@@ -1,0 +1,212 @@
+/* PGT Portfolio Integration - Sharp Professional Styling */
+
+/* Portfolio Value Styling */
+.stat-value {
+    font-family: var(--font-tech) !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.5px !important;
+    transition: all 0.3s ease !important;
+}
+
+/* Portfolio Value Specific Styling */
+#futuristic-portfolio-value {
+    font-size: 16px !important;
+    font-weight: 700 !important;
+    color: var(--cyber-blue) !important;
+    text-shadow: 0 0 8px var(--cyber-blue-glow) !important;
+    letter-spacing: 1px !important;
+}
+
+#futuristic-portfolio-value:hover {
+    color: var(--cyber-blue-bright) !important;
+    text-shadow: 0 0 12px var(--cyber-blue-glow) !important;
+    transform: scale(1.05) !important;
+}
+
+/* 24h Change Styling */
+#futuristic-24h-change {
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.5px !important;
+    transition: all 0.3s ease !important;
+}
+
+#futuristic-24h-change.positive {
+    color: var(--matrix-green) !important;
+    text-shadow: 0 0 6px var(--matrix-green) !important;
+}
+
+#futuristic-24h-change.negative {
+    color: var(--danger-red) !important;
+    text-shadow: 0 0 6px var(--danger-red) !important;
+}
+
+#futuristic-24h-change.neutral {
+    color: var(--cyber-blue) !important;
+    text-shadow: 0 0 4px var(--cyber-blue-glow) !important;
+}
+
+/* Last Updated Styling */
+#futuristic-last-updated {
+    font-size: 11px !important;
+    color: var(--cyber-blue-dim) !important;
+    font-family: var(--font-mono) !important;
+    letter-spacing: 0.3px !important;
+}
+
+/* Portfolio Stats Panel Enhancement */
+.stats-panel:has(#futuristic-portfolio-value) {
+    border: 1px solid var(--cyber-blue) !important;
+    background: rgba(0, 212, 255, 0.05) !important;
+    backdrop-filter: blur(10px) !important;
+    box-shadow: 0 0 20px rgba(0, 212, 255, 0.1) !important;
+}
+
+.stats-panel:has(#futuristic-portfolio-value)::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, 
+        transparent,
+        var(--cyber-blue),
+        transparent
+    );
+    animation: portfolioGlow 3s ease-in-out infinite;
+}
+
+@keyframes portfolioGlow {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 1; }
+}
+
+/* Portfolio Value Animation */
+@keyframes portfolioUpdate {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+.portfolio-updated {
+    animation: portfolioUpdate 0.5s ease-in-out;
+}
+
+/* PGT Section Styling */
+.sidebar-section:has(.sidebar-title:contains("PGT PORTFOLIO")) {
+    border-top: 1px solid var(--cyber-blue) !important;
+    margin-top: 12px !important;
+    padding-top: 12px !important;
+}
+
+.sidebar-section:has(.sidebar-title:contains("PGT PORTFOLIO")) .sidebar-title {
+    color: var(--cyber-blue) !important;
+    text-shadow: 0 0 6px var(--cyber-blue-glow) !important;
+    font-weight: 600 !important;
+}
+
+/* Refresh Button Enhancement */
+.sidebar-button:has([viewBox="0 0 24 24"]:last-child) {
+    position: relative;
+    overflow: hidden;
+}
+
+.sidebar-button:has([viewBox="0 0 24 24"]:last-child)::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, 
+        transparent,
+        rgba(0, 212, 255, 0.2),
+        transparent
+    );
+    transition: left 0.5s ease;
+}
+
+.sidebar-button:has([viewBox="0 0 24 24"]:last-child):hover::before {
+    left: 100%;
+}
+
+/* Loading State */
+.portfolio-loading {
+    opacity: 0.6;
+    animation: pulse 1s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+}
+
+/* Error State */
+.portfolio-error {
+    color: var(--danger-red) !important;
+    text-shadow: 0 0 6px var(--danger-red) !important;
+    animation: errorBlink 1s ease-in-out infinite;
+}
+
+@keyframes errorBlink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+/* Responsive Portfolio Display */
+@media (max-width: 768px) {
+    #futuristic-portfolio-value {
+        font-size: 14px !important;
+    }
+    
+    #futuristic-24h-change {
+        font-size: 12px !important;
+    }
+    
+    #futuristic-last-updated {
+        font-size: 10px !important;
+    }
+}
+
+/* Portfolio Value Formatting */
+.portfolio-value-large {
+    font-size: 18px !important;
+    font-weight: 700 !important;
+}
+
+.portfolio-value-medium {
+    font-size: 16px !important;
+    font-weight: 600 !important;
+}
+
+.portfolio-value-small {
+    font-size: 14px !important;
+    font-weight: 500 !important;
+}
+
+/* Theme Adaptations */
+[data-theme="neon-purple"] #futuristic-portfolio-value {
+    color: var(--neon-purple) !important;
+    text-shadow: 0 0 8px var(--neon-purple) !important;
+}
+
+[data-theme="matrix-green"] #futuristic-portfolio-value {
+    color: var(--matrix-green) !important;
+    text-shadow: 0 0 8px var(--matrix-green) !important;
+}
+
+[data-theme="neon-pink"] #futuristic-portfolio-value {
+    color: var(--neon-pink) !important;
+    text-shadow: 0 0 8px var(--neon-pink) !important;
+}
+
+[data-theme="warning-amber"] #futuristic-portfolio-value {
+    color: var(--warning-amber) !important;
+    text-shadow: 0 0 8px var(--warning-amber) !important;
+}
+
+[data-theme="danger-red"] #futuristic-portfolio-value {
+    color: var(--danger-red) !important;
+    text-shadow: 0 0 8px var(--danger-red) !important;
+}

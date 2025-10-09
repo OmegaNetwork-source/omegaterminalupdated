@@ -1,0 +1,217 @@
+/* Layout Fixes - Ensure all panels fit properly and text is never cut off */
+
+/* Critical Layout Fixes */
+.omega-dashboard {
+    height: 100vh !important;
+    width: 100vw !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+}
+
+/* Terminal Panel Layout Fix */
+.omega-terminal {
+    display: flex !important;
+    flex-direction: column !important;
+    height: 100% !important;
+    max-height: 100% !important;
+    overflow: hidden !important;
+}
+
+/* Terminal Output - Scrollable but never cut off */
+.terminal-output {
+    flex: 1 !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    min-height: 0 !important;
+    max-height: calc(100% - 120px) !important;
+    word-wrap: break-word !important;
+    word-break: break-word !important;
+    white-space: pre-wrap !important;
+}
+
+/* Terminal Input - Always visible at bottom */
+.terminal-input-section {
+    flex-shrink: 0 !important;
+    min-height: 60px !important;
+    max-height: 60px !important;
+    display: flex !important;
+    align-items: center !important;
+    position: relative !important;
+    z-index: 10 !important;
+}
+
+/* Command Input Field - Always visible and functional */
+#commandInput {
+    flex: 1 !important;
+    min-width: 0 !important;
+    width: 100% !important;
+    background: transparent !important;
+    border: none !important;
+    color: var(--cyber-blue) !important;
+    font-family: var(--font-mono) !important;
+    font-size: 14px !important;
+    outline: none !important;
+    padding: 8px 0 !important;
+    letter-spacing: 0.3px !important;
+}
+
+/* Input Prompt - Never wrap */
+.input-prompt {
+    white-space: nowrap !important;
+    flex-shrink: 0 !important;
+}
+
+/* Sidebar - Scrollable if needed */
+.omega-sidebar {
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    max-height: 100% !important;
+}
+
+/* Stats Panel - Scrollable if needed */
+.omega-stats {
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    max-height: 100% !important;
+}
+
+/* Activity Log - Scrollable */
+#futuristic-activity {
+    max-height: 200px !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+}
+
+/* Terminal Lines - Proper spacing */
+.terminal-line {
+    margin-bottom: 4px !important;
+    word-wrap: break-word !important;
+    word-break: break-word !important;
+    white-space: pre-wrap !important;
+    line-height: 1.6 !important;
+}
+
+/* Ensure no text gets cut off */
+.terminal-line * {
+    word-wrap: break-word !important;
+    word-break: break-word !important;
+    white-space: pre-wrap !important;
+}
+
+/* Fix for long URLs and addresses */
+.terminal-line a,
+.terminal-line code,
+.terminal-line .address,
+.terminal-line .hash {
+    word-break: break-all !important;
+    white-space: pre-wrap !important;
+    display: inline-block !important;
+    max-width: 100% !important;
+}
+
+/* Responsive fixes */
+@media (max-width: 1024px) {
+    .omega-dashboard {
+        grid-template-rows: 60px 1fr 200px !important;
+    }
+    
+    .terminal-output {
+        max-height: calc(100% - 140px) !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .omega-dashboard {
+        grid-template-rows: 60px 1fr 150px 150px !important;
+    }
+    
+    .terminal-output {
+        max-height: calc(100% - 160px) !important;
+    }
+    
+    .terminal-input-section {
+        min-height: 50px !important;
+        max-height: 50px !important;
+        padding: 8px 12px !important;
+    }
+}
+
+/* Ensure proper scrolling behavior */
+.terminal-output::-webkit-scrollbar {
+    width: 8px !important;
+}
+
+.terminal-output::-webkit-scrollbar-track {
+    background: rgba(0, 212, 255, 0.1) !important;
+    border-radius: 4px !important;
+}
+
+.terminal-output::-webkit-scrollbar-thumb {
+    background: var(--cyber-blue) !important;
+    border-radius: 4px !important;
+}
+
+.terminal-output::-webkit-scrollbar-thumb:hover {
+    background: var(--cyber-blue-bright) !important;
+}
+
+/* Fix for terminal content overflow */
+.terminal-output > * {
+    max-width: 100% !important;
+    overflow-wrap: break-word !important;
+    word-break: break-word !important;
+}
+
+/* Ensure input line never wraps */
+.input-line {
+    display: flex !important;
+    align-items: center !important;
+    width: 100% !important;
+    min-height: 40px !important;
+}
+
+/* Fix for terminal header */
+.terminal-header {
+    flex-shrink: 0 !important;
+    min-height: 50px !important;
+    max-height: 50px !important;
+}
+
+/* Prevent any element from causing overflow */
+.omega-dashboard * {
+    box-sizing: border-box !important;
+    max-width: 100% !important;
+}
+
+/* Ensure proper flex behavior */
+.omega-terminal > * {
+    flex-shrink: 0 !important;
+}
+
+.omega-terminal > .terminal-output {
+    flex-shrink: 1 !important;
+    flex-grow: 1 !important;
+}
+
+/* Fix for very long command outputs */
+.terminal-line pre,
+.terminal-line code {
+    max-width: 100% !important;
+    overflow-x: auto !important;
+    white-space: pre !important;
+    word-break: normal !important;
+}
+
+/* Ensure tables don't break layout */
+.terminal-line table {
+    width: 100% !important;
+    table-layout: fixed !important;
+    word-wrap: break-word !important;
+}
+
+.terminal-line td,
+.terminal-line th {
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+    max-width: 0 !important;
+}

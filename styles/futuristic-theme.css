@@ -1,0 +1,703 @@
+/* ============================================
+   OMEGA TERMINAL - FUTURISTIC THEME v1.0
+   Ultra-Modern Sci-Fi Command Center Interface
+   Dark Minimal - High Tech Aesthetic
+   ============================================ */
+
+:root {
+    /* Primary Color Palette - Dark Minimal */
+    --void-black: #0a0a0f;
+    --deep-space: #0f0f1a;
+    --dark-matter: #151520;
+    --shadow-grey: #1a1a28;
+    --steel-grey: #2a2a3a;
+    
+    /* Accent Colors - Cybernetic Blue */
+    --cyber-blue: #00d4ff;
+    --cyber-blue-dim: #0099cc;
+    --cyber-blue-glow: rgba(0, 212, 255, 0.3);
+    --cyber-blue-bright: #00ffff;
+    
+    /* Secondary Accents */
+    --neon-purple: #9d00ff;
+    --neon-pink: #ff0099;
+    --matrix-green: #00ff88;
+    --warning-amber: #ffaa00;
+    --danger-red: #ff3366;
+    
+    /* Glass Morphism */
+    --glass-bg: rgba(21, 21, 32, 0.7);
+    --glass-border: rgba(0, 212, 255, 0.15);
+    --glass-blur: blur(20px);
+    
+    /* Typography */
+    --font-mono: 'Consolas', 'Monaco', 'Courier New', monospace;
+    --font-tech: 'SF Mono', 'Roboto Mono', monospace;
+    
+    /* Spacing */
+    --gap-xs: 4px;
+    --gap-sm: 8px;
+    --gap-md: 16px;
+    --gap-lg: 24px;
+    --gap-xl: 32px;
+    
+    /* Border Radius */
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --radius-xl: 16px;
+    
+    /* Animations */
+    --transition-fast: 0.15s ease;
+    --transition-normal: 0.3s ease;
+    --transition-slow: 0.5s ease;
+}
+
+/* ============================================
+   GLOBAL RESETS & BASE STYLES
+   ============================================ */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: var(--void-black);
+    color: var(--cyber-blue);
+    font-family: var(--font-tech);
+    font-size: 14px;
+    line-height: 1.6;
+    overflow: hidden;
+    position: relative;
+    height: 100vh;
+    width: 100vw;
+}
+
+/* Animated Background Grid */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        linear-gradient(var(--glass-border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--glass-border) 1px, transparent 1px);
+    background-size: 50px 50px;
+    opacity: 0.15;
+    z-index: 0;
+    pointer-events: none;
+    animation: gridMove 20s linear infinite;
+}
+
+@keyframes gridMove {
+    0% { transform: translate(0, 0); }
+    100% { transform: translate(50px, 50px); }
+}
+
+/* Scanline Effect */
+body::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        to bottom,
+        transparent 0%,
+        rgba(0, 212, 255, 0.02) 50%,
+        transparent 100%
+    );
+    background-size: 100% 4px;
+    pointer-events: none;
+    z-index: 9999;
+    animation: scanline 8s linear infinite;
+}
+
+@keyframes scanline {
+    0% { transform: translateY(-100%); }
+    100% { transform: translateY(100%); }
+}
+
+/* ============================================
+   MAIN DASHBOARD CONTAINER
+   ============================================ */
+
+.omega-dashboard {
+    width: 100vw;
+    height: 100vh;
+    display: grid;
+    grid-template-areas:
+        "header header header"
+        "sidebar terminal stats"
+        "sidebar terminal stats";
+    grid-template-columns: 280px 1fr 320px;
+    grid-template-rows: 60px 1fr;
+    gap: var(--gap-md);
+    padding: var(--gap-md);
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+/* ============================================
+   HEADER - TOP COMMAND BAR
+   ============================================ */
+
+.omega-header {
+    grid-area: header;
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    padding: 0 var(--gap-lg);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    overflow: hidden;
+}
+
+.omega-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, 
+        transparent,
+        var(--cyber-blue),
+        transparent
+    );
+    animation: headerGlow 3s ease-in-out infinite;
+}
+
+@keyframes headerGlow {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 1; }
+}
+
+.header-brand {
+    display: flex;
+    align-items: center;
+    gap: var(--gap-md);
+}
+
+.brand-logo {
+    width: 32px;
+    height: 32px;
+    background: linear-gradient(135deg, var(--cyber-blue), var(--neon-purple));
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 18px;
+    box-shadow: 0 0 20px var(--cyber-blue-glow);
+}
+
+.brand-text {
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    background: linear-gradient(90deg, var(--cyber-blue), var(--cyber-blue-bright));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.header-status {
+    display: flex;
+    align-items: center;
+    gap: var(--gap-lg);
+}
+
+.status-indicator {
+    display: flex;
+    align-items: center;
+    gap: var(--gap-sm);
+    padding: var(--gap-sm) var(--gap-md);
+    background: rgba(0, 212, 255, 0.05);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-md);
+    font-size: 12px;
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--cyber-blue-dim);
+    box-shadow: 0 0 6px rgba(0, 212, 255, 0.3);
+    transition: all 0.3s ease;
+}
+
+.status-dot.active {
+    background: var(--matrix-green);
+    box-shadow: 0 0 10px var(--matrix-green), 0 0 15px rgba(0, 255, 136, 0.6);
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.7; transform: scale(1.1); }
+}
+
+.status-dot.connecting { 
+    background: var(--warning-amber); 
+    box-shadow: 0 0 10px var(--warning-amber); 
+    animation: pulse 2s ease-in-out infinite;
+}
+
+.status-dot.error { 
+    background: var(--danger-red); 
+    box-shadow: 0 0 10px var(--danger-red); 
+}
+
+/* ============================================
+   SIDEBAR - QUICK ACTIONS & NAVIGATION
+   ============================================ */
+
+.omega-sidebar {
+    grid-area: sidebar;
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    padding: var(--gap-lg);
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-lg);
+    overflow-y: auto;
+}
+
+.sidebar-section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-sm);
+}
+
+.sidebar-title {
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--cyber-blue-dim);
+    margin-bottom: var(--gap-sm);
+    padding-bottom: var(--gap-sm);
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.sidebar-button {
+    background: rgba(0, 212, 255, 0.05);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-md);
+    padding: var(--gap-md);
+    color: var(--cyber-blue);
+    font-family: var(--font-tech);
+    font-size: 13px;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    display: flex;
+    align-items: center;
+    gap: var(--gap-sm);
+}
+
+.sidebar-button:hover {
+    background: rgba(0, 212, 255, 0.15);
+    border-color: var(--cyber-blue);
+    box-shadow: 0 0 15px var(--cyber-blue-glow);
+    transform: translateX(4px);
+}
+
+.sidebar-button.active {
+    background: rgba(0, 212, 255, 0.2);
+    border-color: var(--cyber-blue);
+    box-shadow: inset 0 0 10px var(--cyber-blue-glow);
+}
+
+.sidebar-icon {
+    width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ============================================
+   TERMINAL - MAIN COMMAND CENTER
+   ============================================ */
+
+.omega-terminal {
+    grid-area: terminal;
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+    min-height: 0;
+    max-height: 100%;
+}
+
+.terminal-header {
+    padding: var(--gap-md) var(--gap-lg);
+    border-bottom: 1px solid var(--glass-border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(0, 0, 0, 0.3);
+}
+
+.terminal-title {
+    font-size: 13px;
+    letter-spacing: 1px;
+    color: var(--cyber-blue-bright);
+    display: flex;
+    align-items: center;
+    gap: var(--gap-sm);
+}
+
+.terminal-controls {
+    display: flex;
+    gap: var(--gap-sm);
+}
+
+.terminal-control-btn {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.terminal-control-btn.close { background: var(--danger-red); }
+.terminal-control-btn.minimize { background: var(--warning-amber); }
+.terminal-control-btn.maximize { background: var(--matrix-green); }
+
+.terminal-control-btn:hover {
+    box-shadow: 0 0 10px currentColor;
+    transform: scale(1.2);
+}
+
+.terminal-output {
+    flex: 1;
+    padding: var(--gap-lg);
+    overflow-y: auto;
+    overflow-x: hidden;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    line-height: 1.8;
+    min-height: 0;
+    max-height: calc(100% - 120px);
+    word-wrap: break-word;
+    word-break: break-word;
+}
+
+.terminal-line {
+    margin-bottom: var(--gap-sm);
+    animation: fadeIn 0.2s ease;
+}
+
+/* Terminal Input Section - Always Visible */
+.terminal-input-section {
+    padding: var(--gap-md) var(--gap-lg);
+    background: rgba(0, 0, 0, 0.4);
+    border-top: 1px solid var(--glass-border);
+    display: flex;
+    align-items: center;
+    gap: var(--gap-sm);
+    flex-shrink: 0;
+    min-height: 60px;
+    max-height: 60px;
+}
+
+.input-line {
+    display: flex;
+    align-items: center;
+    gap: var(--gap-sm);
+    width: 100%;
+}
+
+.input-prompt {
+    color: var(--cyber-blue-bright);
+    font-weight: 600;
+    font-family: var(--font-mono);
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+}
+
+.input-field {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: var(--cyber-blue);
+    font-family: var(--font-mono);
+    font-size: 14px;
+    outline: none;
+    padding: var(--gap-xs) 0;
+    letter-spacing: 0.3px;
+}
+
+.input-field::placeholder {
+    color: var(--cyber-blue-dim);
+    opacity: 0.7;
+}
+
+/* Ensure command input is always visible */
+#commandInput {
+    background: transparent !important;
+    border: none !important;
+    color: var(--cyber-blue) !important;
+    font-family: var(--font-mono) !important;
+    font-size: 14px !important;
+    outline: none !important;
+    padding: var(--gap-xs) 0 !important;
+    letter-spacing: 0.3px !important;
+    width: 100% !important;
+    flex: 1 !important;
+    min-width: 0 !important;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.terminal-input-area {
+    padding: var(--gap-lg);
+    border-top: 1px solid var(--glass-border);
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    gap: var(--gap-md);
+}
+
+.terminal-prompt {
+    color: var(--cyber-blue-bright);
+    font-weight: bold;
+    user-select: none;
+}
+
+.terminal-input {
+    flex: 1;
+    background: none;
+    border: none;
+    outline: none;
+    color: var(--cyber-blue);
+    font-family: var(--font-mono);
+    font-size: 14px;
+    caret-color: var(--cyber-blue-bright);
+}
+
+.terminal-input::selection {
+    background: var(--cyber-blue-glow);
+}
+
+/* ============================================
+   STATS PANEL - SYSTEM MONITORS
+   ============================================ */
+
+.omega-stats {
+    grid-area: stats;
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-md);
+    overflow-y: auto;
+}
+
+.stats-panel {
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    padding: var(--gap-lg);
+}
+
+.stats-title {
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--cyber-blue-dim);
+    margin-bottom: var(--gap-md);
+    padding-bottom: var(--gap-sm);
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.stat-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--gap-sm) 0;
+    font-size: 12px;
+}
+
+.stat-label {
+    color: var(--cyber-blue-dim);
+}
+
+.stat-value {
+    color: var(--cyber-blue-bright);
+    font-weight: 600;
+}
+
+.stat-bar {
+    width: 100%;
+    height: 4px;
+    background: rgba(0, 212, 255, 0.1);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-top: var(--gap-xs);
+}
+
+.stat-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--cyber-blue), var(--neon-purple));
+    border-radius: 2px;
+    transition: width var(--transition-normal);
+    box-shadow: 0 0 10px var(--cyber-blue-glow);
+}
+
+/* ============================================
+   SCROLLBAR STYLING
+   ============================================ */
+
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--cyber-blue-dim);
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--cyber-blue);
+    box-shadow: 0 0 10px var(--cyber-blue-glow);
+}
+
+/* ============================================
+   UTILITY CLASSES
+   ============================================ */
+
+.text-cyber { color: var(--cyber-blue); }
+.text-neon-purple { color: var(--neon-purple); }
+.text-matrix { color: var(--matrix-green); }
+.text-warning { color: var(--warning-amber); }
+.text-danger { color: var(--danger-red); }
+
+.glow-cyber {
+    text-shadow: 0 0 10px var(--cyber-blue-glow);
+}
+
+.glow-pulse {
+    animation: glowPulse 2s ease-in-out infinite;
+}
+
+@keyframes glowPulse {
+    0%, 100% { box-shadow: 0 0 5px var(--cyber-blue-glow); }
+    50% { box-shadow: 0 0 20px var(--cyber-blue-glow), 0 0 30px var(--cyber-blue-glow); }
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+
+@media (max-width: 1400px) {
+    .omega-dashboard {
+        grid-template-columns: 240px 1fr 280px;
+    }
+}
+
+@media (max-width: 1024px) {
+    .omega-dashboard {
+        grid-template-areas:
+            "header header"
+            "terminal terminal"
+            "sidebar stats";
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 60px 1fr auto;
+    }
+}
+
+@media (max-width: 768px) {
+    .omega-dashboard {
+        grid-template-areas:
+            "header"
+            "terminal"
+            "sidebar"
+            "stats";
+        grid-template-columns: 1fr;
+        grid-template-rows: 60px 1fr auto auto;
+        gap: var(--gap-sm);
+        padding: var(--gap-sm);
+    }
+    
+    .omega-header {
+        padding: 0 var(--gap-md);
+    }
+    
+    .header-status {
+        gap: var(--gap-sm);
+    }
+}
+
+/* ============================================
+   LOADING ANIMATION
+   ============================================ */
+
+.omega-loader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--void-black);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+}
+
+.loader-content {
+    text-align: center;
+}
+
+.loader-spinner {
+    width: 60px;
+    height: 60px;
+    border: 3px solid var(--glass-border);
+    border-top-color: var(--cyber-blue);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto var(--gap-lg);
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.loader-text {
+    color: var(--cyber-blue);
+    font-size: 14px;
+    letter-spacing: 2px;
+    animation: fadeInOut 2s ease-in-out infinite;
+}
+
+@keyframes fadeInOut {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+}
+

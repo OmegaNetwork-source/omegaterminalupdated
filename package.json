@@ -1,0 +1,42 @@
+{
+  "name": "omega-terminal",
+  "version": "2.0.1",
+  "description": "The Ultimate Multi-Chain Web3 Terminal - A powerful, modular terminal interface for Web3 trading, NFTs, DeFi, and more",
+  "main": "index.html",
+  "scripts": {
+    "dev": "npx http-server . -p 8080 -o --cors",
+    "futuristic": "npx http-server . -p 8080 -o --cors -P http://localhost:8080/index-futuristic.html",
+    "start": "npm run futuristic",
+    "serve": "npx http-server . -p 8080 --cors",
+    "original": "npx http-server . -p 8080 -o --cors -P http://localhost:8080/index.html",
+    "pgt-proxy": "node pgt-proxy-server.js",
+    "dev-with-pgt": "concurrently \"npm run pgt-proxy\" \"npm run dev\"",
+    "test": "echo \"No tests configured yet\" && exit 0"
+  },
+  "keywords": [
+    "web3",
+    "terminal",
+    "blockchain",
+    "ethereum",
+    "solana",
+    "near",
+    "nft",
+    "defi",
+    "trading",
+    "crypto"
+  ],
+  "author": "Omega Terminal Team",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "http-server": "^14.1.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/omega-terminal.git"
+  },
+  "engines": {
+    "node": ">=14.0.0",
+    "npm": ">=6.0.0"
+  }
+}

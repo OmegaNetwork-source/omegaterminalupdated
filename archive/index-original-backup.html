@@ -7,61 +7,46 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' https: data: blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https:; style-src 'self' 'unsafe-inline' https:; img-src 'self' data: https:; font-src 'self' https:; connect-src 'self' https:;"> -->
-    <title>OMEGA TERMINAL - CLASSIFIED ACCESS SYSTEM v2.0.1</title>
+    <title>Omega Terminal v2.0.1 - Modern Apple UI</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js" type="application/javascript"></script>
     <script src="https://cdn.jsdelivr.net/npm/eth-crypto@2.1.2/dist/lib.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@1.93.1/lib/index.iife.min.js"></script>
     <link rel="stylesheet" href="styles/gui-themes.css">
-    <link rel="stylesheet" href="styles/themes-crypto.css">
-    <link rel="stylesheet" href="styles/apple-ui-theme.css">
-    <link rel="stylesheet" href="styles/simple-input-fix.css">
-    <link rel="stylesheet" href="styles/mobile-terminal-fix.css">
-    <link rel="stylesheet" href="styles/mobile-games-fix.css">
+    <link rel="stylesheet" href="themes-crypto.css">
+    <link rel="stylesheet" href="apple-ui-theme.css">
+    <link rel="stylesheet" href="simple-input-fix.css">
+    <link rel="stylesheet" href="mobile-terminal-fix.css">
+    <link rel="stylesheet" href="mobile-games-fix.css">
     
     <!-- FUTURISTIC THEME -->
-    <link rel="stylesheet" href="styles/futuristic-theme.css">
-    <link rel="stylesheet" href="styles/futuristic-mode.css">
-    <link rel="stylesheet" href="styles/futuristic-terminal-integration.css">
-    <link rel="stylesheet" href="styles/futuristic-font-override.css">
-    <link rel="stylesheet" href="styles/futuristic-welcome-screen.css">
-    <link rel="stylesheet" href="styles/svg-icons-system.css">
-    <link rel="stylesheet" href="styles/omega-logos.css">
-    <link rel="stylesheet" href="styles/omega-symbol-logo.css">
-    <link rel="stylesheet" href="styles/pgt-portfolio-integration.css">
-    <link rel="stylesheet" href="styles/pgt-tracker-styles.css">
-    <link rel="stylesheet" href="styles/layout-fixes.css">
-    <!-- Futuristic UI System -->
-    <script src="js/futuristic/futuristic-customizer.js"></script>
-    <script src="js/futuristic/terminal-theme-bridge.js"></script>
-    <script src="js/futuristic/futuristic-welcome-screen.js"></script>
-    <script src="js/futuristic/welcome-screen-fix.js"></script>
-    <script src="js/futuristic/futuristic-dashboard-transform.js"></script>
-    
-    <!-- UI Components -->
-    <script src="ui/svg-icons-replacement.js"></script>
-    <script src="ui/omega-symbol-logo.js"></script>
-    
-    <!-- Core Plugins -->
-    <script src="js/plugins/dexscreener-enhanced-fixed.js"></script>
-    <script src="js/plugins/dexscreener-analytics-ultimate.js"></script>
-    <script src="js/plugins/metamask-connection-fix.js"></script>
-    <script src="js/plugins/theme-crypto-plugin.js"></script>
-    <script src="js/plugins/ref-simple.js"></script>
-    <script src="js/plugins/near-wallet-connection-fix.js"></script>
-    <script src="js/plugins/bot-manager-plugin.js"></script>
-    <script src="js/plugins/apple-ui-plugin.js"></script>
-    <script src="js/plugins/defillama-api-plugin.js"></script>
-    <script src="js/plugins/opensea-enhanced-plugin.js"></script>
-    <script src="js/plugins/enhanced-profile-system.js"></script>
-    <script src="js/plugins/terminal-chatter-mode.js"></script>
-    <script src="js/plugins/python-integration-system.js"></script>
-    <script src="js/plugins/terminal-games-system.js"></script>
-    <script src="js/plugins/simple-terminal-builder.js"></script>
-    <script src="js/plugins/omega-nft-onchain.js"></script>
-    
-    <!-- PGT Integration -->
-    <script src="js/pgt/pgt-integration-live.js"></script>
-    <script src="js/pgt/pgt-cors-proxy.js"></script>
+    <link rel="stylesheet" href="futuristic-theme.css">
+    <script src="futuristic-customizer.js"></script>
+    <script src="dexscreener-enhanced-fixed.js"></script>
+    <script src="dexscreener-analytics-ultimate.js"></script>
+    <script src="metamask-connection-fix.js"></script>
+    <script src="theme-crypto-plugin.js"></script>
+    <script src="ref-simple.js"></script>
+    <!-- <script src="near-wallet-plugin.js"></script> DISABLED: Was breaking existing NEAR commands -->
+    <script src="near-wallet-connection-fix.js"></script>
+    <script src="bot-manager-plugin.js"></script>
+    <!-- <script src="input-visibility-hotfix.js"></script> DISABLED: Causing issues -->
+    <!-- <script src="apple-ui-input-override.js"></script> DISABLED: Causing duplicate text -->
+    <script src="apple-ui-plugin.js"></script>
+    <script src="defillama-api-plugin.js"></script>
+    <!-- <script src="opensea-nft-plugin.js"></script> REPLACED WITH ENHANCED VERSION -->
+    <script src="opensea-enhanced-plugin.js"></script>
+
+
+
+
+    <script src="enhanced-profile-system.js"></script>
+    <script src="terminal-chatter-mode.js"></script>
+    <script src="python-integration-system.js"></script>
+    <script src="pgt-integration-live.js"></script>
+    <script src="pgt-cors-proxy.js"></script>
+    <script src="terminal-games-system.js"></script>
+    <script src="simple-terminal-builder.js"></script>
+    <script src="omega-nft-onchain.js"></script>
     <script>
         // VERSION CHECK - This should be visible in console if updated code is loaded
         console.log('🚀 OMEGA TERMINAL VERSION 2.0.1 LOADED');
@@ -870,8 +855,16 @@
     </style>
 </head>
 <body>
-    <!-- Futuristic Welcome Screen (replaces old boot animation) -->
-    <!-- Welcome screen is now handled by futuristic-welcome-screen.js -->
+    <!-- Boot Animation -->
+    <div class="boot-animation" id="bootAnimation">
+        <div class="omega-symbols">Ω Ω Ω Ω Ω</div>
+        <div class="pickaxe">⛏️</div>
+        <div class="welcome-text">
+            Welcome to Omega Terminal v2.0.1<br>
+            <span style="font-size: 16px; color: #cccccc;">Type below to get started</span>
+        </div>
+        <div class="loading-dots">Loading...</div>
+    </div>
 
     <div class="terminal" id="terminal" style="display: none;">
         <div class="terminal-header">
@@ -1494,14 +1487,8 @@
                 console.log('[DEBUG] showBootAnimation() called');
                 return new Promise((resolve) => {
                     setTimeout(() => {
-                        const bootAnimation = document.getElementById('bootAnimation');
-                        if (bootAnimation) {
-                            bootAnimation.style.display = 'none';
-                        }
-                        const terminal = document.getElementById('terminal');
-                        if (terminal) {
-                            terminal.style.display = 'flex';
-                        }
+                        document.getElementById('bootAnimation').style.display = 'none';
+                        document.getElementById('terminal').style.display = 'flex';
                         this.applyTheme();
                         // Clean startup - no debug messages
                         this.log('Type "connect" to get started', 'info');
@@ -11600,6 +11587,5 @@
         // init() is already called in the constructor, so we don't need to call it again
     });
     </script>
-
 </body>
 </html>

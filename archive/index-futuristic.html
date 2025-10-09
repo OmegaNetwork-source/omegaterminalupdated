@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>OMEGA TERMINAL - CLASSIFIED ACCESS SYSTEM</title>
+    
+    <!-- External Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js" type="application/javascript"></script>
+    <script src="https://cdn.jsdelivr.net/npm/eth-crypto@2.1.2/dist/lib.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@1.93.1/lib/index.iife.min.js"></script>
+    
+    <!-- Futuristic Theme -->
+    <link rel="stylesheet" href="futuristic-theme.css">
+    
+    <!-- Core Plugins -->
+    <script src="dexscreener-enhanced-fixed.js"></script>
+    <script src="dexscreener-analytics-ultimate.js"></script>
+    <script src="metamask-connection-fix.js"></script>
+    <script src="theme-crypto-plugin.js"></script>
+    <script src="ref-simple.js"></script>
+    <script src="near-wallet-connection-fix.js"></script>
+    <script src="bot-manager-plugin.js"></script>
+    <script src="defillama-api-plugin.js"></script>
+    <script src="opensea-enhanced-plugin.js"></script>
+    <script src="enhanced-profile-system.js"></script>
+    <script src="terminal-chatter-mode.js"></script>
+    <script src="python-integration-system.js"></script>
+    <script src="pgt-integration-live.js"></script>
+    <script src="pgt-cors-proxy.js"></script>
+    <script src="terminal-games-system.js"></script>
+    <script src="simple-terminal-builder.js"></script>
+    <script src="omega-nft-onchain.js"></script>
+    <script src="relayer-faucet.js"></script>
+    <script src="omega-arcade-sdk.js"></script>
+    
+    <!-- Core JS Modules -->
+    <script src="js/utils.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/wallet.js"></script>
+    <script src="js/themes.js"></script>
+    
+    <!-- Command Modules -->
+    <script src="js/commands/api.js"></script>
+    <script src="js/commands/basic.js"></script>
+    <script src="js/commands/wallet-commands.js"></script>
+    <script src="js/commands/mining.js"></script>
+    <script src="js/commands/network.js"></script>
+    <script src="js/commands/mixer.js"></script>
+    <script src="js/commands/entertainment.js"></script>
+    <script src="js/commands/solana.js"></script>
+    <script src="js/commands/near.js"></script>
+    <script src="js/commands/eclipse.js"></script>
+    <script src="js/commands/referral.js"></script>
+    <script src="js/commands/remaining.js"></script>
+    
+    <!-- Terminal Core -->
+    <script src="js/terminal-core.js"></script>
+    <script src="js/init.js"></script>
+    
+    <!-- Futuristic Customizer -->
+    <script src="futuristic-customizer.js"></script>
+    
+    <style>
+        /* Override for futuristic dashboard integration */
+        .terminal {
+            display: none !important;
+        }
+        
+        body.omega-initialized .omega-loader {
+            display: none;
+        }
+        
+        body.omega-initialized .omega-dashboard {
+            display: grid;
+        }
+    </style>
+    
+    <script>
+        // PRE-INIT: Force terminal creation compatibility
+        console.log('🔧 Futuristic Pre-Init Script Running...');
+        
+        // Create hidden terminal elements for compatibility
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('📋 Creating hidden terminal compatibility layer...');
+            
+            // Check if terminal elements don't exist
+            if (!document.getElementById('terminal')) {
+                const hiddenTerminal = document.createElement('div');
+                hiddenTerminal.id = 'terminal';
+                hiddenTerminal.className = 'terminal';
+                hiddenTerminal.style.display = 'none';
+                hiddenTerminal.innerHTML = `
+                    <div id="terminalOutput"></div>
+                    <div class="terminal-input-section">
+                        <div class="input-line">
+                            <span class="input-prompt">root@omega:~$</span>
+                            <input type="text" class="input-field" id="commandInput" />
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(hiddenTerminal);
+                console.log('✅ Hidden terminal elements created for compatibility');
+            }
+            
+            // Force terminal creation if not created by init.js
+            let terminalCheckAttempts = 0;
+            const checkAndCreateTerminal = () => {
+                terminalCheckAttempts++;
+                console.log(`🔍 Terminal check attempt ${terminalCheckAttempts}...`);
+                
+                if (!window.terminal) {
+                    if (typeof OmegaMinerTerminal !== 'undefined') {
+                        console.log('✅ OmegaMinerTerminal class found, creating instance...');
+                        try {
+                            window.terminal = new OmegaMinerTerminal();
+                            console.log('✅ Terminal instance created successfully!');
+                            console.log('✅ window.terminal.processCommand:', typeof window.terminal.processCommand);
+                        } catch (error) {
+                            console.error('❌ Error creating terminal:', error);
+                            if (terminalCheckAttempts < 10) {
+                                setTimeout(checkAndCreateTerminal, 200);
+                            }
+                        }
+                    } else {
+                        console.warn(`⚠️ OmegaMinerTerminal not loaded yet (attempt ${terminalCheckAttempts}/10)`);
+                        if (terminalCheckAttempts < 10) {
+                            setTimeout(checkAndCreateTerminal, 200);
+                        } else {
+                            console.error('❌ Failed to load OmegaMinerTerminal after 10 attempts');
+                        }
+                    }
+                } else {
+                    console.log('✅ Terminal already exists');
+                    console.log('✅ window.terminal.processCommand:', typeof window.terminal.processCommand);
+                }
+            };
+            
+            setTimeout(checkAndCreateTerminal, 500);
+        });
+    </script>
+</head>
+<body>
+    
+    <!-- Loading Screen -->
+    <div class="omega-loader" id="omegaLoader">
+        <div class="loader-content">
+            <div class="loader-spinner"></div>
+            <div class="loader-text">INITIALIZING CLASSIFIED SYSTEM...</div>
+            <div class="loader-text" style="font-size: 11px; margin-top: 10px; opacity: 0.5;">OMEGA PROTOCOL v2.0.1</div>
+        </div>
+    </div>
+
+    <!-- Main Dashboard -->
+    <div class="omega-dashboard" style="display: none;">
+        
+        <!-- Header -->
+        <header class="omega-header">
+            <div class="header-brand">
+                <div class="brand-logo">Ω</div>
+                <div class="brand-text">OMEGA TERMINAL</div>
+                <div style="font-size: 10px; color: var(--cyber-blue-dim); margin-left: 8px;">v2.0.1 CLASSIFIED</div>
+            </div>
+            
+            <div class="header-status">
+                <div class="status-indicator">
+                    <div class="status-dot" id="connectionStatus"></div>
+                    <span id="connectionText">OFFLINE</span>
+                </div>
+                
+                <div class="status-indicator">
+                    <span id="networkInfo">NO NETWORK</span>
+                </div>
+                
+                <div class="status-indicator">
+                    <span id="walletInfo">NO WALLET</span>
+                </div>
+                
+                <button class="sidebar-button" onclick="if(window.OmegaCustomizer) OmegaCustomizer.cycleColorScheme()" style="padding: 6px 12px;" title="Cycle Color Scheme">
+                    <span id="themeIcon">🎨</span>
+                </button>
+            </div>
+        </header>
+        
+        <!-- Sidebar -->
+        <aside class="omega-sidebar">
+            <div class="sidebar-section">
+                <div class="sidebar-title">QUICK ACTIONS</div>
+                <button class="sidebar-button" onclick="omegaFuturistic.quickCommand('help')">
+                    <span class="sidebar-icon">📖</span>
+                    <span>System Help</span>
+                </button>
+                <button class="sidebar-button" onclick="omegaFuturistic.quickCommand('connect')">
+                    <span class="sidebar-icon">🔗</span>
+                    <span>Connect Wallet</span>
+                </button>
+                <button class="sidebar-button" onclick="omegaFuturistic.quickCommand('balance')">
+                    <span class="sidebar-icon">💰</span>
+                    <span>Check Balance</span>
+                </button>
+                <button class="sidebar-button" onclick="omegaFuturistic.quickCommand('faucet')">
+                    <span class="sidebar-icon">🚰</span>
+                    <span>Claim Faucet</span>
+                </button>
+            </div>
+            
+            <div class="sidebar-section">
+                <div class="sidebar-title">TRADING & ANALYTICS</div>
+                <button class="sidebar-button" onclick="omegaFuturistic.quickCommand('dexscreener BTC')">
+                    <span class="sidebar-icon">📊</span>
+                    <span>BTC Analytics</span>
+                </button>
+                <button class="sidebar-button" onclick="omegaFuturistic.quickCommand('dexscreener ETH')">
+                    <span class="sidebar-icon">📈</span>
+                    <span>ETH Analytics</span>
+                </button>
+                <button class="sidebar-button" onclick="omegaFuturistic.quickCommand('defillama')">
+                    <span class="sidebar-icon">🦙</span>
+                    <span>DeFi Llama</span>
+                </button>
+            </div>
+            
+            <div class="sidebar-section">
+                <div class="sidebar-title">NFT & WEB3</div>
+                <button class="sidebar-button" onclick="omegaFuturistic.quickCommand('nft')">
+                    <span class="sidebar-icon">🎨</span>
+                    <span>NFT Explorer</span>
+                </button>
+                <button class="sidebar-button" onclick="omegaFuturistic.quickCommand('solana wallet')">
+                    <span class="sidebar-icon">◎</span>
+                    <span>Solana Wallet</span>
+                </button>
+                <button class="sidebar-button" onclick="omegaFuturistic.quickCommand('near')">
+                    <span class="sidebar-icon">Ⓝ</span>
+                    <span>NEAR Protocol</span>
+                </button>
+            </div>
+            
+            <div class="sidebar-section">
+                <div class="sidebar-title">SYSTEM</div>
+                <button class="sidebar-button" onclick="omegaFuturistic.quickCommand('clear')">
+                    <span class="sidebar-icon">🗑️</span>
+                    <span>Clear Terminal</span>
+                </button>
+                <button class="sidebar-button" onclick="omegaFuturistic.quickCommand('profile')">
+                    <span class="sidebar-icon">👤</span>
+                    <span>Profile Settings</span>
+                </button>
+                <button class="sidebar-button" onclick="if(window.OmegaCustomizer) OmegaCustomizer.cycleColorScheme()">
+                    <span class="sidebar-icon">🎨</span>
+                    <span>Cycle Theme</span>
+                </button>
+            </div>
+            
+            <div class="sidebar-section">
+                <div class="sidebar-title">CUSTOMIZATION</div>
+                <button class="sidebar-button" onclick="omegaFuturistic.showCustomizer()">
+                    <span class="sidebar-icon">⚙️</span>
+                    <span>Customize UI</span>
+                </button>
+            </div>
+        </aside>
+        
+        <!-- Main Terminal -->
+        <main class="omega-terminal">
+            <div class="terminal-header">
+                <div class="terminal-title">
+                    <span>▶</span>
+                    <span>COMMAND CENTER</span>
+                </div>
+                <div class="terminal-controls">
+                    <div class="terminal-control-btn close" title="Close"></div>
+                    <div class="terminal-control-btn minimize" title="Minimize"></div>
+                    <div class="terminal-control-btn maximize" title="Maximize"></div>
+                </div>
+            </div>
+            
+            <div class="terminal-output" id="terminalOutput">
+                <!-- Terminal output will be injected here -->
+            </div>
+            
+            <div class="terminal-input-area">
+                <span class="terminal-prompt" id="terminalPrompt">root@omega:~$</span>
+                <input 
+                    type="text" 
+                    class="terminal-input" 
+                    id="commandInput"
+                    placeholder="Enter command..."
+                    autocomplete="off"
+                    spellcheck="false"
+                />
+            </div>
+        </main>
+        
+        <!-- Stats Panel -->
+        <aside class="omega-stats">
+            <div class="stats-panel">
+                <div class="stats-title">SYSTEM STATUS</div>
+                <div class="stat-item">
+                    <span class="stat-label">CPU Usage</span>
+                    <span class="stat-value" id="cpuUsage">0%</span>
+                </div>
+                <div class="stat-bar">
+                    <div class="stat-bar-fill" id="cpuBar" style="width: 0%"></div>
+                </div>
+                
+                <div class="stat-item">
+                    <span class="stat-label">Memory</span>
+                    <span class="stat-value" id="memUsage">0 MB</span>
+                </div>
+                <div class="stat-bar">
+                    <div class="stat-bar-fill" id="memBar" style="width: 0%"></div>
+                </div>
+                
+                <div class="stat-item">
+                    <span class="stat-label">Network</span>
+                    <span class="stat-value" id="networkStatus">IDLE</span>
+                </div>
+            </div>
+            
+            <div class="stats-panel">
+                <div class="stats-title">WALLET INFO</div>
+                <div class="stat-item">
+                    <span class="stat-label">Address</span>
+                    <span class="stat-value" id="walletAddress">Not Connected</span>
+                </div>
+                
+                <div class="stat-item">
+                    <span class="stat-label">Balance</span>
+                    <span class="stat-value" id="walletBalance">0.00</span>
+                </div>
+                
+                <div class="stat-item">
+                    <span class="stat-label">Network</span>
+                    <span class="stat-value" id="walletNetwork">N/A</span>
+                </div>
+            </div>
+            
+            <div class="stats-panel">
+                <div class="stats-title">ACTIVITY LOG</div>
+                <div id="activityLog" style="font-size: 11px; color: var(--cyber-blue-dim); max-height: 200px; overflow-y: auto;">
+                    <div style="padding: 4px 0;">• System initialized</div>
+                    <div style="padding: 4px 0;">• Awaiting commands...</div>
+                </div>
+            </div>
+            
+            <div class="stats-panel">
+                <div class="stats-title">QUICK STATS</div>
+                <div class="stat-item">
+                    <span class="stat-label">Commands Run</span>
+                    <span class="stat-value" id="commandCount">0</span>
+                </div>
+                
+                <div class="stat-item">
+                    <span class="stat-label">Uptime</span>
+                    <span class="stat-value" id="uptime">00:00:00</span>
+                </div>
+                
+                <div class="stat-item">
+                    <span class="stat-label">Status</span>
+                    <span class="stat-value text-matrix">OPERATIONAL</span>
+                </div>
+            </div>
+        </aside>
+        
+    </div>
+
+    <script>
+        // Futuristic Dashboard Integration Script
+        const omegaFuturistic = {
+            initialized: false,
+            commandCount: 0,
+            startTime: Date.now(),
+            
+            init: function() {
+                console.log('🚀 OMEGA FUTURISTIC DASHBOARD INITIALIZING...');
+                
+                let attempts = 0;
+                const maxAttempts = 50; // 5 seconds max wait
+                
+                // Wait for terminal to be ready with timeout
+                const waitForTerminal = () => {
+                    attempts++;
+                    
+                    if (window.terminal && window.terminal.processCommand) {
+                        console.log('✅ Terminal core loaded successfully');
+                        this.setupTerminalIntegration();
+                        this.startSystemMonitoring();
+                        this.hideLoader();
+                        this.initialized = true;
+                    } else if (attempts >= maxAttempts) {
+                        console.warn('⚠️ Terminal core not loaded after 5 seconds, showing dashboard anyway');
+                        this.setupTerminalIntegration(); // Try anyway
+                        this.startSystemMonitoring();
+                        this.hideLoader();
+                        this.initialized = true;
+                        this.addTerminalLine('⚠️ Terminal core loading delayed. Some commands may not work yet.', 'warning');
+                        this.addTerminalLine('💡 Try refreshing the page if commands don\'t work.', 'info');
+                    } else {
+                        console.log(`⏳ Waiting for terminal core... (${attempts}/${maxAttempts})`);
+                        setTimeout(waitForTerminal, 100);
+                    }
+                };
+                
+                // Start checking after 500ms
+                setTimeout(waitForTerminal, 500);
+                
+                // Absolute failsafe - force show after 8 seconds
+                setTimeout(() => {
+                    if (!this.initialized) {
+                        console.error('❌ FORCE SHOWING DASHBOARD - Something went wrong with initialization');
+                        this.hideLoader();
+                        this.startSystemMonitoring();
+                        this.addTerminalLine('❌ Dashboard loaded with errors. Check console (F12) for details.', 'error');
+                        this.addTerminalLine('🔄 Try refreshing the page or check INTEGRATION_STATUS.md', 'warning');
+                    }
+                }, 8000);
+            },
+            
+            setupTerminalIntegration: function() {
+                console.log('🔧 Setting up terminal integration...');
+                
+                // Redirect terminal output to futuristic display
+                const terminalOutput = document.getElementById('terminalOutput');
+                
+                // Override terminal display if window.terminal exists
+                if (window.terminal && window.terminal.log) {
+                    console.log('✅ Found window.terminal.log - integrating');
+                    const originalTerminalLog = window.terminal.log;
+                    const self = this;
+                    
+                    window.terminal.log = function(message, type = 'info') {
+                        // Call original
+                        originalTerminalLog.call(window.terminal, message, type);
+                        
+                        // Also display in futuristic UI
+                        self.addTerminalLine(message, type);
+                    };
+                } else {
+                    console.warn('⚠️ window.terminal.log not found - terminal may not be ready yet');
+                    
+                    // Try again in a moment
+                    setTimeout(() => {
+                        if (window.terminal && window.terminal.log && !this._terminalIntegrated) {
+                            console.log('✅ Terminal loaded late - integrating now');
+                            const originalTerminalLog = window.terminal.log;
+                            const self = this;
+                            
+                            window.terminal.log = function(message, type = 'info') {
+                                originalTerminalLog.call(window.terminal, message, type);
+                                self.addTerminalLine(message, type);
+                            };
+                            this._terminalIntegrated = true;
+                        }
+                    }, 2000);
+                }
+                
+                // Setup command input
+                const commandInput = document.getElementById('commandInput');
+                if (commandInput) {
+                    commandInput.addEventListener('keydown', (e) => {
+                        if (e.key === 'Enter') {
+                            const command = commandInput.value.trim();
+                            if (command) {
+                                this.executeCommand(command);
+                                commandInput.value = '';
+                            }
+                        }
+                    });
+                    
+                    // Focus input
+                    commandInput.focus();
+                }
+                
+                // Show welcome message
+                this.addTerminalLine('╔═══════════════════════════════════════════════════════════╗', 'info');
+                this.addTerminalLine('║      OMEGA TERMINAL - CLASSIFIED ACCESS SYSTEM v2.0.1     ║', 'success');
+                this.addTerminalLine('╚═══════════════════════════════════════════════════════════╝', 'info');
+                this.addTerminalLine('', 'info');
+                this.addTerminalLine('🔐 SECURITY CLEARANCE: LEVEL OMEGA', 'warning');
+                this.addTerminalLine('⚡ SYSTEM STATUS: FULLY OPERATIONAL', 'success');
+                this.addTerminalLine('🌐 MULTI-CHAIN SUPPORT: ACTIVE', 'success');
+                this.addTerminalLine('', 'info');
+                this.addTerminalLine('Type "help" for available commands', 'info');
+                this.addTerminalLine('', 'info');
+            },
+            
+            addTerminalLine: function(message, type = 'info') {
+                const output = document.getElementById('terminalOutput');
+                if (!output) return;
+                
+                const line = document.createElement('div');
+                line.className = 'terminal-line';
+                
+                // Apply colors based on type
+                const colors = {
+                    'info': 'var(--cyber-blue)',
+                    'success': 'var(--matrix-green)',
+                    'warning': 'var(--warning-amber)',
+                    'error': 'var(--danger-red)',
+                    'nft': 'var(--neon-purple)'
+                };
+                
+                line.style.color = colors[type] || colors.info;
+                line.textContent = message;
+                
+                output.appendChild(line);
+                output.scrollTop = output.scrollHeight;
+                
+                // Keep only last 500 lines for performance
+                while (output.children.length > 500) {
+                    output.removeChild(output.firstChild);
+                }
+            },
+            
+            executeCommand: function(command) {
+                // Display command
+                this.addTerminalLine(`$ ${command}`, 'warning');
+                this.commandCount++;
+                document.getElementById('commandCount').textContent = this.commandCount;
+                
+                // Add to activity log
+                this.addActivityLog(`Command: ${command}`);
+                
+                // Execute via existing terminal if available
+                if (window.terminal && window.terminal.processCommand) {
+                    try {
+                        window.terminal.processCommand(command);
+                    } catch (error) {
+                        console.error('Command execution error:', error);
+                        this.addTerminalLine('⚠️ Error executing command: ' + error.message, 'error');
+                    }
+                } else {
+                    console.error('Terminal state:', {
+                        terminalExists: !!window.terminal,
+                        processCommandExists: !!(window.terminal && window.terminal.processCommand),
+                        terminalType: typeof window.terminal,
+                        terminalKeys: window.terminal ? Object.keys(window.terminal).slice(0, 10) : []
+                    });
+                    
+                    this.addTerminalLine('⚠️ Terminal core not loaded yet. Retrying...', 'error');
+                    
+                    // More aggressive retry
+                    let retries = 0;
+                    const retryCommand = () => {
+                        retries++;
+                        if (window.terminal && window.terminal.processCommand) {
+                            console.log('✅ Terminal ready on retry ' + retries);
+                            window.terminal.processCommand(command);
+                        } else if (retries < 10) {
+                            console.log(`⏳ Retry ${retries}/10 for command: ${command}`);
+                            setTimeout(retryCommand, 500);
+                        } else {
+                            this.addTerminalLine('❌ Terminal core still not available after 10 retries.', 'error');
+                            this.addTerminalLine('🔍 Check browser console (F12) for detailed errors.', 'warning');
+                        }
+                    };
+                    
+                    setTimeout(retryCommand, 500);
+                }
+            },
+            
+            quickCommand: function(command) {
+                const input = document.getElementById('commandInput');
+                if (input) {
+                    input.value = command;
+                    input.focus();
+                    // Auto-execute
+                    this.executeCommand(command);
+                    input.value = '';
+                }
+            },
+            
+            startSystemMonitoring: function() {
+                // Update system stats
+                setInterval(() => {
+                    // CPU (simulated based on activity)
+                    const cpu = Math.min(95, Math.random() * 30 + this.commandCount % 20);
+                    document.getElementById('cpuUsage').textContent = cpu.toFixed(1) + '%';
+                    document.getElementById('cpuBar').style.width = cpu + '%';
+                    
+                    // Memory (simulated)
+                    const mem = performance.memory ? 
+                        (performance.memory.usedJSHeapSize / 1048576).toFixed(2) : 
+                        (Math.random() * 200 + 100).toFixed(2);
+                    document.getElementById('memUsage').textContent = mem + ' MB';
+                    const memPercent = Math.min(100, (mem / 500) * 100);
+                    document.getElementById('memBar').style.width = memPercent + '%';
+                    
+                    // Uptime
+                    const uptime = Math.floor((Date.now() - this.startTime) / 1000);
+                    const hours = Math.floor(uptime / 3600).toString().padStart(2, '0');
+                    const mins = Math.floor((uptime % 3600) / 60).toString().padStart(2, '0');
+                    const secs = (uptime % 60).toString().padStart(2, '0');
+                    document.getElementById('uptime').textContent = `${hours}:${mins}:${secs}`;
+                }, 1000);
+                
+                // Update wallet info if connected
+                setInterval(() => {
+                    if (window.ethereum && window.ethereum.selectedAddress) {
+                        const addr = window.ethereum.selectedAddress;
+                        document.getElementById('walletAddress').textContent = 
+                            addr.substring(0, 6) + '...' + addr.substring(38);
+                        document.getElementById('connectionStatus').className = 'status-dot';
+                        document.getElementById('connectionText').textContent = 'CONNECTED';
+                    }
+                }, 2000);
+            },
+            
+            addActivityLog: function(message) {
+                const log = document.getElementById('activityLog');
+                if (!log) return;
+                
+                const entry = document.createElement('div');
+                entry.style.padding = '4px 0';
+                entry.textContent = `• ${message}`;
+                log.appendChild(entry);
+                
+                // Keep last 10 entries
+                while (log.children.length > 10) {
+                    log.removeChild(log.firstChild);
+                }
+            },
+            
+            hideLoader: function() {
+                document.getElementById('omegaLoader').style.display = 'none';
+                document.querySelector('.omega-dashboard').style.display = 'grid';
+                document.body.classList.add('omega-initialized');
+            },
+            
+            showCustomizer: function() {
+                this.addTerminalLine('', 'info');
+                this.addTerminalLine('═══════════════════════════════════════', 'info');
+                this.addTerminalLine('    🎨 OMEGA CUSTOMIZER COMMANDS', 'success');
+                this.addTerminalLine('═══════════════════════════════════════', 'info');
+                this.addTerminalLine('', 'info');
+                this.addTerminalLine('Color Schemes:', 'warning');
+                this.addTerminalLine('  • Cyber Blue (default)', 'info');
+                this.addTerminalLine('  • Matrix Green', 'info');
+                this.addTerminalLine('  • Neon Purple', 'info');
+                this.addTerminalLine('  • Blood Red', 'info');
+                this.addTerminalLine('  • Arctic White', 'info');
+                this.addTerminalLine('  • Sunset Orange', 'info');
+                this.addTerminalLine('', 'info');
+                this.addTerminalLine('JavaScript Commands (Console):', 'warning');
+                this.addTerminalLine('  OmegaCustomizer.applyColorScheme("matrixGreen")', 'info');
+                this.addTerminalLine('  OmegaCustomizer.cycleColorScheme()', 'info');
+                this.addTerminalLine('  OmegaCustomizer.adjustFontSize("large")', 'info');
+                this.addTerminalLine('  OmegaCustomizer.togglePanel("sidebar")', 'info');
+                this.addTerminalLine('  OmegaCustomizer.exportSettings()', 'info');
+                this.addTerminalLine('  OmegaCustomizer.resetToDefaults()', 'info');
+                this.addTerminalLine('', 'info');
+                this.addTerminalLine('💡 Tip: Click "Cycle Theme" button to try all colors!', 'success');
+                this.addTerminalLine('═══════════════════════════════════════', 'info');
+                this.addTerminalLine('', 'info');
+            }
+        };
+        
+        // Initialize when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => omegaFuturistic.init());
+        } else {
+            omegaFuturistic.init();
+        }
+        
+        // Make it globally accessible
+        window.omegaFuturistic = omegaFuturistic;
+    </script>
+</body>
+</html>
+

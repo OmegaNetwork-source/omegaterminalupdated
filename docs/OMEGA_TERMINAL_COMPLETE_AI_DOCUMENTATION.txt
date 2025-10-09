@@ -1,0 +1,1448 @@
+===============================================================================
+                    OMEGA TERMINAL v2.0.1 - COMPLETE AI AGENT DOCUMENTATION
+                           Comprehensive Command Reference & Integration Guide
+===============================================================================
+
+TABLE OF CONTENTS
+=================
+1. What is Omega Terminal?
+2. What is Chat History?
+3. What can users do here?
+4. Complete Command List
+   - Core Terminal Commands
+   - Wallet & Network Operations
+   - Modern UI & Theme System
+   - DeFi Analytics & Market Data
+   - NFT Trading Suite
+   - Profile & API Management
+   - Token Operations & Swapping
+   - Privacy & Security Features
+   - Communication & Messaging
+   - Advanced Features
+5. AI Automation Guidelines
+6. Technical Specifications
+
+===============================================================================
+                                WHAT IS OMEGA TERMINAL?
+===============================================================================
+
+Omega Terminal is a web-based crypto automation and wallet management interface designed 
+for both human users and AI agents. It provides a unified command-line experience for 
+interacting with multiple blockchains (EVM, Solana, Near, Eclipse, etc.), managing 
+wallets, sending tokens, mining, privacy operations, DeFi analytics, NFT trading, and 
+accessing comprehensive Web3 utilities.
+
+The terminal supports:
+- Multi-chain wallet management across 8+ major blockchains
+- Real-time market data and DeFi analytics
+- Professional-grade NFT trading tools
+- Advanced privacy features
+- Comprehensive API integrations
+- Modern, responsive UI with multiple themes
+- AI agent automation and natural language processing
+
+===============================================================================
+                                WHAT IS CHAT HISTORY?
+===============================================================================
+
+Chat history is a structured log of all interactions within Omega Terminal, designed to 
+provide full context for both human users and AI agents. It records every user message, 
+AI reply, executed command, and the result/output of each command. This history is 
+continuously updated and sent to the AI agent to enable:
+
+- Accurate context for natural language queries and command automation
+- Error handling and troubleshooting by tracking what was attempted and what happened
+- Seamless workflow scripting, allowing the AI to understand the current state and past actions
+- Rich conversational memory, so the AI can reference previous instructions, results, and feedback
+
+CHAT HISTORY SCHEMA
+===================
+Each entry in chat history is a JSON object with one of the following shapes:
+
+// User message
+{
+  "type": "user",
+  "message": "<user input>"
+}
+
+// AI response  
+{
+  "type": "ai",
+  "message": "<ai response>"
+}
+
+// Command executed
+{
+  "type": "command",
+  "command": "<command string>"
+}
+
+// Command result/output
+{
+  "type": "result",
+  "output": "<output string>",
+  "success": true/false
+}
+
+This enables the AI to make informed decisions, provide relevant responses, and automate 
+complex tasks reliably within Omega Terminal.
+
+===============================================================================
+                              WHAT CAN USERS DO HERE?
+===============================================================================
+
+CORE FUNCTIONALITY:
+- Connect and manage crypto wallets (EVM, Solana, Near, Eclipse, Hyperliquid, etc.)
+- Send, receive, and swap tokens across supported blockchains
+- Claim airdrops, faucet tokens, and mining rewards
+- Register and resolve ENS names
+- Use privacy features like the Omega Mixer for anonymous transactions
+- Run stress tests, view stats, and monitor wallet/network status
+
+ADVANCED FEATURES:
+- Comprehensive DeFi analytics with TVL tracking and protocol data
+- Professional NFT trading suite with OpenSea integration
+- Real-time market data from multiple sources (DexScreener, DeFi Llama, CoinGecko)
+- Modern UI system with Apple-inspired themes
+- Profile management with custom API key configuration
+- Multi-chain DEX integration and token swapping
+- Advanced price tracking and portfolio analytics
+- Encrypted messaging and communication tools
+
+DATA INTEGRATIONS:
+- DexScreener: Ultimate trading analytics and market data
+- DeFi Llama: TVL tracking and protocol analytics
+- OpenSea: NFT marketplace data and collection analytics  
+- CoinGecko: Comprehensive token price data
+- Alpha Vantage: Stock market and financial data
+- Custom APIs: Enhanced features with user API keys
+
+===============================================================================
+                              COMPLETE COMMAND LIST
+===============================================================================
+
+CORE TERMINAL COMMANDS
+======================
+
+help
+----
+Description: Lists all available commands and their descriptions. Essential for discovering terminal capabilities.
+Purpose: Help users and AI agents understand what commands are available and how to use them.
+Arguments: None.
+Network: None (local terminal help only).
+Usage: help
+Workflow:
+- User or AI types 'help'
+- Terminal displays comprehensive command list with descriptions
+Notes:
+- Useful for both users and AI to discover available commands and syntax
+- Shows categories and command groupings
+
+clear
+-----
+Description: Clears the terminal output/history for the current tab.
+Purpose: Reset the terminal display for clarity or before/after automation.
+Arguments: None.
+Network: None.
+Usage: clear
+Workflow:
+- Terminal display is wiped clean
+- Does not affect wallet state or session, only the UI
+
+status
+------
+Description: Shows current terminal status, wallet connection, and network information.
+Purpose: Check connection state and system status.
+Arguments: None.
+Network: All supported networks.
+Usage: status
+Workflow:
+- User or AI types 'status'
+- Terminal displays current wallet address, network, and other status info
+Notes:
+- Useful to check if connected and synced
+
+stats
+-----
+Description: Shows mining and session statistics.
+Purpose: Provide insights into mining performance and session details.
+Arguments: None.
+Network: None.
+Usage: stats
+Workflow:
+- User or AI types 'stats'
+- Terminal displays mining stats, session info, and performance metrics
+Notes:
+- Helps monitor mining efficiency and session health
+
+WALLET & NETWORK OPERATIONS
+============================
+
+connect
+-------
+Description: Connects to an EVM wallet (MetaMask, etc.).
+Purpose: Required before running any wallet-dependent commands.
+Arguments: None.
+Network: EVM (Omega, Aurora, etc.).
+Usage: connect
+Workflow:
+- User or AI types 'connect'
+- MetaMask or compatible wallet prompts for connection
+- On success, wallet address is shown and session is initialized
+Notes:
+- Must be connected before most other commands
+- Supports all EVM-compatible networks
+
+disconnect
+----------
+Description: Disconnects the currently connected wallet.
+Purpose: Ends wallet session and clears connection state.
+Arguments: None.
+Network: EVM.
+Usage: disconnect
+Workflow:
+- User or AI types 'disconnect'
+- Wallet connection is terminated
+- Session state is cleared
+
+balance
+-------
+Description: Shows the current wallet's balance (OMEGA or native token).
+Purpose: Check wallet balance for OMEGA or native token on the connected network.
+Arguments: None.
+Network: EVM (Omega, Aurora, etc.).
+Usage: balance
+Workflow:
+- User or AI types 'balance'
+- Terminal queries wallet and displays token balance
+- May show error if not connected
+
+send <recipient> <amount>
+-------------------------
+Description: Sends OMEGA tokens to another address.
+Purpose: Transfer tokens between wallets.
+Arguments:
+- <recipient>: The address to send tokens to (must be a valid EVM address)
+- <amount>: The amount of OMEGA to send (must be a positive number)
+Network: EVM (Omega Network).
+Usage: send 0x123... 100
+Workflow:
+- User or AI provides recipient address and amount
+- Terminal validates inputs and initiates transaction
+- MetaMask prompts for confirmation
+- Transaction hash displayed on success
+
+network
+-------
+Description: Checks the current network.
+Purpose: Verify which blockchain network is currently active.
+Arguments: None.
+Network: All supported.
+Usage: network
+Workflow:
+- Displays current network name and chain ID
+- Shows network status and connection quality
+
+forceadd
+--------
+Description: Forces adding a network to the wallet.
+Purpose: Add Omega Network or other supported networks to MetaMask.
+Arguments: None.
+Network: EVM.
+Usage: forceadd
+Workflow:
+- Prompts MetaMask to add network configuration
+- User confirms network addition
+
+rpccheck
+--------
+Description: Checks the RPC chain ID.
+Purpose: Verify RPC connection and chain compatibility.
+Arguments: None.
+Network: EVM.
+Usage: rpccheck
+Workflow:
+- Tests RPC connection
+- Displays chain ID and connection status
+
+MODERN UI & THEME SYSTEM
+=========================
+
+theme <theme_name>
+------------------
+Description: Changes the terminal visual theme and UI mode.
+Purpose: Customize terminal appearance and user experience.
+Arguments:
+- <theme_name>: Theme identifier (see supported themes below)
+Network: None (UI only).
+Usage: theme modern ui
+       theme chatgpt
+       theme discord
+
+SUPPORTED THEMES:
+- modern ui / modern: Apple-inspired glass morphism interface
+- chatgpt: AI conversational interface with chat bubbles
+- discord: Social media chat-style interface
+- windows95: Retro DOS terminal interface
+- aol: 90s instant messenger aesthetic
+- limewire: P2P file sharing application style
+- dark: Dark mode terminal
+- light: Light mode terminal  
+- matrix: Green matrix-style effects
+- retro: Vintage computer aesthetic
+- crypto: Crypto-focused color scheme
+- powershell: Windows PowerShell styling
+
+Workflow:
+- User or AI specifies theme name
+- Terminal applies new visual styling
+- Theme preference is saved to localStorage
+- Mobile-optimized versions automatically applied
+
+Features:
+- Real-time theme switching without reload
+- Mobile-responsive design for all themes
+- Accessibility compliance
+- Smooth animations and transitions
+- Custom CSS variables for easy customization
+
+theme list
+----------
+Description: Shows all available themes.
+Usage: theme list
+Workflow:
+- Displays complete list of supported themes
+- Shows current active theme
+
+theme current
+-------------
+Description: Display currently active theme.
+Usage: theme current
+Workflow:
+- Shows name of current theme
+- Displays theme settings and customizations
+
+DEFI ANALYTICS & MARKET DATA
+=============================
+
+dexscreener <token> / ds <token>
+--------------------------------
+Description: Ultimate trading analytics dashboard with comprehensive market data.
+Purpose: Real-time token analysis, price movements, and trading metrics.
+Arguments:
+- <token>: Token symbol (BTC, ETH, SOL) or contract address
+Network: Multi-chain (Ethereum, Solana, BSC, Polygon, etc.).
+Usage: dexscreener BTC
+       ds ETH
+       dexscreener 0x123...
+
+Features:
+- Real-time price data from 100+ DEXs
+- Volume analysis and trading metrics
+- Liquidity tracking across pools
+- Market cap and circulation data
+- Price change percentage calculations
+- Multi-chain support across 50+ blockchains
+- Trading pair discovery
+- Historical data and trends
+
+Advanced Commands:
+- dexscreener trending: Top trending tokens
+- dexscreener gainers: Biggest price gainers  
+- dexscreener losers: Biggest price drops
+- dexscreener volume: Highest volume tokens
+- dexscreener pairs [TOKEN]: Trading pairs for token
+- dexscreener liquidity [TOKEN]: Liquidity pool data
+- dexscreener market [TOKEN]: Market cap and metrics
+- dexscreener chart [TOKEN]: Price chart visualization
+
+defillama <subcommand>
+----------------------
+Description: Comprehensive DeFi protocol analytics with TVL tracking and yield data.
+Purpose: Protocol analysis, TVL monitoring, and DeFi ecosystem insights.
+Arguments: Various subcommands (see below)
+Network: Multi-chain DeFi protocols.
+Usage: defillama protocols
+       defillama tvl ethereum
+
+DEFILLAMA SUBCOMMANDS:
+- protocols: List all DeFi protocols with TVL data
+- protocol [NAME]: Specific protocol detailed analysis
+- tvl [PROTOCOL]: Total Value Locked for specific protocol
+- tvl [CHAIN]: TVL for entire blockchain (ethereum, solana, polygon, etc.)
+- chains: Blockchain TVL comparison
+- yields: Current yield opportunities across protocols
+- pools: Liquidity pool analytics
+- farm [PROTOCOL]: Farming opportunities and APY data
+- apy [POOL]: APY calculations for specific pools
+- overview: DeFi market overview and global statistics
+- trending: Trending protocols by TVL growth
+- news: Latest DeFi developments and updates
+- stats: Global DeFi statistics and metrics
+
+Features:
+- 1000+ protocols tracked
+- Real-time TVL data across 200+ blockchains
+- Historical trends and analytics
+- Yield comparison tools
+- Protocol rankings by multiple metrics
+- Risk assessment indicators
+- Chain distribution analysis
+- Revenue data tracking
+
+tvl <subcommand>
+----------------
+Description: Dedicated TVL (Total Value Locked) analysis commands.
+Purpose: Comprehensive TVL tracking and protocol analysis.
+Usage: tvl overview
+       tvl ethereum
+       tvl uniswap
+
+SUBCOMMANDS:
+- overview: Global DeFi TVL overview
+- chains: TVL by blockchain comparison
+- protocols: Top protocols by TVL
+- trending: Trending TVL movements
+- ethereum/solana/polygon/etc.: Chain-specific TVL breakdown
+- [PROTOCOL_NAME]: Specific protocol TVL analysis
+- history [PROTOCOL]: Historical TVL data
+- compare [PROTOCOL1] [PROTOCOL2]: Compare protocols
+- growth [CHAIN]: TVL growth analysis
+
+price <token> [timeframe]
+-------------------------
+Description: Multi-source price aggregation with real-time updates and analysis.
+Purpose: Comprehensive token price data with historical charts.
+Arguments:
+- <token>: Token symbol or contract address
+- [timeframe]: Optional timeframe (24h, 7d, 30d, 1y)
+Network: Multi-chain token support.
+Usage: price BTC
+       price ETH 24h
+       price SOL compare
+
+PRICE SUBCOMMANDS:
+- price [TOKEN]: Current price from multiple sources
+- price [TOKEN] compare: Compare prices across exchanges
+- price [TOKEN] sources: Show all price sources
+- price [TOKEN] spread: Price spread analysis  
+- price [TOKEN] 24h/7d/30d/1y: Historical price charts
+- price [TOKEN] market: Market cap, volume, supply data
+- price [TOKEN] metrics: Complete market analysis
+- price [TOKEN] analysis: Technical analysis indicators
+
+Data Sources:
+- CoinGecko API (primary price feed)
+- DexScreener (DEX aggregated prices)
+- DeFi Llama (DeFi token prices)
+- Alpha Vantage (traditional market data)
+- Custom relayer (real-time updates)
+
+Features:
+- Real-time updates with sub-second latency
+- Multi-exchange price aggregation
+- Historical charts and trends
+- Market cap calculations
+- Volume analysis across timeframes
+- Price alerts and notifications
+- Arbitrage opportunity detection
+- Portfolio tracking integration
+
+stock <symbol>
+--------------
+Description: Fetches stock market information and financial data.
+Purpose: Traditional market analysis and stock price tracking.
+Arguments:
+- <symbol>: Stock ticker symbol (TSLA, AAPL, GOOGL, etc.)
+Network: Traditional financial markets via Alpha Vantage API.
+Usage: stock TSLA
+       stock AAPL
+
+Features:
+- Real-time stock prices
+- Market cap and financial metrics
+- Historical price data
+- Trading volume analysis
+- Financial news integration
+
+geckoterminal <token> / cg <token>
+----------------------------------
+Description: Fetches comprehensive token data from GeckoTerminal and CoinGecko.
+Purpose: Alternative market data source with different analytics.
+Arguments:
+- <token>: Token symbol or address
+Network: Multi-chain.
+Usage: geckoterminal OMEGA
+       cg BTC
+
+Features:
+- Price data from CoinGecko
+- Market statistics
+- Trading volume
+- Historical performance
+- Alternative to DexScreener data
+
+NFT TRADING SUITE
+==================
+
+nft <subcommand> [args]
+-----------------------
+Description: Comprehensive NFT marketplace integration with OpenSea API.
+Purpose: Professional NFT trading, analytics, and collection management.
+Arguments: Various subcommands for different NFT operations
+Network: Ethereum, Polygon, Solana (via OpenSea).
+Usage: nft assets boredapeyachtclub
+       nft analytics cryptopunks
+
+NFT SUBCOMMANDS:
+
+Collection Discovery:
+- nft assets [COLLECTION]: Browse collection assets with for-sale prioritization
+- nft trending: Trending NFT collections
+- nft popular: Popular collections by volume
+- nft new: New NFT drops and launches
+
+Market Analysis:
+- nft analytics [COLLECTION]: Comprehensive collection analytics dashboard
+- nft floor [COLLECTION]: Floor price tracking and trends
+- nft volume [COLLECTION]: Trading volume data and statistics
+- nft sales [COLLECTION]: Recent sales history with prices
+- nft activity: Real-time activity feed across collections
+
+Asset Information:
+- nft details [TOKEN_ID]: Detailed NFT information with traits
+- nft traits [COLLECTION]: Trait rarity analysis and distribution
+- nft rarity [TOKEN_ID]: Rarity score and ranking within collection
+- nft history [TOKEN_ID]: Complete trading history
+
+Market Tools:
+- nft watch [COLLECTION]: Add to watchlist for monitoring
+- nft alerts [COLLECTION]: Set up price alerts and notifications
+- nft compare [COLLECTION1] [COLLECTION2]: Compare collection metrics
+- nft portfolio: View NFT portfolio across connected wallets
+
+Features:
+- OpenSea integration with real-time data
+- Collection analytics with floor price tracking
+- Trait rarity analysis and scoring
+- Sales history and market trends
+- Watchlist management with alerts
+- Portfolio tracking across wallets
+- Multi-chain support (Ethereum, Polygon, Solana)
+- Advanced filtering by traits, price, and rarity
+- For-sale NFT prioritization in listings
+- Comprehensive collection statistics
+
+Supported Collections:
+- Blue Chip: BAYC, CryptoPunks, Azuki, Clone X
+- Gaming: Axie Infinity, Gods Unchained, The Sandbox
+- Art: Art Blocks, SuperRare, Foundation
+- Utility: ENS Domains, Unstoppable Domains
+- Custom: Any OpenSea-supported collection
+
+PROFILE & API MANAGEMENT
+========================
+
+profile [subcommand]
+--------------------
+Description: Command-driven profile system with API key management and customization.
+Purpose: User profile management and API key configuration for enhanced features.
+Arguments: Optional subcommands for specific operations
+Network: None (local profile management).
+Usage: profile
+       profile api opensea [KEY]
+
+PROFILE SUBCOMMANDS:
+
+Profile Management:
+- profile: Open profile settings sidebar (main command)
+- profile view: Display current profile information
+- profile edit: Edit profile information (name, bio, image)
+- profile delete: Delete profile data and reset
+- profile export: Export profile data for backup
+- profile import: Import profile data from backup
+
+API Key Configuration:
+- profile api opensea [KEY]: Set/update OpenSea API key
+- profile api dexscreener [KEY]: Set/update DexScreener API key
+- profile api defillama [KEY]: Set/update DeFi Llama API key
+- profile api coingecko [KEY]: Set/update CoinGecko API key
+- profile api alphavantage [KEY]: Set/update Alpha Vantage API key
+- profile api clear: Clear all custom API keys
+- profile api status: Show API key configuration status
+
+Settings Management:
+- profile theme [THEME]: Set default theme preference
+- profile notifications on/off: Toggle notification settings
+- profile autoconnect on/off: Auto-connect wallet on load
+- profile settings: View all current settings
+
+Features:
+- Command-only interface (no UI buttons)
+- Comprehensive API key management with status indicators
+- Profile picture upload and storage
+- Bio and metadata customization
+- Settings persistence across sessions
+- Data export/import functionality
+- Privacy controls and data management
+- Real-time API key validation
+- Rate limit management for API calls
+- Automatic failover to default keys
+
+API Integration Benefits:
+- OpenSea API: Enhanced NFT features and higher limits
+- DexScreener API: Premium analytics and increased rate limits
+- DeFi Llama API: Pro-tier data access and exclusive features
+- CoinGecko API: Professional-grade market data
+- Alpha Vantage API: Stock market and financial data access
+- Custom quotas: Use your own API limits instead of shared defaults
+
+Profile UI Features:
+- Modern sidebar interface with glass morphism design
+- Touch-friendly mobile optimization
+- Drag-and-drop profile picture upload
+- Real-time API key status indicators
+- Bulk save/clear options for API keys
+- Secure localStorage encryption for sensitive data
+
+TOKEN OPERATIONS & SWAPPING
+============================
+
+solana <subcommand> [args]
+--------------------------
+Description: Comprehensive Solana blockchain operations and DEX integration.
+Purpose: Solana wallet management, token swapping, and ecosystem interaction.
+Arguments: Various subcommands for Solana operations
+Network: Solana blockchain.
+Usage: solana connect
+       solana swap 1000000 So11... EPjF...
+
+SOLANA SUBCOMMANDS:
+
+Wallet Operations:
+- solana connect: Connect Phantom wallet
+- solana wallet: Generate new Solana wallet
+- solana balance: Check SOL and token balances
+- solana tokens: Show all token holdings
+- solana import [PRIVATE_KEY]: Import existing wallet
+
+Token Operations:
+- solana search <query>: Search for Solana tokens
+- solana quote <amount> <fromMint> <toMint>: Get swap quote via Jupiter
+- solana swap: Open interactive swap interface
+- solana swap <amount> <fromMint> <toMint>: Execute token swap
+- solana price [TOKEN]: Token price from Solana DEXs
+- solana market [TOKEN]: Token market data and statistics
+
+DEX Integration:
+- solana dex raydium: Raydium DEX data and pools
+- solana dex orca: Orca DEX information
+- solana dex jupiter: Jupiter aggregator data
+- solana pools: Display liquidity pools
+- solana volume: 24h trading volumes
+
+Advanced Features:
+- solana stake: Staking information and validators
+- solana validators: Validator network data
+- solana nfts: Solana NFT collections
+- solana defi: Solana DeFi protocols and TVL
+- solana help: Show Solana command help
+
+Features:
+- Jupiter Aggregator integration for best prices
+- Smart routing across multiple DEXs
+- Slippage protection mechanisms
+- Transaction simulation before execution
+- MEV protection strategies
+- Multi-hop swap support
+- Token account management
+- Phantom wallet native integration
+
+Supported Solana DEXs:
+- Raydium (leading Solana AMM)
+- Orca (user-friendly DEX)
+- Serum (central limit order book)
+- Saber (stablecoin DEX)
+- Jupiter (DEX aggregator)
+- Aldrin (advanced trading)
+- Mercurial (dynamic AMM)
+
+eclipse <subcommand> [args]
+---------------------------
+Description: Eclipse Network (SVM) operations with Solar DEX integration.
+Purpose: Eclipse blockchain interaction and token swapping.
+Arguments: Various subcommands for Eclipse operations
+Network: Eclipse (Solana Virtual Machine compatible).
+Usage: eclipse gen-wallet
+       eclipse swap So11... CwrZK... 0.1 100
+
+ECLIPSE SUBCOMMANDS:
+
+Wallet Operations:
+- eclipse gen-wallet: Generate new Eclipse wallet
+- eclipse wallet-info: Show wallet details and balance
+- eclipse balance: Check Eclipse token balance
+- eclipse import-wallet <privateKey>: Import existing wallet
+
+Token Operations:
+- eclipse swap: Open interactive swap interface
+- eclipse quote <inputMint> <outputMint> <amount> <slippageBps>: Get swap quote
+- eclipse tokens: List all available Eclipse tokens
+- eclipse tokens list: Complete token directory
+- eclipse tokens popular: Most traded tokens
+- eclipse tokens new: Recently added tokens
+- eclipse price <mint>: Get token price on Eclipse
+- eclipse search [TOKEN]: Search Eclipse tokens
+
+Network Analytics:
+- eclipse analytics: Network analytics and statistics
+- eclipse tvl: Eclipse ecosystem TVL
+- eclipse stats: Network performance statistics
+- eclipse compare ethereum: Compare to Ethereum metrics
+- eclipse volume: 24h trading volume data
+- eclipse help: Show Eclipse command help
+
+Features:
+- SVM compatibility (Solana Virtual Machine)
+- Ethereum bridge integration
+- Low transaction costs ($0.001 average)
+- High throughput (50,000+ TPS)
+- Eclipse DEX native integration
+- Cross-chain asset transfers
+- Developer tools and APIs
+- EVM compatibility layer
+
+Bridge Support:
+- Ethereum ↔ Eclipse
+- Solana ↔ Eclipse
+- Polygon ↔ Eclipse
+- BSC ↔ Eclipse
+- Arbitrum ↔ Eclipse
+
+near <subcommand> [args]
+------------------------
+Description: NEAR Protocol operations and cross-chain swapping.
+Purpose: NEAR blockchain interaction and asset management.
+Arguments: Various subcommands for NEAR operations
+Network: NEAR Protocol.
+Usage: near tokens
+       near quote nep141:wrap.near nep141:sol-... 1000000000000000000000000 100 your-address
+
+NEAR SUBCOMMANDS:
+
+Token Operations:
+- near tokens: List supported NEAR tokens
+- near quote <originAsset> <destinationAsset> <amount> <slippageBps> <recipient>: Get cross-chain swap quote
+- near swap: Open interactive swap interface
+- near status [depositAddress]: Check swap status
+
+Cross-Chain Features:
+- Aurora bridge integration
+- Multi-chain asset swapping
+- Cross-chain liquidity pools
+- Bridge status monitoring
+
+Features:
+- NEAR wallet integration
+- Cross-chain swapping capabilities  
+- Aurora compatibility
+- Low fees and fast transactions
+- DeFi protocol integration
+
+hyperliquid <subcommand> [args]
+-------------------------------
+Description: Hyperliquid perpetuals trading and derivatives platform integration.
+Purpose: Perpetual futures trading, position management, and derivatives analytics.
+Arguments: Various subcommands for Hyperliquid operations
+Network: Hyperliquid derivatives platform.
+Usage: hyperliquid perp BTC
+       hyperliquid positions 0x123...
+
+HYPERLIQUID SUBCOMMANDS:
+
+Trading Operations:
+- hyperliquid perps: List all available perpetuals
+- hyperliquid perp <COIN>: Show detailed perp information for specific coin
+- hyperliquid funding <COIN>: Show funding rates and payment information
+- hyperliquid positions <ADDRESS>: Display positions for specific address
+- hyperliquid orderbook <COIN>: Show current orderbook depth
+- hyperliquid trades <COIN>: Display recent trades and volume
+
+Market Data:
+- hyperliquid oi-cap: Show open interest caps across markets
+- hyperliquid volume: Trading volume statistics
+- hyperliquid funding-rates: Current funding rates across all perps
+
+Wallet Operations:
+- hyperliquid gen-wallet: Generate new Hyperliquid wallet
+- hyperliquid wallet-info: Show wallet information and balances
+- hyperliquid help: Show Hyperliquid command help
+
+Features:
+- Perpetual futures trading
+- Real-time funding rates
+- Position management
+- Orderbook analysis
+- Trade history tracking
+- Open interest monitoring
+- High leverage trading
+- Low fees and slippage
+
+PRIVACY & SECURITY FEATURES
+============================
+
+mixer <subcommand> [args]
+-------------------------
+Description: Interacts with the Omega Mixer contract for privacy transactions.
+Purpose: Anonymous token transfers using zero-knowledge proofs.
+Arguments: Various subcommands for mixer operations
+Network: Omega Network.
+Usage: mixer deposit-execute
+       mixer withdraw <secret> <address>
+
+MIXER SUBCOMMANDS:
+- mixer -help: Show mixer help and usage instructions
+- mixer deposit: Start deposit flow with prompts for secret and commitment
+- mixer deposit-execute: Start deposit and execute via MetaMask (prompts for amount)
+- mixer deposit-direct <privateKey> <amount>: Direct deposit with private key and amount
+- mixer withdraw <secret> <address>: Start withdrawal flow with secret and address
+- mixer withdraw-direct <privateKey> <secret> <address>: Direct withdrawal
+
+Features:
+- Zero-knowledge proof privacy
+- Anonymous token transfers
+- Commitment/nullifier system
+- Secure deposit and withdrawal
+- Privacy protection for transactions
+- Integration with MetaMask
+- Audit trail obfuscation
+
+Security:
+- Zero-knowledge cryptography
+- No transaction linkability
+- Secure secret management
+- Anonymous withdrawal addresses
+
+ens <subcommand> <name>
+-----------------------
+Description: Handles Omega Name Service (ONS) operations for human-readable addresses.
+Purpose: Simplifies address management with domain name system.
+Arguments: 
+- <subcommand>: register, resolve, or search
+- <name>: The ONS name to operate on
+Network: Omega Network.
+Usage: ens register myname.omega
+       ens resolve alice.omega
+       ens search omega
+
+ENS SUBCOMMANDS:
+- ens register <name>: Register new ONS name for connected wallet
+- ens resolve <name>: Resolve ONS name to associated Omega address
+- ens search <name>: Search for ONS names matching query
+
+Workflow:
+For register:
+- Checks wallet connection and sufficient funds for registration fee
+- Prompts for confirmation before registering
+- Submits registration transaction to ONS contract
+- Displays new ONS name, address, and transaction hash
+
+For resolve:
+- Looks up ONS name and returns associated Omega address
+- Shows error if name not found
+
+For search:
+- Queries ONS registry for names matching search term
+- Displays results with associated addresses
+
+Features:
+- Human-readable address names
+- Decentralized name resolution
+- Search functionality
+- Registration management
+- Integration with wallet addresses
+
+CORE OPERATIONS & MINING
+=========================
+
+mine
+----
+Description: Initiates the mining process for OMEGA tokens.
+Purpose: Start mining session to earn OMEGA tokens on the Omega network.
+Arguments: None.
+Network: EVM (Omega).
+Usage: mine
+Workflow:
+- User or AI types 'mine'
+- Starts mining process if wallet connected
+- Displays mining status and progress
+- Requires wallet to be connected
+Notes:
+- Mining rewards accumulate over time
+- Check stats command for mining performance
+
+claim
+-----
+Description: Claims mining rewards for the connected wallet.
+Purpose: Withdraw earned mining rewards to wallet.
+Arguments: None.
+Network: EVM (Omega).
+Usage: claim
+Workflow:
+- User or AI types 'claim'
+- Checks for available mining rewards
+- Initiates claim transaction via MetaMask
+- Displays transaction hash and claimed amount
+- Requires wallet to be connected
+- May have cooldowns or limits
+
+faucet [status]
+---------------
+Description: Claims tokens from the Omega faucet contract.
+Purpose: Obtain test tokens for development or onboarding.
+Arguments:
+- status (optional): Shows current faucet status and availability
+Network: EVM (Omega).
+Usage: faucet
+       faucet status
+Workflow:
+- User or AI types 'faucet'
+- Checks faucet availability and cooldown
+- Claims tokens if available
+- On success, tokens are credited to wallet
+- May have cooldowns or limits (e.g., once per 24h)
+
+fund <address>
+--------------
+Description: Funds the mining wallet with tokens.
+Purpose: Add tokens to mining wallet for operations.
+Arguments:
+- <address>: The address to fund
+Network: EVM (Omega).
+Usage: fund 0x123...
+Workflow:
+- Transfers tokens to specified mining address
+- Used for mining wallet setup and maintenance
+
+airdrop
+-------
+Description: Handles airdrop-related operations and claims.
+Purpose: Claim available airdrops for connected wallet.
+Arguments: None.
+Network: Various (depends on airdrop).
+Usage: airdrop
+Workflow:
+- Checks for available airdrops
+- Displays claimable amounts
+- Initiates claim process
+
+STRESS TESTING & MONITORING
+============================
+
+stress
+------
+Description: Starts a stress test of wallet creation and transactions.
+Purpose: Test network performance and transaction throughput.
+Arguments: None.
+Network: Omega Network.
+Usage: stress
+Workflow:
+- Initiates automated wallet creation
+- Generates test transactions
+- Monitors network performance
+- Displays real-time statistics
+
+stopstress
+----------
+Description: Stops the ongoing stress test.
+Purpose: End stress testing operations.
+Arguments: None.
+Network: Omega Network.
+Usage: stopstress
+Workflow:
+- Halts all stress testing operations
+- Displays final statistics
+- Cleanup of test resources
+
+stressstats
+-----------
+Description: Displays statistics from the stress test.
+Purpose: Show performance metrics and results.
+Arguments: None.
+Network: Omega Network.
+Usage: stressstats
+Workflow:
+- Displays wallets created
+- Shows transaction success rates
+- Network performance metrics
+- Error rates and timing data
+
+COMMUNICATION & MESSAGING
+==========================
+
+email <subcommand>
+------------------
+Description: Initiates sending an encrypted email (DM) system.
+Purpose: Secure communication between wallet addresses.
+Arguments:
+- clearkey: Clears the E2EE private key from memory
+Network: Omega Network messaging system.
+Usage: email clearkey
+
+dm <recipient> <message>
+------------------------
+Description: Sends a direct message to a recipient.
+Purpose: Encrypted messaging between users.
+Arguments:
+- <recipient>: Wallet address or ENS name
+- <message>: Message text to send
+Network: Omega Network.
+Usage: dm 0x123... Hello there!
+       dm alice.omega How are you?
+
+Features:
+- End-to-end encryption
+- ENS name support
+- Message persistence
+- Privacy protection
+
+inbox [all] / messages [all]
+----------------------------
+Description: Displays received messages.
+Purpose: View encrypted messages sent to your wallet.
+Arguments:
+- all (optional): Shows all messages. If omitted, shows recent messages only
+Network: Omega Network.
+Usage: inbox
+       inbox all
+       messages all
+
+Workflow:
+- Decrypts and displays received messages
+- Shows sender, timestamp, and message content
+- Manages message history
+
+CREATE & DEPLOYMENT TOOLS
+==========================
+
+create
+------
+Description: Deploys a new ERC20 token on the Omega Network using OmegaTokenFactory contract.
+Purpose: Token creation and deployment with custom parameters.
+Arguments: Interactive prompts for token parameters
+Network: Omega Network.
+Usage: create
+
+Interactive Flow & Required Parameters:
+1. Token Name: Prompt: "Token name?" (string, required)
+2. Token Symbol: Prompt: "Token symbol?" (string, required, 3-10 characters)
+3. Decimals: Prompt: "Decimals? (default 18)" (number, 0-18, default 18)
+4. Total Supply: Prompt: "Total supply?" (number, required, > 0)
+5. Mintable: Prompt: "Mintable? (yes/no, default yes)" (boolean, default yes)
+6. Pausable: Prompt: "Pausable? (yes/no, default yes)" (boolean, default yes)
+7. Confirmation: Prompt: "Deploy token? (yes/no)" (must confirm to proceed)
+
+Smart Contract Details:
+- Factory Address: 0x1f568dbb3a7b9ea05062b132094a848ef1443cfe
+- Network: Omega Network
+- Gas optimization included
+
+Output:
+On success, displays:
+- Token address (with copy-to-clipboard functionality)
+- Transaction hash (with copy-to-clipboard functionality)
+- All token parameters (name, symbol, decimals, supply, mintable, pausable)
+
+Prerequisites:
+- User must be connected to EVM wallet (via connect command)
+- Wallet must have sufficient funds to pay for gas
+- Must be on Omega Network
+
+AI Automation Notes:
+- AI should check for wallet connection and sufficient funds before starting
+- All outputs are logged to chat history for traceability
+- AI should guide user through each prompt in sequence
+
+import <privateKey>
+-------------------
+Description: Imports an existing Omega Wallet using a private key.
+Purpose: Restore wallet access from backup.
+Arguments:
+- <privateKey>: The private key to import (hexadecimal format)
+Network: Omega Network.
+Usage: import 0xabc123...
+Workflow:
+- Validates private key format
+- Imports wallet to local storage
+- Displays wallet address
+- Enables wallet operations
+
+ADVANCED INTEGRATIONS
+======================
+
+polymarket / pm
+---------------
+Description: Handles Polymarket prediction market operations.
+Purpose: Access prediction markets and betting functionality.
+Arguments: Context-specific operations
+Network: Polygon.
+Usage: polymarket ...
+       pm ...
+
+Features:
+- Prediction market data
+- Betting interface
+- Market analytics
+- Position management
+
+magiceden / me
+--------------
+Description: Handles Magic Eden NFT marketplace operations.
+Purpose: Solana NFT marketplace integration.
+Arguments: Context-specific operations
+Network: Solana.
+Usage: magiceden ...
+       me ...
+
+Features:
+- Solana NFT trading
+- Collection analytics
+- Market data
+- Portfolio tracking
+
+alphakey <subcommand> / alpha <subcommand>
+------------------------------------------
+Description: Handles Alpha Key operations and Alpha Vantage API integration.
+Purpose: Stock market data and alpha key management.
+Arguments: Various subcommands for different operations
+Network: Traditional financial markets.
+Usage: alphakey ...
+       alpha ...
+
+Features:
+- Stock market data
+- Financial analytics
+- API key management
+- Market research tools
+
+ENTERTAINMENT & EASTER EGGS
+============================
+
+rickroll
+--------
+Description: Triggers a rickroll Easter egg animation.
+Purpose: Entertainment and terminal personality.
+Arguments: None.
+Usage: rickroll
+
+fortune
+-------
+Description: Displays a random fortune or quote.
+Purpose: Entertainment and motivational messages.
+Arguments: None.
+Usage: fortune
+
+matrix
+------
+Description: Activates a Matrix-style falling characters animation.
+Purpose: Visual effect and terminal aesthetics.
+Arguments: None.
+Usage: matrix
+
+hack
+----
+Description: Triggers a hacking simulation animation.
+Purpose: Entertainment with cyberpunk aesthetics.
+Arguments: None.
+Usage: hack
+
+disco
+-----
+Description: Activates disco mode with colorful animations.
+Purpose: Fun visual effects and terminal personality.
+Arguments: None.
+Usage: disco
+
+stop
+----
+Description: Stops all ongoing animations, processes, or effects.
+Purpose: Return terminal to normal operation.
+Arguments: None.
+Usage: stop
+
+UTILITY COMMANDS
+================
+
+tab
+---
+Description: Creates a new terminal tab for parallel operations.
+Purpose: Multi-tasking and parallel command execution.
+Arguments: None.
+Usage: tab
+
+url / urls
+----------
+Description: Displays useful URLs and links related to Omega Terminal.
+Purpose: Quick access to documentation and resources.
+Arguments: None.
+Usage: url
+       urls
+
+gui
+---
+Description: Opens the graphical user interface mode.
+Purpose: Switch from terminal to GUI interaction.
+Arguments: None.
+Usage: gui
+
+shade [info]
+------------
+Description: Manages the Shade Agent for cross-chain operations.
+Purpose: Multi-chain wallet and agent management.
+Arguments:
+- info (optional): Display detailed Shade Agent and ETH information
+Network: Multi-chain (NEAR, Ethereum, Solana, etc.).
+Usage: shade
+       shade info
+
+SHADE SUBCOMMANDS:
+- shade: Check for and deploy Shade Agent if not found
+- shade info: Display detailed Shade Agent information and multi-chain capabilities
+
+Features:
+- Cross-chain account management
+- Multi-blockchain support
+- Automated agent deployment
+- Account derivation across chains
+
+ambassador <subcommand>
+-----------------------
+Description: Ambassador program operations and referral management.
+Purpose: Referral system and ambassador analytics.
+Arguments: Various subcommands for ambassador operations
+Network: Omega Network.
+Usage: ambassador stats
+       ambassador generate
+
+AMBASSADOR SUBCOMMANDS:
+- ambassador stats: Display ambassador statistics and performance
+- ambassador generate: Generate referral links
+- ambassador leaderboard: Show top ambassadors
+- ambassador directory: Browse ambassador profiles
+- ambassador profile: View/edit ambassador profile
+- ambassador referrals: Track referral performance
+
+Features:
+- Referral link generation
+- Performance tracking
+- Leaderboard system
+- Revenue sharing
+- Analytics dashboard
+
+===============================================================================
+                              AI AUTOMATION GUIDELINES
+===============================================================================
+
+CRITICAL AI GUIDANCE:
+When multiple commands or similar actions are available across different networks or contexts 
+(for example, 'swap' is available for Solana, Near, and Eclipse), the AI MUST ALWAYS CONFIRM 
+with the user which network or context to use before proceeding. This ensures:
+
+- The correct command is executed for the intended blockchain or protocol
+- The user is aware of which wallet, network, or asset will be affected
+- Errors and unintended actions are avoided
+
+EXAMPLE CONFIRMATION FLOW:
+- If the user requests a token swap, the AI should ask: "Which network do you want to use 
+  for this swap? (Solana, Near, Eclipse, etc.)"
+- Only after the user confirms the network/context, the AI should proceed with the 
+  appropriate command and workflow
+
+This confirmation step is REQUIRED for all actions where multiple command variants exist for 
+different networks, wallets, or protocols.
+
+COMMAND EXECUTION BEST PRACTICES:
+
+1. ALWAYS check wallet connection status before executing wallet-dependent commands
+2. Validate arguments and provide helpful error messages for invalid inputs
+3. Use natural language to explain what will happen before executing commands
+4. Monitor transaction hashes and provide status updates
+5. Handle errors gracefully with clear explanations
+6. Log all operations to chat history for traceability
+7. Respect rate limits and API constraints
+8. Provide progress updates for long-running operations
+
+CONTEXT AWARENESS:
+- Remember previous commands and their results
+- Track wallet connection state across conversations
+- Maintain awareness of current network and active sessions
+- Reference chat history for relevant context
+- Provide personalized responses based on user's usage patterns
+
+ERROR HANDLING:
+- Always explain what went wrong in user-friendly terms
+- Suggest alternative approaches or troubleshooting steps
+- Check for common issues (wallet not connected, insufficient funds, network mismatch)
+- Provide specific guidance for resolving errors
+- Retry mechanisms for temporary failures
+
+SECURITY CONSIDERATIONS:
+- Never expose private keys or sensitive information
+- Validate addresses and amounts before executing transactions
+- Warn users about high-value or irreversible operations
+- Respect user privacy and data protection
+- Use secure practices for API key management
+
+===============================================================================
+                              TECHNICAL SPECIFICATIONS
+===============================================================================
+
+SYSTEM REQUIREMENTS:
+- Browser: Chrome 90+, Firefox 88+, Safari 14+
+- JavaScript: ES6+ support required
+- Storage: 50MB localStorage for caching and user data
+- Network: Stable internet connection for real-time data
+
+API RATE LIMITS:
+- Default Tier: 100 requests/minute per endpoint
+- With Custom API Keys: Up to 1000 requests/minute (varies by provider)
+- Caching: 30-second cache for price data, 5-minute cache for protocol data
+- Fallback: Multiple data source redundancy for reliability
+
+PERFORMANCE METRICS:
+- Load Time: <3 seconds initial load
+- Command Response: <500ms average response time
+- Data Refresh: Real-time streaming where available
+- Memory Usage: <100MB typical usage
+- Mobile Performance: Optimized for touch devices
+
+SECURITY FEATURES:
+- Client-side only architecture (no server required)
+- Local data storage with user privacy protection
+- API key encryption in localStorage
+- No private key storage (wallet integration only)
+- CORS compliance for all API calls
+- Rate limiting to prevent abuse
+- Secure communication protocols
+
+SUPPORTED NETWORKS:
+- Ethereum and EVM-compatible chains
+- Solana blockchain
+- NEAR Protocol
+- Eclipse Network (SVM)
+- Hyperliquid derivatives platform
+- Polygon Network
+- Binance Smart Chain
+- Arbitrum Layer 2
+- Optimism Layer 2
+
+API INTEGRATIONS:
+- OpenSea API v2 (NFT marketplace data)
+- DexScreener API (DEX analytics)
+- DeFi Llama API (protocol TVL data)
+- CoinGecko API (price data)
+- Alpha Vantage API (stock market data)
+- Jupiter Aggregator (Solana swaps)
+- Custom relayer services
+
+MOBILE OPTIMIZATION:
+- Responsive design for all screen sizes
+- Touch-friendly interface elements
+- Mobile-specific input handling
+- Optimized performance on mobile devices
+- Progressive Web App (PWA) capabilities
+- Offline functionality for core features
+
+THEME SYSTEM:
+- Multiple visual themes with real-time switching
+- CSS custom properties for easy customization
+- Mobile-responsive theme variations
+- Accessibility compliance across all themes
+- Theme persistence and user preferences
+- Animation and transition support
+
+===============================================================================
+                              COMMAND QUICK REFERENCE
+===============================================================================
+
+ESSENTIAL COMMANDS:
+help                              # Show all available commands
+clear                             # Clear terminal output
+theme [NAME]                      # Switch visual theme
+profile                           # Open profile & API settings
+connect                           # Connect wallet (MetaMask)
+status                            # Check connection status
+
+MARKET DATA:
+price [TOKEN]                     # Token price information
+dexscreener [TOKEN]               # Comprehensive analytics
+defillama protocols               # DeFi protocol data
+tvl [PROTOCOL]                    # Total Value Locked data
+stock [SYMBOL]                    # Stock market data
+
+TRADING & DEX:
+solana swap [AMOUNT] [FROM] [TO]  # Solana token swaps
+eclipse swap [FROM] [TO] [AMT]    # Eclipse network swaps
+near swap                         # NEAR cross-chain swaps
+
+NFT OPERATIONS:
+nft assets [COLLECTION]           # Browse NFT collections
+nft analytics [COLLECTION]       # Collection analytics
+nft trending                      # Trending collections
+nft floor [COLLECTION]            # Floor price tracking
+
+DEFI OPERATIONS:
+mine                              # Start mining OMEGA
+claim                             # Claim mining rewards
+faucet                            # Get test tokens
+mixer deposit-execute             # Privacy transactions
+
+NETWORK OPERATIONS:
+balance                           # Check wallet balances
+send [ADDRESS] [AMOUNT]           # Send tokens
+ens register [NAME]               # Register domain name
+network                           # Check current network
+
+COMMUNICATION:
+dm [ADDRESS] [MESSAGE]            # Send encrypted message
+inbox                             # View received messages
+ambassador stats                  # Ambassador program data
+
+UTILITIES:
+create                            # Deploy new ERC20 token
+stress                            # Start network stress test
+gui                               # Open graphical interface
+tab                               # Create new terminal tab
+
+===============================================================================
+                                    CONCLUSION
+===============================================================================
+
+Omega Terminal v2.0.1 represents a comprehensive Web3 interface with advanced trading tools, 
+multi-chain support, and professional-grade analytics. The system provides seamless integration 
+across DeFi protocols, NFT marketplaces, and multiple blockchain networks while maintaining a 
+user-friendly command-line interface optimized for both human users and AI agents.
+
+KEY ACHIEVEMENTS:
+- 100+ integrated commands across multiple categories
+- 10+ integrated APIs for comprehensive market data
+- Multi-chain support across 8+ major blockchains
+- Real-time analytics with sub-second latency
+- Professional UI/UX with mobile optimization
+- Comprehensive NFT trading suite with OpenSea integration
+- Advanced DeFi analytics with TVL tracking
+- Privacy features with zero-knowledge proofs
+- AI agent automation capabilities
+- Enterprise-grade performance and reliability
+
+This documentation serves as a complete reference for AI agents and advanced users seeking to 
+leverage the full capabilities of the Omega Terminal ecosystem. All commands are case-insensitive 
+and designed for natural language interaction, making it ideal for AI automation and human-computer 
+interaction in the Web3 space.
+
+For the most up-to-date command list and new features, users should always reference the 'help' 
+command within the terminal itself, as new capabilities are continuously being added to the platform.
+
+===============================================================================
+                            END OF DOCUMENTATION
+===============================================================================

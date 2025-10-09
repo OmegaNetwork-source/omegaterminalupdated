@@ -1,0 +1,215 @@
+/* Omega Symbol Logo System - Pure SVG Styling */
+
+/* Header Omega SVG Logo */
+.header-omega-svg {
+    width: 32px;
+    height: 32px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.header-omega-svg:hover {
+    transform: scale(1.1);
+    filter: drop-shadow(0 0 15px var(--cyber-blue-glow)) !important;
+}
+
+/* Welcome Screen Omega SVG Logo */
+.welcome-omega-svg {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 20px;
+    animation: logo-pulse 3s ease-in-out infinite;
+}
+
+@keyframes logo-pulse {
+    0%, 100% { 
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% { 
+        transform: scale(1.05);
+        opacity: 0.9;
+    }
+}
+
+/* Omega Symbol Specific Styling */
+.omega-symbol-logo {
+    display: block;
+    overflow: visible;
+}
+
+.omega-symbol-logo text {
+    transition: all 0.3s ease;
+}
+
+.omega-symbol-logo circle {
+    transition: all 0.3s ease;
+}
+
+/* Header Logo Container Updates */
+.header-logo-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: rgba(0, 212, 255, 0.05);
+    border: 1px solid var(--cyber-blue);
+    border-radius: 8px;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    overflow: visible; /* Allow glow to show */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.header-logo-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, 
+        rgba(0, 212, 255, 0.1) 0%, 
+        rgba(0, 212, 255, 0.05) 50%, 
+        rgba(0, 212, 255, 0.1) 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    border-radius: 8px;
+}
+
+.header-logo-container:hover {
+    background: rgba(0, 212, 255, 0.15);
+    border-color: var(--cyber-blue-bright);
+    box-shadow: 0 0 20px var(--cyber-blue-glow), 0 4px 12px rgba(0, 0, 0, 0.4);
+    transform: scale(1.05);
+}
+
+.header-logo-container:hover::before {
+    opacity: 1;
+}
+
+/* Welcome Logo Container Updates */
+.welcome-logo-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 40px;
+    z-index: 2;
+}
+
+/* Theme-specific logo colors */
+[data-theme="cyber-blue"] .omega-symbol-logo text,
+[data-theme="cyber-blue"] .omega-symbol-logo circle[stroke] {
+    stroke: var(--cyber-blue);
+    fill: var(--cyber-blue);
+}
+
+[data-theme="neon-purple"] .omega-symbol-logo text,
+[data-theme="neon-purple"] .omega-symbol-logo circle[stroke] {
+    stroke: var(--neon-purple);
+    fill: var(--neon-purple);
+}
+
+[data-theme="matrix-green"] .omega-symbol-logo text,
+[data-theme="matrix-green"] .omega-symbol-logo circle[stroke] {
+    stroke: var(--matrix-green);
+    fill: var(--matrix-green);
+}
+
+[data-theme="neon-pink"] .omega-symbol-logo text,
+[data-theme="neon-pink"] .omega-symbol-logo circle[stroke] {
+    stroke: var(--neon-pink);
+    fill: var(--neon-pink);
+}
+
+[data-theme="warning-amber"] .omega-symbol-logo text,
+[data-theme="warning-amber"] .omega-symbol-logo circle[stroke] {
+    stroke: var(--warning-amber);
+    fill: var(--warning-amber);
+}
+
+[data-theme="danger-red"] .omega-symbol-logo text,
+[data-theme="danger-red"] .omega-symbol-logo circle[stroke] {
+    stroke: var(--danger-red);
+    fill: var(--danger-red);
+}
+
+/* Loading state */
+.omega-symbol-logo.loading {
+    animation: logo-spin 2s linear infinite;
+}
+
+@keyframes logo-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Success state */
+.omega-symbol-logo.success text {
+    fill: var(--matrix-green) !important;
+}
+
+.omega-symbol-logo.success {
+    filter: drop-shadow(0 0 15px var(--matrix-green)) !important;
+}
+
+/* Error state */
+.omega-symbol-logo.error text {
+    fill: var(--danger-red) !important;
+}
+
+.omega-symbol-logo.error {
+    filter: drop-shadow(0 0 15px var(--danger-red)) !important;
+}
+
+/* Responsive sizing */
+@media (max-width: 768px) {
+    .header-omega-svg {
+        width: 28px;
+        height: 28px;
+    }
+    
+    .welcome-omega-svg {
+        width: 90px;
+        height: 90px;
+    }
+    
+    .header-logo-container {
+        width: 36px;
+        height: 36px;
+    }
+}
+
+@media (max-width: 480px) {
+    .header-omega-svg {
+        width: 24px;
+        height: 24px;
+    }
+    
+    .welcome-omega-svg {
+        width: 70px;
+        height: 70px;
+    }
+    
+    .header-logo-container {
+        width: 32px;
+        height: 32px;
+    }
+}
+
+/* Ensure logos are always visible */
+.header-omega-svg,
+.welcome-omega-svg {
+    display: block !important;
+    opacity: 1 !important;
+}
+
+/* Smooth transitions for all logo elements */
+.omega-symbol-logo * {
+    transition: all 0.3s ease;
+}
+

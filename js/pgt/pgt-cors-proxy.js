@@ -74,11 +74,38 @@ console.log('🔄 Loading PGT CORS Proxy...');
         }
         
         async addWallet(address, network, label) {
-            // For localhost, use demo mode instead of trying CORS proxies
+            // For localhost, check if local proxy is available
             if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                // Try local proxy first
+                try {
+                    const proxyUrl = 'http://localhost:3003/wallet';
+                    console.log(`🔄 Using local proxy: ${proxyUrl}`);
+                    
+                    const response = await fetch(proxyUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            address: address,
+                            network: network,
+                            label: label || `Omega Terminal - ${network}`
+                        })
+                    });
+                    
+                    if (response.ok) {
+                        const result = await response.json();
+                        console.log('✅ Local proxy successful!', result);
+                        return result;
+                    }
+                } catch (error) {
+                    console.warn('⚠️ Local proxy not available:', error.message);
+                }
+                
+                // If local proxy fails, return error
                 return {
                     success: false,
-                    error: 'CORS Error: Localhost cannot access PGT API directly. Use "pgt-demo track" for local testing, or deploy to production for real API access.'
+                    error: 'Local proxy not running. Start it with: npm run pgt-proxy'
                 };
             }
             
@@ -102,6 +129,28 @@ console.log('🔄 Loading PGT CORS Proxy...');
         }
         
         async getPortfolio() {
+            // For localhost, use local proxy
+            if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                try {
+                    const proxyUrl = 'http://localhost:3003/portfolio';
+                    console.log(`🔄 Using local proxy: ${proxyUrl}`);
+                    
+                    const response = await fetch(proxyUrl);
+                    
+                    if (response.ok) {
+                        const result = await response.json();
+                        console.log('✅ Local proxy successful!', result);
+                        return result;
+                    }
+                } catch (error) {
+                    console.warn('⚠️ Local proxy not available:', error.message);
+                    return {
+                        success: false,
+                        error: 'Local proxy not running. Start it with: npm run pgt-proxy'
+                    };
+                }
+            }
+            
             try {
                 const result = await this.makeRequest('/portfolio');
                 return result;
@@ -154,6 +203,12 @@ console.log('🔄 Loading PGT CORS Proxy...');
                     error: `CORS Error: ${error.message}. Try deploying to production.`
                 };
             }
+        }
+        
+        // Alias for getWallet - used by dashboard tracker
+        async getWalletData(address, network) {
+            console.log(`🔍 CORS Proxy: Getting wallet data for ${address} on ${network}`);
+            return await this.getWallet(address, network);
         }
         
         async testConnection() {

@@ -269,6 +269,12 @@ console.log('🎯 Loading PGT Integration...');
             }
         }
         
+        // Alias for compatibility with dashboard tracker
+        async getWalletData(address, network) {
+            console.log(`📊 PGT Live: Getting wallet data for ${address} on ${network}`);
+            return await this.getWallet(address, network);
+        }
+        
         async testConnection() {
             try {
                 // Simple HTTP test to verify API is accessible

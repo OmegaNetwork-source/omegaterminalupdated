@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>OMEGA TERMINAL - CLASSIFIED ACCESS SYSTEM</title>
+    
+    <!-- Use original index.html as iframe, overlay futuristic UI -->
+    <link rel="stylesheet" href="futuristic-theme.css">
+    
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        #terminal-frame {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+            opacity: 0;
+        }
+        
+        #terminal-frame.loaded {
+            opacity: 1;
+        }
+        
+        /* Overlay the futuristic UI on top */
+        .futuristic-overlay {
+            position: relative;
+            z-index: 10;
+            pointer-events: none;
+        }
+        
+        .futuristic-overlay > * {
+            pointer-events: auto;
+        }
+        
+        /* Make terminal output area transparent to show iframe */
+        .omega-terminal {
+            background: transparent !important;
+        }
+        
+        .terminal-output {
+            opacity: 0;
+        }
+    </style>
+</head>
+<body>
+    <iframe id="terminal-frame" src="index.html"></iframe>
+    
+    <div class="futuristic-overlay">
+        <!-- Futuristic dashboard UI here -->
+    </div>
+    
+    <script>
+        // This approach is overly complex - better to directly modify index.html
+        alert('This file is experimental. Use the direct modification approach instead.');
+    </script>
+</body>
+</html>
+

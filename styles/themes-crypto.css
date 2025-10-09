@@ -1,0 +1,65 @@
+/* Crypto-themed CSS Enhancements */
+
+/* Bitcoin Theme Colors */
+:root.theme-bitcoin {
+    --primary-color: #f7931a;
+    --secondary-color: #ff9500;
+    --accent-color: #ffb347;
+    --bg-gradient: linear-gradient(135deg, #1a0f00 0%, #2d1a00 100%);
+}
+
+/* Ethereum Theme Colors */
+:root.theme-ethereum {
+    --primary-color: #627eea;
+    --secondary-color: #8c8dff;
+    --accent-color: #a5a8ff;
+    --bg-gradient: linear-gradient(135deg, #0a0a1a 0%, #1a1a2d 100%);
+}
+
+/* Solana Theme Colors */
+:root.theme-solana {
+    --primary-color: #14f195;
+    --secondary-color: #9945ff;
+    --accent-color: #00d4aa;
+    --bg-gradient: linear-gradient(135deg, #0a0014 0%, #1a0029 100%);
+}
+
+/* Crypto-themed scrollbar */
+.theme-crypto ::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, var(--primary-color), var(--secondary-color));
+    border-radius: 10px;
+}
+
+/* Crypto price ticker animation */
+@keyframes priceFlash {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+}
+
+.price-ticker {
+    animation: priceFlash 2s infinite;
+}
+
+/* Crypto chart glow effect */
+.crypto-chart {
+    box-shadow: 0 0 20px var(--primary-color);
+    border: 1px solid var(--primary-color);
+    border-radius: 8px;
+}
+
+/* Token badge styles */
+.token-badge {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-weight: bold;
+    font-size: 12px;
+}
+
+/* Crypto command prefix styles */
+.crypto-command-prefix {
+    color: var(--primary-color);
+    font-weight: bold;
+}
+

@@ -1,0 +1,189 @@
+/* Futuristic Font Override - Match original futuristic index styling */
+
+/* Import modern tech fonts if available */
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@300;400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&display=swap');
+
+/* Update font variables with better options */
+:root {
+    --font-mono: 'JetBrains Mono', 'Consolas', 'Monaco', 'Courier New', monospace;
+    --font-tech: 'Roboto Mono', 'SF Mono', 'Consolas', monospace;
+}
+
+/* Apply to entire dashboard */
+.omega-dashboard {
+    font-family: var(--font-tech) !important;
+}
+
+/* Terminal output with tech font */
+.omega-dashboard #terminalOutput,
+.omega-dashboard #terminalOutput * {
+    font-family: var(--font-tech) !important;
+    font-size: 13px !important;
+    line-height: 1.8 !important;
+    letter-spacing: 0.3px !important;
+    font-weight: 400 !important;
+    -webkit-font-smoothing: antialiased !important;
+    -moz-osx-font-smoothing: grayscale !important;
+}
+
+/* Make important text slightly bolder */
+.omega-dashboard strong,
+.omega-dashboard b,
+.omega-dashboard .highlight {
+    font-weight: 500 !important;
+}
+
+/* Headers with tech styling */
+.omega-dashboard h1,
+.omega-dashboard h2,
+.omega-dashboard h3 {
+    font-family: var(--font-tech) !important;
+    font-weight: 600 !important;
+    letter-spacing: 1px !important;
+}
+
+/* Command input with monospace */
+.omega-dashboard .input-field,
+.omega-dashboard #commandInput {
+    font-family: var(--font-mono) !important;
+    font-size: 14px !important;
+    font-weight: 400 !important;
+    letter-spacing: 0.5px !important;
+}
+
+/* Sidebar buttons */
+.omega-dashboard .sidebar-button {
+    font-family: var(--font-tech) !important;
+    font-size: 13px !important;
+    font-weight: 400 !important;
+    letter-spacing: 0.3px !important;
+}
+
+/* Stats panel */
+.omega-dashboard .stats-panel,
+.omega-dashboard .stat-label,
+.omega-dashboard .stat-value {
+    font-family: var(--font-tech) !important;
+    font-size: 12px !important;
+    letter-spacing: 0.3px !important;
+}
+
+/* Header text */
+.omega-dashboard .omega-header,
+.omega-dashboard .brand-text,
+.omega-dashboard .status-indicator {
+    font-family: var(--font-tech) !important;
+    letter-spacing: 0.5px !important;
+}
+
+/* Terminal prompt */
+.omega-dashboard .input-prompt,
+.omega-dashboard .terminal-prompt {
+    font-family: var(--font-tech) !important;
+    font-weight: 600 !important;
+    letter-spacing: 1px !important;
+}
+
+/* Code/hash/addresses with strict monospace */
+.omega-dashboard .hash,
+.omega-dashboard .tx-hash,
+.omega-dashboard .wallet-address,
+.omega-dashboard .address,
+.omega-dashboard code {
+    font-family: var(--font-mono) !important;
+    font-size: 12px !important;
+    letter-spacing: 0.5px !important;
+}
+
+/* Numbers and values */
+.omega-dashboard .number,
+.omega-dashboard .value,
+.omega-dashboard .balance,
+.omega-dashboard .price {
+    font-family: var(--font-tech) !important;
+    font-weight: 500 !important;
+    letter-spacing: 0.5px !important;
+}
+
+/* ASCII art - use pure monospace */
+.omega-dashboard pre {
+    font-family: var(--font-mono) !important;
+    font-size: 12px !important;
+    letter-spacing: 0px !important;
+    line-height: 1.2 !important;
+}
+
+/* Ensure crisp rendering */
+.omega-dashboard * {
+    text-rendering: optimizeLegibility !important;
+    -webkit-font-smoothing: antialiased !important;
+    -moz-osx-font-smoothing: grayscale !important;
+}
+
+/* Small caps for labels */
+.omega-dashboard .sidebar-title,
+.omega-dashboard .stats-title {
+    font-family: var(--font-tech) !important;
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    letter-spacing: 1.5px !important;
+    text-transform: uppercase !important;
+}
+
+/* Activity log */
+.omega-dashboard #futuristic-activity,
+.omega-dashboard #futuristic-activity * {
+    font-family: var(--font-tech) !important;
+    font-size: 11px !important;
+    letter-spacing: 0.2px !important;
+}
+
+/* Terminal control buttons text */
+.omega-dashboard .terminal-title {
+    font-family: var(--font-tech) !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    letter-spacing: 1px !important;
+}
+
+/* Loading text */
+.omega-dashboard .loader-text {
+    font-family: var(--font-tech) !important;
+    font-size: 14px !important;
+    font-weight: 400 !important;
+    letter-spacing: 2px !important;
+}
+
+/* Improve readability with slight text shadow */
+.omega-dashboard #terminalOutput {
+    text-shadow: 0 0 1px rgba(0, 212, 255, 0.1) !important;
+}
+
+/* Special formatting for tables */
+.omega-dashboard table {
+    font-family: var(--font-tech) !important;
+    font-size: 12px !important;
+}
+
+.omega-dashboard td,
+.omega-dashboard th {
+    font-family: var(--font-tech) !important;
+    letter-spacing: 0.3px !important;
+}
+
+/* Links */
+.omega-dashboard a {
+    font-family: var(--font-tech) !important;
+    font-weight: 500 !important;
+    letter-spacing: 0.3px !important;
+}
+
+/* Timestamps */
+.omega-dashboard .timestamp,
+.omega-dashboard .time {
+    font-family: var(--font-mono) !important;
+    font-size: 11px !important;
+    letter-spacing: 0.5px !important;
+}
+

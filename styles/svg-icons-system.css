@@ -1,0 +1,183 @@
+/* SVG Icons System - Replace all emojis with scalable SVG icons */
+
+/* Icon Base Styles */
+.svg-icon {
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    fill: currentColor;
+    vertical-align: middle;
+    transition: all 0.3s ease;
+}
+
+.svg-icon-sm { width: 0.8em; height: 0.8em; }
+.svg-icon-lg { width: 1.2em; height: 1.2em; }
+.svg-icon-xl { width: 1.5em; height: 1.5em; }
+
+/* Icon Colors - Theme Aware */
+.svg-icon-primary { fill: var(--cyber-blue); }
+.svg-icon-success { fill: var(--matrix-green); }
+.svg-icon-warning { fill: var(--warning-amber); }
+.svg-icon-error { fill: var(--danger-red); }
+.svg-icon-purple { fill: var(--neon-purple); }
+.svg-icon-pink { fill: var(--neon-pink); }
+
+/* Icon Animations */
+.svg-icon-spin { animation: icon-spin 1s linear infinite; }
+.svg-icon-pulse { animation: icon-pulse 2s ease-in-out infinite; }
+.svg-icon-bounce { animation: icon-bounce 1s ease-in-out infinite; }
+.svg-icon-glow { filter: drop-shadow(0 0 5px currentColor); }
+
+@keyframes icon-spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes icon-pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.1); opacity: 0.8; }
+}
+
+@keyframes icon-bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-3px); }
+}
+
+/* Replace emoji classes with SVG equivalents */
+.omega-logo-icon {
+    width: 24px;
+    height: 24px;
+    fill: var(--cyber-blue);
+    filter: drop-shadow(0 0 5px var(--cyber-blue-glow));
+}
+
+.mining-icon {
+    width: 20px;
+    height: 20px;
+    fill: var(--warning-amber);
+}
+
+.wallet-icon {
+    width: 18px;
+    height: 18px;
+    fill: var(--matrix-green);
+}
+
+.network-icon {
+    width: 18px;
+    height: 18px;
+    fill: var(--cyber-blue);
+}
+
+.nft-icon {
+    width: 18px;
+    height: 18px;
+    fill: var(--neon-purple);
+}
+
+.security-icon {
+    width: 16px;
+    height: 16px;
+    fill: var(--danger-red);
+}
+
+.success-icon {
+    width: 16px;
+    height: 16px;
+    fill: var(--matrix-green);
+}
+
+.error-icon {
+    width: 16px;
+    height: 16px;
+    fill: var(--danger-red);
+}
+
+.info-icon {
+    width: 16px;
+    height: 16px;
+    fill: var(--cyber-blue);
+}
+
+.warning-icon {
+    width: 16px;
+    height: 16px;
+    fill: var(--warning-amber);
+}
+
+/* Header Logo Integration */
+.header-logo {
+    width: 32px;
+    height: 32px;
+    fill: var(--cyber-blue);
+    filter: drop-shadow(0 0 8px var(--cyber-blue-glow));
+    transition: all 0.3s ease;
+}
+
+.header-logo:hover {
+    filter: drop-shadow(0 0 12px var(--cyber-blue-glow));
+    transform: scale(1.05);
+}
+
+/* Sidebar Icons */
+.sidebar-icon {
+    width: 16px;
+    height: 16px;
+    fill: var(--cyber-blue-dim);
+    transition: all 0.3s ease;
+}
+
+.sidebar-button:hover .sidebar-icon {
+    fill: var(--cyber-blue);
+    transform: scale(1.1);
+}
+
+/* Terminal Icons */
+.terminal-icon {
+    width: 14px;
+    height: 14px;
+    fill: currentColor;
+    margin-right: 6px;
+    vertical-align: middle;
+}
+
+/* Status Icons */
+.status-icon {
+    width: 12px;
+    height: 12px;
+    fill: currentColor;
+    margin-right: 4px;
+}
+
+/* Button Icons */
+.button-icon {
+    width: 16px;
+    height: 16px;
+    fill: currentColor;
+    margin-right: 8px;
+    vertical-align: middle;
+}
+
+/* Loading Icons */
+.loading-icon {
+    width: 20px;
+    height: 20px;
+    fill: var(--cyber-blue);
+    animation: icon-spin 1s linear infinite;
+}
+
+/* Theme-aware icon colors */
+[data-theme="cyber-blue"] .svg-icon-primary { fill: var(--cyber-blue); }
+[data-theme="neon-purple"] .svg-icon-primary { fill: var(--neon-purple); }
+[data-theme="matrix-green"] .svg-icon-primary { fill: var(--matrix-green); }
+[data-theme="neon-pink"] .svg-icon-primary { fill: var(--neon-pink); }
+[data-theme="warning-amber"] .svg-icon-primary { fill: var(--warning-amber); }
+[data-theme="danger-red"] .svg-icon-primary { fill: var(--danger-red); }
+
+/* Responsive Icons */
+@media (max-width: 768px) {
+    .svg-icon { width: 0.9em; height: 0.9em; }
+    .header-logo { width: 28px; height: 28px; }
+    .sidebar-icon { width: 14px; height: 14px; }
+    .terminal-icon { width: 12px; height: 12px; }
+}

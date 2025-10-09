@@ -1,0 +1,292 @@
+/* Omega Branding Logos - Theme Adaptive Integration */
+
+/* Header Logo Container */
+.header-logo-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: rgba(0, 212, 255, 0.1);
+    border: 1px solid var(--cyber-blue);
+    border-radius: 8px;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.header-logo-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, 
+        rgba(0, 212, 255, 0.1) 0%, 
+        rgba(0, 212, 255, 0.05) 50%, 
+        rgba(0, 212, 255, 0.1) 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.header-logo-container:hover {
+    background: rgba(0, 212, 255, 0.2);
+    border-color: var(--cyber-blue-bright);
+    box-shadow: 0 0 15px var(--cyber-blue-glow), 0 4px 12px rgba(0, 0, 0, 0.4);
+    transform: scale(1.05);
+}
+
+.header-logo-container:hover::before {
+    opacity: 1;
+}
+
+/* Header Logo Image */
+.header-omega-logo {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+    filter: brightness(1.2) contrast(1.1);
+    transition: all 0.3s ease;
+}
+
+.header-omega-logo:hover {
+    filter: brightness(1.4) contrast(1.2);
+}
+
+/* Header Logo SVG Fallback */
+.header-omega-logo-fallback {
+    width: 28px;
+    height: 28px;
+    fill: var(--cyber-blue);
+    filter: drop-shadow(0 0 6px var(--cyber-blue-glow));
+    transition: all 0.3s ease;
+}
+
+.header-omega-logo-fallback:hover {
+    fill: var(--cyber-blue-bright);
+    filter: drop-shadow(0 0 10px var(--cyber-blue-glow));
+}
+
+/* Legacy Logo Container (for other uses) */
+.logo-container {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Main Omega Logo SVG */
+.omega-logo {
+    width: 40px;
+    height: 40px;
+    fill: var(--cyber-blue);
+    filter: drop-shadow(0 0 8px var(--cyber-blue-glow));
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.omega-logo:hover {
+    filter: drop-shadow(0 0 12px var(--cyber-blue-glow));
+    transform: scale(1.05);
+}
+
+/* Header Logo Variants */
+.header-logo-light {
+    width: 32px;
+    height: 32px;
+    fill: var(--cyber-blue);
+    filter: drop-shadow(0 0 6px var(--cyber-blue-glow));
+}
+
+.header-logo-dark {
+    width: 32px;
+    height: 32px;
+    fill: var(--void-black);
+    filter: drop-shadow(0 0 4px rgba(0, 0, 0, 0.5));
+}
+
+/* Welcome Screen Logo */
+.welcome-logo {
+    width: 120px;
+    height: 120px;
+    fill: var(--cyber-blue);
+    filter: drop-shadow(0 0 20px var(--cyber-blue-glow));
+    animation: logo-pulse 3s ease-in-out infinite;
+}
+
+/* Sidebar Logo */
+.sidebar-logo {
+    width: 24px;
+    height: 24px;
+    fill: var(--cyber-blue-dim);
+    transition: all 0.3s ease;
+}
+
+.sidebar-logo:hover {
+    fill: var(--cyber-blue);
+    transform: scale(1.1);
+}
+
+/* Theme Adaptive Colors */
+[data-theme="cyber-blue"] .omega-logo,
+[data-theme="cyber-blue"] .header-logo-light,
+[data-theme="cyber-blue"] .welcome-logo {
+    fill: var(--cyber-blue);
+    filter: drop-shadow(0 0 8px var(--cyber-blue-glow));
+}
+
+[data-theme="neon-purple"] .omega-logo,
+[data-theme="neon-purple"] .header-logo-light,
+[data-theme="neon-purple"] .welcome-logo {
+    fill: var(--neon-purple);
+    filter: drop-shadow(0 0 8px var(--neon-purple));
+}
+
+[data-theme="matrix-green"] .omega-logo,
+[data-theme="matrix-green"] .header-logo-light,
+[data-theme="matrix-green"] .welcome-logo {
+    fill: var(--matrix-green);
+    filter: drop-shadow(0 0 8px var(--matrix-green));
+}
+
+[data-theme="neon-pink"] .omega-logo,
+[data-theme="neon-pink"] .header-logo-light,
+[data-theme="neon-pink"] .welcome-logo {
+    fill: var(--neon-pink);
+    filter: drop-shadow(0 0 8px var(--neon-pink));
+}
+
+[data-theme="warning-amber"] .omega-logo,
+[data-theme="warning-amber"] .header-logo-light,
+[data-theme="warning-amber"] .welcome-logo {
+    fill: var(--warning-amber);
+    filter: drop-shadow(0 0 8px var(--warning-amber));
+}
+
+[data-theme="danger-red"] .omega-logo,
+[data-theme="danger-red"] .header-logo-light,
+[data-theme="danger-red"] .welcome-logo {
+    fill: var(--danger-red);
+    filter: drop-shadow(0 0 8px var(--danger-red));
+}
+
+/* Logo Animations */
+@keyframes logo-pulse {
+    0%, 100% { 
+        transform: scale(1);
+        filter: drop-shadow(0 0 8px currentColor);
+    }
+    50% { 
+        transform: scale(1.05);
+        filter: drop-shadow(0 0 12px currentColor);
+    }
+}
+
+@keyframes logo-glow {
+    0%, 100% { 
+        filter: drop-shadow(0 0 8px currentColor);
+    }
+    50% { 
+        filter: drop-shadow(0 0 16px currentColor);
+    }
+}
+
+/* Logo with Glow Animation */
+.omega-logo-glow {
+    animation: logo-glow 2s ease-in-out infinite;
+}
+
+/* Brand Text Integration */
+.brand-text {
+    font-family: var(--font-tech);
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--cyber-blue);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-left: 8px;
+    transition: all 0.3s ease;
+}
+
+.brand-text:hover {
+    color: var(--cyber-blue-bright);
+    text-shadow: 0 0 8px var(--cyber-blue-glow);
+}
+
+/* Version Badge */
+.version-badge {
+    font-size: 10px;
+    color: var(--cyber-blue-dim);
+    letter-spacing: 1px;
+    margin-left: 8px;
+    opacity: 0.8;
+    transition: all 0.3s ease;
+}
+
+/* Logo States */
+.logo-loading {
+    animation: logo-pulse 1s ease-in-out infinite;
+}
+
+.logo-error {
+    fill: var(--danger-red) !important;
+    filter: drop-shadow(0 0 8px var(--danger-red)) !important;
+}
+
+.logo-success {
+    fill: var(--matrix-green) !important;
+    filter: drop-shadow(0 0 8px var(--matrix-green)) !important;
+}
+
+/* Responsive Logo Sizes */
+@media (max-width: 768px) {
+    .omega-logo { width: 32px; height: 32px; }
+    .header-logo-light { width: 28px; height: 28px; }
+    .welcome-logo { width: 80px; height: 80px; }
+    .sidebar-logo { width: 20px; height: 20px; }
+    .brand-text { font-size: 16px; }
+}
+
+@media (max-width: 480px) {
+    .omega-logo { width: 28px; height: 28px; }
+    .header-logo-light { width: 24px; height: 24px; }
+    .welcome-logo { width: 60px; height: 60px; }
+    .brand-text { font-size: 14px; }
+}
+
+/* Logo Fallback for Missing Images */
+.omega-logo-fallback {
+    width: 40px;
+    height: 40px;
+    background: var(--cyber-blue);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--void-black);
+    font-family: var(--font-tech);
+    font-size: 24px;
+    font-weight: bold;
+    filter: drop-shadow(0 0 8px var(--cyber-blue-glow));
+}
+
+/* Logo Loading State */
+.logo-loading-placeholder {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(90deg, 
+        rgba(0, 212, 255, 0.1) 0%, 
+        rgba(0, 212, 255, 0.3) 50%, 
+        rgba(0, 212, 255, 0.1) 100%);
+    border-radius: 8px;
+    animation: logo-shimmer 1.5s ease-in-out infinite;
+}
+
+@keyframes logo-shimmer {
+    0% { background-position: -200px 0; }
+    100% { background-position: 200px 0; }
+}

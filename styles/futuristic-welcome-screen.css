@@ -1,0 +1,256 @@
+/* Futuristic Welcome Screen - Matching index-futuristic.html */
+
+/* Welcome Screen Container */
+.omega-welcome-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: var(--void-black);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+    font-family: var(--font-tech);
+    overflow: hidden;
+}
+
+/* Animated Grid Background */
+.omega-welcome-screen::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        linear-gradient(rgba(0, 212, 255, 0.1) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 212, 255, 0.1) 1px, transparent 1px);
+    background-size: 50px 50px;
+    animation: grid-move 20s linear infinite;
+    opacity: 0.3;
+}
+
+@keyframes grid-move {
+    0% { transform: translate(0, 0); }
+    100% { transform: translate(50px, 50px); }
+}
+
+/* Main Logo Container */
+.welcome-logo-container {
+    position: relative;
+    text-align: center;
+    margin-bottom: 40px;
+    z-index: 2;
+}
+
+/* Omega Logo SVG */
+  .welcome-omega-logo {
+      width: 120px;
+      height: 120px;
+      margin: 0 auto 20px;
+      object-fit: contain;
+      filter: drop-shadow(0 0 20px var(--cyber-blue-glow));
+      animation: logo-pulse 3s ease-in-out infinite;
+  }
+
+  .welcome-omega-logo-fallback {
+      width: 120px;
+      height: 120px;
+      margin: 0 auto 20px;
+      fill: var(--cyber-blue);
+      filter: drop-shadow(0 0 20px var(--cyber-blue-glow));
+      animation: logo-pulse 3s ease-in-out infinite;
+  }
+
+@keyframes logo-pulse {
+    0%, 100% { 
+        transform: scale(1);
+        filter: drop-shadow(0 0 20px var(--cyber-blue-glow));
+    }
+    50% { 
+        transform: scale(1.05);
+        filter: drop-shadow(0 0 30px var(--cyber-blue-glow));
+    }
+}
+
+/* Brand Text */
+.welcome-brand-text {
+    font-size: 32px;
+    font-weight: 600;
+    color: var(--cyber-blue);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    text-shadow: 0 0 10px var(--cyber-blue-glow);
+    animation: text-glow 2s ease-in-out infinite alternate;
+}
+
+@keyframes text-glow {
+    0% { text-shadow: 0 0 10px var(--cyber-blue-glow); }
+    100% { text-shadow: 0 0 20px var(--cyber-blue-glow), 0 0 30px var(--cyber-blue-glow); }
+}
+
+/* Version Text */
+.welcome-version {
+    font-size: 14px;
+    color: var(--cyber-blue-dim);
+    letter-spacing: 2px;
+    margin-bottom: 40px;
+    opacity: 0.8;
+}
+
+/* Loading Spinner */
+.welcome-spinner {
+    width: 60px;
+    height: 60px;
+    border: 3px solid rgba(0, 212, 255, 0.2);
+    border-top: 3px solid var(--cyber-blue);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 30px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Status Text */
+.welcome-status {
+    font-size: 18px;
+    color: var(--cyber-blue);
+    letter-spacing: 1px;
+    text-align: center;
+    margin-bottom: 10px;
+    animation: status-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes status-pulse {
+    0%, 100% { opacity: 0.7; }
+    50% { opacity: 1; }
+}
+
+/* Sub Status */
+.welcome-sub-status {
+    font-size: 12px;
+    color: var(--cyber-blue-dim);
+    letter-spacing: 1px;
+    text-align: center;
+    opacity: 0.6;
+}
+
+/* Progress Bar */
+.welcome-progress {
+    width: 300px;
+    height: 4px;
+    background: rgba(0, 212, 255, 0.2);
+    border-radius: 2px;
+    margin: 30px auto 0;
+    overflow: hidden;
+    position: relative;
+}
+
+.welcome-progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--cyber-blue), var(--neon-purple));
+    border-radius: 2px;
+    width: 0%;
+    animation: progress-load 3s ease-in-out forwards;
+    box-shadow: 0 0 10px var(--cyber-blue-glow);
+}
+
+@keyframes progress-load {
+    0% { width: 0%; }
+    100% { width: 100%; }
+}
+
+/* Security Clearance Badge */
+.welcome-security-badge {
+    position: absolute;
+    top: 30px;
+    right: 30px;
+    background: rgba(0, 212, 255, 0.1);
+    border: 1px solid var(--cyber-blue);
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-size: 11px;
+    color: var(--cyber-blue);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    backdrop-filter: blur(10px);
+    animation: badge-glow 2s ease-in-out infinite alternate;
+}
+
+@keyframes badge-glow {
+    0% { box-shadow: 0 0 5px var(--cyber-blue-glow); }
+    100% { box-shadow: 0 0 15px var(--cyber-blue-glow); }
+}
+
+/* System Status Indicators */
+.welcome-system-status {
+    position: absolute;
+    bottom: 30px;
+    left: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.welcome-status-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    color: var(--cyber-blue-dim);
+    letter-spacing: 0.5px;
+}
+
+.welcome-status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--matrix-green);
+    animation: status-blink 1s ease-in-out infinite;
+}
+
+@keyframes status-blink {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 1; }
+}
+
+/* Hide when initialized */
+body.omega-initialized .omega-welcome-screen {
+    display: none !important;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .welcome-omega-logo {
+        width: 80px;
+        height: 80px;
+    }
+    
+    .welcome-brand-text {
+        font-size: 24px;
+        letter-spacing: 2px;
+    }
+    
+    .welcome-progress {
+        width: 250px;
+    }
+    
+    .welcome-security-badge {
+        top: 20px;
+        right: 20px;
+        font-size: 10px;
+        padding: 6px 12px;
+    }
+    
+    .welcome-system-status {
+        bottom: 20px;
+        left: 20px;
+    }
+}

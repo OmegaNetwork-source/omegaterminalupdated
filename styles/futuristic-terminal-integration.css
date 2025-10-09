@@ -1,0 +1,292 @@
+/* Futuristic Terminal Integration - Dynamic Theme Support */
+
+/* Apply futuristic fonts to terminal */
+.omega-dashboard .terminal,
+.omega-dashboard #terminal,
+.omega-dashboard #terminalOutput,
+.omega-dashboard .terminal-line {
+    font-family: var(--font-tech) !important;
+    font-size: 13px !important;
+    line-height: 1.8 !important;
+    letter-spacing: 0.3px !important;
+    color: var(--cyber-blue) !important;
+}
+
+/* Input field font */
+.omega-dashboard .input-field,
+.omega-dashboard #commandInput {
+    font-family: var(--font-mono) !important;
+    font-size: 14px !important;
+    letter-spacing: 0.5px !important;
+}
+
+/* Terminal output line colors based on type */
+.omega-dashboard .terminal-line,
+.omega-dashboard #terminalOutput > div {
+    color: var(--cyber-blue) !important;
+    animation: fadeIn 0.2s ease !important;
+}
+
+/* Success messages */
+.omega-dashboard .success,
+.omega-dashboard .terminal-line.success,
+.omega-dashboard [style*="color: green"],
+.omega-dashboard [style*="color: #00ff00"] {
+    color: var(--matrix-green) !important;
+}
+
+/* Warning messages */
+.omega-dashboard .warning,
+.omega-dashboard .terminal-line.warning,
+.omega-dashboard [style*="color: yellow"],
+.omega-dashboard [style*="color: orange"] {
+    color: var(--warning-amber) !important;
+}
+
+/* Error messages */
+.omega-dashboard .error,
+.omega-dashboard .terminal-line.error,
+.omega-dashboard [style*="color: red"] {
+    color: var(--danger-red) !important;
+}
+
+/* Info messages */
+.omega-dashboard .info,
+.omega-dashboard .terminal-line.info {
+    color: var(--cyber-blue) !important;
+}
+
+/* Special/NFT messages */
+.omega-dashboard .nft,
+.omega-dashboard .terminal-line.nft,
+.omega-dashboard [style*="purple"] {
+    color: var(--neon-purple) !important;
+}
+
+/* Command prompts */
+.omega-dashboard .input-prompt,
+.omega-dashboard .terminal-prompt {
+    color: var(--cyber-blue-bright) !important;
+    font-weight: bold !important;
+    font-family: var(--font-tech) !important;
+    letter-spacing: 1px !important;
+}
+
+/* User input text */
+.omega-dashboard .input-field,
+.omega-dashboard #commandInput {
+    color: var(--cyber-blue) !important;
+    caret-color: var(--cyber-blue-bright) !important;
+    background: transparent !important;
+}
+
+/* Links */
+.omega-dashboard a {
+    color: var(--cyber-blue-bright) !important;
+    text-decoration: none !important;
+}
+
+.omega-dashboard a:hover {
+    color: var(--neon-purple) !important;
+    text-shadow: 0 0 10px var(--cyber-blue-glow) !important;
+}
+
+/* ASCII art and special formatting */
+.omega-dashboard pre,
+.omega-dashboard code {
+    color: var(--cyber-blue) !important;
+    font-family: var(--font-mono) !important;
+    font-size: 13px !important;
+    letter-spacing: 0.2px !important;
+}
+
+/* Monospace elements */
+.omega-dashboard .monospace,
+.omega-dashboard .code-block,
+.omega-dashboard .hash,
+.omega-dashboard .address {
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace !important;
+    letter-spacing: 0.5px !important;
+}
+
+/* Headers in terminal output */
+.omega-dashboard h1,
+.omega-dashboard h2,
+.omega-dashboard h3 {
+    color: var(--cyber-blue-bright) !important;
+    text-shadow: 0 0 10px var(--cyber-blue-glow) !important;
+}
+
+/* Highlighted text */
+.omega-dashboard .highlight,
+.omega-dashboard strong,
+.omega-dashboard b {
+    color: var(--cyber-blue-bright) !important;
+    font-weight: bold !important;
+}
+
+/* Tables in terminal */
+.omega-dashboard table {
+    border-color: var(--glass-border) !important;
+}
+
+.omega-dashboard td,
+.omega-dashboard th {
+    border-color: var(--glass-border) !important;
+    color: var(--cyber-blue) !important;
+}
+
+/* Terminal input section */
+.omega-dashboard .terminal-input-section {
+    background: rgba(0, 0, 0, 0.4) !important;
+    border-top: 1px solid var(--glass-border) !important;
+}
+
+/* Boot animation text */
+.omega-dashboard #bootAnimation {
+    color: var(--matrix-green) !important;
+}
+
+/* Numbers and values */
+.omega-dashboard .value,
+.omega-dashboard .number {
+    color: var(--cyber-blue-bright) !important;
+}
+
+/* Dimmed/secondary text */
+.omega-dashboard .secondary,
+.omega-dashboard .dim {
+    color: var(--cyber-blue-dim) !important;
+    opacity: 0.7 !important;
+}
+
+/* Scrollbar for terminal output */
+.omega-dashboard #terminalOutput::-webkit-scrollbar-thumb {
+    background: var(--cyber-blue-dim) !important;
+}
+
+.omega-dashboard #terminalOutput::-webkit-scrollbar-thumb:hover {
+    background: var(--cyber-blue) !important;
+    box-shadow: 0 0 10px var(--cyber-blue-glow) !important;
+}
+
+/* Loading/processing indicators */
+.omega-dashboard .loading,
+.omega-dashboard .processing {
+    color: var(--warning-amber) !important;
+    animation: pulse 2s ease-in-out infinite !important;
+}
+
+/* Status indicators in text */
+.omega-dashboard .status-active {
+    color: var(--matrix-green) !important;
+}
+
+.omega-dashboard .status-pending {
+    color: var(--warning-amber) !important;
+}
+
+.omega-dashboard .status-inactive {
+    color: var(--danger-red) !important;
+}
+
+/* Price indicators (for trading) */
+.omega-dashboard .price-up {
+    color: var(--matrix-green) !important;
+}
+
+.omega-dashboard .price-down {
+    color: var(--danger-red) !important;
+}
+
+/* Borders and separators */
+.omega-dashboard hr {
+    border-color: var(--glass-border) !important;
+}
+
+/* Special emoji/icon styling to match theme */
+.omega-dashboard .emoji {
+    filter: drop-shadow(0 0 5px var(--cyber-blue-glow));
+}
+
+/* Command echo (typed commands) */
+.omega-dashboard .command-echo {
+    color: var(--warning-amber) !important;
+    font-weight: bold !important;
+}
+
+/* NFT/Trading specific */
+.omega-dashboard .nft-name,
+.omega-dashboard .token-name {
+    color: var(--neon-purple) !important;
+}
+
+.omega-dashboard .floor-price,
+.omega-dashboard .token-price {
+    color: var(--cyber-blue-bright) !important;
+}
+
+/* Wallet addresses */
+.omega-dashboard .address,
+.omega-dashboard .wallet-address {
+    color: var(--cyber-blue) !important;
+    font-family: var(--font-mono) !important;
+}
+
+/* Transaction hashes */
+.omega-dashboard .tx-hash,
+.omega-dashboard .transaction {
+    color: var(--neon-purple) !important;
+    font-family: var(--font-mono) !important;
+}
+
+/* Balances and amounts */
+.omega-dashboard .balance,
+.omega-dashboard .amount {
+    color: var(--matrix-green) !important;
+    font-weight: bold !important;
+}
+
+/* Network names */
+.omega-dashboard .network-name {
+    color: var(--neon-purple) !important;
+    text-transform: uppercase !important;
+}
+
+/* Timestamps */
+.omega-dashboard .timestamp,
+.omega-dashboard .time {
+    color: var(--cyber-blue-dim) !important;
+    font-size: 0.9em !important;
+}
+
+/* Box/panel borders in terminal output */
+.omega-dashboard .box,
+.omega-dashboard .panel {
+    border: 1px solid var(--glass-border) !important;
+    background: rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Make sure inline styles don't override theme */
+.omega-dashboard [style*="color"] {
+    /* This will be overridden by the specific classes above */
+}
+
+/* Fade in animation for new lines */
+@keyframes fadeIn {
+    from { 
+        opacity: 0; 
+        transform: translateY(-5px); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0); 
+    }
+}
+
+/* Pulse animation for loading */
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+

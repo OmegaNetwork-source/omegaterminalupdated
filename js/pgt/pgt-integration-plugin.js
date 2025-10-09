@@ -10,119 +10,250 @@ console.log('🎯 Loading PGT Integration Plugin...');
     class PGTIntegration {
         constructor() {
             this.apiKey = 'pgt-partner-omega-terminal-2-25';
-            this.baseUrl = 'https://www.pgtools.tech/app';
+            
+            // For localhost: Use local proxy to bypass CORS
+            // For production: Use PGT API directly
+            const isLocalhost = window.location.hostname === 'localhost' || 
+                              window.location.hostname === '127.0.0.1';
+            
+            if (isLocalhost) {
+                this.baseUrl = 'http://localhost:3003';
+                this.useProxy = true;
+                console.log('🔄 Using LOCAL PROXY to bypass CORS');
+                console.log('💡 Make sure pgt-proxy-server.js is running!');
+            } else {
+                this.baseUrl = 'https://www.pgtools.tech/api';
+                this.useProxy = false;
+                console.log('🌐 Using DIRECT PGT API');
+            }
+            
             this.isReady = true;
+            
+            console.log(`🔗 PGT API Base URL: ${this.baseUrl}`);
+            console.log(`🌐 API Key: ${this.apiKey}`);
+            console.log(`📍 Endpoints: /portfolio, /wallet, /health`);
         }
         
-        async callPGTApi(endpoint, data = {}) {
+        async callPGTApi(endpoint, method = 'GET', data = null) {
+            const fullUrl = `${this.baseUrl}${endpoint}`;
+            console.log(`📞 PGT API Call: ${method} ${fullUrl}`);
+            
             try {
-                const response = await fetch(`${this.baseUrl}/api/terminal${endpoint}`, {
-                    method: 'POST',
+                const options = {
+                    method: method,
                     headers: {
+                        'X-API-Key': this.apiKey,
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({
-                        ...data,
-                        apiKey: this.apiKey
-                    })
+                    mode: 'cors',
+                    credentials: 'omit'
+                };
+                
+                // Add body for POST/PUT/DELETE
+                if (data && (method === 'POST' || method === 'PUT' || method === 'DELETE')) {
+                    options.body = JSON.stringify(data);
+                    console.log('📤 Request Body:', data);
+                }
+                
+                console.log('🔑 Request Headers:', options.headers);
+                
+                const response = await fetch(fullUrl, options);
+                
+                console.log(`📥 Response Status: ${response.status} ${response.statusText}`);
+                console.log('📥 Response Headers:', {
+                    'content-type': response.headers.get('content-type'),
+                    'access-control-allow-origin': response.headers.get('access-control-allow-origin')
                 });
                 
                 // Check if response is JSON
                 const contentType = response.headers.get('content-type');
                 if (!contentType || !contentType.includes('application/json')) {
+                    console.error('❌ Response is not JSON:', contentType);
+                    
+                    // Try to read response as text to see what we got
+                    const text = await response.text();
+                    console.error('📄 Response Body (first 500 chars):', text.substring(0, 500));
+                    
                     return { 
                         success: false, 
-                        error: 'API endpoints not deployed yet - contact @playgroundtools',
+                        error: 'API returning HTML instead of JSON - endpoints may not exist at this path',
                         status: 'API_NOT_READY',
-                        data: null 
+                        data: null,
+                        responseType: contentType,
+                        responsePreview: text.substring(0, 200)
                     };
                 }
                 
+                const result = await response.json();
+                console.log('📦 Parsed JSON Response:', result);
+                
+                // Handle non-200 status codes
                 if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    console.error('❌ HTTP Error:', response.status, result);
+                    return {
+                        success: false,
+                        error: result.error || `HTTP ${response.status}: ${response.statusText}`,
+                        status: `HTTP_${response.status}`,
+                        data: null
+                    };
                 }
                 
-                return await response.json();
+                console.log('✅ API Call Successful');
+                return result;
             } catch (error) {
-                console.error('PGT API Error:', error);
+                console.error('❌ PGT API Exception:', error);
+                console.error('❌ Error Name:', error.name);
+                console.error('❌ Error Message:', error.message);
+                console.error('❌ Error Stack:', error.stack);
                 
                 // Better error messages
                 let errorMessage = error.message;
+                let errorStatus = 'CONNECTION_FAILED';
+                
                 if (error.message.includes('Failed to fetch')) {
-                    errorMessage = 'Connection failed - API may not be deployed yet';
+                    errorMessage = 'CORS error or network failure - PGT API may not allow cross-origin requests';
+                    errorStatus = 'CORS_ERROR';
                 } else if (error.message.includes('Unexpected token')) {
                     errorMessage = 'API returning HTML instead of JSON - endpoints not ready';
+                    errorStatus = 'INVALID_RESPONSE';
+                } else if (error.name === 'TypeError') {
+                    errorMessage = 'Network error - cannot reach PGT API server';
+                    errorStatus = 'NETWORK_ERROR';
                 }
                 
                 return { 
                     success: false, 
                     error: errorMessage,
-                    status: 'CONNECTION_FAILED',
-                    data: null 
+                    status: errorStatus,
+                    data: null,
+                    originalError: error.message
                 };
             }
         }
         
         // Portfolio data
         async getPortfolio() {
-            return await this.callPGTApi('/portfolio');
+            return await this.callPGTApi('/portfolio', 'GET');
+        }
+        
+        async getPortfolioSummary() {
+            return await this.callPGTApi('/portfolio/summary', 'GET');
         }
         
         // Wallet management
         async addWallet(address, network, label) {
-            return await this.callPGTApi('/add-wallet', {
+            return await this.callPGTApi('/wallet', 'POST', {
                 address, 
                 network, 
                 label
             });
         }
         
+        async updateWallet(address, network, label) {
+            return await this.callPGTApi(`/wallet/${address}`, 'PUT', {
+                network,
+                label
+            });
+        }
+        
         async removeWallet(address, network) {
-            return await this.callPGTApi('/remove-wallet', {
+            return await this.callPGTApi('/wallet', 'DELETE', {
                 address, 
                 network
             });
         }
         
         async getTrackedWallets() {
-            return await this.callPGTApi('/wallets');
+            return await this.callPGTApi('/wallet/tracked', 'GET');
         }
         
         async getWalletData(address, network) {
-            return await this.callPGTApi('/wallet', {
-                address,
-                network
-            });
+            // PGT API uses /wallet/:address/:network format
+            return await this.callPGTApi(`/wallet/${address}/${network}`, 'GET');
+        }
+        
+        // Partner info
+        async getPartnerInfo() {
+            return await this.callPGTApi('/partner/info', 'GET');
+        }
+        
+        async getUsageStats() {
+            return await this.callPGTApi('/partner/usage', 'GET');
         }
         
         // Health check
         async healthCheck() {
-            try {
-                const response = await fetch(`${this.baseUrl}/api/terminal/health`);
-                
-                // Check if response is JSON
-                const contentType = response.headers.get('content-type');
-                if (!contentType || !contentType.includes('application/json')) {
-                    return { 
-                        success: false, 
-                        error: 'API endpoint not available (returns HTML instead of JSON)',
-                        status: 'API_NOT_READY'
-                    };
-                }
-                
-                return await response.json();
-            } catch (error) {
-                return { 
-                    success: false, 
-                    error: error.message,
-                    status: 'CONNECTION_FAILED'
-                };
-            }
+            return await this.callPGTApi('/health', 'GET');
         }
     }
     
     // Initialize global PGT system
     window.omegaPGT = new PGTIntegration();
+    
+    // Test PGT API Connection
+    window.testPGTConnection = async function() {
+        console.log('🔍 Testing PGT API Connection...');
+        console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+        
+        // Test 1: Health Check
+        console.log('\n1️⃣ Testing Health Endpoint...');
+        const healthResult = await window.omegaPGT.healthCheck();
+        console.log('   Result:', healthResult);
+        
+        if (healthResult.success) {
+            console.log('   ✅ API Server is ONLINE');
+        } else {
+            console.log('   ❌ API Server is OFFLINE or not responding');
+            console.log('   Error:', healthResult.error);
+            return;
+        }
+        
+        // Test 2: Partner Info
+        console.log('\n2️⃣ Testing Partner Info...');
+        const partnerResult = await window.omegaPGT.getPartnerInfo();
+        console.log('   Result:', partnerResult);
+        
+        if (partnerResult.success) {
+            console.log('   ✅ API Key is VALID');
+            console.log('   Partner:', partnerResult.data.name);
+            console.log('   Permissions:', partnerResult.data.permissions);
+        } else {
+            console.log('   ❌ API Key is INVALID');
+            console.log('   Error:', partnerResult.error);
+        }
+        
+        // Test 3: Get Wallet Data
+        console.log('\n3️⃣ Testing Wallet Data Endpoint...');
+        const testAddress = '0xBB07d617cF64A64F96b29f3f3B65cd741C2C51FC';
+        const testNetwork = 'ethereum';
+        console.log('   Address:', testAddress);
+        console.log('   Network:', testNetwork);
+        
+        const walletResult = await window.omegaPGT.getWalletData(testAddress, testNetwork);
+        console.log('   Result:', walletResult);
+        
+        if (walletResult.success) {
+            console.log('   ✅ Wallet Data Retrieved');
+            console.log('   Total Value:', walletResult.data.totalValue);
+            console.log('   Change 24h:', walletResult.data.change24h);
+            console.log('   Tokens:', walletResult.data.tokens?.length || 0);
+        } else {
+            console.log('   ❌ Failed to Get Wallet Data');
+            console.log('   Error:', walletResult.error);
+            console.log('   Status:', walletResult.status);
+        }
+        
+        console.log('\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+        console.log('🏁 Test Complete');
+        
+        return {
+            health: healthResult.success,
+            partner: partnerResult.success,
+            wallet: walletResult.success
+        };
+    };
+    
+    console.log('💡 Run testPGTConnection() in console to test API connection');
     
     // ===================================
     // PGT COMMANDS INTEGRATION

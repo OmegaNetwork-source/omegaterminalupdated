@@ -1,8 +1,40 @@
-# Node modules and dependencies
+# Dependencies
 node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+package-lock.json
+yarn.lock
+
+# Environment Variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# IDE / Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Build outputs
+dist/
+build/
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+
+# API Keys (if stored in files)
+api-keys.json
+secrets.json
 
 # OS Files
 .DS_Store
@@ -11,99 +43,25 @@ yarn-error.log*
 .Spotlight-V100
 .Trashes
 ehthumbs.db
-Thumbs.db
-desktop.ini
+Desktop.ini
 
-# IDE and editor files
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
+# Testing
+coverage/
+.nyc_output/
 
-# Logs and databases
-*.log
-*.db
-*.sqlite
-*.sqlite3
+# Optional npm cache
+.npm
 
-# Python
-__pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-*.pkl
+# Optional eslint cache
+.eslintcache
 
-# Environment files
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+# Local development
+.local/
+*.local.*
 
-# Windows shortcuts
-*.lnk
+# Archive (optional - remove to version control archived files)
+# archive/
 
-# Large files and folders we don't need
-Cursor_v2/
-omega-terminal-working/
-shade-agent-template/
-test-solana-program/
-omega-referral-clean/
-omega-referral-standalone/
-public/
-
-# Office documents
-*.ppt
-*.pptx
-*.doc
-*.docx
-*.pdf
-
-# Deprecated/old files (keeping only the working ones)
-fix-main-nft-commands.js
-nft-final-fixes.js
-nft-quick-fix.js
-simple-opensea-fix.js
-test-exact-opensea.js
-opensea-correct-endpoints.js
-opensea-exact-endpoint.js
-opensea-header-fix.js
-opensea-listings-fix.js
-opensea-marketplace-endpoints.js
-opensea-official-api-fix.js
-debug-network-issues.js
-emergency-refresh.js
-clean-profile-only.js
-profile-*.js
-!profile-command-only.js
-
-# Test and debug files
-*test*.js
-*debug*.js
-*fix*.js
-emergency-*.js
-simple-*.js
-
-# Keep only the working plugin files
-!dexscreener-analytics-ultimate.js
-!opensea-enhanced-plugin.js
-!omega-arcade-sdk.js
-!defillama-api-plugin.js
-!profile-command-only.js
+# Omega Terminal specific
+pgt-proxy-server.log
+*.backup

@@ -1,0 +1,82 @@
+/* Futuristic Mode - Apply to original terminal */
+
+body.futuristic-mode {
+    background: var(--void-black) !important;
+}
+
+/* Apply futuristic styling when in futuristic mode */
+body.futuristic-mode .terminal {
+    background: var(--glass-bg) !important;
+    backdrop-filter: var(--glass-blur) !important;
+    border: 1px solid var(--glass-border) !important;
+    border-radius: var(--radius-lg) !important;
+}
+
+body.futuristic-mode .terminal-header {
+    background: rgba(0, 0, 0, 0.3) !important;
+    border-bottom: 1px solid var(--glass-border) !important;
+}
+
+body.futuristic-mode .terminal-output {
+    background: transparent !important;
+}
+
+body.futuristic-mode .terminal-input-section {
+    background: rgba(0, 0, 0, 0.4) !important;
+    border-top: 1px solid var(--glass-border) !important;
+}
+
+/* Grid background */
+body.futuristic-mode::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        linear-gradient(var(--glass-border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--glass-border) 1px, transparent 1px);
+    background-size: 50px 50px;
+    opacity: 0.15;
+    z-index: 0;
+    pointer-events: none;
+    animation: gridMove 20s linear infinite;
+}
+
+@keyframes gridMove {
+    0% { transform: translate(0, 0); }
+    100% { transform: translate(50px, 50px); }
+}
+
+/* Scanline effect */
+body.futuristic-mode::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        to bottom,
+        transparent 0%,
+        rgba(0, 212, 255, 0.02) 50%,
+        transparent 100%
+    );
+    background-size: 100% 4px;
+    pointer-events: none;
+    z-index: 9999;
+    animation: scanline 8s linear infinite;
+}
+
+@keyframes scanline {
+    0% { transform: translateY(-100%); }
+    100% { transform: translateY(100%); }
+}
+
+/* Ensure terminal is positioned above background */
+body.futuristic-mode .terminal {
+    position: relative;
+    z-index: 1;
+}
+

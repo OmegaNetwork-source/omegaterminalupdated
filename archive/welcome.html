@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to Omega Terminal</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: linear-gradient(135deg, #0a0a0f 0%, #1a0a2f 100%);
+            color: #00d4ff;
+            font-family: 'Consolas', 'Monaco', monospace;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(0, 212, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 212, 255, 0.05) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: gridMove 20s linear infinite;
+            pointer-events: none;
+        }
+        @keyframes gridMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+        .container {
+            max-width: 1200px;
+            padding: 40px;
+            position: relative;
+            z-index: 1;
+        }
+        h1 {
+            font-size: 48px;
+            background: linear-gradient(90deg, #00d4ff, #00ffff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .subtitle {
+            text-align: center;
+            color: #9d00ff;
+            font-size: 18px;
+            margin-bottom: 60px;
+            letter-spacing: 2px;
+        }
+        .versions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+        .version-card {
+            background: rgba(21, 21, 32, 0.7);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 212, 255, 0.15);
+            border-radius: 12px;
+            padding: 30px;
+            transition: all 0.3s ease;
+        }
+        .version-card:hover {
+            border-color: #00d4ff;
+            box-shadow: 0 0 30px rgba(0, 212, 255, 0.3);
+            transform: translateY(-5px);
+        }
+        .version-title {
+            font-size: 24px;
+            color: #00ffff;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .badge {
+            background: linear-gradient(135deg, #00d4ff, #9d00ff);
+            color: #fff;
+            font-size: 10px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .version-desc {
+            color: #00d4ff;
+            margin-bottom: 20px;
+            line-height: 1.6;
+            font-size: 14px;
+        }
+        .features {
+            list-style: none;
+            margin: 20px 0;
+        }
+        .features li {
+            padding: 5px 0;
+            color: #00ff88;
+            font-size: 13px;
+        }
+        .features li:before {
+            content: '✓ ';
+            color: #00ff88;
+            font-weight: bold;
+        }
+        .cta-button {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background: rgba(0, 212, 255, 0.2);
+            border: 2px solid #00d4ff;
+            color: #00d4ff;
+            text-decoration: none;
+            text-align: center;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+        .cta-button:hover {
+            background: rgba(0, 212, 255, 0.3);
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+            transform: scale(1.05);
+        }
+        .diagnostics {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 40px;
+            border-top: 1px solid rgba(0, 212, 255, 0.2);
+        }
+        .diag-link {
+            color: #9d00ff;
+            text-decoration: none;
+            padding: 10px 20px;
+            border: 1px solid #9d00ff;
+            border-radius: 6px;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+        .diag-link:hover {
+            background: rgba(157, 0, 255, 0.2);
+            box-shadow: 0 0 15px rgba(157, 0, 255, 0.3);
+        }
+        @media (max-width: 768px) {
+            .versions { grid-template-columns: 1fr; }
+            h1 { font-size: 32px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Ω OMEGA TERMINAL</h1>
+        <div class="subtitle">CHOOSE YOUR INTERFACE</div>
+        
+        <div class="versions">
+            <div class="version-card">
+                <div class="version-title">
+                    🚀 FUTURISTIC DASHBOARD
+                    <span class="badge">NEW!</span>
+                </div>
+                <div class="version-desc">
+                    Ultra-modern sci-fi command center with advanced monitoring and customization
+                </div>
+                <ul class="features">
+                    <li>3-Panel Dashboard Layout</li>
+                    <li>6 Color Schemes (Cyber Blue, Matrix Green, etc.)</li>
+                    <li>Real-time System Monitoring</li>
+                    <li>Quick Action Sidebar</li>
+                    <li>Glass Morphism & Neon Effects</li>
+                    <li>Animated Grid Background</li>
+                    <li>Live Stats & Activity Log</li>
+                </ul>
+                <a href="index-futuristic.html" class="cta-button">
+                    ▶ LAUNCH FUTURISTIC UI
+                </a>
+            </div>
+            
+            <div class="version-card">
+                <div class="version-title">
+                    📟 CLASSIC TERMINAL
+                </div>
+                <div class="version-desc">
+                    Traditional terminal interface with modern features and multiple GUI themes
+                </div>
+                <ul class="features">
+                    <li>Full-Screen Terminal Focus</li>
+                    <li>5 GUI Themes (ChatGPT, Discord, etc.)</li>
+                    <li>Apple-Inspired Modern UI</li>
+                    <li>Traditional Terminal Feel</li>
+                    <li>All Core Features</li>
+                    <li>Minimal Distractions</li>
+                    <li>Fast & Lightweight</li>
+                </ul>
+                <a href="index.html" class="cta-button">
+                    ▶ LAUNCH CLASSIC UI
+                </a>
+            </div>
+        </div>
+        
+        <div class="diagnostics">
+            <a href="diagnostic-check.html" class="diag-link">
+                🔍 Run System Diagnostics
+            </a>
+        </div>
+    </div>
+</body>
+</html>
+
