@@ -4143,6 +4143,10 @@
                     case 'perps':
                         this.handlePerpCommand(args);
                         break;
+                    case 'farcaster':
+                    case 'fc':
+                        await this.handleFarcasterCommand(args);
+                        break;
                     default:
                         if (cmd) {
                             this.log(`Command not found: ${command}`, 'error');
@@ -16323,7 +16327,742 @@
             }
         };
 
-        console.log('🔧 DEBUG: Polymarket and Perp functions loaded successfully!');
+        // Farcaster Integration
+        OmegaMinerTerminal.prototype.handleFarcasterCommand = async function(args) {
+            if (!args || args.length < 2) {
+                this.showFarcasterHelp();
+                return;
+            }
+
+            const subcommand = args[1].toLowerCase();
+            
+            switch (subcommand) {
+                case 'help':
+                    this.showFarcasterHelp();
+                    break;
+                case 'trending':
+                    await this.getFarcasterTrending();
+                    break;
+                case 'feed':
+                    await this.getFarcasterFeed();
+                    break;
+                case 'search':
+                    if (args.length < 3) {
+                        this.log('Usage: farcaster search <query>', 'error');
+                        return;
+                    }
+                    const query = args.slice(2).join(' ');
+                    await this.searchFarcaster(query);
+                    break;
+                case 'user':
+                    if (args.length < 3) {
+                        this.log('Usage: farcaster user <username>', 'error');
+                        return;
+                    }
+                    await this.getFarcasterUser(args[2]);
+                    break;
+                case 'channels':
+                    await this.getFarcasterChannels();
+                    break;
+                default:
+                    this.log(`Unknown Farcaster command: ${subcommand}`, 'error');
+                    this.showFarcasterHelp();
+            }
+        };
+
+        OmegaMinerTerminal.prototype.showFarcasterHelp = function() {
+            this.log('════════════════════════════════════', 'info');
+            this.log('FARCASTER - Decentralized Social Network', 'info');
+            this.log('════════════════════════════════════', 'info');
+            this.log('', 'info');
+            this.log('COMMANDS:', 'info');
+            this.log('  farcaster trending       Trending casts', 'output');
+            this.log('  farcaster feed           Recent feed', 'output');
+            this.log('  farcaster search <q>     Search casts', 'output');
+            this.log('  farcaster user <name>    View user profile', 'output');
+            this.log('  farcaster channels       Browse channels', 'output');
+            this.log('  farcaster help           Show this help', 'output');
+            this.log('', 'info');
+            this.log('EXAMPLES:', 'info');
+            this.log('  farcaster trending', 'info');
+            this.log('  farcaster search "crypto"', 'info');
+            this.log('  farcaster user vitalik.eth', 'info');
+            this.log('════════════════════════════════════', 'info');
+        };
+
+        OmegaMinerTerminal.prototype.getFarcasterTrending = async function() {
+            try {
+                this.log('Loading trending Farcaster casts...', 'info');
+                
+                // Use Neynar API - free tier, no auth needed for reads
+                const response = await fetch('https://api.neynar.com/v2/farcaster/feed/trending?limit=20', {
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`API returned ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if (data && data.casts && data.casts.length > 0) {
+                    const casts = data.casts;
+                    
+                    let html = `
+                        <div style="
+                            background: #1a1a1a;
+                            border: 1px solid #333;
+                            border-radius: 12px;
+                            padding: 20px;
+                            margin: 16px 0;
+                        ">
+                            <div style="
+                                display: flex;
+                                align-items: center;
+                                margin-bottom: 20px;
+                                padding-bottom: 16px;
+                                border-bottom: 1px solid #333;
+                            ">
+                                <div style="
+                                    width: 40px;
+                                    height: 40px;
+                                    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+                                    border-radius: 10px;
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                    margin-right: 12px;
+                                    font-size: 20px;
+                                ">🔥</div>
+                                <div>
+                                    <h3 style="margin: 0; font-size: 20px; font-weight: 600; color: #ffffff;">
+                                        Trending on Farcaster
+                                    </h3>
+                                    <p style="margin: 4px 0 0 0; font-size: 14px; color: #888;">
+                                        ${casts.length} trending casts
+                                    </p>
+                                </div>
+                            </div>
+                            
+                            <div style="display: flex; flex-direction: column; gap: 16px;">
+                    `;
+                    
+                    casts.forEach((cast, index) => {
+                        const author = cast.author || {};
+                        const username = author.username || 'unknown';
+                        const displayName = author.display_name || username;
+                        const pfpUrl = author.pfp_url || '';
+                        const text = cast.text || '';
+                        const timestamp = cast.timestamp ? new Date(cast.timestamp).toLocaleString() : '';
+                        const reactions = cast.reactions || {};
+                        const likes = reactions.likes_count || 0;
+                        const recasts = reactions.recasts_count || 0;
+                        const replies = cast.replies?.count || 0;
+                        const hash = cast.hash || '';
+                        
+                        html += `
+                            <div style="
+                                background: #0f0f0f;
+                                border: 1px solid #333;
+                                border-radius: 8px;
+                                padding: 16px;
+                                transition: all 0.2s ease;
+                            " onmouseover="this.style.borderColor='#6b7280'" onmouseout="this.style.borderColor='#333'">
+                                <div style="display: flex; align-items: flex-start; gap: 12px;">
+                                    ${pfpUrl ? `
+                                        <img src="${pfpUrl}" style="
+                                            width: 40px;
+                                            height: 40px;
+                                            border-radius: 50%;
+                                            border: 2px solid #333;
+                                        ">
+                                    ` : `
+                                        <div style="
+                                            width: 40px;
+                                            height: 40px;
+                                            border-radius: 50%;
+                                            background: linear-gradient(135deg, #6b7280, #4b5563);
+                                            display: flex;
+                                            align-items: center;
+                                            justify-content: center;
+                                            font-size: 18px;
+                                        ">👤</div>
+                                    `}
+                                    
+                                    <div style="flex: 1; min-width: 0;">
+                                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                                            <span style="font-weight: 600; color: #ffffff;">${displayName}</span>
+                                            <span style="color: #888; font-size: 14px;">@${username}</span>
+                                            ${timestamp ? `<span style="color: #666; font-size: 12px;">• ${timestamp}</span>` : ''}
+                                        </div>
+                                        
+                                        <p style="
+                                            margin: 0 0 12px 0;
+                                            color: #ddd;
+                                            line-height: 1.5;
+                                            word-wrap: break-word;
+                                        ">${text}</p>
+                                        
+                                        <div style="
+                                            display: flex;
+                                            gap: 20px;
+                                            font-size: 13px;
+                                            color: #888;
+                                        ">
+                                            <span>❤️ ${likes}</span>
+                                            <span>🔄 ${recasts}</span>
+                                            <span>💬 ${replies}</span>
+                                            ${hash ? `
+                                                <a href="https://warpcast.com/~/conversations/${hash}" target="_blank" style="
+                                                    color: #8b5cf6;
+                                                    text-decoration: none;
+                                                    margin-left: auto;
+                                                " onmouseover="this.style.color='#a78bfa'" onmouseout="this.style.color='#8b5cf6'">
+                                                    View on Warpcast →
+                                                </a>
+                                            ` : ''}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    
+                    html += `
+                            </div>
+                        </div>
+                    `;
+                    
+                    this.logHtml(html, 'output');
+                } else {
+                    this.log('No trending casts found', 'warning');
+                }
+            } catch (error) {
+                this.log('Failed to fetch Farcaster trending: ' + error.message, 'error');
+                this.log('Note: Farcaster integration is experimental', 'info');
+            }
+        };
+
+        OmegaMinerTerminal.prototype.getFarcasterFeed = async function() {
+            try {
+                this.log('Loading Farcaster feed...', 'info');
+                
+                const response = await fetch('https://api.neynar.com/v2/farcaster/feed?limit=20', {
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`API returned ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if (data && data.casts && data.casts.length > 0) {
+                    const casts = data.casts;
+                    
+                    let html = `
+                        <div style="
+                            background: #1a1a1a;
+                            border: 1px solid #333;
+                            border-radius: 12px;
+                            padding: 20px;
+                            margin: 16px 0;
+                        ">
+                            <div style="
+                                display: flex;
+                                align-items: center;
+                                margin-bottom: 20px;
+                                padding-bottom: 16px;
+                                border-bottom: 1px solid #333;
+                            ">
+                                <div style="
+                                    width: 40px;
+                                    height: 40px;
+                                    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+                                    border-radius: 10px;
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                    margin-right: 12px;
+                                    font-size: 20px;
+                                ">📱</div>
+                                <div>
+                                    <h3 style="margin: 0; font-size: 20px; font-weight: 600; color: #ffffff;">
+                                        Recent Feed
+                                    </h3>
+                                    <p style="margin: 4px 0 0 0; font-size: 14px; color: #888;">
+                                        ${casts.length} recent casts
+                                    </p>
+                                </div>
+                            </div>
+                            
+                            <div style="display: flex; flex-direction: column; gap: 16px;">
+                    `;
+                    
+                    casts.forEach((cast, index) => {
+                        const author = cast.author || {};
+                        const username = author.username || 'unknown';
+                        const displayName = author.display_name || username;
+                        const pfpUrl = author.pfp_url || '';
+                        const text = cast.text || '';
+                        const timestamp = cast.timestamp ? new Date(cast.timestamp).toLocaleString() : '';
+                        const reactions = cast.reactions || {};
+                        const likes = reactions.likes_count || 0;
+                        const recasts = reactions.recasts_count || 0;
+                        const replies = cast.replies?.count || 0;
+                        const hash = cast.hash || '';
+                        
+                        html += `
+                            <div style="
+                                background: #0f0f0f;
+                                border: 1px solid #333;
+                                border-radius: 8px;
+                                padding: 16px;
+                                transition: all 0.2s ease;
+                            " onmouseover="this.style.borderColor='#6b7280'" onmouseout="this.style.borderColor='#333'">
+                                <div style="display: flex; align-items: flex-start; gap: 12px;">
+                                    ${pfpUrl ? `
+                                        <img src="${pfpUrl}" style="
+                                            width: 40px;
+                                            height: 40px;
+                                            border-radius: 50%;
+                                            border: 2px solid #333;
+                                        ">
+                                    ` : `
+                                        <div style="
+                                            width: 40px;
+                                            height: 40px;
+                                            border-radius: 50%;
+                                            background: linear-gradient(135deg, #6b7280, #4b5563);
+                                            display: flex;
+                                            align-items: center;
+                                            justify-content: center;
+                                            font-size: 18px;
+                                        ">👤</div>
+                                    `}
+                                    
+                                    <div style="flex: 1; min-width: 0;">
+                                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                                            <span style="font-weight: 600; color: #ffffff;">${displayName}</span>
+                                            <span style="color: #888; font-size: 14px;">@${username}</span>
+                                            ${timestamp ? `<span style="color: #666; font-size: 12px;">• ${timestamp}</span>` : ''}
+                                        </div>
+                                        
+                                        <p style="
+                                            margin: 0 0 12px 0;
+                                            color: #ddd;
+                                            line-height: 1.5;
+                                            word-wrap: break-word;
+                                        ">${text}</p>
+                                        
+                                        <div style="
+                                            display: flex;
+                                            gap: 20px;
+                                            font-size: 13px;
+                                            color: #888;
+                                        ">
+                                            <span>❤️ ${likes}</span>
+                                            <span>🔄 ${recasts}</span>
+                                            <span>💬 ${replies}</span>
+                                            ${hash ? `
+                                                <a href="https://warpcast.com/~/conversations/${hash}" target="_blank" style="
+                                                    color: #8b5cf6;
+                                                    text-decoration: none;
+                                                    margin-left: auto;
+                                                " onmouseover="this.style.color='#a78bfa'" onmouseout="this.style.color='#8b5cf6'">
+                                                    View on Warpcast →
+                                                </a>
+                                            ` : ''}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    
+                    html += `
+                            </div>
+                        </div>
+                    `;
+                    
+                    this.logHtml(html, 'output');
+                } else {
+                    this.log('No casts found', 'warning');
+                }
+            } catch (error) {
+                this.log('Failed to fetch Farcaster feed: ' + error.message, 'error');
+                this.log('Note: Using public Neynar API (no auth required)', 'info');
+            }
+        };
+
+        OmegaMinerTerminal.prototype.searchFarcaster = async function(query) {
+            try {
+                this.log(`Searching Farcaster for: "${query}"...`, 'info');
+                
+                const response = await fetch(`https://api.neynar.com/v2/farcaster/cast/search?q=${encodeURIComponent(query)}&limit=20`, {
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`API returned ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if (data && data.casts && data.casts.length > 0) {
+                    const casts = data.casts;
+                    
+                    let html = `
+                        <div style="
+                            background: #1a1a1a;
+                            border: 1px solid #333;
+                            border-radius: 12px;
+                            padding: 20px;
+                            margin: 16px 0;
+                        ">
+                            <div style="
+                                display: flex;
+                                align-items: center;
+                                margin-bottom: 20px;
+                                padding-bottom: 16px;
+                                border-bottom: 1px solid #333;
+                            ">
+                                <div style="
+                                    width: 40px;
+                                    height: 40px;
+                                    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+                                    border-radius: 10px;
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                    margin-right: 12px;
+                                    font-size: 20px;
+                                ">🔍</div>
+                                <div>
+                                    <h3 style="margin: 0; font-size: 20px; font-weight: 600; color: #ffffff;">
+                                        Search Results: "${query}"
+                                    </h3>
+                                    <p style="margin: 4px 0 0 0; font-size: 14px; color: #888;">
+                                        Found ${casts.length} casts
+                                    </p>
+                                </div>
+                            </div>
+                            
+                            <div style="display: flex; flex-direction: column; gap: 16px;">
+                    `;
+                    
+                    casts.forEach((cast, index) => {
+                        const author = cast.author || {};
+                        const username = author.username || 'unknown';
+                        const displayName = author.display_name || username;
+                        const pfpUrl = author.pfp_url || '';
+                        const text = cast.text || '';
+                        const timestamp = cast.timestamp ? new Date(cast.timestamp).toLocaleString() : '';
+                        const reactions = cast.reactions || {};
+                        const likes = reactions.likes_count || 0;
+                        const recasts = reactions.recasts_count || 0;
+                        const replies = cast.replies?.count || 0;
+                        const hash = cast.hash || '';
+                        
+                        html += `
+                            <div style="
+                                background: #0f0f0f;
+                                border: 1px solid #333;
+                                border-radius: 8px;
+                                padding: 16px;
+                                transition: all 0.2s ease;
+                            " onmouseover="this.style.borderColor='#6b7280'" onmouseout="this.style.borderColor='#333'">
+                                <div style="display: flex; align-items: flex-start; gap: 12px;">
+                                    ${pfpUrl ? `
+                                        <img src="${pfpUrl}" style="
+                                            width: 40px;
+                                            height: 40px;
+                                            border-radius: 50%;
+                                            border: 2px solid #333;
+                                        ">
+                                    ` : `
+                                        <div style="
+                                            width: 40px;
+                                            height: 40px;
+                                            border-radius: 50%;
+                                            background: linear-gradient(135deg, #6b7280, #4b5563);
+                                            display: flex;
+                                            align-items: center;
+                                            justify-content: center;
+                                            font-size: 18px;
+                                        ">👤</div>
+                                    `}
+                                    
+                                    <div style="flex: 1; min-width: 0;">
+                                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                                            <span style="font-weight: 600; color: #ffffff;">${displayName}</span>
+                                            <span style="color: #888; font-size: 14px;">@${username}</span>
+                                            ${timestamp ? `<span style="color: #666; font-size: 12px;">• ${timestamp}</span>` : ''}
+                                        </div>
+                                        
+                                        <p style="
+                                            margin: 0 0 12px 0;
+                                            color: #ddd;
+                                            line-height: 1.5;
+                                            word-wrap: break-word;
+                                        ">${text}</p>
+                                        
+                                        <div style="
+                                            display: flex;
+                                            gap: 20px;
+                                            font-size: 13px;
+                                            color: #888;
+                                        ">
+                                            <span>❤️ ${likes}</span>
+                                            <span>🔄 ${recasts}</span>
+                                            <span>💬 ${replies}</span>
+                                            ${hash ? `
+                                                <a href="https://warpcast.com/~/conversations/${hash}" target="_blank" style="
+                                                    color: #8b5cf6;
+                                                    text-decoration: none;
+                                                    margin-left: auto;
+                                                " onmouseover="this.style.color='#a78bfa'" onmouseout="this.style.color='#8b5cf6'">
+                                                    View on Warpcast →
+                                                </a>
+                                            ` : ''}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    
+                    html += `
+                            </div>
+                        </div>
+                    `;
+                    
+                    this.logHtml(html, 'output');
+                } else {
+                    this.log(`No results found for "${query}"`, 'warning');
+                }
+            } catch (error) {
+                this.log('Failed to search Farcaster: ' + error.message, 'error');
+            }
+        };
+
+        OmegaMinerTerminal.prototype.getFarcasterUser = async function(username) {
+            try {
+                this.log(`Loading profile for @${username}...`, 'info');
+                
+                const response = await fetch(`https://api.neynar.com/v2/farcaster/user/by_username?username=${username}`, {
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`API returned ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if (data && data.user) {
+                    const user = data.user;
+                    const pfpUrl = user.pfp_url || '';
+                    const displayName = user.display_name || username;
+                    const bio = user.profile?.bio?.text || 'No bio';
+                    const followers = user.follower_count || 0;
+                    const following = user.following_count || 0;
+                    const fid = user.fid || '';
+                    
+                    let html = `
+                        <div style="
+                            background: #1a1a1a;
+                            border: 1px solid #333;
+                            border-radius: 12px;
+                            padding: 24px;
+                            margin: 16px 0;
+                        ">
+                            <div style="display: flex; align-items: flex-start; gap: 20px; margin-bottom: 20px;">
+                                ${pfpUrl ? `
+                                    <img src="${pfpUrl}" style="
+                                        width: 80px;
+                                        height: 80px;
+                                        border-radius: 50%;
+                                        border: 3px solid #8b5cf6;
+                                    ">
+                                ` : `
+                                    <div style="
+                                        width: 80px;
+                                        height: 80px;
+                                        border-radius: 50%;
+                                        background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+                                        display: flex;
+                                        align-items: center;
+                                        justify-content: center;
+                                        font-size: 32px;
+                                    ">👤</div>
+                                `}
+                                
+                                <div style="flex: 1;">
+                                    <h2 style="margin: 0 0 8px 0; font-size: 24px; font-weight: 600; color: #ffffff;">
+                                        ${displayName}
+                                    </h2>
+                                    <p style="margin: 0 0 12px 0; color: #888; font-size: 16px;">
+                                        @${username} • FID: ${fid}
+                                    </p>
+                                    <p style="margin: 0 0 16px 0; color: #ddd; line-height: 1.5;">
+                                        ${bio}
+                                    </p>
+                                    
+                                    <div style="display: flex; gap: 24px; margin-bottom: 16px;">
+                                        <div>
+                                            <span style="font-weight: 600; color: #ffffff; font-size: 18px;">${followers.toLocaleString()}</span>
+                                            <span style="color: #888; font-size: 14px; margin-left: 4px;">Followers</span>
+                                        </div>
+                                        <div>
+                                            <span style="font-weight: 600; color: #ffffff; font-size: 18px;">${following.toLocaleString()}</span>
+                                            <span style="color: #888; font-size: 14px; margin-left: 4px;">Following</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <a href="https://warpcast.com/${username}" target="_blank" style="
+                                        display: inline-block;
+                                        background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+                                        color: white;
+                                        padding: 10px 20px;
+                                        border-radius: 8px;
+                                        text-decoration: none;
+                                        font-weight: 600;
+                                        transition: all 0.2s ease;
+                                    " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                                        View on Warpcast →
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    
+                    this.logHtml(html, 'output');
+                } else {
+                    this.log(`User @${username} not found`, 'error');
+                }
+            } catch (error) {
+                this.log('Failed to fetch user profile: ' + error.message, 'error');
+                this.log(`Make sure the username "${username}" is correct`, 'info');
+            }
+        };
+
+        OmegaMinerTerminal.prototype.getFarcasterChannels = async function() {
+            try {
+                this.log('Loading popular Farcaster channels...', 'info');
+                
+                // Note: Neynar free tier might not have channels endpoint
+                // We'll show a message about popular channels instead
+                
+                let html = `
+                    <div style="
+                        background: #1a1a1a;
+                        border: 1px solid #333;
+                        border-radius: 12px;
+                        padding: 20px;
+                        margin: 16px 0;
+                    ">
+                        <div style="
+                            display: flex;
+                            align-items: center;
+                            margin-bottom: 20px;
+                            padding-bottom: 16px;
+                            border-bottom: 1px solid #333;
+                        ">
+                            <div style="
+                                width: 40px;
+                                height: 40px;
+                                background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+                                border-radius: 10px;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                margin-right: 12px;
+                                font-size: 20px;
+                            ">#️⃣</div>
+                            <div>
+                                <h3 style="margin: 0; font-size: 20px; font-weight: 600; color: #ffffff;">
+                                    Popular Farcaster Channels
+                                </h3>
+                                <p style="margin: 4px 0 0 0; font-size: 14px; color: #888;">
+                                    Discover communities on Farcaster
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 12px;">
+                `;
+                
+                const popularChannels = [
+                    { name: 'base', description: 'Official Base channel', url: 'base' },
+                    { name: 'crypto', description: 'Cryptocurrency discussions', url: 'crypto' },
+                    { name: 'dev', description: 'Developer community', url: 'dev' },
+                    { name: 'nfts', description: 'NFT collectors and creators', url: 'nfts' },
+                    { name: 'founders', description: 'Startup founders', url: 'founders' },
+                    { name: 'memes', description: 'Memes and fun', url: 'memes' },
+                    { name: 'ethereum', description: 'Ethereum ecosystem', url: 'ethereum' },
+                    { name: 'solana', description: 'Solana ecosystem', url: 'solana' },
+                    { name: 'defi', description: 'DeFi protocols and yields', url: 'defi' },
+                    { name: 'art', description: 'Digital art and creativity', url: 'art' }
+                ];
+                
+                popularChannels.forEach(channel => {
+                    html += `
+                        <a href="https://warpcast.com/~/channel/${channel.url}" target="_blank" style="
+                            background: #0f0f0f;
+                            border: 1px solid #333;
+                            border-radius: 8px;
+                            padding: 16px;
+                            text-decoration: none;
+                            transition: all 0.2s ease;
+                            display: block;
+                        " onmouseover="this.style.borderColor='#8b5cf6'; this.style.background='#1a1a1a'" onmouseout="this.style.borderColor='#333'; this.style.background='#0f0f0f'">
+                            <h4 style="
+                                margin: 0 0 8px 0;
+                                color: #8b5cf6;
+                                font-size: 16px;
+                                font-weight: 600;
+                            ">#${channel.name}</h4>
+                            <p style="
+                                margin: 0;
+                                color: #888;
+                                font-size: 13px;
+                                line-height: 1.4;
+                            ">${channel.description}</p>
+                        </a>
+                    `;
+                });
+                
+                html += `
+                        </div>
+                        <div style="
+                            margin-top: 20px;
+                            padding-top: 16px;
+                            border-top: 1px solid #333;
+                            text-align: center;
+                            color: #888;
+                            font-size: 13px;
+                        ">
+                            Click any channel to view on Warpcast
+                        </div>
+                    </div>
+                `;
+                
+                this.logHtml(html, 'output');
+            } catch (error) {
+                this.log('Failed to load channels: ' + error.message, 'error');
+            }
+        };
+
+        console.log('🔧 DEBUG: Polymarket, Perp, and Farcaster functions loaded successfully!');
     } else {
         console.log('🔧 DEBUG: Terminal prototype not found, Polymarket and Perp functions not loaded');
     }
