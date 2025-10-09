@@ -89,6 +89,10 @@ window.OmegaCommands.Basic = {
         terminal.log('  referral leaderboard Top referrers rankings');
         terminal.log('  referral dashboard   Open web dashboard');
         terminal.log('');
+        terminal.log('🏛️ ROME NETWORK:', 'info');
+        terminal.log('  rome help            Show Rome Network commands');
+        terminal.log('  rome token create    Create a new token on Rome Network');
+        terminal.log('');
         terminal.log('🎮 ENTERTAINMENT:', 'info');
         terminal.log('  rickroll, matrix, hack, disco, fortune');
         terminal.log('');

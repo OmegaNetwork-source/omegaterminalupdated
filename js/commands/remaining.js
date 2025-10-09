@@ -451,5 +451,37 @@ window.OmegaCommands.Remaining = {
         } catch (error) {
             terminal.log(`❌ Token creation failed: ${error.message}`, 'error');
         }
+    },
+
+    // Rome Network Commands
+    rome: function(terminal, args) {
+        if (!args || args.length < 2) {
+            terminal.log('=== Rome Network Commands ===', 'info');
+            terminal.log('rome help - Show Rome commands', 'output');
+            terminal.log('rome token create - Create a new token on Rome Network', 'output');
+            return;
+        }
+
+        const subCommand = args[1].toLowerCase();
+
+        switch (subCommand) {
+            case 'help':
+                terminal.log('=== Rome Network Help ===', 'info');
+                terminal.log('rome token create - Creates a new token on Rome Network', 'output');
+                break;
+            
+            case 'token':
+                if (args[2] && args[2].toLowerCase() === 'create') {
+                    terminal.log('🏛️ Rome Token Creation Coming Soon!', 'info');
+                    terminal.log('This will create a token on the Rome Network', 'output');
+                } else {
+                    terminal.log('Usage: rome token create', 'error');
+                }
+                break;
+            
+            default:
+                terminal.log('Unknown rome command. Type "rome help" for available commands.', 'error');
+                break;
+        }
     }
 }; 

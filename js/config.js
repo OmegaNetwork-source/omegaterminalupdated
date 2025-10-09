@@ -332,7 +332,7 @@ window.OmegaConfig = {
         'dexscreener', 'geckoterminal', 'stock', 'alphakey', 'ds search', 'ds trending', 'cg search', 'cg networks', 'alpha', 
         'alpha quote', 'alpha daily', 'alpha overview', 'alpha macro', 'solana connect', 'solana generate', 'solana status', 'solana test', 'solana search', 'solana swap',
         'near generate', 'near connect', 'near swap', 'near tokens', 'eclipse tokens', 'eclipse price', 'eclipse swap', 'eclipse connect', 'eclipse generate', 'eclipse balance',
-        'airdrop', 'hyperliquid', 'polymarket', 'magiceden', 'import', 'create', 'ascii'
+        'airdrop', 'hyperliquid', 'polymarket', 'magiceden', 'import', 'create', 'ascii', 'rome', 'rome help', 'rome token create'
     ],
     
     // Theme Options

@@ -583,6 +583,9 @@ class OmegaMinerTerminal {
                 case 'create':
                     await OmegaCommands.Remaining.createToken(this, args);
                     break;
+                case 'rome':
+                    OmegaCommands.Remaining.rome(this, args);
+                    break;
                 
                 default:
                     // DEBUG: Log when we hit unknown command

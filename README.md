@@ -1,8 +1,8 @@
-# 🚀 Omega Terminal v2.0.1
+# 🚀 Omega Terminal v2.0.2
 
 **The Ultimate Multi-Chain Web3 Terminal** - A powerful, modular terminal interface for Web3 trading, NFTs, DeFi, and more.
 
-![Omega Terminal](https://img.shields.io/badge/version-1.5.9-blue.svg) ![License](https://img.shields.io/badge/license-MIT-green.svg) ![Web3](https://img.shields.io/badge/Web3-Multi--Chain-purple.svg)
+![Omega Terminal](https://img.shields.io/badge/version-2.0.2-blue.svg) ![License](https://img.shields.io/badge/license-MIT-green.svg) ![Web3](https://img.shields.io/badge/Web3-Multi--Chain-purple.svg)
 
 ## ✨ **Live Demo**
 🌐 **[Try Omega Terminal](https://your-username.github.io/omega-terminal)** (Replace with your GitHub Pages URL)
@@ -174,20 +174,29 @@ MIT License - see LICENSE file for details
 - **Documentation**: See README files in the repo
 - **Issues**: Create a GitHub issue for bugs
 
-## 🎉 **Latest Updates (v1.5.9)**
+## 🎉 **Latest Updates (v2.0.2)**
 
 ### ✅ **New Features:**
-- **Command-only Profile System** with API key management
-- **Enhanced NFT Trading** with OpenSea integration
-- **Ultimate DexScreener Analytics** dashboard
-- **Modular Architecture** with clean separation
-- **5 GUI Themes** with seamless switching
+- **Futuristic Dashboard** with real-time Web3 data
+- **PGT Portfolio Tracker** with live API integration
+- **Omega Symbol SVG** branding system
+- **Real-time Network Status** (gas prices, block numbers)
+- **Command Counter** with live tracking
+- **Classic Mode Toggle** for terminal purists
 
 ### 🐛 **Bug Fixes:**
-- **Mobile responsiveness** improvements
-- **API error handling** enhancements  
-- **Theme consistency** across all modes
-- **Performance optimizations**
+- **Command submission** now works correctly
+- **Classic mode** toggle fixed (no more UI disappearing)
+- **Header logos** replaced with proper Omega SVG symbols
+- **Terminal layout** fits properly without text cutoff
+- **Directory organization** - cleaned up project structure
+- **Sidebar buttons** all verified and working
+
+### 🏗️ **Architecture Improvements:**
+- **Organized directory structure** (styles/, js/plugins/, js/pgt/, etc.)
+- **Modular CSS/JS** files for better maintainability
+- **Real-time data integration** for network status
+- **Robust error handling** for API calls
 
 ---
 
