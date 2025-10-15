@@ -295,6 +295,8 @@
             padding: 15px;
             border-radius: 5px;
             border: 1px solid #ffffff;
+            width: 100%;
+            box-sizing: border-box;
         }
 
         .terminal-content {
@@ -465,6 +467,9 @@
             display: flex;
             align-items: center;
             background: transparent;
+            width: 100%;
+            gap: 5px;
+            position: relative;
         }
 
         .input-prompt {
@@ -479,10 +484,20 @@
             border: none;
             color: #ffffff;
             font-family: 'Courier New', monospace;
-            font-size: 16px;
+            font-size: 18px;
             outline: none;
             flex: 1;
             padding: 5px;
+            caret-color: #ffffff;
+            width: 100%;
+            min-width: 0;
+            opacity: 1 !important;
+            line-height: 1.5;
+        }
+        
+        .input-field:focus {
+            caret-color: #ffffff;
+            opacity: 1 !important;
         }
 
         .input-field::placeholder {
@@ -490,7 +505,20 @@
         }
 
         .cursor {
-            display: none !important;
+            display: inline-block !important;
+            color: #00ff00;
+            font-weight: bold;
+            font-size: 18px;
+            margin-left: 2px;
+            animation: cursor-blink 1s infinite;
+            position: absolute;
+            pointer-events: none;
+            z-index: 10;
+        }
+        
+        @keyframes cursor-blink {
+            0%, 49% { opacity: 1; }
+            50%, 100% { opacity: 0; }
         }
 
         @keyframes blink {
@@ -669,6 +697,11 @@
 
         .terminal.light-theme .input-field {
             color: #000000;
+            caret-color: #000000;
+        }
+        
+        .terminal.light-theme .input-field:focus {
+            caret-color: #000000;
         }
 
         .terminal.light-theme .input-field::placeholder {
@@ -676,7 +709,8 @@
         }
 
         .terminal.light-theme .cursor {
-            display: none !important;
+            display: inline-block !important;
+            color: #0066cc;
         }
 
         .terminal.light-theme .mining-status {
@@ -1746,7 +1780,7 @@
                         'help', 'clear', 'connect', 'disconnect', 'balance', 'faucet', 'mine', 'claim', 'status', 'stats',
                         'send', 'ens', 'mixer', 'stress', 'stopstress', 'stressstats', 'theme', 'rickroll', 'fortune', 'matrix', 'hack', 'disco', 'stop', 'tab',
                         'email', 'inbox', 'dexscreener', 'geckoterminal', 'stock', 'alphakey', 'ds', 'cg', 'alpha', 'airdrop',
-                        'solana', 'eclipse', 'hyperliquid', 'polymarket', 'poly', 'events', 'recent', 'magiceden', 'import', 'ambassador', 'profile', 'gui', 'rome', 'kalshi',
+                        'solana', 'eclipse', 'fair', 'fns', 'hyperliquid', 'polymarket', 'poly', 'events', 'recent', 'magiceden', 'import', 'ambassador', 'profile', 'gui', 'rome', 'kalshi',
                         'bot', 'bots', 'py', 'python', 'pgt', 'pgt-demo', 'game', 'play', 'chat', 'near-wallet', 'nearwallet', 'near', 'ref',
                         'defillama', 'llama', 'defi', 'tvl', 'modern', 'nft', 'opensea', 'profile', 'terminal', 'mint'
                     ];
@@ -1792,10 +1826,71 @@
                             }
                         }
                     });
+                    // Position cursor dynamically after text
+                    const cursorElement = document.querySelector('.cursor');
+                    const promptElement = document.querySelector('.input-prompt');
+                    let animationFrameId = null;
+                    
+                    const updateCursorPosition = () => {
+                        if (animationFrameId) {
+                            cancelAnimationFrame(animationFrameId);
+                        }
+                        
+                        animationFrameId = requestAnimationFrame(() => {
+                            if (cursorElement && input && promptElement) {
+                                // Get the actual computed font from the input element
+                                const computedStyle = window.getComputedStyle(input);
+                                const fontSize = computedStyle.fontSize;
+                                const fontFamily = computedStyle.fontFamily;
+                                const fontWeight = computedStyle.fontWeight;
+                                const font = `${fontWeight} ${fontSize} ${fontFamily}`;
+                                
+                                // Get actual text width
+                                const textWidth = this.getTextWidth(input.value, font);
+                                
+                                // Get input field's actual position relative to parent
+                                const inputRect = input.getBoundingClientRect();
+                                const inputLineRect = input.parentElement.getBoundingClientRect();
+                                const promptRect = promptElement.getBoundingClientRect();
+                                
+                                // Calculate position relative to input-line container
+                                const relativeInputLeft = inputRect.left - inputLineRect.left;
+                                
+                                cursorElement.style.position = 'absolute';
+                                cursorElement.style.left = `${relativeInputLeft + textWidth}px`;
+                                cursorElement.style.top = '50%';
+                                cursorElement.style.transform = 'translateY(-50%)';
+                            }
+                        });
+                    };
+                    
+                    // Update on every input event immediately
+                    input.addEventListener('input', () => {
+                        updateCursorPosition();
+                    });
+                    
+                    input.addEventListener('keydown', () => {
+                        updateCursorPosition();
+                    });
+                    
+                    input.addEventListener('keyup', () => {
+                        updateCursorPosition();
+                    });
+                    
+                    // Continuous update for smooth cursor following
+                    setInterval(() => {
+                        if (document.activeElement === input) {
+                            updateCursorPosition();
+                        }
+                    }, 50); // Update every 50ms when input is focused
+                    
+                    setTimeout(updateCursorPosition, 100); // Initial position with delay
+                    
                     input.addEventListener('keypress', async (e) => {
                         if (e.key === 'Enter') {
                             const val = input.value;
                             input.value = '';
+                            updateCursorPosition(); // Reset cursor position after clearing input
                             if (this.awaitingPromptInput && this.promptResolver) {
                                 const value = val.trim();
                                 this.awaitingPromptInput = false;
@@ -1860,6 +1955,11 @@
                     this.awaitingPromptInput = true;
                     this.promptResolver = resolve;
                 });
+            }
+            
+            // Alias for promptTerminalInput
+            async promptUser() {
+                return this.promptTerminalInput();
             }
             
             async checkWalletConnection() {
@@ -4101,6 +4201,1206 @@
                         
                         this.log('Unknown Magic Eden command. Type "magiceden help" for available commands.', 'error');
                         return;
+                    
+                    case 'fns':
+                        // FNS (FAIR Name Service) Commands
+                        const fnsContract = '0x2d06d9568ae99f61f421ea99a46969878986fc2d';
+                        
+                        if (!args[1] || args[1] === 'help') {
+                            let html = `<b>📛 FNS (FAIR Name Service) Commands:</b><br>`;
+                            html += `<ul style='margin-left:1em;'>`;
+                            html += `<li><b>fns register &lt;name&gt;</b> — Register a FNS name to your address</li>`;
+                            html += `<li><b>fns resolve &lt;name&gt;</b> — Get address for a FNS name</li>`;
+                            html += `<li><b>fns lookup &lt;address&gt;</b> — Get FNS name for an address</li>`;
+                            html += `<li><b>fns transfer &lt;name&gt; &lt;address&gt;</b> — Transfer name ownership</li>`;
+                            html += `<li><b>fns search &lt;term&gt;</b> — Search for FNS names</li>`;
+                            html += `<li><b>fns help</b> — Show this help</li>`;
+                            html += `</ul>`;
+                            html += `<br><b>FNS Contract:</b> ${fnsContract}<br>`;
+                            html += `<br>💡 Use FNS names anywhere! Send tokens with: <b>fair send 100 myname.fns</b><br>`;
+                            this.logHtml(html, 'output');
+                            return;
+                        }
+                        
+                        // fns register
+                        if (args[1] === 'register' && args[2]) {
+                            try {
+                                const name = args[2].toLowerCase().replace(/\.fns$/, '');
+                                
+                                if (!window.fairWallet && !this.signer) {
+                                    this.log('❌ No wallet connected. Use: fair generate or fair connect', 'error');
+                                    return;
+                                }
+                                
+                                let signer;
+                                if (window.fairWallet) {
+                                    const provider = new this.ethers.providers.JsonRpcProvider('https://testnet-rpc.fair.cloud');
+                                    signer = new this.ethers.Wallet(window.fairWallet.privateKey, provider);
+                                } else {
+                                    signer = this.signer;
+                                }
+                                
+                                this.log(`📝 Registering FNS name: ${name}...`, 'info');
+                                
+                                const fnsABI = [
+                                    "function register(string memory name) public",
+                                    "function resolve(string memory name) public view returns (address)",
+                                    "function getNameByAddress(address owner) public view returns (string memory)",
+                                    "function transfer(string memory name, address newOwner) public",
+                                    "function isAvailable(string memory name) public view returns (bool)",
+                                    "function getAllNames() public view returns (string[] memory)"
+                                ];
+                                
+                                const fns = new this.ethers.Contract(fnsContract, fnsABI, signer);
+                                
+                                // Check if available
+                                const available = await fns.isAvailable(name);
+                                if (!available) {
+                                    this.log(`❌ Name "${name}" is already registered`, 'error');
+                                    this.log('💡 Try a different name or use: fns search ' + name, 'info');
+                                    return;
+                                }
+                                
+                                const tx = await fns.register(name);
+                                this.log(`⏳ Transaction submitted: ${tx.hash}`, 'info');
+                                this.log('⏳ Waiting for confirmation...', 'info');
+                                
+                                await tx.wait();
+                                
+                                this.log('', 'info');
+                                this.log(`✅ FNS name registered: ${name}.fns`, 'success');
+                                const address = await signer.getAddress();
+                                this.log(`📍 Resolves to: ${address}`, 'output');
+                                this.log('', 'info');
+                                this.log(`🔍 View on explorer: https://testnet-explorer.fair.cloud/tx/${tx.hash}`, 'info');
+                                this.log('💡 Anyone can now send tokens to: ' + name + '.fns', 'info');
+                                
+                                return;
+                            } catch (e) {
+                                this.log('❌ Registration failed: ' + e.message, 'error');
+                                return;
+                            }
+                        }
+                        
+                        // fns resolve
+                        if (args[1] === 'resolve' && args[2]) {
+                            try {
+                                const name = args[2].toLowerCase().replace(/\.fns$/, '');
+                                const provider = new this.ethers.providers.JsonRpcProvider('https://testnet-rpc.fair.cloud');
+                                
+                                const fnsABI = ["function resolve(string memory name) public view returns (address)"];
+                                const fns = new this.ethers.Contract(fnsContract, fnsABI, provider);
+                                
+                                this.log(`🔍 Resolving ${name}.fns...`, 'info');
+                                const address = await fns.resolve(name);
+                                
+                                if (address === '0x0000000000000000000000000000000000000000') {
+                                    this.log(`❌ Name "${name}.fns" not found`, 'error');
+                                    this.log('💡 Register it with: fns register ' + name, 'info');
+                                } else {
+                                    this.log('', 'info');
+                                    this.log(`✅ ${name}.fns resolves to:`, 'success');
+                                    this.log(`📍 ${address}`, 'output');
+                                    this.log('', 'info');
+                                }
+                                
+                                return;
+                            } catch (e) {
+                                this.log('❌ Failed to resolve: ' + e.message, 'error');
+                                return;
+                            }
+                        }
+                        
+                        // fns lookup (reverse lookup)
+                        if (args[1] === 'lookup' && args[2]) {
+                            try {
+                                const address = args[2];
+                                const provider = new this.ethers.providers.JsonRpcProvider('https://testnet-rpc.fair.cloud');
+                                
+                                const fnsABI = ["function getNameByAddress(address owner) public view returns (string memory)"];
+                                const fns = new this.ethers.Contract(fnsContract, fnsABI, provider);
+                                
+                                this.log(`🔍 Looking up address...`, 'info');
+                                const name = await fns.getNameByAddress(address);
+                                
+                                if (!name || name === '') {
+                                    this.log(`❌ No FNS name found for ${address}`, 'info');
+                                } else {
+                                    this.log('', 'info');
+                                    this.log(`✅ Primary name: ${name}.fns`, 'success');
+                                    this.log(`📍 Address: ${address}`, 'output');
+                                    this.log('', 'info');
+                                }
+                                
+                                return;
+                            } catch (e) {
+                                this.log('❌ Failed to lookup: ' + e.message, 'error');
+                                return;
+                            }
+                        }
+                        
+                        // fns transfer
+                        if (args[1] === 'transfer' && args[2] && args[3]) {
+                            try {
+                                const name = args[2].toLowerCase().replace(/\.fns$/, '');
+                                const newOwner = args[3];
+                                
+                                if (!window.fairWallet && !this.signer) {
+                                    this.log('❌ No wallet connected. Use: fair generate or fair connect', 'error');
+                                    return;
+                                }
+                                
+                                let signer;
+                                if (window.fairWallet) {
+                                    const provider = new this.ethers.providers.JsonRpcProvider('https://testnet-rpc.fair.cloud');
+                                    signer = new this.ethers.Wallet(window.fairWallet.privateKey, provider);
+                                } else {
+                                    signer = this.signer;
+                                }
+                                
+                                this.log(`📤 Transferring ${name}.fns to ${newOwner}...`, 'info');
+                                
+                                const fnsABI = ["function transfer(string memory name, address newOwner) public"];
+                                const fns = new this.ethers.Contract(fnsContract, fnsABI, signer);
+                                
+                                const tx = await fns.transfer(name, newOwner);
+                                this.log(`⏳ Transaction submitted: ${tx.hash}`, 'info');
+                                await tx.wait();
+                                
+                                this.log('', 'info');
+                                this.log(`✅ ${name}.fns transferred to ${newOwner}`, 'success');
+                                this.log(`🔍 View on explorer: https://testnet-explorer.fair.cloud/tx/${tx.hash}`, 'info');
+                                
+                                return;
+                            } catch (e) {
+                                this.log('❌ Transfer failed: ' + e.message, 'error');
+                                if (e.message.includes('Not the owner')) {
+                                    this.log('💡 You must own this name to transfer it', 'info');
+                                }
+                                return;
+                            }
+                        }
+                        
+                        // fns search
+                        if (args[1] === 'search' && args[2]) {
+                            try {
+                                const searchTerm = args[2].toLowerCase().replace(/\.fns$/, '');
+                                const provider = new this.ethers.providers.JsonRpcProvider('https://testnet-rpc.fair.cloud');
+                                
+                                const fnsABI = ["function getAllNames() public view returns (string[] memory)"];
+                                const fns = new this.ethers.Contract(fnsContract, fnsABI, provider);
+                                
+                                this.log(`🔍 Searching for names containing "${searchTerm}"...`, 'info');
+                                const allNames = await fns.getAllNames();
+                                
+                                const matches = allNames.filter(name => name.toLowerCase().includes(searchTerm));
+                                
+                                if (matches.length === 0) {
+                                    this.log(`❌ No names found containing "${searchTerm}"`, 'info');
+                                    this.log('💡 Register it with: fns register ' + searchTerm, 'info');
+                                } else {
+                                    this.log('', 'info');
+                                    this.log(`✅ Found ${matches.length} name(s):`, 'success');
+                                    this.log('', 'info');
+                                    matches.slice(0, 20).forEach((name, i) => {
+                                        this.log(`  ${i + 1}. ${name}.fns`, 'output');
+                                    });
+                                    if (matches.length > 20) {
+                                        this.log(`  ... and ${matches.length - 20} more`, 'info');
+                                    }
+                                    this.log('', 'info');
+                                }
+                                
+                                return;
+                            } catch (e) {
+                                this.log('❌ Search failed: ' + e.message, 'error');
+                                return;
+                            }
+                        }
+                        
+                        this.log('❌ Unknown FNS command. Type "fns help" for available commands.', 'error');
+                        return;
+                    
+                    case 'fair':
+                        if (args[1] === 'help' || args[1] === '-help' || !args[1]) {
+                            let html = `<b>🔗 FAIR Blockchain Commands:</b><br>`;
+                            html += `<ul style='margin-left:1em;'>`;
+                            html += `<li><b>fair generate</b> — Generate a new FAIR wallet</li>`;
+                            html += `<li><b>fair connect</b> — Connect MetaMask to FAIR network</li>`;
+                            html += `<li><b>fair wallet</b> — Show current FAIR wallet details</li>`;
+                            html += `<li><b>fair balance</b> — Check FAIR balance</li>`;
+                            html += `<li><b>fair faucet</b> — Get testnet FAIR tokens (auto-copies address)</li>`;
+                            html += `<li><b>fair send &lt;amount&gt; &lt;address|fns&gt;</b> — Send FAIR tokens</li>`;
+                            html += `<li><b>fair send-token &lt;token&gt; &lt;amount&gt; &lt;address|fns&gt;</b> — Send ERC20 tokens</li>`;
+                            html += `<li><b>fair create-token</b> — Create a custom ERC20 token (interactive)</li>`;
+                            html += `<li><b>fair my-tokens</b> — List your created tokens</li>`;
+                            html += `<li><b>fair token-info &lt;address&gt;</b> — Get token details</li>`;
+                            html += `<li><b>fair mint-nft</b> — Mint a FAIR NFT (interactive)</li>`;
+                            html += `<li><b>fair my-nfts</b> — View your NFTs</li>`;
+                            html += `<li><b>fair nft-info &lt;tokenId&gt;</b> — Get NFT details</li>`;
+                            html += `<li><b>fair transfer-nft &lt;tokenId&gt; &lt;address|fns&gt;</b> — Transfer NFT</li>`;
+                            html += `<li><b>fair help</b> — Show this help</li>`;
+                            html += `</ul>`;
+                            html += `<br><b>Network Info:</b><br>`;
+                            html += `Chain ID: 935<br>`;
+                            html += `RPC: https://testnet-rpc.fair.cloud<br>`;
+                            html += `Explorer: https://testnet-explorer.fair.cloud<br>`;
+                            html += `Token Factory: 0x30a399891f44c2ee07134e248d0393e53286f5f4<br>`;
+                            html += `NFT Contract: 0xe133cb4df4834c7e0b4aea5181ab40477c9fa30e<br>`;
+                            html += `FNS Contract: 0x2d06d9568ae99f61f421ea99a46969878986fc2d<br>`;
+                            html += `<br>💡 Use <b>fair generate</b> to create a new wallet or <b>fair connect</b> to use MetaMask<br>`;
+                            html += `💡 Get testnet tokens with <b>fair faucet</b> (copies your address automatically!)<br>`;
+                            html += `💡 Register FNS names with <b>fns register myname</b> - then use <b>fair send 10 myname.fns</b>!<br>`;
+                            html += `💡 Create your own token with <b>fair create-token</b> or mint NFTs with <b>fair mint-nft</b>!<br>`;
+                            this.logHtml(html, 'output');
+                            return;
+                        }
+                        
+                        // fair generate
+                        if (args[1] === 'generate' || args[1] === 'gen') {
+                            try {
+                                const wallet = this.ethers.Wallet.createRandom();
+                                
+                                // Store in session
+                                window.fairWallet = {
+                                    address: wallet.address,
+                                    privateKey: wallet.privateKey,
+                                    wallet: wallet,
+                                    network: 'FAIR Testnet',
+                                    chainId: 935,
+                                    rpcUrl: 'https://testnet-rpc.fair.cloud'
+                                };
+                                
+                                let html = `<b>✅ New FAIR Wallet Generated!</b><br>`;
+                                html += `<span style='color:#ff3333'>⚠️ SECURITY WARNING: Save your private key securely. Anyone with this key can access your funds!</span><br><br>`;
+                                html += `<b>Address:</b> <span class='copyable' onclick="navigator.clipboard.writeText('${wallet.address}').then(() => window.terminal.log('✅ Address copied!', 'success'))">${wallet.address}</span><br>`;
+                                html += `<b>Private Key:</b> <span class='copyable' onclick="navigator.clipboard.writeText('${wallet.privateKey}').then(() => window.terminal.log('✅ Private key copied!', 'success'))">${wallet.privateKey}</span><br>`;
+                                html += `<b>Network:</b> FAIR Testnet Beta<br>`;
+                                html += `<b>Chain ID:</b> 935<br>`;
+                                html += `<b>RPC URL:</b> https://testnet-rpc.fair.cloud<br>`;
+                                html += `<b>Explorer:</b> <a href="https://testnet-explorer.fair.cloud" target="_blank" style="color:#00ff80;">testnet-explorer.fair.cloud</a><br>`;
+                                html += `<br><button onclick="(() => { const blob = new Blob(['Address: ${wallet.address}\\nPrivate Key: ${wallet.privateKey}\\nNetwork: FAIR Testnet Beta\\nChain ID: 935\\nRPC URL: https://testnet-rpc.fair.cloud'], {type: 'text/plain'}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'fair-wallet.txt'; a.click(); setTimeout(() => URL.revokeObjectURL(url), 1000); window.terminal.log('✅ Wallet info downloaded!', 'success'); })()">💾 Download Wallet Info</button><br>`;
+                                html += `<br>💡 Get testnet FAIR from the <a href="https://testnet-faucet.fair.cloud" target="_blank" style="color:#00ff80;">FAIR Faucet</a><br>`;
+                                html += `💡 Use <b>fair balance</b> to check your balance<br>`;
+                                this.logHtml(html, 'output');
+                                this.log('', 'info');
+                                return;
+                            } catch (e) {
+                                this.log('❌ Failed to generate FAIR wallet: ' + e.message, 'error');
+                                return;
+                            }
+                        }
+                        
+                        // fair wallet
+                        if (args[1] === 'wallet' || args[1] === 'info') {
+                            if (window.fairWallet) {
+                                let html = `<b>Current FAIR Wallet:</b><br>`;
+                                html += `<b>Address:</b> <span class='copyable' onclick="navigator.clipboard.writeText('${window.fairWallet.address}')">${window.fairWallet.address}</span><br>`;
+                                html += `<b>Private Key:</b> <span class='copyable' onclick="navigator.clipboard.writeText('${window.fairWallet.privateKey}')">${window.fairWallet.privateKey}</span><br>`;
+                                html += `<b>Network:</b> ${window.fairWallet.network}<br>`;
+                                html += `<b>Chain ID:</b> ${window.fairWallet.chainId}<br>`;
+                                html += `<b>RPC URL:</b> ${window.fairWallet.rpcUrl}<br>`;
+                                this.logHtml(html, 'output');
+                            } else if (this.signer) {
+                                const address = await this.signer.getAddress();
+                                this.log('Connected with MetaMask:', 'info');
+                                this.log(`Address: ${address}`, 'output');
+                                this.log('Network: FAIR Testnet Beta', 'output');
+                            } else {
+                                this.log('No FAIR wallet generated or connected. Use: fair generate', 'warning');
+                            }
+                            return;
+                        }
+                        
+                        // fair balance
+                        if (args[1] === 'balance' || args[1] === 'bal') {
+                            try {
+                                let address;
+                                let provider;
+                                
+                                if (window.fairWallet) {
+                                    address = window.fairWallet.address;
+                                    provider = new this.ethers.providers.JsonRpcProvider('https://testnet-rpc.fair.cloud');
+                                } else if (this.signer) {
+                                    address = await this.signer.getAddress();
+                                    provider = this.provider;
+                                } else {
+                                    this.log('No FAIR wallet found. Use: fair generate', 'warning');
+                                    return;
+                                }
+                                
+                                this.log('🔍 Checking FAIR balance...', 'info');
+                                const balance = await provider.getBalance(address);
+                                const fairBalance = this.ethers.utils.formatEther(balance);
+                                
+                                this.log('', 'info');
+                                this.log(`💰 FAIR Balance: ${fairBalance} FAIR`, 'success');
+                                this.log(`📍 Address: ${address}`, 'output');
+                                this.log('', 'info');
+                                return;
+                            } catch (e) {
+                                this.log('❌ Failed to check balance: ' + e.message, 'error');
+                                return;
+                            }
+                        }
+                        
+                        // fair create-token (Interactive Flow)
+                        if (args[1] === 'create-token' || args[1] === 'create') {
+                            try {
+                                // Check wallet first
+                                if (!window.fairWallet && !this.signer) {
+                                    this.log('❌ No wallet found. Use: fair generate or fair connect', 'error');
+                                    return;
+                                }
+                                
+                                this.log('🏭 FAIR Token Creator', 'success');
+                                this.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'info');
+                                this.log('', 'info');
+                                
+                                // Prompt for token name
+                                this.log('Enter token name (e.g., "My Fair Token"):', 'info');
+                                const name = await this.promptUser();
+                                if (!name || !name.trim()) {
+                                    this.log('❌ Token name is required', 'error');
+                                    return;
+                                }
+                                
+                                // Prompt for symbol
+                                this.log('Enter token symbol (e.g., "MFT"):', 'info');
+                                const symbol = await this.promptUser();
+                                if (!symbol || !symbol.trim()) {
+                                    this.log('❌ Token symbol is required', 'error');
+                                    return;
+                                }
+                                
+                                // Prompt for supply
+                                this.log('Enter total supply (e.g., 1000000):', 'info');
+                                const supply = await this.promptUser();
+                                if (!supply || isNaN(supply)) {
+                                    this.log('❌ Invalid supply. Must be a number', 'error');
+                                    return;
+                                }
+                                
+                                // Prompt for burnable
+                                this.log('Enable burning? (yes/no) - Allows holders to burn tokens:', 'info');
+                                const burnableInput = (await this.promptUser()).toLowerCase();
+                                const burnable = burnableInput === 'yes' || burnableInput === 'y';
+                                
+                                // Prompt for mintable
+                                this.log('Enable minting? (yes/no) - Allows owner to mint new tokens:', 'info');
+                                const mintableInput = (await this.promptUser()).toLowerCase();
+                                const mintable = mintableInput === 'yes' || mintableInput === 'y';
+                                
+                                // Prompt for pausable
+                                this.log('Enable pausing? (yes/no) - Allows owner to pause transfers:', 'info');
+                                const pausableInput = (await this.promptUser()).toLowerCase();
+                                const pausable = pausableInput === 'yes' || pausableInput === 'y';
+                                
+                                this.log('', 'info');
+                                this.log('📋 Token Configuration:', 'success');
+                                this.log(`  Name: ${name}`, 'output');
+                                this.log(`  Symbol: ${symbol}`, 'output');
+                                this.log(`  Supply: ${supply}`, 'output');
+                                this.log(`  Burnable: ${burnable ? '✅' : '❌'}`, 'output');
+                                this.log(`  Mintable: ${mintable ? '✅' : '❌'}`, 'output');
+                                this.log(`  Pausable: ${pausable ? '✅' : '❌'}`, 'output');
+                                this.log('', 'info');
+                                
+                                // Get signer (MetaMask or generated wallet)
+                                let signer;
+                                let provider;
+                                if (window.fairWallet) {
+                                    provider = new this.ethers.providers.JsonRpcProvider('https://testnet-rpc.fair.cloud');
+                                    signer = new this.ethers.Wallet(window.fairWallet.privateKey, provider);
+                                } else if (this.signer) {
+                                    signer = this.signer;
+                                }
+                                
+                                this.log(`🏭 Creating token "${name}" (${symbol})...`, 'info');
+                                
+                                // Advanced FAIR Token Factory ABI
+                                const factoryABI = [
+                                    "function createToken(string memory _name, string memory _symbol, uint256 _supply, bool _burnable, bool _mintable, bool _pausable) public returns (address)",
+                                    "function getUserTokens(address _user) public view returns (address[] memory)",
+                                    "function getTotalTokens() public view returns (uint256)",
+                                    "event TokenCreated(address indexed tokenAddress, address indexed owner, string name, string symbol, uint256 totalSupply, bool burnable, bool mintable, bool pausable)"
+                                ];
+                                
+                                const factoryAddress = '0x30a399891f44c2ee07134e248d0393e53286f5f4';
+                                const factory = new this.ethers.Contract(factoryAddress, factoryABI, signer);
+                                
+                                const tx = await factory.createToken(name.trim(), symbol.trim(), supply, burnable, mintable, pausable);
+                                this.log(`⏳ Transaction submitted: ${tx.hash}`, 'info');
+                                this.log('⏳ Waiting for confirmation...', 'info');
+                                
+                                const receipt = await tx.wait();
+                                
+                                // Find TokenCreated event in logs
+                                const tokenCreatedEvent = receipt.logs.find(log => {
+                                    try {
+                                        const parsed = factory.interface.parseLog(log);
+                                        return parsed.name === 'TokenCreated';
+                                    } catch (e) {
+                                        return false;
+                                    }
+                                });
+                                
+                                if (tokenCreatedEvent) {
+                                    const parsed = factory.interface.parseLog(tokenCreatedEvent);
+                                    const tokenAddress = parsed.args.tokenAddress;
+                                    
+                                    let html = `<b>✅ Token Created Successfully!</b><br><br>`;
+                                    html += `<b>Token Name:</b> ${name}<br>`;
+                                    html += `<b>Symbol:</b> ${symbol}<br>`;
+                                    html += `<b>Total Supply:</b> ${supply}<br>`;
+                                    html += `<b>Features:</b> ${burnable ? '🔥 Burnable ' : ''}${mintable ? '⚡ Mintable ' : ''}${pausable ? '⏸️ Pausable' : ''}${!burnable && !mintable && !pausable ? 'Standard ERC20' : ''}<br>`;
+                                    html += `<b>Token Address:</b> <span class='copyable' onclick="navigator.clipboard.writeText('${tokenAddress}').then(() => window.terminal.log('✅ Address copied!', 'success'))">${tokenAddress}</span><br>`;
+                                    html += `<b>Transaction:</b> <a href="https://testnet-explorer.fair.cloud/tx/${tx.hash}" target="_blank" style="color:#00ff80;">${tx.hash.substring(0, 20)}...</a><br>`;
+                                    html += `<br>💡 Use <b>fair my-tokens</b> to see all your tokens<br>`;
+                                    html += `💡 View on explorer: <a href="https://testnet-explorer.fair.cloud/address/${tokenAddress}" target="_blank" style="color:#00ff80;">View Token</a><br>`;
+                                    this.logHtml(html, 'output');
+                                } else {
+                                    this.log('✅ Token created successfully!', 'success');
+                                    this.log(`Transaction: ${tx.hash}`, 'output');
+                                }
+                                
+                                return;
+                            } catch (e) {
+                                this.log('❌ Failed to create token: ' + e.message, 'error');
+                                if (e.reason) this.log(`Reason: ${e.reason}`, 'error');
+                                return;
+                            }
+                        }
+                        
+                        // fair my-tokens
+                        if (args[1] === 'my-tokens' || args[1] === 'tokens') {
+                            try {
+                                let address;
+                                let provider;
+                                
+                                if (window.fairWallet) {
+                                    address = window.fairWallet.address;
+                                    provider = new this.ethers.providers.JsonRpcProvider('https://testnet-rpc.fair.cloud');
+                                } else if (this.signer) {
+                                    address = await this.signer.getAddress();
+                                    provider = this.provider;
+                                } else {
+                                    this.log('❌ No wallet found. Use: fair generate or fair connect', 'error');
+                                    return;
+                                }
+                                
+                                this.log('🔍 Fetching your tokens...', 'info');
+                                
+                                const factoryABI = [
+                                    "function getUserTokens(address _user) public view returns (address[] memory)"
+                                ];
+                                
+                                const tokenABI = [
+                                    "function name() public view returns (string memory)",
+                                    "function symbol() public view returns (string memory)",
+                                    "function totalSupply() public view returns (uint256)",
+                                    "function decimals() public view returns (uint8)"
+                                ];
+                                
+                                const factoryAddress = '0x30a399891f44c2ee07134e248d0393e53286f5f4';
+                                const factory = new this.ethers.Contract(factoryAddress, factoryABI, provider);
+                                
+                                const tokens = await factory.getUserTokens(address);
+                                
+                                if (tokens.length === 0) {
+                                    this.log('📋 You haven\'t created any tokens yet.', 'info');
+                                    this.log('💡 Create one with: fair create-token "My Token" MTK 1000000', 'info');
+                                    return;
+                                }
+                                
+                                this.log('', 'info');
+                                this.log(`📋 Your Tokens (${tokens.length}):`, 'success');
+                                this.log('', 'info');
+                                
+                                for (let i = 0; i < tokens.length; i++) {
+                                    const tokenContract = new this.ethers.Contract(tokens[i], tokenABI, provider);
+                                    try {
+                                        const name = await tokenContract.name();
+                                        const symbol = await tokenContract.symbol();
+                                        const totalSupply = await tokenContract.totalSupply();
+                                        const decimals = await tokenContract.decimals();
+                                        const formattedSupply = this.ethers.utils.formatUnits(totalSupply, decimals);
+                                        
+                                        let html = `<b>${i + 1}. ${name} (${symbol})</b><br>`;
+                                        html += `Address: <span class='copyable' onclick="navigator.clipboard.writeText('${tokens[i]}')">${tokens[i]}</span><br>`;
+                                        html += `Supply: ${formattedSupply}<br>`;
+                                        html += `Explorer: <a href="https://testnet-explorer.fair.cloud/address/${tokens[i]}" target="_blank" style="color:#00ff80;">View</a><br>`;
+                                        this.logHtml(html, 'output');
+                                    } catch (e) {
+                                        this.log(`${i + 1}. ${tokens[i]}`, 'output');
+                                    }
+                                }
+                                
+                                return;
+                            } catch (e) {
+                                this.log('❌ Failed to fetch tokens: ' + e.message, 'error');
+                                return;
+                            }
+                        }
+                        
+                        // fair token-info
+                        if (args[1] === 'token-info' || args[1] === 'info-token') {
+                            if (!args[2]) {
+                                this.log('Usage: fair token-info <token-address>', 'info');
+                                return;
+                            }
+                            
+                            try {
+                                const tokenAddress = args[2];
+                                const provider = new this.ethers.providers.JsonRpcProvider('https://testnet-rpc.fair.cloud');
+                                
+                                this.log(`🔍 Getting token info for ${tokenAddress}...`, 'info');
+                                
+                                const tokenABI = [
+                                    "function name() public view returns (string memory)",
+                                    "function symbol() public view returns (string memory)",
+                                    "function totalSupply() public view returns (uint256)",
+                                    "function decimals() public view returns (uint8)",
+                                    "function owner() public view returns (address)",
+                                    "function balanceOf(address) public view returns (uint256)"
+                                ];
+                                
+                                const token = new this.ethers.Contract(tokenAddress, tokenABI, provider);
+                                
+                                const name = await token.name();
+                                const symbol = await token.symbol();
+                                const totalSupply = await token.totalSupply();
+                                const decimals = await token.decimals();
+                                const owner = await token.owner();
+                                const formattedSupply = this.ethers.utils.formatUnits(totalSupply, decimals);
+                                
+                                this.log('', 'info');
+                                let html = `<b>📊 Token Information:</b><br><br>`;
+                                html += `<b>Name:</b> ${name}<br>`;
+                                html += `<b>Symbol:</b> ${symbol}<br>`;
+                                html += `<b>Decimals:</b> ${decimals}<br>`;
+                                html += `<b>Total Supply:</b> ${formattedSupply}<br>`;
+                                html += `<b>Owner:</b> <span class='copyable' onclick="navigator.clipboard.writeText('${owner}')">${owner}</span><br>`;
+                                html += `<b>Address:</b> <span class='copyable' onclick="navigator.clipboard.writeText('${tokenAddress}')">${tokenAddress}</span><br>`;
+                                html += `<br><b>Explorer:</b> <a href="https://testnet-explorer.fair.cloud/address/${tokenAddress}" target="_blank" style="color:#00ff80;">View on FAIR Explorer</a><br>`;
+                                this.logHtml(html, 'output');
+                                
+                                return;
+                            } catch (e) {
+                                this.log('❌ Failed to get token info: ' + e.message, 'error');
+                                return;
+                            }
+                        }
+                        
+                        // fair send (send FAIR tokens)
+                        if (args[1] === 'send' && args[2] && args[3]) {
+                            try {
+                                const amount = args[2];
+                                let recipientInput = args[3];
+                                
+                                if (!window.fairWallet && !this.signer) {
+                                    this.log('❌ No wallet connected. Use: fair generate or fair connect', 'error');
+                                    return;
+                                }
+                                
+                                let signer;
+                                let provider;
+                                if (window.fairWallet) {
+                                    provider = new this.ethers.providers.JsonRpcProvider('https://testnet-rpc.fair.cloud');
+                                    signer = new this.ethers.Wallet(window.fairWallet.privateKey, provider);
+                                } else {
+                                    signer = this.signer;
+                                    provider = this.provider;
+                                }
+                                
+                                // Check if recipient is FNS name
+                                let recipient = recipientInput;
+                                let fnsName = null;
+                                if (recipientInput.endsWith('.fns') || !recipientInput.startsWith('0x')) {
+                                    fnsName = recipientInput.replace(/\.fns$/, '');
+                                    this.log(`🔍 Resolving FNS name: ${fnsName}.fns...`, 'info');
+                                    
+                                    const fnsABI = ["function resolve(string memory name) public view returns (address)"];
+                                    const fns = new this.ethers.Contract('0x2d06d9568ae99f61f421ea99a46969878986fc2d', fnsABI, provider);
+                                    recipient = await fns.resolve(fnsName);
+                                    
+                                    if (recipient === '0x0000000000000000000000000000000000000000') {
+                                        this.log(`❌ FNS name "${fnsName}.fns" not found`, 'error');
+                                        this.log('💡 Use: fns search ' + fnsName, 'info');
+                                        return;
+                                    }
+                                    this.log(`✅ Resolved to: ${recipient}`, 'success');
+                                }
+                                
+                                this.log(`💸 Sending ${amount} FAIR to ${fnsName ? fnsName + '.fns' : recipient}...`, 'info');
+                                
+                                const tx = await signer.sendTransaction({
+                                    to: recipient,
+                                    value: this.ethers.utils.parseEther(amount)
+                                });
+                                
+                                this.log(`⏳ Transaction submitted: ${tx.hash}`, 'info');
+                                this.log('⏳ Waiting for confirmation...', 'info');
+                                
+                                await tx.wait();
+                                
+                                this.log('', 'info');
+                                this.log(`✅ Sent ${amount} FAIR!`, 'success');
+                                this.log(`📍 To: ${fnsName ? fnsName + '.fns (' + recipient + ')' : recipient}`, 'output');
+                                this.log(`🔍 View on explorer: https://testnet-explorer.fair.cloud/tx/${tx.hash}`, 'info');
+                                this.log('', 'info');
+                                
+                                return;
+                            } catch (e) {
+                                this.log('❌ Failed to send: ' + e.message, 'error');
+                                if (e.message.includes('insufficient funds')) {
+                                    this.log('💡 Get tokens with: fair faucet', 'info');
+                                }
+                                return;
+                            }
+                        }
+                        
+                        // fair send-token (send ERC20 tokens)
+                        if (args[1] === 'send-token' && args[2] && args[3] && args[4]) {
+                            try {
+                                const tokenAddress = args[2];
+                                const amount = args[3];
+                                let recipientInput = args[4];
+                                
+                                if (!window.fairWallet && !this.signer) {
+                                    this.log('❌ No wallet connected. Use: fair generate or fair connect', 'error');
+                                    return;
+                                }
+                                
+                                let signer;
+                                let provider;
+                                if (window.fairWallet) {
+                                    provider = new this.ethers.providers.JsonRpcProvider('https://testnet-rpc.fair.cloud');
+                                    signer = new this.ethers.Wallet(window.fairWallet.privateKey, provider);
+                                } else {
+                                    signer = this.signer;
+                                    provider = this.provider;
+                                }
+                                
+                                // Check if recipient is FNS name
+                                let recipient = recipientInput;
+                                let fnsName = null;
+                                if (recipientInput.endsWith('.fns') || !recipientInput.startsWith('0x')) {
+                                    fnsName = recipientInput.replace(/\.fns$/, '');
+                                    this.log(`🔍 Resolving FNS name: ${fnsName}.fns...`, 'info');
+                                    
+                                    const fnsABI = ["function resolve(string memory name) public view returns (address)"];
+                                    const fns = new this.ethers.Contract('0x2d06d9568ae99f61f421ea99a46969878986fc2d', fnsABI, provider);
+                                    recipient = await fns.resolve(fnsName);
+                                    
+                                    if (recipient === '0x0000000000000000000000000000000000000000') {
+                                        this.log(`❌ FNS name "${fnsName}.fns" not found`, 'error');
+                                        return;
+                                    }
+                                    this.log(`✅ Resolved to: ${recipient}`, 'success');
+                                }
+                                
+                                // Get token info
+                                const tokenABI = [
+                                    "function name() public view returns (string memory)",
+                                    "function symbol() public view returns (string memory)",
+                                    "function decimals() public view returns (uint8)",
+                                    "function transfer(address to, uint256 amount) public returns (bool)"
+                                ];
+                                
+                                const token = new this.ethers.Contract(tokenAddress, tokenABI, signer);
+                                const symbol = await token.symbol();
+                                const decimals = await token.decimals();
+                                
+                                this.log(`💸 Sending ${amount} ${symbol} to ${fnsName ? fnsName + '.fns' : recipient}...`, 'info');
+                                
+                                const tx = await token.transfer(recipient, this.ethers.utils.parseUnits(amount, decimals));
+                                this.log(`⏳ Transaction submitted: ${tx.hash}`, 'info');
+                                this.log('⏳ Waiting for confirmation...', 'info');
+                                
+                                await tx.wait();
+                                
+                                this.log('', 'info');
+                                this.log(`✅ Sent ${amount} ${symbol}!`, 'success');
+                                this.log(`📍 To: ${fnsName ? fnsName + '.fns (' + recipient + ')' : recipient}`, 'output');
+                                this.log(`🔍 View on explorer: https://testnet-explorer.fair.cloud/tx/${tx.hash}`, 'info');
+                                this.log('', 'info');
+                                
+                                return;
+                            } catch (e) {
+                                this.log('❌ Failed to send token: ' + e.message, 'error');
+                                return;
+                            }
+                        }
+                        
+                        // fair faucet
+                        if (args[1] === 'faucet') {
+                            try {
+                                let address;
+                                if (window.fairWallet) {
+                                    address = window.fairWallet.address;
+                                } else if (this.signer) {
+                                    address = await this.signer.getAddress();
+                                } else {
+                                    this.log('❌ No wallet found. Use: fair generate or fair connect', 'error');
+                                    this.log('💡 Or you can visit the faucet manually: https://testnet-faucet.fair.cloud', 'info');
+                                    return;
+                                }
+                                
+                                // Copy address to clipboard
+                                await navigator.clipboard.writeText(address);
+                                
+                                // Open faucet in new window
+                                window.open('https://testnet-faucet.fair.cloud', '_blank', 'width=800,height=900');
+                                
+                                this.log('', 'info');
+                                this.log('🚰 Opening FAIR Faucet...', 'success');
+                                this.log('', 'info');
+                                this.log('✅ Your address has been copied to clipboard!', 'success');
+                                this.log(`📍 Address: ${address}`, 'output');
+                                this.log('', 'info');
+                                this.log('📋 Instructions:', 'info');
+                                this.log('  1. Paste your address (Ctrl+V) in the faucet', 'output');
+                                this.log('  2. Click "Claim"', 'output');
+                                this.log('  3. Wait 24 hours between claims', 'output');
+                                this.log('  4. Use "fair balance" to check your balance', 'output');
+                                this.log('', 'info');
+                                
+                                return;
+                            } catch (e) {
+                                this.log('❌ Failed to open faucet: ' + e.message, 'error');
+                                this.log('💡 Visit manually: https://testnet-faucet.fair.cloud', 'info');
+                                return;
+                            }
+                        }
+                        
+                        // fair connect
+                        if (args[1] === 'connect') {
+                            try {
+                                if (!window.ethereum) {
+                                    this.log('❌ MetaMask not detected. Please install MetaMask.', 'error');
+                                    return;
+                                }
+                                
+                                this.log('🔗 Connecting to FAIR network...', 'info');
+                                
+                                // Try to switch to FAIR network
+                                try {
+                                    await window.ethereum.request({
+                                        method: 'wallet_switchEthereumChain',
+                                        params: [{ chainId: '0x3A7' }], // 935 in hex
+                                    });
+                                } catch (switchError) {
+                                    // If network doesn't exist, add it
+                                    if (switchError.code === 4902) {
+                                        await window.ethereum.request({
+                                            method: 'wallet_addEthereumChain',
+                                            params: [{
+                                                chainId: '0x3A7',
+                                                chainName: 'FAIR Testnet Beta',
+                                                nativeCurrency: {
+                                                    name: 'FAIR',
+                                                    symbol: 'FAIR',
+                                                    decimals: 18
+                                                },
+                                                rpcUrls: ['https://testnet-rpc.fair.cloud'],
+                                                blockExplorerUrls: ['https://testnet-explorer.fair.cloud']
+                                            }]
+                                        });
+                                    } else {
+                                        throw switchError;
+                                    }
+                                }
+                                
+                                // Connect wallet
+                                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                                this.provider = new this.ethers.providers.Web3Provider(window.ethereum);
+                                this.signer = this.provider.getSigner();
+                                const address = accounts[0];
+                                
+                                this.log('', 'info');
+                                this.log('✅ Successfully connected to FAIR network!', 'success');
+                                this.log(`📍 Address: ${address}`, 'output');
+                                this.log('⛓️ Network: FAIR Testnet Beta (Chain ID: 935)', 'output');
+                                this.log('', 'info');
+                                return;
+                            } catch (e) {
+                                this.log('❌ Failed to connect to FAIR: ' + e.message, 'error');
+                                return;
+                            }
+                        }
+                        
+                        // fair mint-nft (Interactive NFT Minting with Image Upload)
+                        if (args[1] === 'mint-nft' || args[1] === 'mint') {
+                            try {
+                                if (!window.fairWallet && !this.signer) {
+                                    this.log('❌ No wallet connected. Use: fair generate or fair connect', 'error');
+                                    return;
+                                }
+                                
+                                this.log('🎨 FAIR NFT Minter', 'success');
+                                this.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'info');
+                                this.log('', 'info');
+                                
+                                // Prompt for NFT name
+                                this.log('Enter NFT name:', 'info');
+                                const nftName = await this.promptUser();
+                                if (!nftName || !nftName.trim()) {
+                                    this.log('❌ NFT name is required', 'error');
+                                    return;
+                                }
+                                
+                                // Prompt for description
+                                this.log('Enter NFT description:', 'info');
+                                const description = await this.promptUser();
+                                
+                                // Create file input for image upload
+                                this.log('📸 Click to select an image to upload...', 'info');
+                                const file = await new Promise((resolve) => {
+                                    const input = document.createElement('input');
+                                    input.type = 'file';
+                                    input.accept = 'image/*';
+                                    input.onchange = (e) => {
+                                        const file = e.target.files[0];
+                                        if (file) {
+                                            resolve(file);
+                                        } else {
+                                            resolve(null);
+                                        }
+                                    };
+                                    input.click();
+                                });
+                                
+                                if (!file) {
+                                    this.log('❌ No image selected', 'error');
+                                    return;
+                                }
+                                
+                                this.log(`✅ Selected: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`, 'success');
+                                this.log('☁️ Uploading image to IPFS via Pinata...', 'info');
+                                
+                                // Upload image to Pinata
+                                const formData = new FormData();
+                                formData.append('file', file);
+                                
+                                const imageResponse = await fetch('https://api.pinata.cloud/pinning/pinFileToIPFS', {
+                                    method: 'POST',
+                                    headers: {
+                                        'pinata_api_key': 'c717314daa6072cf4111',
+                                        'pinata_secret_api_key': '2d78c057627d207a25d57f0b625d3c8f6388e911101788cbe5b0b3d2cf763f59'
+                                    },
+                                    body: formData
+                                });
+                                
+                                if (!imageResponse.ok) {
+                                    throw new Error('Failed to upload image to IPFS');
+                                }
+                                
+                                const imageResult = await imageResponse.json();
+                                const imageUrl = `https://gateway.pinata.cloud/ipfs/${imageResult.IpfsHash}`;
+                                
+                                this.log(`✅ Image uploaded to IPFS: ${imageResult.IpfsHash}`, 'success');
+                                
+                                // Create metadata
+                                const metadata = {
+                                    name: nftName.trim(),
+                                    description: description.trim() || 'A FAIR NFT',
+                                    image: imageUrl,
+                                    attributes: [
+                                        { trait_type: 'Network', value: 'FAIR' },
+                                        { trait_type: 'Blockchain', value: 'FAIR Testnet' }
+                                    ]
+                                };
+                                
+                                this.log('☁️ Uploading metadata to IPFS...', 'info');
+                                
+                                // Upload metadata to Pinata
+                                const metadataResponse = await fetch('https://api.pinata.cloud/pinning/pinJSONToIPFS', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'pinata_api_key': 'c717314daa6072cf4111',
+                                        'pinata_secret_api_key': '2d78c057627d207a25d57f0b625d3c8f6388e911101788cbe5b0b3d2cf763f59'
+                                    },
+                                    body: JSON.stringify({
+                                        pinataContent: metadata,
+                                        pinataMetadata: {
+                                            name: `fair-nft-${nftName.replace(/\s+/g, '-').toLowerCase()}.json`
+                                        }
+                                    })
+                                });
+                                
+                                if (!metadataResponse.ok) {
+                                    throw new Error('Failed to upload metadata to IPFS');
+                                }
+                                
+                                const metadataResult = await metadataResponse.json();
+                                const metadataUri = `https://gateway.pinata.cloud/ipfs/${metadataResult.IpfsHash}`;
+                                
+                                this.log(`✅ Metadata uploaded to IPFS: ${metadataResult.IpfsHash}`, 'success');
+                                
+                                this.log('', 'info');
+                                this.log('📋 NFT Details:', 'success');
+                                this.log(`  Name: ${nftName}`, 'output');
+                                this.log(`  Description: ${description || 'A FAIR NFT'}`, 'output');
+                                this.log(`  Image: ${imageUrl}`, 'output');
+                                this.log(`  Metadata: ${metadataUri}`, 'output');
+                                this.log('', 'info');
+                                
+                                let signer;
+                                if (window.fairWallet) {
+                                    const provider = new this.ethers.providers.JsonRpcProvider('https://testnet-rpc.fair.cloud');
+                                    signer = new this.ethers.Wallet(window.fairWallet.privateKey, provider);
+                                } else {
+                                    signer = this.signer;
+                                }
+                                
+                                this.log('🎨 Minting NFT...', 'info');
+                                
+                                const nftABI = [
+                                    "function mint(address to, string memory uri) public returns (uint256)",
+                                    "function totalSupply() public view returns (uint256)"
+                                ];
+                                
+                                const nftContract = new this.ethers.Contract('0xe133cb4df4834c7e0b4aea5181ab40477c9fa30e', nftABI, signer);
+                                const address = await signer.getAddress();
+                                
+                                const tx = await nftContract.mint(address, metadataUri);
+                                this.log(`⏳ Transaction submitted: ${tx.hash}`, 'info');
+                                this.log('⏳ Waiting for confirmation...', 'info');
+                                
+                                const receipt = await tx.wait();
+                                
+                                // Get token ID from current supply
+                                const totalSupply = await nftContract.totalSupply();
+                                const tokenId = totalSupply.sub(1).toString();
+                                
+                                this.log('', 'info');
+                                this.log(`✅ NFT Minted Successfully!`, 'success');
+                                this.log(`🎨 Token ID: #${tokenId}`, 'output');
+                                this.log(`📍 Owner: ${address}`, 'output');
+                                this.log(`🔍 View on explorer: https://testnet-explorer.fair.cloud/tx/${tx.hash}`, 'info');
+                                this.log('💡 Use: fair my-nfts to see all your NFTs', 'info');
+                                this.log('', 'info');
+                                
+                                return;
+                            } catch (e) {
+                                this.log('❌ Failed to mint NFT: ' + e.message, 'error');
+                                return;
+                            }
+                        }
+                        
+                        // fair my-nfts
+                        if (args[1] === 'my-nfts' || args[1] === 'nfts') {
+                            try {
+                                let address;
+                                let provider;
+                                
+                                if (window.fairWallet) {
+                                    address = window.fairWallet.address;
+                                    provider = new this.ethers.providers.JsonRpcProvider('https://testnet-rpc.fair.cloud');
+                                } else if (this.signer) {
+                                    address = await this.signer.getAddress();
+                                    provider = this.provider;
+                                } else {
+                                    this.log('❌ No wallet found. Use: fair generate or fair connect', 'error');
+                                    return;
+                                }
+                                
+                                this.log('🔍 Fetching your NFTs...', 'info');
+                                
+                                const nftABI = [
+                                    "function tokensOfOwner(address owner) public view returns (uint256[] memory)",
+                                    "function tokenURI(uint256 tokenId) public view returns (string memory)"
+                                ];
+                                
+                                const nftContract = new this.ethers.Contract('0xe133cb4df4834c7e0b4aea5181ab40477c9fa30e', nftABI, provider);
+                                const tokens = await nftContract.tokensOfOwner(address);
+                                
+                                if (tokens.length === 0) {
+                                    this.log('📋 You don\'t own any FAIR NFTs yet.', 'info');
+                                    this.log('💡 Mint one with: fair mint-nft', 'info');
+                                    return;
+                                }
+                                
+                                this.log('', 'info');
+                                this.log(`🎨 Your FAIR NFTs (${tokens.length}):`, 'success');
+                                this.log('', 'info');
+                                
+                                for (let i = 0; i < Math.min(tokens.length, 10); i++) {
+                                    const tokenId = tokens[i].toString();
+                                    try {
+                                        const uri = await nftContract.tokenURI(tokens[i]);
+                                        
+                                        // Parse metadata - handle both base64 and IPFS URLs
+                                        let metadata = {};
+                                        if (uri.startsWith('data:application/json;base64,')) {
+                                            const base64Data = uri.split(',')[1];
+                                            const jsonStr = atob(base64Data);
+                                            metadata = JSON.parse(jsonStr);
+                                        } else if (uri.startsWith('http://') || uri.startsWith('https://')) {
+                                            // Fetch metadata from IPFS
+                                            try {
+                                                const metadataResponse = await fetch(uri);
+                                                metadata = await metadataResponse.json();
+                                            } catch (e) {
+                                                console.error('Failed to fetch metadata:', e);
+                                            }
+                                        }
+                                        
+                                        let html = `<b>🎨 Token #${tokenId}</b>`;
+                                        if (metadata.name) html += ` - ${metadata.name}`;
+                                        html += `<br>`;
+                                        if (metadata.description) html += `Description: ${metadata.description}<br>`;
+                                        if (metadata.image) html += `Image: <a href="${metadata.image}" target="_blank" style="color:#00ff80;">View</a><br>`;
+                                        html += `Explorer: <a href="https://testnet-explorer.fair.cloud/token/0xe133cb4df4834c7e0b4aea5181ab40477c9fa30e?a=${tokenId}" target="_blank" style="color:#00ff80;">View NFT</a><br>`;
+                                        this.logHtml(html, 'output');
+                                    } catch (e) {
+                                        this.log(`🎨 Token #${tokenId}`, 'output');
+                                    }
+                                }
+                                
+                                if (tokens.length > 10) {
+                                    this.log(`... and ${tokens.length - 10} more`, 'info');
+                                }
+                                this.log('', 'info');
+                                
+                                return;
+                            } catch (e) {
+                                this.log('❌ Failed to fetch NFTs: ' + e.message, 'error');
+                                return;
+                            }
+                        }
+                        
+                        // fair nft-info
+                        if (args[1] === 'nft-info' && args[2]) {
+                            try {
+                                const tokenId = args[2];
+                                const provider = new this.ethers.providers.JsonRpcProvider('https://testnet-rpc.fair.cloud');
+                                
+                                this.log(`🔍 Getting info for NFT #${tokenId}...`, 'info');
+                                
+                                const nftABI = [
+                                    "function ownerOf(uint256 tokenId) public view returns (address)",
+                                    "function tokenURI(uint256 tokenId) public view returns (string memory)"
+                                ];
+                                
+                                const nftContract = new this.ethers.Contract('0xe133cb4df4834c7e0b4aea5181ab40477c9fa30e', nftABI, provider);
+                                
+                                const owner = await nftContract.ownerOf(tokenId);
+                                const uri = await nftContract.tokenURI(tokenId);
+                                
+                                // Parse metadata - handle both base64 and IPFS URLs
+                                let metadata = {};
+                                if (uri.startsWith('data:application/json;base64,')) {
+                                    const base64Data = uri.split(',')[1];
+                                    const jsonStr = atob(base64Data);
+                                    metadata = JSON.parse(jsonStr);
+                                } else if (uri.startsWith('http://') || uri.startsWith('https://')) {
+                                    // Fetch metadata from IPFS
+                                    try {
+                                        const metadataResponse = await fetch(uri);
+                                        metadata = await metadataResponse.json();
+                                    } catch (e) {
+                                        console.error('Failed to fetch metadata:', e);
+                                    }
+                                }
+                                
+                                this.log('', 'info');
+                                let html = `<b>🎨 FAIR NFT #${tokenId}</b><br><br>`;
+                                if (metadata.name) html += `<b>Name:</b> ${metadata.name}<br>`;
+                                if (metadata.description) html += `<b>Description:</b> ${metadata.description}<br>`;
+                                html += `<b>Owner:</b> <span class='copyable' onclick="navigator.clipboard.writeText('${owner}')">${owner}</span><br>`;
+                                if (metadata.image) html += `<b>Image:</b> <a href="${metadata.image}" target="_blank" style="color:#00ff80;">View Image</a><br>`;
+                                if (metadata.attributes && metadata.attributes.length > 0) {
+                                    html += `<br><b>Attributes:</b><br>`;
+                                    metadata.attributes.forEach(attr => {
+                                        html += `  • ${attr.trait_type}: ${attr.value}<br>`;
+                                    });
+                                }
+                                html += `<br><b>Explorer:</b> <a href="https://testnet-explorer.fair.cloud/token/0xe133cb4df4834c7e0b4aea5181ab40477c9fa30e?a=${tokenId}" target="_blank" style="color:#00ff80;">View on FAIR Explorer</a><br>`;
+                                this.logHtml(html, 'output');
+                                
+                                return;
+                            } catch (e) {
+                                this.log('❌ Failed to get NFT info: ' + e.message, 'error');
+                                if (e.message.includes('owner query')) {
+                                    this.log('💡 This token may not exist yet', 'info');
+                                }
+                                return;
+                            }
+                        }
+                        
+                        // fair transfer-nft (with FNS support!)
+                        if (args[1] === 'transfer-nft' && args[2] && args[3]) {
+                            try {
+                                const tokenId = args[2];
+                                let recipientInput = args[3];
+                                
+                                if (!window.fairWallet && !this.signer) {
+                                    this.log('❌ No wallet connected. Use: fair generate or fair connect', 'error');
+                                    return;
+                                }
+                                
+                                let signer;
+                                let provider;
+                                if (window.fairWallet) {
+                                    provider = new this.ethers.providers.JsonRpcProvider('https://testnet-rpc.fair.cloud');
+                                    signer = new this.ethers.Wallet(window.fairWallet.privateKey, provider);
+                                } else {
+                                    signer = this.signer;
+                                    provider = this.provider;
+                                }
+                                
+                                // Check if recipient is FNS name
+                                let recipient = recipientInput;
+                                let fnsName = null;
+                                if (recipientInput.endsWith('.fns') || !recipientInput.startsWith('0x')) {
+                                    fnsName = recipientInput.replace(/\.fns$/, '');
+                                    this.log(`🔍 Resolving FNS name: ${fnsName}.fns...`, 'info');
+                                    
+                                    const fnsABI = ["function resolve(string memory name) public view returns (address)"];
+                                    const fns = new this.ethers.Contract('0x2d06d9568ae99f61f421ea99a46969878986fc2d', fnsABI, provider);
+                                    recipient = await fns.resolve(fnsName);
+                                    
+                                    if (recipient === '0x0000000000000000000000000000000000000000') {
+                                        this.log(`❌ FNS name "${fnsName}.fns" not found`, 'error');
+                                        return;
+                                    }
+                                    this.log(`✅ Resolved to: ${recipient}`, 'success');
+                                }
+                                
+                                this.log(`🎨 Transferring NFT #${tokenId} to ${fnsName ? fnsName + '.fns' : recipient}...`, 'info');
+                                
+                                const nftABI = ["function transferFrom(address from, address to, uint256 tokenId) public"];
+                                const nftContract = new this.ethers.Contract('0xe133cb4df4834c7e0b4aea5181ab40477c9fa30e', nftABI, signer);
+                                const from = await signer.getAddress();
+                                
+                                const tx = await nftContract.transferFrom(from, recipient, tokenId);
+                                this.log(`⏳ Transaction submitted: ${tx.hash}`, 'info');
+                                this.log('⏳ Waiting for confirmation...', 'info');
+                                
+                                await tx.wait();
+                                
+                                this.log('', 'info');
+                                this.log(`✅ NFT #${tokenId} transferred!`, 'success');
+                                this.log(`📍 To: ${fnsName ? fnsName + '.fns (' + recipient + ')' : recipient}`, 'output');
+                                this.log(`🔍 View on explorer: https://testnet-explorer.fair.cloud/tx/${tx.hash}`, 'info');
+                                this.log('', 'info');
+                                
+                                return;
+                            } catch (e) {
+                                this.log('❌ Failed to transfer NFT: ' + e.message, 'error');
+                                if (e.message.includes('Not authorized')) {
+                                    this.log('💡 You must own this NFT to transfer it', 'info');
+                                }
+                                return;
+                            }
+                        }
+                        
+                        this.log('Unknown FAIR command. Type "fair help" for available commands.', 'error');
+                        return;
+                    
                     case 'ambassador':
                         await this.handleAmbassadorCommand(args);
                         break;
@@ -4142,10 +5442,6 @@
                     case 'perp':
                     case 'perps':
                         this.handlePerpCommand(args);
-                        break;
-                    case 'farcaster':
-                    case 'fc':
-                        await this.handleFarcasterCommand(args);
                         break;
                     default:
                         if (cmd) {
@@ -5287,6 +6583,14 @@
                 // Store in tab history
                 const tab = this.tabs[this.activeTab];
                 if (tab) tab.history.push({ type: 'output', content: html, logType: type });
+            }
+            
+            getTextWidth(text, font) {
+                const canvas = this.canvas || (this.canvas = document.createElement("canvas"));
+                const context = canvas.getContext("2d");
+                context.font = font;
+                const metrics = context.measureText(text);
+                return metrics.width;
             }
             
             clearTerminal() {
@@ -16327,742 +17631,7 @@
             }
         };
 
-        // Farcaster Integration
-        OmegaMinerTerminal.prototype.handleFarcasterCommand = async function(args) {
-            if (!args || args.length < 2) {
-                this.showFarcasterHelp();
-                return;
-            }
-
-            const subcommand = args[1].toLowerCase();
-            
-            switch (subcommand) {
-                case 'help':
-                    this.showFarcasterHelp();
-                    break;
-                case 'trending':
-                    await this.getFarcasterTrending();
-                    break;
-                case 'feed':
-                    await this.getFarcasterFeed();
-                    break;
-                case 'search':
-                    if (args.length < 3) {
-                        this.log('Usage: farcaster search <query>', 'error');
-                        return;
-                    }
-                    const query = args.slice(2).join(' ');
-                    await this.searchFarcaster(query);
-                    break;
-                case 'user':
-                    if (args.length < 3) {
-                        this.log('Usage: farcaster user <username>', 'error');
-                        return;
-                    }
-                    await this.getFarcasterUser(args[2]);
-                    break;
-                case 'channels':
-                    await this.getFarcasterChannels();
-                    break;
-                default:
-                    this.log(`Unknown Farcaster command: ${subcommand}`, 'error');
-                    this.showFarcasterHelp();
-            }
-        };
-
-        OmegaMinerTerminal.prototype.showFarcasterHelp = function() {
-            this.log('════════════════════════════════════', 'info');
-            this.log('FARCASTER - Decentralized Social Network', 'info');
-            this.log('════════════════════════════════════', 'info');
-            this.log('', 'info');
-            this.log('COMMANDS:', 'info');
-            this.log('  farcaster trending       Trending casts', 'output');
-            this.log('  farcaster feed           Recent feed', 'output');
-            this.log('  farcaster search <q>     Search casts', 'output');
-            this.log('  farcaster user <name>    View user profile', 'output');
-            this.log('  farcaster channels       Browse channels', 'output');
-            this.log('  farcaster help           Show this help', 'output');
-            this.log('', 'info');
-            this.log('EXAMPLES:', 'info');
-            this.log('  farcaster trending', 'info');
-            this.log('  farcaster search "crypto"', 'info');
-            this.log('  farcaster user vitalik.eth', 'info');
-            this.log('════════════════════════════════════', 'info');
-        };
-
-        OmegaMinerTerminal.prototype.getFarcasterTrending = async function() {
-            try {
-                this.log('Loading trending Farcaster casts...', 'info');
-                
-                // Use Neynar API - free tier, no auth needed for reads
-                const response = await fetch('https://api.neynar.com/v2/farcaster/feed/trending?limit=20', {
-                    headers: {
-                        'Accept': 'application/json'
-                    }
-                });
-                
-                if (!response.ok) {
-                    throw new Error(`API returned ${response.status}`);
-                }
-                
-                const data = await response.json();
-                
-                if (data && data.casts && data.casts.length > 0) {
-                    const casts = data.casts;
-                    
-                    let html = `
-                        <div style="
-                            background: #1a1a1a;
-                            border: 1px solid #333;
-                            border-radius: 12px;
-                            padding: 20px;
-                            margin: 16px 0;
-                        ">
-                            <div style="
-                                display: flex;
-                                align-items: center;
-                                margin-bottom: 20px;
-                                padding-bottom: 16px;
-                                border-bottom: 1px solid #333;
-                            ">
-                                <div style="
-                                    width: 40px;
-                                    height: 40px;
-                                    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
-                                    border-radius: 10px;
-                                    display: flex;
-                                    align-items: center;
-                                    justify-content: center;
-                                    margin-right: 12px;
-                                    font-size: 20px;
-                                ">🔥</div>
-                                <div>
-                                    <h3 style="margin: 0; font-size: 20px; font-weight: 600; color: #ffffff;">
-                                        Trending on Farcaster
-                                    </h3>
-                                    <p style="margin: 4px 0 0 0; font-size: 14px; color: #888;">
-                                        ${casts.length} trending casts
-                                    </p>
-                                </div>
-                            </div>
-                            
-                            <div style="display: flex; flex-direction: column; gap: 16px;">
-                    `;
-                    
-                    casts.forEach((cast, index) => {
-                        const author = cast.author || {};
-                        const username = author.username || 'unknown';
-                        const displayName = author.display_name || username;
-                        const pfpUrl = author.pfp_url || '';
-                        const text = cast.text || '';
-                        const timestamp = cast.timestamp ? new Date(cast.timestamp).toLocaleString() : '';
-                        const reactions = cast.reactions || {};
-                        const likes = reactions.likes_count || 0;
-                        const recasts = reactions.recasts_count || 0;
-                        const replies = cast.replies?.count || 0;
-                        const hash = cast.hash || '';
-                        
-                        html += `
-                            <div style="
-                                background: #0f0f0f;
-                                border: 1px solid #333;
-                                border-radius: 8px;
-                                padding: 16px;
-                                transition: all 0.2s ease;
-                            " onmouseover="this.style.borderColor='#6b7280'" onmouseout="this.style.borderColor='#333'">
-                                <div style="display: flex; align-items: flex-start; gap: 12px;">
-                                    ${pfpUrl ? `
-                                        <img src="${pfpUrl}" style="
-                                            width: 40px;
-                                            height: 40px;
-                                            border-radius: 50%;
-                                            border: 2px solid #333;
-                                        ">
-                                    ` : `
-                                        <div style="
-                                            width: 40px;
-                                            height: 40px;
-                                            border-radius: 50%;
-                                            background: linear-gradient(135deg, #6b7280, #4b5563);
-                                            display: flex;
-                                            align-items: center;
-                                            justify-content: center;
-                                            font-size: 18px;
-                                        ">👤</div>
-                                    `}
-                                    
-                                    <div style="flex: 1; min-width: 0;">
-                                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
-                                            <span style="font-weight: 600; color: #ffffff;">${displayName}</span>
-                                            <span style="color: #888; font-size: 14px;">@${username}</span>
-                                            ${timestamp ? `<span style="color: #666; font-size: 12px;">• ${timestamp}</span>` : ''}
-                                        </div>
-                                        
-                                        <p style="
-                                            margin: 0 0 12px 0;
-                                            color: #ddd;
-                                            line-height: 1.5;
-                                            word-wrap: break-word;
-                                        ">${text}</p>
-                                        
-                                        <div style="
-                                            display: flex;
-                                            gap: 20px;
-                                            font-size: 13px;
-                                            color: #888;
-                                        ">
-                                            <span>❤️ ${likes}</span>
-                                            <span>🔄 ${recasts}</span>
-                                            <span>💬 ${replies}</span>
-                                            ${hash ? `
-                                                <a href="https://warpcast.com/~/conversations/${hash}" target="_blank" style="
-                                                    color: #8b5cf6;
-                                                    text-decoration: none;
-                                                    margin-left: auto;
-                                                " onmouseover="this.style.color='#a78bfa'" onmouseout="this.style.color='#8b5cf6'">
-                                                    View on Warpcast →
-                                                </a>
-                                            ` : ''}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        `;
-                    });
-                    
-                    html += `
-                            </div>
-                        </div>
-                    `;
-                    
-                    this.logHtml(html, 'output');
-                } else {
-                    this.log('No trending casts found', 'warning');
-                }
-            } catch (error) {
-                this.log('Failed to fetch Farcaster trending: ' + error.message, 'error');
-                this.log('Note: Farcaster integration is experimental', 'info');
-            }
-        };
-
-        OmegaMinerTerminal.prototype.getFarcasterFeed = async function() {
-            try {
-                this.log('Loading Farcaster feed...', 'info');
-                
-                const response = await fetch('https://api.neynar.com/v2/farcaster/feed?limit=20', {
-                    headers: {
-                        'Accept': 'application/json'
-                    }
-                });
-                
-                if (!response.ok) {
-                    throw new Error(`API returned ${response.status}`);
-                }
-                
-                const data = await response.json();
-                
-                if (data && data.casts && data.casts.length > 0) {
-                    const casts = data.casts;
-                    
-                    let html = `
-                        <div style="
-                            background: #1a1a1a;
-                            border: 1px solid #333;
-                            border-radius: 12px;
-                            padding: 20px;
-                            margin: 16px 0;
-                        ">
-                            <div style="
-                                display: flex;
-                                align-items: center;
-                                margin-bottom: 20px;
-                                padding-bottom: 16px;
-                                border-bottom: 1px solid #333;
-                            ">
-                                <div style="
-                                    width: 40px;
-                                    height: 40px;
-                                    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
-                                    border-radius: 10px;
-                                    display: flex;
-                                    align-items: center;
-                                    justify-content: center;
-                                    margin-right: 12px;
-                                    font-size: 20px;
-                                ">📱</div>
-                                <div>
-                                    <h3 style="margin: 0; font-size: 20px; font-weight: 600; color: #ffffff;">
-                                        Recent Feed
-                                    </h3>
-                                    <p style="margin: 4px 0 0 0; font-size: 14px; color: #888;">
-                                        ${casts.length} recent casts
-                                    </p>
-                                </div>
-                            </div>
-                            
-                            <div style="display: flex; flex-direction: column; gap: 16px;">
-                    `;
-                    
-                    casts.forEach((cast, index) => {
-                        const author = cast.author || {};
-                        const username = author.username || 'unknown';
-                        const displayName = author.display_name || username;
-                        const pfpUrl = author.pfp_url || '';
-                        const text = cast.text || '';
-                        const timestamp = cast.timestamp ? new Date(cast.timestamp).toLocaleString() : '';
-                        const reactions = cast.reactions || {};
-                        const likes = reactions.likes_count || 0;
-                        const recasts = reactions.recasts_count || 0;
-                        const replies = cast.replies?.count || 0;
-                        const hash = cast.hash || '';
-                        
-                        html += `
-                            <div style="
-                                background: #0f0f0f;
-                                border: 1px solid #333;
-                                border-radius: 8px;
-                                padding: 16px;
-                                transition: all 0.2s ease;
-                            " onmouseover="this.style.borderColor='#6b7280'" onmouseout="this.style.borderColor='#333'">
-                                <div style="display: flex; align-items: flex-start; gap: 12px;">
-                                    ${pfpUrl ? `
-                                        <img src="${pfpUrl}" style="
-                                            width: 40px;
-                                            height: 40px;
-                                            border-radius: 50%;
-                                            border: 2px solid #333;
-                                        ">
-                                    ` : `
-                                        <div style="
-                                            width: 40px;
-                                            height: 40px;
-                                            border-radius: 50%;
-                                            background: linear-gradient(135deg, #6b7280, #4b5563);
-                                            display: flex;
-                                            align-items: center;
-                                            justify-content: center;
-                                            font-size: 18px;
-                                        ">👤</div>
-                                    `}
-                                    
-                                    <div style="flex: 1; min-width: 0;">
-                                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
-                                            <span style="font-weight: 600; color: #ffffff;">${displayName}</span>
-                                            <span style="color: #888; font-size: 14px;">@${username}</span>
-                                            ${timestamp ? `<span style="color: #666; font-size: 12px;">• ${timestamp}</span>` : ''}
-                                        </div>
-                                        
-                                        <p style="
-                                            margin: 0 0 12px 0;
-                                            color: #ddd;
-                                            line-height: 1.5;
-                                            word-wrap: break-word;
-                                        ">${text}</p>
-                                        
-                                        <div style="
-                                            display: flex;
-                                            gap: 20px;
-                                            font-size: 13px;
-                                            color: #888;
-                                        ">
-                                            <span>❤️ ${likes}</span>
-                                            <span>🔄 ${recasts}</span>
-                                            <span>💬 ${replies}</span>
-                                            ${hash ? `
-                                                <a href="https://warpcast.com/~/conversations/${hash}" target="_blank" style="
-                                                    color: #8b5cf6;
-                                                    text-decoration: none;
-                                                    margin-left: auto;
-                                                " onmouseover="this.style.color='#a78bfa'" onmouseout="this.style.color='#8b5cf6'">
-                                                    View on Warpcast →
-                                                </a>
-                                            ` : ''}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        `;
-                    });
-                    
-                    html += `
-                            </div>
-                        </div>
-                    `;
-                    
-                    this.logHtml(html, 'output');
-                } else {
-                    this.log('No casts found', 'warning');
-                }
-            } catch (error) {
-                this.log('Failed to fetch Farcaster feed: ' + error.message, 'error');
-                this.log('Note: Using public Neynar API (no auth required)', 'info');
-            }
-        };
-
-        OmegaMinerTerminal.prototype.searchFarcaster = async function(query) {
-            try {
-                this.log(`Searching Farcaster for: "${query}"...`, 'info');
-                
-                const response = await fetch(`https://api.neynar.com/v2/farcaster/cast/search?q=${encodeURIComponent(query)}&limit=20`, {
-                    headers: {
-                        'Accept': 'application/json'
-                    }
-                });
-                
-                if (!response.ok) {
-                    throw new Error(`API returned ${response.status}`);
-                }
-                
-                const data = await response.json();
-                
-                if (data && data.casts && data.casts.length > 0) {
-                    const casts = data.casts;
-                    
-                    let html = `
-                        <div style="
-                            background: #1a1a1a;
-                            border: 1px solid #333;
-                            border-radius: 12px;
-                            padding: 20px;
-                            margin: 16px 0;
-                        ">
-                            <div style="
-                                display: flex;
-                                align-items: center;
-                                margin-bottom: 20px;
-                                padding-bottom: 16px;
-                                border-bottom: 1px solid #333;
-                            ">
-                                <div style="
-                                    width: 40px;
-                                    height: 40px;
-                                    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
-                                    border-radius: 10px;
-                                    display: flex;
-                                    align-items: center;
-                                    justify-content: center;
-                                    margin-right: 12px;
-                                    font-size: 20px;
-                                ">🔍</div>
-                                <div>
-                                    <h3 style="margin: 0; font-size: 20px; font-weight: 600; color: #ffffff;">
-                                        Search Results: "${query}"
-                                    </h3>
-                                    <p style="margin: 4px 0 0 0; font-size: 14px; color: #888;">
-                                        Found ${casts.length} casts
-                                    </p>
-                                </div>
-                            </div>
-                            
-                            <div style="display: flex; flex-direction: column; gap: 16px;">
-                    `;
-                    
-                    casts.forEach((cast, index) => {
-                        const author = cast.author || {};
-                        const username = author.username || 'unknown';
-                        const displayName = author.display_name || username;
-                        const pfpUrl = author.pfp_url || '';
-                        const text = cast.text || '';
-                        const timestamp = cast.timestamp ? new Date(cast.timestamp).toLocaleString() : '';
-                        const reactions = cast.reactions || {};
-                        const likes = reactions.likes_count || 0;
-                        const recasts = reactions.recasts_count || 0;
-                        const replies = cast.replies?.count || 0;
-                        const hash = cast.hash || '';
-                        
-                        html += `
-                            <div style="
-                                background: #0f0f0f;
-                                border: 1px solid #333;
-                                border-radius: 8px;
-                                padding: 16px;
-                                transition: all 0.2s ease;
-                            " onmouseover="this.style.borderColor='#6b7280'" onmouseout="this.style.borderColor='#333'">
-                                <div style="display: flex; align-items: flex-start; gap: 12px;">
-                                    ${pfpUrl ? `
-                                        <img src="${pfpUrl}" style="
-                                            width: 40px;
-                                            height: 40px;
-                                            border-radius: 50%;
-                                            border: 2px solid #333;
-                                        ">
-                                    ` : `
-                                        <div style="
-                                            width: 40px;
-                                            height: 40px;
-                                            border-radius: 50%;
-                                            background: linear-gradient(135deg, #6b7280, #4b5563);
-                                            display: flex;
-                                            align-items: center;
-                                            justify-content: center;
-                                            font-size: 18px;
-                                        ">👤</div>
-                                    `}
-                                    
-                                    <div style="flex: 1; min-width: 0;">
-                                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
-                                            <span style="font-weight: 600; color: #ffffff;">${displayName}</span>
-                                            <span style="color: #888; font-size: 14px;">@${username}</span>
-                                            ${timestamp ? `<span style="color: #666; font-size: 12px;">• ${timestamp}</span>` : ''}
-                                        </div>
-                                        
-                                        <p style="
-                                            margin: 0 0 12px 0;
-                                            color: #ddd;
-                                            line-height: 1.5;
-                                            word-wrap: break-word;
-                                        ">${text}</p>
-                                        
-                                        <div style="
-                                            display: flex;
-                                            gap: 20px;
-                                            font-size: 13px;
-                                            color: #888;
-                                        ">
-                                            <span>❤️ ${likes}</span>
-                                            <span>🔄 ${recasts}</span>
-                                            <span>💬 ${replies}</span>
-                                            ${hash ? `
-                                                <a href="https://warpcast.com/~/conversations/${hash}" target="_blank" style="
-                                                    color: #8b5cf6;
-                                                    text-decoration: none;
-                                                    margin-left: auto;
-                                                " onmouseover="this.style.color='#a78bfa'" onmouseout="this.style.color='#8b5cf6'">
-                                                    View on Warpcast →
-                                                </a>
-                                            ` : ''}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        `;
-                    });
-                    
-                    html += `
-                            </div>
-                        </div>
-                    `;
-                    
-                    this.logHtml(html, 'output');
-                } else {
-                    this.log(`No results found for "${query}"`, 'warning');
-                }
-            } catch (error) {
-                this.log('Failed to search Farcaster: ' + error.message, 'error');
-            }
-        };
-
-        OmegaMinerTerminal.prototype.getFarcasterUser = async function(username) {
-            try {
-                this.log(`Loading profile for @${username}...`, 'info');
-                
-                const response = await fetch(`https://api.neynar.com/v2/farcaster/user/by_username?username=${username}`, {
-                    headers: {
-                        'Accept': 'application/json'
-                    }
-                });
-                
-                if (!response.ok) {
-                    throw new Error(`API returned ${response.status}`);
-                }
-                
-                const data = await response.json();
-                
-                if (data && data.user) {
-                    const user = data.user;
-                    const pfpUrl = user.pfp_url || '';
-                    const displayName = user.display_name || username;
-                    const bio = user.profile?.bio?.text || 'No bio';
-                    const followers = user.follower_count || 0;
-                    const following = user.following_count || 0;
-                    const fid = user.fid || '';
-                    
-                    let html = `
-                        <div style="
-                            background: #1a1a1a;
-                            border: 1px solid #333;
-                            border-radius: 12px;
-                            padding: 24px;
-                            margin: 16px 0;
-                        ">
-                            <div style="display: flex; align-items: flex-start; gap: 20px; margin-bottom: 20px;">
-                                ${pfpUrl ? `
-                                    <img src="${pfpUrl}" style="
-                                        width: 80px;
-                                        height: 80px;
-                                        border-radius: 50%;
-                                        border: 3px solid #8b5cf6;
-                                    ">
-                                ` : `
-                                    <div style="
-                                        width: 80px;
-                                        height: 80px;
-                                        border-radius: 50%;
-                                        background: linear-gradient(135deg, #8b5cf6, #7c3aed);
-                                        display: flex;
-                                        align-items: center;
-                                        justify-content: center;
-                                        font-size: 32px;
-                                    ">👤</div>
-                                `}
-                                
-                                <div style="flex: 1;">
-                                    <h2 style="margin: 0 0 8px 0; font-size: 24px; font-weight: 600; color: #ffffff;">
-                                        ${displayName}
-                                    </h2>
-                                    <p style="margin: 0 0 12px 0; color: #888; font-size: 16px;">
-                                        @${username} • FID: ${fid}
-                                    </p>
-                                    <p style="margin: 0 0 16px 0; color: #ddd; line-height: 1.5;">
-                                        ${bio}
-                                    </p>
-                                    
-                                    <div style="display: flex; gap: 24px; margin-bottom: 16px;">
-                                        <div>
-                                            <span style="font-weight: 600; color: #ffffff; font-size: 18px;">${followers.toLocaleString()}</span>
-                                            <span style="color: #888; font-size: 14px; margin-left: 4px;">Followers</span>
-                                        </div>
-                                        <div>
-                                            <span style="font-weight: 600; color: #ffffff; font-size: 18px;">${following.toLocaleString()}</span>
-                                            <span style="color: #888; font-size: 14px; margin-left: 4px;">Following</span>
-                                        </div>
-                                    </div>
-                                    
-                                    <a href="https://warpcast.com/${username}" target="_blank" style="
-                                        display: inline-block;
-                                        background: linear-gradient(135deg, #8b5cf6, #7c3aed);
-                                        color: white;
-                                        padding: 10px 20px;
-                                        border-radius: 8px;
-                                        text-decoration: none;
-                                        font-weight: 600;
-                                        transition: all 0.2s ease;
-                                    " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
-                                        View on Warpcast →
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                    
-                    this.logHtml(html, 'output');
-                } else {
-                    this.log(`User @${username} not found`, 'error');
-                }
-            } catch (error) {
-                this.log('Failed to fetch user profile: ' + error.message, 'error');
-                this.log(`Make sure the username "${username}" is correct`, 'info');
-            }
-        };
-
-        OmegaMinerTerminal.prototype.getFarcasterChannels = async function() {
-            try {
-                this.log('Loading popular Farcaster channels...', 'info');
-                
-                // Note: Neynar free tier might not have channels endpoint
-                // We'll show a message about popular channels instead
-                
-                let html = `
-                    <div style="
-                        background: #1a1a1a;
-                        border: 1px solid #333;
-                        border-radius: 12px;
-                        padding: 20px;
-                        margin: 16px 0;
-                    ">
-                        <div style="
-                            display: flex;
-                            align-items: center;
-                            margin-bottom: 20px;
-                            padding-bottom: 16px;
-                            border-bottom: 1px solid #333;
-                        ">
-                            <div style="
-                                width: 40px;
-                                height: 40px;
-                                background: linear-gradient(135deg, #8b5cf6, #7c3aed);
-                                border-radius: 10px;
-                                display: flex;
-                                align-items: center;
-                                justify-content: center;
-                                margin-right: 12px;
-                                font-size: 20px;
-                            ">#️⃣</div>
-                            <div>
-                                <h3 style="margin: 0; font-size: 20px; font-weight: 600; color: #ffffff;">
-                                    Popular Farcaster Channels
-                                </h3>
-                                <p style="margin: 4px 0 0 0; font-size: 14px; color: #888;">
-                                    Discover communities on Farcaster
-                                </p>
-                            </div>
-                        </div>
-                        
-                        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 12px;">
-                `;
-                
-                const popularChannels = [
-                    { name: 'base', description: 'Official Base channel', url: 'base' },
-                    { name: 'crypto', description: 'Cryptocurrency discussions', url: 'crypto' },
-                    { name: 'dev', description: 'Developer community', url: 'dev' },
-                    { name: 'nfts', description: 'NFT collectors and creators', url: 'nfts' },
-                    { name: 'founders', description: 'Startup founders', url: 'founders' },
-                    { name: 'memes', description: 'Memes and fun', url: 'memes' },
-                    { name: 'ethereum', description: 'Ethereum ecosystem', url: 'ethereum' },
-                    { name: 'solana', description: 'Solana ecosystem', url: 'solana' },
-                    { name: 'defi', description: 'DeFi protocols and yields', url: 'defi' },
-                    { name: 'art', description: 'Digital art and creativity', url: 'art' }
-                ];
-                
-                popularChannels.forEach(channel => {
-                    html += `
-                        <a href="https://warpcast.com/~/channel/${channel.url}" target="_blank" style="
-                            background: #0f0f0f;
-                            border: 1px solid #333;
-                            border-radius: 8px;
-                            padding: 16px;
-                            text-decoration: none;
-                            transition: all 0.2s ease;
-                            display: block;
-                        " onmouseover="this.style.borderColor='#8b5cf6'; this.style.background='#1a1a1a'" onmouseout="this.style.borderColor='#333'; this.style.background='#0f0f0f'">
-                            <h4 style="
-                                margin: 0 0 8px 0;
-                                color: #8b5cf6;
-                                font-size: 16px;
-                                font-weight: 600;
-                            ">#${channel.name}</h4>
-                            <p style="
-                                margin: 0;
-                                color: #888;
-                                font-size: 13px;
-                                line-height: 1.4;
-                            ">${channel.description}</p>
-                        </a>
-                    `;
-                });
-                
-                html += `
-                        </div>
-                        <div style="
-                            margin-top: 20px;
-                            padding-top: 16px;
-                            border-top: 1px solid #333;
-                            text-align: center;
-                            color: #888;
-                            font-size: 13px;
-                        ">
-                            Click any channel to view on Warpcast
-                        </div>
-                    </div>
-                `;
-                
-                this.logHtml(html, 'output');
-            } catch (error) {
-                this.log('Failed to load channels: ' + error.message, 'error');
-            }
-        };
-
-        console.log('🔧 DEBUG: Polymarket, Perp, and Farcaster functions loaded successfully!');
+        console.log('🔧 DEBUG: Polymarket and Perp functions loaded successfully!');
     } else {
         console.log('🔧 DEBUG: Terminal prototype not found, Polymarket and Perp functions not loaded');
     }
