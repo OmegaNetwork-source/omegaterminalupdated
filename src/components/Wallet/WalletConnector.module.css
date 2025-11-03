@@ -1,0 +1,516 @@
+/**
+ * @file WalletConnector.module.css
+ * @description Wallet connector styling with theme variants, touch optimizations, and responsive breakpoints.
+ * @sources styles/mobile-terminal-fix.css, styles/mobile-fixes.css
+ */
+
+/* -----------------------------------------------------------------------------
+   Container Layout
+   ----------------------------------------------------------------------------- */
+
+.container {
+  max-width: 620px;
+  margin: 0 auto;
+  padding: 24px 28px;
+  font-family: "Courier New", Monaco, monospace;
+  background: rgba(8, 12, 20, 0.72);
+  border: 1px solid rgba(0, 188, 242, 0.25);
+  border-radius: 24px;
+  box-shadow: 0 20px 48px rgba(0, 188, 242, 0.18);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.containerMobile {
+  width: 100%;
+  max-width: none;
+  border-radius: 18px;
+  padding: 20px;
+}
+
+/* -----------------------------------------------------------------------------
+   Connected State
+   ----------------------------------------------------------------------------- */
+
+.connected {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  background: rgba(0, 188, 242, 0.12);
+  border: 1px solid rgba(0, 188, 242, 0.32);
+  border-radius: 20px;
+  padding: 22px;
+  position: relative;
+}
+
+.walletInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.walletType {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: 18px;
+  background: rgba(0, 188, 242, 0.2);
+  color: #00bcf2;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  width: fit-content;
+}
+
+.address {
+  font-size: 17px;
+  color: rgba(255, 255, 255, 0.92);
+  word-break: break-all;
+}
+
+.balance {
+  font-size: 20px;
+  color: #00ff88;
+  font-weight: 700;
+}
+
+.disconnectButton {
+  background: rgba(255, 68, 68, 0.18);
+  border: 1px solid rgba(255, 68, 68, 0.4);
+  color: #ff5252;
+  padding: 12px 22px;
+  border-radius: 14px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 700;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.disconnectButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(255, 68, 68, 0.25);
+}
+
+/* -----------------------------------------------------------------------------
+   Headings & Layout
+   ----------------------------------------------------------------------------- */
+
+.title {
+  font-size: 26px;
+  font-weight: 700;
+  color: #00bcf2;
+  text-align: center;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.optionCard {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(0, 188, 242, 0.28);
+  border-radius: 20px;
+  padding: 22px 20px;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease,
+    transform 0.2s ease;
+  position: relative;
+}
+
+.optionCard::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgba(0, 188, 242, 0.18), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.optionCard:hover {
+  border-color: rgba(0, 188, 242, 0.5);
+  box-shadow: 0 18px 40px rgba(0, 188, 242, 0.22);
+  transform: translateY(-3px);
+}
+
+.optionCard:hover::before {
+  opacity: 1;
+}
+
+.optionCardMobile {
+  border-radius: 18px;
+  padding: 20px 18px;
+}
+
+.cardTitle {
+  font-size: 18px;
+  font-weight: 700;
+  color: #00bcf2;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.cardDescription {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 18px;
+  line-height: 1.6;
+}
+
+/* -----------------------------------------------------------------------------
+   Buttons & States
+   ----------------------------------------------------------------------------- */
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px 22px;
+  border-radius: 14px;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  min-height: 44px;
+  text-align: center;
+}
+
+.buttonPrimary {
+  background: linear-gradient(
+    135deg,
+    rgba(0, 188, 242, 0.25) 0%,
+    rgba(0, 132, 255, 0.35) 100%
+  );
+  border: 1px solid rgba(0, 188, 242, 0.45);
+  color: #00bcf2;
+  box-shadow: 0 14px 30px rgba(0, 188, 242, 0.22);
+}
+
+.buttonPrimary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 36px rgba(0, 188, 242, 0.28);
+}
+
+.buttonGhost {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.buttonGhost:hover:not(:disabled) {
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.connectButton {
+  width: 100%;
+  background: rgba(0, 188, 242, 0.2);
+  border: 1px solid rgba(0, 188, 242, 0.5);
+  color: #00bcf2;
+  padding: 12px 20px;
+  border-radius: 14px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 700;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.connectButton:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 34px rgba(0, 188, 242, 0.25);
+}
+
+.connectButton:disabled,
+.button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Status indicator classes */
+.statusConnecting {
+  border-color: rgba(0, 188, 242, 0.45);
+  background: rgba(0, 188, 242, 0.12);
+  color: #00bcf2;
+}
+
+.statusConnected {
+  border-color: rgba(0, 255, 136, 0.4);
+  background: rgba(0, 255, 136, 0.14);
+  color: #00ff88;
+}
+
+.statusDisconnected {
+  border-color: rgba(255, 68, 68, 0.36);
+  background: rgba(255, 68, 68, 0.12);
+  color: #ff5252;
+}
+
+/* -----------------------------------------------------------------------------
+   Warnings & Import Section
+   ----------------------------------------------------------------------------- */
+
+.warningText {
+  font-size: 12px;
+  color: #ffaa00;
+  margin-top: 12px;
+  padding: 12px;
+  background: rgba(255, 170, 0, 0.12);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 170, 0, 0.3);
+  line-height: 1.5;
+}
+
+.importSection {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.input {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(0, 188, 242, 0.3);
+  color: #ffffff;
+  padding: 12px 14px;
+  border-radius: 12px;
+  font-family: inherit;
+  font-size: 15px;
+  width: 100%;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.input:focus {
+  outline: none;
+  border-color: rgba(0, 188, 242, 0.55);
+  box-shadow: 0 0 0 3px rgba(0, 188, 242, 0.2);
+}
+
+/* -----------------------------------------------------------------------------
+   Status Messages
+   ----------------------------------------------------------------------------- */
+
+.statusMessage {
+  padding: 16px;
+  border-radius: 14px;
+  font-size: 14px;
+  margin-top: 10px;
+  text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.statusSuccess {
+  background: rgba(0, 255, 136, 0.12);
+  border-color: rgba(0, 255, 136, 0.3);
+  color: #00ff88;
+}
+
+.statusError {
+  background: rgba(255, 68, 68, 0.12);
+  border-color: rgba(255, 68, 68, 0.3);
+  color: #ff5252;
+}
+
+.statusInfo {
+  background: rgba(0, 188, 242, 0.12);
+  border-color: rgba(0, 188, 242, 0.3);
+  color: #00bcf2;
+}
+
+/* -----------------------------------------------------------------------------
+   Loading Spinner
+   ----------------------------------------------------------------------------- */
+
+.loading {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(0, 188, 242, 0.3);
+  border-top-color: #00bcf2;
+  border-radius: 50%;
+  animation: spin 0.85s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* -----------------------------------------------------------------------------
+   Theme Variants
+   ----------------------------------------------------------------------------- */
+
+:global(body.theme-executive) .container {
+  background: rgba(20, 16, 6, 0.82);
+  border-color: rgba(255, 215, 0, 0.35);
+  box-shadow: 0 24px 54px rgba(255, 215, 0, 0.22);
+}
+
+:global(body.theme-executive) .title {
+  color: #ffd700;
+}
+
+:global(body.theme-modern) .container {
+  background: rgba(12, 8, 36, 0.82);
+  border-color: rgba(102, 51, 255, 0.35);
+  box-shadow: 0 24px 54px rgba(102, 51, 255, 0.25);
+}
+
+:global(body.theme-modern) .title {
+  color: #a88cff;
+}
+
+:global(body.theme-matrix) .container {
+  background: rgba(0, 24, 12, 0.82);
+  border-color: rgba(57, 255, 20, 0.38);
+  box-shadow: 0 24px 54px rgba(57, 255, 20, 0.25);
+}
+
+:global(body.theme-matrix) .title {
+  color: #39ff14;
+}
+
+/* -----------------------------------------------------------------------------
+   Responsive Breakpoints
+   ----------------------------------------------------------------------------- */
+
+@media (max-width: 1400px) {
+  .container {
+    max-width: 560px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .container {
+    max-width: 520px;
+    padding: 22px;
+  }
+
+  .options {
+    gap: 18px;
+  }
+
+  .optionCard {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 900px) {
+  .container {
+    max-width: 480px;
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    width: 95vw;
+    max-width: none;
+    border-radius: 20px;
+    padding: 18px 20px 24px;
+  }
+
+  .title {
+    font-size: 22px;
+  }
+
+  .cardTitle {
+    font-size: 16px;
+  }
+
+  .cardDescription {
+    font-size: 13px;
+  }
+
+  .optionCard {
+    padding: 18px;
+  }
+
+  .input {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 600px) {
+  .container {
+    width: 100vw;
+    border-radius: 0;
+  }
+
+  .connected,
+  .optionCard {
+    border-radius: 18px;
+  }
+
+  .disconnectButton {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 18px 16px 22px;
+  }
+
+  .cardDescription {
+    font-size: 12px;
+  }
+
+  .optionCard {
+    padding: 16px;
+  }
+}
+
+/* -----------------------------------------------------------------------------
+   Safe Area & Touch Enhancements
+   ----------------------------------------------------------------------------- */
+
+@supports (-webkit-touch-callout: none) {
+  .container {
+    min-height: -webkit-fill-available;
+  }
+}
+
+@supports (padding: max(0px)) {
+  .container {
+    padding-left: max(20px, env(safe-area-inset-left));
+    padding-right: max(20px, env(safe-area-inset-right));
+    padding-bottom: max(24px, calc(24px + env(safe-area-inset-bottom)));
+    padding-top: max(24px, env(safe-area-inset-top));
+  }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .connectButton,
+  .button,
+  .disconnectButton {
+    min-height: 48px;
+  }
+}

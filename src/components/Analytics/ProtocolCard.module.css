@@ -1,0 +1,176 @@
+/**
+ * ProtocolCard Component Styles
+ * Matches the DeFi Llama plugin styling from defillama-api-plugin.js
+ */
+
+.card {
+  background: linear-gradient(
+    135deg,
+    rgba(52, 199, 89, 0.1),
+    rgba(255, 255, 255, 0.05)
+  );
+  border: 1px solid rgba(52, 199, 89, 0.3);
+  border-radius: 16px;
+  padding: 16px;
+  margin: 8px 0;
+  backdrop-filter: blur(20px);
+  box-shadow: 0 4px 16px rgba(52, 199, 89, 0.1);
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: 0 8px 24px rgba(52, 199, 89, 0.2);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.leftSection {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.rank {
+  background: #34c759;
+  color: #fff;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.logo {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: 2px solid #34c759;
+  flex-shrink: 0;
+}
+
+.logoPlaceholder {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: #34c759;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.info {
+  flex: 1;
+  min-width: 0;
+}
+
+.name {
+  font-size: 18px;
+  font-weight: bold;
+  color: #1b5e20;
+}
+
+.category {
+  color: #666;
+  font-size: 14px;
+}
+
+.tvlSection {
+  text-align: right;
+}
+
+.tvl {
+  font-size: 20px;
+  color: #2e7d32;
+  font-weight: bold;
+}
+
+.change {
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.changePositive {
+  color: #34c759;
+}
+
+.changeNegative {
+  color: #ff3b30;
+}
+
+.chains {
+  color: #888;
+  font-size: 12px;
+  margin-top: 8px;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+
+.actionButton {
+  background: #34c759;
+  color: #fff;
+  text-decoration: none;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.actionButton:hover {
+  background: #2e7d32;
+}
+
+.secondaryButton {
+  background: #007aff;
+}
+
+.secondaryButton:hover {
+  background: #0056b3;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .leftSection {
+    width: 100%;
+  }
+
+  .tvlSection {
+    text-align: left;
+    width: 100%;
+  }
+
+  .actions {
+    width: 100%;
+  }
+
+  .actionButton {
+    flex: 1;
+  }
+}

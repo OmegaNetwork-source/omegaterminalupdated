@@ -1,0 +1,1192 @@
+/**
+ * Omega Terminal - Global Styles
+ * Base styles and CSS variables for the application
+ */
+
+/* =============================================================================
+   CSS Reset and Base Styles
+   ============================================================================= */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  font-family: "Courier New", Monaco, monospace;
+  font-size: 14px;
+  line-height: 1.4;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* =============================================================================
+   CSS Custom Properties (Variables)
+   ============================================================================= */
+
+:root {
+  /* Primary Colors */
+  --color-primary: #00bcf2;
+  --color-secondary: #00ff88;
+  --color-accent: #ff00ff;
+
+  /* Background Colors */
+  --color-bg-primary: #0a0a0f;
+  --color-bg-secondary: #1a1a1f;
+  --color-bg-tertiary: #2a2a2f;
+
+  /* Text Colors */
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #cccccc;
+  --color-text-muted: #888888;
+
+  /* Status Colors */
+  --color-success: #00ff88;
+  --color-error: #ff3333;
+  --color-warning: #ffaa00;
+  --color-info: #00bcf2;
+
+  /* Terminal Colors */
+  --color-terminal-bg: #000000;
+  --color-terminal-text: #ffffff;
+  --color-terminal-prompt: #00bcf2;
+  --color-terminal-input: #ffffff;
+
+  /* Border and Shadow */
+  --color-border: #ffffff;
+  --shadow-glow: 0 0 15px var(--color-primary);
+
+  /* Spacing */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+
+  /* Border Radius */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+
+  /* Transitions */
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.3s ease;
+  --transition-slow: 0.5s ease;
+}
+
+/* =============================================================================
+   Typography
+   ============================================================================= */
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+code,
+pre {
+  font-family: "Courier New", Monaco, monospace;
+}
+
+/* =============================================================================
+   Scrollbar Styling
+   ============================================================================= */
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-bg-primary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-primary);
+  border-radius: var(--radius-sm);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-secondary);
+}
+
+/* =============================================================================
+   Animation Keyframes
+   ============================================================================= */
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes glow {
+  0%,
+  100% {
+    text-shadow: 0 0 5px var(--color-primary), 0 0 10px var(--color-primary);
+  }
+  50% {
+    text-shadow: 0 0 10px var(--color-primary), 0 0 20px var(--color-primary),
+      0 0 30px var(--color-primary);
+  }
+}
+
+@keyframes loadingProgress {
+  0% {
+    width: 0%;
+  }
+  100% {
+    width: 100%;
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ============================================================================
+   Multi-Network Connector Styles (ported from legacy terminal)
+   ============================================================================ */
+
+.network-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.network-modal[data-state-open="true"] {
+  opacity: 1;
+}
+
+.network-modal-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(10px);
+}
+
+.network-modal-content {
+  position: relative;
+  background: linear-gradient(
+    135deg,
+    rgba(10, 15, 30, 0.95) 0%,
+    rgba(15, 20, 35, 0.95) 100%
+  );
+  border: 2px solid var(--cyber-blue, #00bcf2);
+  border-radius: var(--radius-lg, 12px);
+  box-shadow: 0 0 40px rgba(0, 212, 255, 0.3),
+    inset 0 0 20px rgba(0, 212, 255, 0.1);
+  max-width: 600px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+  from {
+    transform: translateY(-50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.network-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-lg, 24px);
+  border-bottom: 1px solid var(--glass-border, rgba(0, 212, 255, 0.2));
+}
+
+.network-modal-header h2 {
+  margin: 0;
+  font-size: 20px;
+  color: var(--cyber-blue-bright, #00f7ff);
+  font-family: var(--font-tech, "Courier New", monospace);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.network-modal-close {
+  background: none;
+  border: none;
+  color: var(--cyber-blue, #00bcf2);
+  font-size: 24px;
+  cursor: pointer;
+  padding: 4px 8px;
+  transition: all var(--transition-fast, 0.15s ease);
+  border-radius: var(--radius-sm, 4px);
+}
+
+.network-modal-close:hover {
+  color: var(--color-error, #ff3333);
+  background: rgba(255, 0, 0, 0.1);
+}
+
+.network-modal-body {
+  padding: var(--spacing-lg, 24px);
+}
+
+.network-section {
+  margin-bottom: var(--spacing-lg, 24px);
+}
+
+.network-section:last-child {
+  margin-bottom: 0;
+}
+
+.network-section-title {
+  font-size: 12px;
+  color: var(--cyber-blue-dim, #5ecffd);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: var(--spacing-md, 16px);
+  padding-bottom: var(--spacing-sm, 8px);
+  border-bottom: 1px solid var(--glass-border, rgba(0, 212, 255, 0.2));
+  font-family: var(--font-tech, "Courier New", monospace);
+}
+
+.network-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: var(--spacing-md, 16px);
+}
+
+.network-button {
+  background: var(--glass-bg, rgba(4, 7, 15, 0.85));
+  border: 1px solid var(--glass-border, rgba(0, 212, 255, 0.2));
+  border-radius: var(--radius-md, 8px);
+  padding: var(--spacing-md, 16px);
+  cursor: pointer;
+  transition: all var(--transition-fast, 0.15s ease);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-sm, 8px);
+  position: relative;
+  overflow: hidden;
+}
+
+.network-button::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    45deg,
+    transparent,
+    rgba(0, 212, 255, 0.1),
+    transparent
+  );
+  transform: rotate(45deg);
+  transition: all 0.6s;
+  opacity: 0;
+}
+
+.network-button:hover::before {
+  opacity: 1;
+  transform: rotate(45deg) translate(50%, 50%);
+}
+
+.network-button:hover {
+  border-color: var(--cyber-blue, #00bcf2);
+  box-shadow: 0 0 20px rgba(0, 212, 255, 0.3),
+    inset 0 0 15px rgba(0, 212, 255, 0.1);
+  transform: translateY(-4px);
+}
+
+.network-logo-wrapper {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 4px;
+  background: var(--palette-bg-primary, rgba(0, 0, 0, 0.8));
+  border: 1px solid var(--palette-border, rgba(0, 212, 255, 0.3));
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 12px var(--palette-shadow, rgba(0, 0, 0, 0.3));
+  transition: all var(--transition-fast, 0.15s ease);
+}
+
+.network-logo-wrapper:hover {
+  background: var(--palette-bg-overlay, rgba(0, 0, 0, 0.9));
+  border-color: var(--palette-primary, #00d4ff);
+  box-shadow: 0 0 20px var(--palette-primary-glow, rgba(0, 212, 255, 0.3));
+  transform: scale(1.05);
+}
+
+.network-logo {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  object-fit: contain;
+  filter: drop-shadow(
+    0 2px 8px var(--palette-primary-glow, rgba(0, 212, 255, 0.3))
+  );
+  transition: all var(--transition-fast, 0.15s ease);
+}
+
+.network-button:hover .network-logo {
+  filter: drop-shadow(
+    0 4px 12px var(--palette-primary-glow, rgba(0, 212, 255, 0.6))
+  );
+  transform: scale(1.1);
+}
+
+.network-icon {
+  font-size: 32px;
+  filter: drop-shadow(0 0 10px var(--palette-primary-glow, currentColor));
+  color: var(--palette-primary, #00d4ff);
+}
+
+.omega-network-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  background: var(--palette-bg-primary, rgba(0, 0, 0, 0.9));
+  border-radius: 50%;
+  font-size: 32px;
+  font-weight: bold;
+  font-family: serif, "Times New Roman";
+  color: var(--palette-primary, #ffffff);
+  box-shadow: 0 0 12px var(--palette-primary-glow, rgba(255, 255, 255, 0.6));
+  border: 2px solid var(--palette-primary, #ffffff);
+  backdrop-filter: blur(10px);
+}
+
+.network-name {
+  font-size: 13px;
+  color: var(--palette-primary, #00d4ff);
+  text-align: center;
+  font-weight: 600;
+  font-family: var(--font-tech, "Courier New", monospace);
+}
+
+.network-symbol {
+  font-size: 11px;
+  color: var(--palette-text-secondary, #888888);
+  font-family: var(--font-mono, "Courier New", monospace);
+  letter-spacing: 0.5px;
+}
+
+.network-modal-footer {
+  padding: var(--spacing-md, 16px) var(--spacing-lg, 24px);
+  border-top: 1px solid var(--glass-border, rgba(0, 212, 255, 0.2));
+  text-align: center;
+}
+
+.network-modal-footer p {
+  margin: 0;
+  font-size: 11px;
+  color: var(--cyber-blue-dim, #5ecffd);
+  line-height: 1.5;
+}
+
+.network-display {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  background: rgba(0, 212, 255, 0.1);
+  border: 1px solid var(--cyber-blue, #00bcf2);
+  border-radius: var(--radius-sm, 4px);
+  margin-right: 12px;
+  animation: networkPulse 2s ease-in-out infinite;
+}
+
+@keyframes networkPulse {
+  0%,
+  100% {
+    box-shadow: 0 0 5px rgba(0, 212, 255, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 15px rgba(0, 212, 255, 0.5);
+  }
+}
+
+.network-modal-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.network-modal-content::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.network-modal-content::-webkit-scrollbar-thumb {
+  background: var(--cyber-blue, #00bcf2);
+  border-radius: 3px;
+}
+
+.network-modal-content::-webkit-scrollbar-thumb:hover {
+  background: var(--cyber-blue-bright, #00f7ff);
+}
+
+@media (max-width: 640px) {
+  .network-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .network-modal-content {
+    width: 95%;
+    max-height: 85vh;
+  }
+
+  .network-button {
+    padding: var(--spacing-sm, 8px);
+  }
+
+  .network-icon {
+    font-size: 24px;
+  }
+
+  .network-name {
+    font-size: 11px;
+  }
+}
+
+/* =============================================================================
+   Utility Classes
+   ============================================================================= */
+
+.hidden {
+  display: none !important;
+}
+
+.flex {
+  display: flex;
+}
+
+.flex-col {
+  flex-direction: column;
+}
+
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-left {
+  text-align: left;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.animate-pulse {
+  animation: pulse 2s infinite;
+}
+
+.animate-fadeIn {
+  animation: fadeIn var(--transition-normal);
+}
+
+.animate-slideIn {
+  animation: slideIn var(--transition-normal);
+}
+
+.animate-glow {
+  animation: glow 2s infinite;
+}
+
+/* =============================================================================
+   Selection
+   ============================================================================= */
+
+::selection {
+  background: var(--color-primary);
+  color: var(--color-terminal-bg);
+}
+
+::-moz-selection {
+  background: var(--color-primary);
+  color: var(--color-terminal-bg);
+}
+
+/* =============================================================================
+   Theme Classes
+   Applied to body element by ThemeProvider
+   CSS Modules handle component-specific styles
+   ============================================================================= */
+
+body.theme-dark {
+  background: #000;
+  color: #fff;
+}
+
+body.theme-light {
+  background: #fff;
+  color: #111;
+}
+
+body.theme-matrix {
+  background: #000;
+  color: #00ff00;
+}
+
+body.theme-retro {
+  background: #181200;
+  color: #ffaa00;
+}
+
+body.theme-powershell {
+  background: #012456;
+  color: #ffffff;
+}
+
+/* Executive and Modern themes reference full CSS files */
+body.theme-executive {
+  /* Full styles in styles/executive-theme.css */
+  background: #0a0a0f;
+  color: #ffffff;
+}
+
+body.theme-modern {
+  /* Full styles in styles/modern-ui-futuristic-theme.css */
+  background: #000000;
+  color: #ffffff;
+}
+
+/* Modern theme aliases */
+body.modern-ui-futuristic,
+body.modern-terminal-ui {
+  background: #000000;
+  color: #ffffff;
+}
+
+/* =============================================================================
+   Futuristic UI System - View Modes and GUI Themes
+   ============================================================================= */
+
+body.basic-terminal-mode {
+  /* Basic mode uses the terminal full-screen */
+  background: var(--color-terminal-bg, #000000);
+  color: var(--color-terminal-text, #ffffff);
+}
+
+/* =============================================================================
+   Color Palette Variables
+   Applied via body[data-color-palette="<name>"]
+   Variables referenced by components: --palette-primary, --palette-secondary,
+   --palette-accent, --palette-bg, --palette-surface, --palette-text,
+   --palette-muted, --palette-border, --palette-success, --palette-warning,
+   --palette-error
+   ============================================================================= */
+
+:root {
+  --palette-primary: #00bcf2;
+  --palette-secondary: #00ff88;
+  --palette-accent: #ff00ff;
+  --palette-bg: #0a0a0f;
+  --palette-surface: #111218;
+  --palette-text: #ffffff;
+  --palette-muted: #b7b7c2;
+  --palette-border: #2a2a33;
+  --palette-success: #16c782;
+  --palette-warning: #f2b705;
+  --palette-error: #ff4d4f;
+}
+
+body[data-color-palette="default"] {
+  --palette-primary: #00bcf2;
+  --palette-secondary: #00ff88;
+  --palette-accent: #ff00ff;
+  --palette-bg: #0a0a0f;
+  --palette-surface: #111218;
+  --palette-text: #ffffff;
+  --palette-muted: #b7b7c2;
+  --palette-border: #2a2a33;
+  --palette-success: #16c782;
+  --palette-warning: #f2b705;
+  --palette-error: #ff4d4f;
+}
+
+body[data-color-palette="red"] {
+  --palette-primary: #ff4d4f;
+  --palette-secondary: #ff7875;
+  --palette-accent: #ff9aa2;
+  --palette-bg: #130a0a;
+  --palette-surface: #1c1010;
+  --palette-text: #ffffff;
+  --palette-muted: #e0bcbc;
+  --palette-border: #3a1b1b;
+  --palette-success: #16c782;
+  --palette-warning: #f2b705;
+  --palette-error: #ff4d4f;
+}
+
+body[data-color-palette="crimson"] {
+  --palette-primary: #dc143c;
+  --palette-secondary: #ff6b81;
+  --palette-accent: #ff8fab;
+  --palette-bg: #14080c;
+  --palette-surface: #1b0c12;
+  --palette-text: #ffffff;
+  --palette-muted: #e7bcc8;
+  --palette-border: #3a1622;
+  --palette-success: #16c782;
+  --palette-warning: #f2b705;
+  --palette-error: #ff4d4f;
+}
+
+body[data-color-palette="anime"] {
+  --palette-primary: #ff6bd6;
+  --palette-secondary: #6bffea;
+  --palette-accent: #ffd66b;
+  --palette-bg: #0d0a12;
+  --palette-surface: #171321;
+  --palette-text: #ffffff;
+  --palette-muted: #cbc4d9;
+  --palette-border: #2a2336;
+  --palette-success: #16c782;
+  --palette-warning: #f2b705;
+  --palette-error: #ff4d4f;
+}
+
+body[data-color-palette="ocean"] {
+  --palette-primary: #00a3ff;
+  --palette-secondary: #00e1ff;
+  --palette-accent: #00ffa3;
+  --palette-bg: #06121a;
+  --palette-surface: #0c1c28;
+  --palette-text: #e7f7ff;
+  --palette-muted: #a8c7d6;
+  --palette-border: #153040;
+  --palette-success: #16c782;
+  --palette-warning: #f2b705;
+  --palette-error: #ff4d4f;
+}
+
+body[data-color-palette="blue"] {
+  --palette-primary: #2f80ed;
+  --palette-secondary: #56ccf2;
+  --palette-accent: #90e0ff;
+  --palette-bg: #0a0f18;
+  --palette-surface: #0f1624;
+  --palette-text: #ffffff;
+  --palette-muted: #b6c8e1;
+  --palette-border: #1c2942;
+  --palette-success: #16c782;
+  --palette-warning: #f2b705;
+  --palette-error: #ff4d4f;
+}
+
+body[data-color-palette="forest"] {
+  --palette-primary: #2ecc71;
+  --palette-secondary: #27ae60;
+  --palette-accent: #a8e6cf;
+  --palette-bg: #07120f;
+  --palette-surface: #0d1c17;
+  --palette-text: #e9fff6;
+  --palette-muted: #b5d9cd;
+  --palette-border: #173428;
+  --palette-success: #2ecc71;
+  --palette-warning: #f2b705;
+  --palette-error: #ff4d4f;
+}
+
+body[data-color-palette="green"] {
+  --palette-primary: #27ae60;
+  --palette-secondary: #2ecc71;
+  --palette-accent: #7bed9f;
+  --palette-bg: #08110c;
+  --palette-surface: #0e1a13;
+  --palette-text: #eafff3;
+  --palette-muted: #bfe5d1;
+  --palette-border: #173724;
+  --palette-success: #27ae60;
+  --palette-warning: #f2b705;
+  --palette-error: #ff4d4f;
+}
+
+body[data-color-palette="sunset"] {
+  --palette-primary: #ff7e67;
+  --palette-secondary: #ffbd69;
+  --palette-accent: #ffd36b;
+  --palette-bg: #140d0a;
+  --palette-surface: #1f1410;
+  --palette-text: #fff6f0;
+  --palette-muted: #e9c9b9;
+  --palette-border: #3a231b;
+  --palette-success: #16c782;
+  --palette-warning: #ffbd69;
+  --palette-error: #ff4d4f;
+}
+
+body[data-color-palette="purple"] {
+  --palette-primary: #9b59b6;
+  --palette-secondary: #8e44ad;
+  --palette-accent: #c39bd3;
+  --palette-bg: #110b14;
+  --palette-surface: #1a1220;
+  --palette-text: #f7ecff;
+  --palette-muted: #d9c4e6;
+  --palette-border: #2c1f36;
+  --palette-success: #16c782;
+  --palette-warning: #f2b705;
+  --palette-error: #ff4d4f;
+}
+
+body[data-color-palette="violet"] {
+  --palette-primary: #7c4dff;
+  --palette-secondary: #b388ff;
+  --palette-accent: #ea80fc;
+  --palette-bg: #0f0a16;
+  --palette-surface: #170f21;
+  --palette-text: #f2e9ff;
+  --palette-muted: #d6c6f5;
+  --palette-border: #2a1f3d;
+  --palette-success: #16c782;
+  --palette-warning: #f2b705;
+  --palette-error: #ff4d4f;
+}
+
+body[data-color-palette="cyber"] {
+  --palette-primary: #00e8ff;
+  --palette-secondary: #00ff9c;
+  --palette-accent: #ff00e0;
+  --palette-bg: #05060a;
+  --palette-surface: #0a0c12;
+  --palette-text: #e8fbff;
+  --palette-muted: #b9d8df;
+  --palette-border: #1a2030;
+  --palette-success: #00ff9c;
+  --palette-warning: #ffd166;
+  --palette-error: #ff4d6d;
+}
+
+body[data-color-palette="neon"] {
+  --palette-primary: #39ff14;
+  --palette-secondary: #00f7ff;
+  --palette-accent: #ff00ff;
+  --palette-bg: #050a05;
+  --palette-surface: #0a120a;
+  --palette-text: #eeffef;
+  --palette-muted: #c8f7d4;
+  --palette-border: #133217;
+  --palette-success: #39ff14;
+  --palette-warning: #ffe066;
+  --palette-error: #ff3860;
+}
+
+body[data-color-palette="gold"] {
+  --palette-primary: #f2c94c;
+  --palette-secondary: #f2994a;
+  --palette-accent: #ffd166;
+  --palette-bg: #110f08;
+  --palette-surface: #1a170c;
+  --palette-text: #fff9e6;
+  --palette-muted: #e9ddba;
+  --palette-border: #3a3315;
+  --palette-success: #16c782;
+  --palette-warning: #f2c94c;
+  --palette-error: #ff4d4f;
+}
+
+body[data-color-palette="luxury"] {
+  --palette-primary: #c0a062;
+  --palette-secondary: #8c7853;
+  --palette-accent: #d9c4a1;
+  --palette-bg: #0b0a08;
+  --palette-surface: #15130f;
+  --palette-text: #f7f2e7;
+  --palette-muted: #d7ccb8;
+  --palette-border: #2a261d;
+  --palette-success: #53d88b;
+  --palette-warning: #f2c94c;
+  --palette-error: #ff6b6b;
+}
+
+body[data-color-palette="ice"] {
+  --palette-primary: #a8d8ff;
+  --palette-secondary: #e0f7ff;
+  --palette-accent: #b0ffe0;
+  --palette-bg: #070a10;
+  --palette-surface: #0d121a;
+  --palette-text: #f5fbff;
+  --palette-muted: #d3e6f3;
+  --palette-border: #1a2533;
+  --palette-success: #8ef5c0;
+  --palette-warning: #ffe08a;
+  --palette-error: #ff7b8b;
+}
+
+body[data-color-palette="frost"] {
+  --palette-primary: #7dd3fc;
+  --palette-secondary: #bae6fd;
+  --palette-accent: #a7f3d0;
+  --palette-bg: #061016;
+  --palette-surface: #0b1922;
+  --palette-text: #e6f7ff;
+  --palette-muted: #cbe7f5;
+  --palette-border: #153040;
+  --palette-success: #86efac;
+  --palette-warning: #fde68a;
+  --palette-error: #fca5a5;
+}
+
+body[data-color-palette="fire"] {
+  --palette-primary: #ff6b00;
+  --palette-secondary: #ff3b3b;
+  --palette-accent: #ffd166;
+  --palette-bg: #160c07;
+  --palette-surface: #24130b;
+  --palette-text: #fff2e6;
+  --palette-muted: #f1c1a6;
+  --palette-border: #3a2115;
+  --palette-success: #53d88b;
+  --palette-warning: #ffb703;
+  --palette-error: #ff4d4f;
+}
+
+body[data-color-palette="flame"] {
+  --palette-primary: #ff8c42;
+  --palette-secondary: #ff5e57;
+  --palette-accent: #ffd166;
+  --palette-bg: #170e09;
+  --palette-surface: #24160e;
+  --palette-text: #fff2e8;
+  --palette-muted: #f5c7a1;
+  --palette-border: #3d2518;
+  --palette-success: #53d88b;
+  --palette-warning: #ffb703;
+  --palette-error: #ff4d4f;
+}
+
+body[data-color-palette="mint"] {
+  --palette-primary: #2ee6a6;
+  --palette-secondary: #a7f3d0;
+  --palette-accent: #7dd3fc;
+  --palette-bg: #07120f;
+  --palette-surface: #0d1c17;
+  --palette-text: #e9fff6;
+  --palette-muted: #c2f1de;
+  --palette-border: #173428;
+  --palette-success: #2ee6a6;
+  --palette-warning: #fde68a;
+  --palette-error: #fca5a5;
+}
+
+body[data-color-palette="turquoise"] {
+  --palette-primary: #00d1b2;
+  --palette-secondary: #6ee7e7;
+  --palette-accent: #7dd3fc;
+  --palette-bg: #061312;
+  --palette-surface: #0c1e1d;
+  --palette-text: #eafffb;
+  --palette-muted: #c1ece7;
+  --palette-border: #153230;
+  --palette-success: #34d399;
+  --palette-warning: #fde68a;
+  --palette-error: #f87171;
+}
+
+body[data-color-palette="rose"] {
+  --palette-primary: #f43f5e;
+  --palette-secondary: #fb7185;
+  --palette-accent: #fda4af;
+  --palette-bg: #160a0e;
+  --palette-surface: #210f15;
+  --palette-text: #ffeef2;
+  --palette-muted: #f8c7d1;
+  --palette-border: #3a1a24;
+  --palette-success: #34d399;
+  --palette-warning: #fbbf24;
+  --palette-error: #ef4444;
+}
+
+body[data-color-palette="pink"] {
+  --palette-primary: #ff69b4;
+  --palette-secondary: #ff9ad5;
+  --palette-accent: #ffd1f0;
+  --palette-bg: #150a12;
+  --palette-surface: #200f1a;
+  --palette-text: #ffeaf6;
+  --palette-muted: #f6c4e3;
+  --palette-border: #3a1c2d;
+  --palette-success: #34d399;
+  --palette-warning: #fbbf24;
+  --palette-error: #ef4444;
+}
+
+body[data-color-palette="amber"] {
+  --palette-primary: #f59e0b;
+  --palette-secondary: #fbbf24;
+  --palette-accent: #fde68a;
+  --palette-bg: #140f07;
+  --palette-surface: #1d170c;
+  --palette-text: #fff8e7;
+  --palette-muted: #f2d9a5;
+  --palette-border: #3a2b14;
+  --palette-success: #34d399;
+  --palette-warning: #f59e0b;
+  --palette-error: #ef4444;
+}
+
+body[data-color-palette="honey"] {
+  --palette-primary: #ffb703;
+  --palette-secondary: #ffd166;
+  --palette-accent: #ffe29a;
+  --palette-bg: #141005;
+  --palette-surface: #1e190a;
+  --palette-text: #fff7dd;
+  --palette-muted: #f3e2a7;
+  --palette-border: #3a2f12;
+  --palette-success: #34d399;
+  --palette-warning: #ffb703;
+  --palette-error: #ef4444;
+}
+
+body[data-color-palette="slate"] {
+  --palette-primary: #64748b;
+  --palette-secondary: #94a3b8;
+  --palette-accent: #cbd5e1;
+  --palette-bg: #0b0e12;
+  --palette-surface: #121720;
+  --palette-text: #e5e7eb;
+  --palette-muted: #cbd5e1;
+  --palette-border: #1f2937;
+  --palette-success: #34d399;
+  --palette-warning: #fbbf24;
+  --palette-error: #ef4444;
+}
+
+body[data-color-palette="silver"] {
+  --palette-primary: #c0c0c0;
+  --palette-secondary: #d9d9d9;
+  --palette-accent: #f0f0f0;
+  --palette-bg: #0c0c0c;
+  --palette-surface: #151515;
+  --palette-text: #f5f5f5;
+  --palette-muted: #dcdcdc;
+  --palette-border: #2a2a2a;
+  --palette-success: #34d399;
+  --palette-warning: #fbbf24;
+  --palette-error: #ef4444;
+}
+
+body[data-color-palette="lavender"] {
+  --palette-primary: #b57edc;
+  --palette-secondary: #d1b3ff;
+  --palette-accent: #f3e8ff;
+  --palette-bg: #100b14;
+  --palette-surface: #190f21;
+  --palette-text: #f9f5ff;
+  --palette-muted: #e6d7fb;
+  --palette-border: #2a1f3d;
+  --palette-success: #34d399;
+  --palette-warning: #fbbf24;
+  --palette-error: #ef4444;
+}
+
+body[data-color-palette="lilac"] {
+  --palette-primary: #c8a2c8;
+  --palette-secondary: #e2c6e2;
+  --palette-accent: #f7e9f7;
+  --palette-bg: #100b12;
+  --palette-surface: #190f1d;
+  --palette-text: #fbf5ff;
+  --palette-muted: #ecd9f0;
+  --palette-border: #2a1f33;
+  --palette-success: #34d399;
+  --palette-warning: #fbbf24;
+  --palette-error: #ef4444;
+}
+
+body[data-color-palette="toxic"] {
+  --palette-primary: #b6ff00;
+  --palette-secondary: #00ff9c;
+  --palette-accent: #00e8ff;
+  --palette-bg: #091003;
+  --palette-surface: #0f1809;
+  --palette-text: #f2ffe6;
+  --palette-muted: #d6f7b9;
+  --palette-border: #1c2e10;
+  --palette-success: #a3ff57;
+  --palette-warning: #ffe066;
+  --palette-error: #ff4d6d;
+}
+
+body[data-color-palette="radioactive"] {
+  --palette-primary: #39ff14;
+  --palette-secondary: #b6ff00;
+  --palette-accent: #00ffea;
+  --palette-bg: #060b05;
+  --palette-surface: #0b140a;
+  --palette-text: #ebffe8;
+  --palette-muted: #c7f7c1;
+  --palette-border: #132a13;
+  --palette-success: #39ff14;
+  --palette-warning: #ffd166;
+  --palette-error: #ff4d6d;
+}
+
+body.futuristic-mode {
+  /* Futuristic dashboard background */
+  background: var(--void-black, #0a0a0f);
+  color: var(--color-text-primary, #ffffff);
+}
+/* GUI Theme base classes (individual layouts provide their own styling) */
+body.gui-chatgpt,
+body.gui-aol,
+body.gui-discord,
+body.gui-windows95,
+body.gui-limewire {
+  margin: 0;
+  padding: 0;
+}
+
+/* Animation helpers for customizer */
+.no-grid .grid-bg {
+  display: none !important;
+}
+.no-scanline .scanline {
+  display: none !important;
+}
+.no-glow {
+  --shadow-glow: none;
+}
+.no-fade {
+  animation: none !important;
+}
+
+/* Theme switching smoothing */
+.switching-theme {
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+/* Additional keyframes used by welcome screen and grid */
+@keyframes gridMove {
+  from {
+    background-position: 0 0, 0 0;
+  }
+  to {
+    background-position: 50px 50px, 50px 50px;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+/* =============================================================================
+   Mobile & Touch Utilities
+   ============================================================================= */
+
+@media screen and (max-width: 768px) {
+  input,
+  select,
+  textarea,
+  button {
+    font-size: 16px;
+  }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  button,
+  input,
+  select,
+  textarea,
+  a {
+    min-height: 44px;
+    min-width: 44px;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: rgba(255, 255, 255, 0.2);
+  }
+}
+
+@supports (padding: max(0px)) {
+  .safe-area-pad {
+    padding-bottom: max(16px, calc(16px + env(safe-area-inset-bottom)));
+  }
+}

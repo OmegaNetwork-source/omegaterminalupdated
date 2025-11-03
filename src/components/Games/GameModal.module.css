@@ -1,0 +1,178 @@
+/**
+ * GameModal Styles
+ * Full-screen modal overlay for game rendering
+ */
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.9);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modal {
+  width: 90vw;
+  height: 90vh;
+  max-width: 1200px;
+  max-height: 900px;
+  background: linear-gradient(
+    135deg,
+    rgba(0, 0, 0, 0.95),
+    rgba(26, 26, 46, 0.95)
+  );
+  border: 2px solid rgba(0, 255, 153, 0.3);
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(0, 255, 153, 0.2);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  background: rgba(0, 0, 0, 0.5);
+  border-bottom: 1px solid rgba(0, 255, 153, 0.2);
+}
+
+.title {
+  font-size: 24px;
+  font-weight: bold;
+  color: #00ff99;
+  text-shadow: 0 0 10px #00ff99;
+  margin: 0;
+}
+
+.headerButtons {
+  display: flex;
+  gap: 10px;
+}
+
+.headerBtn {
+  background: rgba(0, 255, 153, 0.2);
+  border: 1px solid #00ff99;
+  color: #00ff99;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: "Courier New", monospace;
+  font-size: 16px;
+  min-width: 40px;
+}
+
+.headerBtn:hover {
+  background: rgba(0, 255, 153, 0.4);
+  box-shadow: 0 0 15px rgba(0, 255, 153, 0.5);
+  transform: translateY(-1px);
+}
+
+.headerBtn:active {
+  transform: translateY(0);
+}
+
+.gameContainer {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #000;
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  background: rgba(0, 0, 0, 0.5);
+  border-top: 1px solid rgba(0, 255, 153, 0.2);
+}
+
+.scoreDisplay {
+  font-size: 18px;
+  color: #00ff99;
+  font-weight: bold;
+  font-family: "Courier New", monospace;
+}
+
+.submitBtn {
+  background: linear-gradient(135deg, #00ff99, #00cc77);
+  color: #000;
+  padding: 10px 24px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  font-family: "Courier New", monospace;
+}
+
+.submitBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 255, 153, 0.4);
+}
+
+.submitBtn:active {
+  transform: translateY(0);
+}
+
+.submitBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .modal {
+    width: 95vw;
+    height: 95vh;
+    border-radius: 12px;
+  }
+
+  .header {
+    padding: 12px 15px;
+  }
+
+  .title {
+    font-size: 18px;
+  }
+
+  .headerBtn {
+    padding: 6px 12px;
+    font-size: 14px;
+    min-width: 36px;
+  }
+
+  .footer {
+    padding: 12px 15px;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .submitBtn {
+    width: 100%;
+  }
+}

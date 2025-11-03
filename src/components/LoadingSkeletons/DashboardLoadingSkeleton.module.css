@@ -1,0 +1,264 @@
+.container {
+  display: grid;
+  grid-template-areas: "sidebar terminal stats";
+  grid-template-columns: 280px 1fr 320px;
+  width: 100vw;
+  height: 100vh;
+  background: #0a0a0f;
+  overflow: hidden;
+  padding: 16px;
+  box-sizing: border-box;
+  gap: 18px;
+}
+
+.sidebar {
+  grid-area: sidebar;
+  background: #111119;
+  border-radius: 16px;
+  padding: 18px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+}
+
+.sidebarHeader {
+  height: 48px;
+  border-radius: 12px;
+}
+
+.sidebarSection {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sidebarFooter {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.terminal {
+  grid-area: terminal;
+  background: #111119;
+  border-radius: 24px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.4);
+}
+
+.terminalHeader {
+  height: 56px;
+  border-radius: 14px;
+  margin-bottom: 18px;
+}
+
+.terminalBody {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-right: 8px;
+  overflow: hidden;
+}
+
+.outputLine {
+  height: 20px;
+  border-radius: 8px;
+}
+
+.commandInput {
+  height: 58px;
+  border-radius: 16px;
+  margin-top: 18px;
+}
+
+.stats {
+  grid-area: stats;
+  background: #111119;
+  border-radius: 20px;
+  padding: 22px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.35);
+}
+
+.statsHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.statTitle {
+  height: 26px;
+  width: 70%;
+  border-radius: 10px;
+}
+
+.statSubtitle {
+  height: 18px;
+  width: 55%;
+  border-radius: 8px;
+}
+
+.statCards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.statCard {
+  height: 110px;
+  border-radius: 16px;
+}
+
+.activityFeed {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.activityItem {
+  height: 22px;
+  border-radius: 8px;
+}
+
+.skeletonBar {
+  height: 40px;
+  border-radius: 12px;
+}
+
+.skeletonLine {
+  height: 20px;
+  border-radius: 10px;
+}
+
+.shimmer {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(90deg, #19191f 0%, #2a2a31 50%, #19191f 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+
+.shimmer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.08) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  animation: shimmer-highlight 1.5s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+@keyframes shimmer-highlight {
+  0% {
+    transform: translateX(-100%);
+  }
+
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@media (max-width: 1440px) {
+  .container {
+    grid-template-columns: 240px 1fr 280px;
+    padding: 12px;
+    gap: 14px;
+  }
+
+  .terminal {
+    border-radius: 20px;
+    padding: 20px;
+  }
+
+  .stats {
+    border-radius: 18px;
+    padding: 18px;
+  }
+}
+
+@media (max-width: 1200px) {
+  .container {
+    grid-template-areas:
+      "terminal terminal"
+      "sidebar stats";
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr auto;
+    height: auto;
+    min-height: 100vh;
+  }
+
+  .terminal {
+    min-height: 60vh;
+  }
+}
+
+@media (max-width: 960px) {
+  .container {
+    grid-template-areas:
+      "terminal"
+      "sidebar"
+      "stats";
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .sidebar,
+  .stats {
+    flex-direction: column;
+  }
+
+  .statCards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .container {
+    padding: 12px 8px;
+  }
+
+  .terminal,
+  .sidebar,
+  .stats {
+    padding: 16px;
+  }
+
+  .statCards {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shimmer {
+    animation: none;
+  }
+
+  .shimmer::after {
+    animation: none;
+    opacity: 0.08;
+  }
+}

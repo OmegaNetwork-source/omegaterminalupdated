@@ -1,0 +1,283 @@
+/**
+ * BootAnimation Component Styles
+ * Styles for the boot animation screen with Omega branding
+ */
+
+.container {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #000000 0%, #0a0a0f 100%);
+  color: #ffffff;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9999;
+}
+
+.content {
+  text-align: center;
+  animation: fadeIn 0.5s ease-out;
+}
+
+.logo {
+  font-size: 120px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  text-shadow: 0 0 30px #00bcf2, 0 0 60px #00bcf2;
+  animation: glow 2s infinite;
+}
+
+.logoFloat {
+  animation: float 4s ease-in-out infinite;
+}
+
+.logoPulse {
+  animation: pulse 3s ease-in-out infinite;
+}
+
+.logoGlow {
+  animation: glow 2s ease-in-out infinite;
+}
+
+.title {
+  font-size: 48px;
+  font-weight: bold;
+  letter-spacing: 4px;
+  margin-bottom: 10px;
+  text-shadow: 0 0 20px #ffffff;
+}
+
+.version {
+  font-size: 24px;
+  color: #00bcf2;
+  margin-bottom: 10px;
+}
+
+.subtitle {
+  font-size: 18px;
+  color: #cccccc;
+  margin-bottom: 40px;
+}
+
+.loadingBarContainer {
+  width: 400px;
+  height: 4px;
+  background: #1a1a1f;
+  border-radius: 2px;
+  overflow: hidden;
+  margin: 0 auto 30px;
+}
+
+.loadingBar {
+  height: 100%;
+  background: linear-gradient(90deg, #00bcf2, #00ff88);
+  transition: width 0.1s linear;
+  box-shadow: 0 0 10px #00bcf2;
+}
+
+.loadingBarGradient {
+  background: linear-gradient(
+    90deg,
+    rgba(0, 188, 242, 0.2),
+    rgba(0, 255, 136, 0.5),
+    rgba(0, 188, 242, 0.2)
+  );
+  background-size: 200% 100%;
+  animation: gradientFlow 1.8s linear infinite;
+}
+
+.loadingText {
+  font-size: 14px;
+  color: #cccccc;
+  margin-top: 10px;
+}
+
+.featureBadges {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.badgeEmoji {
+  font-size: 32px;
+}
+
+.badgeLabel {
+  font-size: 14px;
+  color: #cccccc;
+}
+
+/* -----------------------------------------------------------------------------
+   Theme Variants
+   ----------------------------------------------------------------------------- */
+
+:global(body.theme-executive) .container {
+  background: linear-gradient(135deg, #100c06 0%, #0a0a0f 100%);
+}
+
+:global(body.theme-modern) .container {
+  background: linear-gradient(135deg, #030314 0%, #090921 100%);
+}
+
+:global(body.theme-matrix) .container {
+  background: linear-gradient(135deg, #000000 0%, #012d12 100%);
+}
+
+/* -----------------------------------------------------------------------------
+   Animations
+   ----------------------------------------------------------------------------- */
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes glow {
+  0%,
+  100% {
+    text-shadow: 0 0 30px #00bcf2, 0 0 60px #00bcf2;
+  }
+  50% {
+    text-shadow: 0 0 60px #00bcf2, 0 0 90px #00bcf2;
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-12px);
+  }
+}
+
+@keyframes gradientFlow {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* -----------------------------------------------------------------------------
+   Responsive Breakpoints
+   ----------------------------------------------------------------------------- */
+
+@media (max-width: 1400px) {
+  .logo {
+    font-size: 110px;
+  }
+
+  .title {
+    font-size: 42px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .logo {
+    font-size: 96px;
+  }
+
+  .title {
+    font-size: 36px;
+    letter-spacing: 3px;
+  }
+
+  .loadingBarContainer {
+    width: 320px;
+  }
+}
+
+@media (max-width: 768px) {
+  .logo {
+    font-size: 80px;
+  }
+
+  .title {
+    font-size: 32px;
+    letter-spacing: 2px;
+  }
+
+  .version {
+    font-size: 18px;
+  }
+
+  .subtitle {
+    font-size: 14px;
+    margin-bottom: 30px;
+  }
+
+  .loadingBarContainer {
+    width: 280px;
+  }
+
+  .badgeEmoji {
+    font-size: 24px;
+  }
+
+  .badgeLabel {
+    font-size: 12px;
+  }
+
+  .featureBadges {
+    gap: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .logo {
+    font-size: 64px;
+  }
+
+  .title {
+    font-size: 26px;
+  }
+
+  .version {
+    font-size: 16px;
+  }
+
+  .subtitle {
+    font-size: 13px;
+    margin-bottom: 24px;
+  }
+
+  .loadingBarContainer {
+    width: 240px;
+  }
+}
+
+/* -----------------------------------------------------------------------------
+   Safe Area & Touch Enhancements
+   ----------------------------------------------------------------------------- */
+
+@supports (padding: max(0px)) {
+  .container {
+    padding-bottom: max(24px, env(safe-area-inset-bottom));
+    padding-top: max(24px, env(safe-area-inset-top));
+  }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .badge {
+    min-height: 44px;
+  }
+}

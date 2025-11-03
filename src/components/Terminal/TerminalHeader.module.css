@@ -1,0 +1,526 @@
+/**
+ * @file TerminalHeader.module.css
+ * @description Terminal header layout with theme-aware styling and mobile optimizations.
+ * @sources styles/base.css, styles/futuristic-theme.css, styles/mobile-terminal-fix.css
+ */
+
+/* -----------------------------------------------------------------------------
+   Core Header Layout
+   ----------------------------------------------------------------------------- */
+
+.header {
+  border-bottom: 1px solid #ffffff;
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.headerLeft,
+.headerCenter,
+.headerRight {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.headerLeft {
+  gap: 18px;
+}
+
+.routeNav {
+  display: none; /* Hide route navigation in basic mode to match vanilla */
+}
+
+.routeLink {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.65);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.routeLink:hover {
+  color: rgba(0, 255, 214, 0.95);
+  border-color: rgba(0, 255, 214, 0.45);
+}
+
+.headerCenter {
+  justify-content: center;
+}
+
+.headerRight {
+  justify-content: flex-end;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.title {
+  font-size: 28px;
+  font-weight: bold;
+  text-shadow: 0 0 15px #ffffff, 0 0 30px #ffffff;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin: 0;
+  color: #ffffff;
+}
+
+.subtitle {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.65);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.socialLinks {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.socialLink {
+  background: rgba(0, 188, 242, 0.1);
+  border: 1px solid rgba(0, 188, 242, 0.3);
+  border-radius: 6px;
+  padding: 6px;
+  color: #00bcf2;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.socialLink:hover {
+  background: rgba(0, 188, 242, 0.2);
+  border-color: rgba(0, 188, 242, 0.5);
+  box-shadow: 0 0 10px rgba(0, 188, 242, 0.3);
+}
+
+.divider {
+  width: 1px;
+  height: 20px;
+  background: rgba(0, 188, 242, 0.3);
+  margin: 0 4px;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.controlsMobile {
+  display: none;
+}
+
+.controlButton {
+  background: rgba(0, 188, 242, 0.1);
+  border: 1px solid rgba(0, 188, 242, 0.3);
+  border-radius: 6px;
+  padding: 6px 12px;
+  color: #00bcf2;
+  font-family: "Courier New", monospace;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: all 0.2s ease;
+}
+
+.controlButton:hover {
+  background: rgba(0, 188, 242, 0.2);
+  border-color: rgba(0, 188, 242, 0.5);
+  box-shadow: 0 0 10px rgba(0, 188, 242, 0.3);
+}
+
+.aiLabel {
+  color: #00bcf2;
+  font-family: "Courier New", monospace;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.aiSelect {
+  background: rgba(0, 188, 242, 0.1);
+  border: 1px solid rgba(0, 188, 242, 0.3);
+  border-radius: 6px;
+  padding: 6px 10px;
+  color: #00bcf2;
+  font-family: "Courier New", monospace;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, #00bcf2 50%),
+    linear-gradient(135deg, #00bcf2 50%, transparent 50%);
+  background-position: calc(100% - 15px) calc(1em + 2px),
+    calc(100% - 10px) calc(1em + 2px);
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+  min-width: 110px;
+}
+
+.aiSelect:focus {
+  outline: none;
+  border-color: rgba(0, 188, 242, 0.6);
+}
+
+.connectionStatus {
+  font-size: 12px;
+  color: #cccccc;
+}
+
+.headerBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+/* -----------------------------------------------------------------------------
+   Theme Variants (global selectors)
+   ----------------------------------------------------------------------------- */
+
+:global(body.theme-executive) .header {
+  border-bottom-color: rgba(255, 215, 0, 0.38);
+  background: linear-gradient(
+    180deg,
+    rgba(8, 10, 16, 0.85) 0%,
+    rgba(4, 5, 9, 0) 100%
+  );
+}
+
+:global(body.theme-executive) .title {
+  color: rgba(255, 215, 0, 0.95);
+  text-shadow: 0 0 18px rgba(255, 215, 0, 0.35);
+}
+
+:global(body.theme-modern) .header {
+  border-bottom-color: rgba(98, 0, 255, 0.4);
+  background: linear-gradient(
+    180deg,
+    rgba(18, 20, 36, 0.85) 0%,
+    rgba(10, 12, 20, 0) 100%
+  );
+}
+
+:global(body.theme-modern) .title {
+  color: rgba(180, 175, 255, 0.95);
+  text-shadow: 0 0 20px rgba(98, 0, 255, 0.35);
+}
+
+:global(body.theme-matrix) .title {
+  color: #39ff14;
+  text-shadow: 0 0 18px rgba(57, 255, 20, 0.45);
+}
+
+:global(body.theme-retro) .title {
+  color: #ffaa00;
+  text-shadow: 0 0 18px rgba(255, 170, 0, 0.45);
+}
+
+:global(body.theme-powershell) .title {
+  color: #f9f1a5;
+  text-shadow: 0 0 18px rgba(249, 241, 165, 0.35);
+}
+
+:global(body.futuristic-mode) .header {
+  border-bottom-color: rgba(0, 255, 210, 0.4);
+}
+
+:global(body.light-mode) .header {
+  border-bottom-color: rgba(0, 81, 213, 0.25);
+  background: linear-gradient(
+    180deg,
+    rgba(240, 247, 255, 0.35) 0%,
+    rgba(240, 247, 255, 0) 100%
+  );
+}
+
+:global(body.light-mode) .title {
+  color: var(--cyber-blue, #0051d5);
+  text-shadow: 0 0 12px rgba(0, 81, 213, 0.25);
+}
+
+:global(body.light-mode) .controlButton {
+  background: rgba(0, 81, 213, 0.08);
+  border: 1px solid rgba(0, 81, 213, 0.2);
+  color: var(--cyber-blue, #0051d5);
+}
+
+:global(body.light-mode) .controlButton:hover {
+  background: rgba(0, 81, 213, 0.15);
+  border-color: var(--cyber-blue, #0051d5);
+  box-shadow: 0 0 10px rgba(0, 81, 213, 0.2);
+}
+
+:global(body.light-mode) .socialLink {
+  background: rgba(0, 81, 213, 0.08);
+  border: 1px solid rgba(0, 81, 213, 0.2);
+  color: var(--cyber-blue, #0051d5);
+}
+
+:global(body.light-mode) .socialLink:hover {
+  background: rgba(0, 81, 213, 0.15);
+  border-color: var(--cyber-blue, #0051d5);
+  box-shadow: 0 0 10px rgba(0, 81, 213, 0.2);
+}
+
+:global(body.light-mode) .divider {
+  background: rgba(0, 81, 213, 0.2);
+}
+
+:global(body.modern-ui-futuristic) .header {
+  border-bottom-color: rgba(0, 255, 210, 0.35);
+  background: linear-gradient(
+    180deg,
+    rgba(8, 14, 32, 0.85) 0%,
+    rgba(4, 8, 18, 0) 100%
+  );
+}
+
+:global(body.modern-ui-futuristic) .controlButton {
+  background: rgba(0, 255, 210, 0.12);
+  border: 1px solid rgba(0, 255, 210, 0.25);
+  color: rgba(0, 255, 210, 0.9);
+}
+
+:global(body.modern-ui-futuristic) .socialLink {
+  background: rgba(0, 255, 210, 0.1);
+  border: 1px solid rgba(0, 255, 210, 0.25);
+  color: rgba(0, 255, 210, 0.95);
+}
+
+/* -----------------------------------------------------------------------------
+   Responsive Breakpoints
+   ----------------------------------------------------------------------------- */
+
+@media (max-width: 1400px) {
+  .title {
+    font-size: 22px;
+  }
+
+  .controls {
+    gap: 10px;
+  }
+
+  .controlButton {
+    padding: 6px 12px;
+    font-size: 10px;
+  }
+
+  .connectionStatus {
+    font-size: 11px;
+    padding: 6px 12px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .header {
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .headerRight {
+    justify-content: center;
+  }
+
+  .controls {
+    justify-content: center;
+  }
+
+  .socialLinks {
+    gap: 12px;
+  }
+
+  .socialLink {
+    width: 32px;
+    height: 32px;
+  }
+
+  .title {
+    font-size: 20px;
+  }
+
+  .headerBadge {
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
+    padding-bottom: 14px;
+  }
+
+  .headerLeft,
+  .headerCenter,
+  .headerRight {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .headerLeft {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .title {
+    font-size: 18px;
+    text-align: center;
+  }
+
+  .subtitle {
+    text-align: center;
+    font-size: 10px;
+  }
+
+  .socialLinks {
+    justify-content: center;
+  }
+
+  .controls {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .controlsMobile {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .controlButton {
+    width: calc(50% - 8px);
+    min-width: 140px;
+    justify-content: center;
+    padding: 8px 12px;
+    font-size: 10px;
+  }
+
+  .aiGroup {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .aiSelect {
+    width: 100%;
+    min-width: 0;
+    font-size: 11px;
+    padding: 10px 16px;
+  }
+
+  .connectionStatus {
+    justify-content: center;
+    width: 100%;
+    font-size: 10px;
+    padding: 7px 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .header {
+    padding-bottom: 12px;
+  }
+
+  .title {
+    font-size: 16px;
+  }
+
+  .socialLinks {
+    gap: 10px;
+  }
+
+  .socialLink {
+    width: 30px;
+    height: 30px;
+  }
+
+  .controlButton {
+    width: 100%;
+    padding: 10px;
+    font-size: 0.78rem;
+  }
+
+  .headerBadge {
+    display: none;
+  }
+}
+
+@media (max-height: 600px) and (orientation: landscape) {
+  .header {
+    padding-bottom: 12px;
+    margin-bottom: 14px;
+  }
+
+  .controlButton {
+    padding: 6px 10px;
+    font-size: 9px;
+  }
+
+  .connectionStatus {
+    font-size: 9px;
+  }
+}
+
+/* -----------------------------------------------------------------------------
+   Feature Queries & Touch Enhancements
+   ----------------------------------------------------------------------------- */
+
+@supports (-webkit-touch-callout: none) {
+  .header {
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .controlButton,
+  .socialLink {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+.headerMobile {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .headerMobile {
+    display: block;
+  }
+}
+
+.compactMode {
+  gap: 10px;
+  padding-bottom: 10px;
+}

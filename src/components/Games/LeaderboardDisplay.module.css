@@ -1,0 +1,168 @@
+/**
+ * LeaderboardDisplay Styles
+ * Game leaderboard table with tabs and rank badges
+ */
+
+.container {
+  background: rgba(0, 0, 0, 0.8);
+  border: 1px solid rgba(0, 255, 153, 0.3);
+  border-radius: 12px;
+  padding: 20px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.header {
+  font-size: 20px;
+  font-weight: bold;
+  color: #00ff99;
+  margin-bottom: 15px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.tab {
+  padding: 10px 20px;
+  background: transparent;
+  border: none;
+  color: #cccccc;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-bottom: 2px solid transparent;
+  font-family: "Courier New", monospace;
+  font-size: 14px;
+}
+
+.tab:hover {
+  color: #ffffff;
+}
+
+.tab.active {
+  color: #00ff99;
+  border-bottom-color: #00ff99;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tableHeader {
+  background: rgba(0, 255, 153, 0.1);
+  color: #00ff99;
+  text-align: left;
+  padding: 10px;
+  font-weight: bold;
+  border-bottom: 2px solid rgba(0, 255, 153, 0.3);
+  font-family: "Courier New", monospace;
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.tableRow {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  transition: all 0.2s ease;
+}
+
+.tableRow:hover {
+  background: rgba(0, 255, 153, 0.05);
+}
+
+.tableCell {
+  padding: 10px;
+  color: #ffffff;
+  font-family: "Courier New", monospace;
+  font-size: 14px;
+}
+
+.rankBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  font-weight: bold;
+  font-size: 14px;
+  font-family: "Courier New", monospace;
+}
+
+.rankGold {
+  background: linear-gradient(135deg, #ffd700, #ffa500);
+  color: #000;
+  box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+}
+
+.rankSilver {
+  background: linear-gradient(135deg, #c0c0c0, #a8a8a8);
+  color: #000;
+  box-shadow: 0 0 15px rgba(192, 192, 192, 0.5);
+}
+
+.rankBronze {
+  background: linear-gradient(135deg, #cd7f32, #b8860b);
+  color: #000;
+  box-shadow: 0 0 15px rgba(205, 127, 50, 0.5);
+}
+
+.rankDefault {
+  background: rgba(0, 255, 153, 0.2);
+  color: #00ff99;
+  border: 1px solid #00ff99;
+}
+
+.loading {
+  text-align: center;
+  padding: 40px;
+  color: #cccccc;
+  font-family: "Courier New", monospace;
+}
+
+.empty {
+  text-align: center;
+  padding: 40px;
+  color: #888888;
+  font-family: "Courier New", monospace;
+}
+
+.empty > div:first-child {
+  font-size: 48px;
+  margin-bottom: 10px;
+}
+
+.empty > div:last-child {
+  font-size: 16px;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .container {
+    padding: 15px;
+  }
+
+  .header {
+    font-size: 18px;
+  }
+
+  .tableHeader,
+  .tableCell {
+    padding: 8px 6px;
+    font-size: 12px;
+  }
+
+  .rankBadge {
+    width: 24px;
+    height: 24px;
+    font-size: 12px;
+  }
+}

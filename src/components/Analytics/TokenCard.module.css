@@ -1,0 +1,135 @@
+/**
+ * TokenCard Component Styles
+ * Matches the DexScreener display format from the original implementation
+ */
+
+.card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(0, 188, 242, 0.3);
+  border-radius: 8px;
+  padding: 15px;
+  margin: 10px 0;
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  border-color: #00bcf2;
+  box-shadow: 0 0 15px rgba(0, 188, 242, 0.2);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.rank {
+  background: #00bcf2;
+  color: #000;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 14px;
+  margin-right: 10px;
+}
+
+.symbol {
+  font-size: 18px;
+  font-weight: bold;
+  color: #00bcf2;
+}
+
+.chain {
+  font-size: 12px;
+  color: #cccccc;
+  margin-left: 8px;
+}
+
+.name {
+  font-size: 14px;
+  color: #ffffff;
+  margin-bottom: 8px;
+}
+
+.price {
+  font-size: 16px;
+  color: #00ff88;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.address {
+  font-size: 12px;
+  color: #cccccc;
+  margin-bottom: 8px;
+  word-break: break-all;
+}
+
+.copyButton {
+  background: rgba(0, 188, 242, 0.2);
+  border: 1px solid rgba(0, 188, 242, 0.5);
+  color: #00bcf2;
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 11px;
+  margin-left: 8px;
+  transition: all 0.2s ease;
+}
+
+.copyButton:hover {
+  background: rgba(0, 188, 242, 0.3);
+}
+
+.stats {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 8px;
+  font-size: 13px;
+  flex-wrap: wrap;
+}
+
+.statPositive {
+  color: #00ff88;
+  font-weight: bold;
+}
+
+.statNegative {
+  color: #ff3333;
+  font-weight: bold;
+}
+
+.link {
+  color: #00bcf2;
+  text-decoration: underline;
+  font-size: 13px;
+}
+
+.link:hover {
+  color: #00ff88;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .card {
+    padding: 12px;
+  }
+
+  .stats {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .symbol {
+    font-size: 16px;
+  }
+
+  .price {
+    font-size: 14px;
+  }
+}

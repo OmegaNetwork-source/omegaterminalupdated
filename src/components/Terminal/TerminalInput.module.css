@@ -1,0 +1,423 @@
+/**
+ * @file TerminalInput.module.css
+ * @description Command input styling with theme variants, touch optimizations, and responsive layout.
+ * @sources styles/command-input-unified.css, styles/base.css, styles/themes.css, styles/mobile-terminal-fix.css
+ */
+
+/* -----------------------------------------------------------------------------
+   Input Section Layout
+   ----------------------------------------------------------------------------- */
+
+.inputSection {
+  padding: 16px 24px;
+  background: transparent;
+  border-top: 1px solid rgba(0, 212, 255, 0.15);
+  display: flex;
+  align-items: center;
+  gap: 0;
+  flex-shrink: 0;
+  min-height: 70px;
+  width: 100%;
+  box-sizing: border-box;
+  position: relative;
+  z-index: 5;
+  margin-top: auto;
+}
+
+/* Basic mode overrides */
+:global(.container:not(.embedded)) .inputSection {
+  border: 1px solid #ffffff !important;
+  padding: 15px !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-radius: 5px !important;
+  width: calc(100vw - 40px) !important;
+  min-width: calc(100vw - 40px) !important;
+  max-width: calc(100vw - 40px) !important;
+  border-top: none;
+}
+
+.inputLine {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  background: rgba(0, 212, 255, 0.05);
+  padding: 12px 18px;
+  border-radius: 6px;
+  border: 1px solid rgba(0, 212, 255, 0.2);
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.inputLine:focus-within {
+  border-color: #00d4ff;
+  box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.15);
+  background: rgba(0, 212, 255, 0.08);
+  transform: translateY(-1px);
+}
+
+/* Basic mode overrides */
+:global(.container:not(.embedded)) .inputLine {
+  background: none !important;
+  border: none !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+}
+
+.prompt {
+  color: #00d4ff;
+  font-weight: 600;
+  font-family: "Courier New", monospace;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  font-size: 15px;
+  flex-shrink: 0;
+}
+
+/* Basic mode overrides */
+:global(.container:not(.embedded)) .prompt {
+  color: #ffffff;
+  font-size: 16px;
+  margin-right: 10px;
+}
+
+.input {
+  flex: 1;
+  width: 100%;
+  min-width: 0;
+  background: transparent;
+  border: none;
+  color: #00d4ff;
+  font-family: "Courier New", monospace;
+  font-size: 14px;
+  outline: none;
+  padding: 4px 0;
+  letter-spacing: 0.3px;
+  caret-color: transparent !important;
+  cursor: text;
+  text-align: left;
+  direction: ltr;
+  opacity: 1;
+  position: relative;
+  z-index: 1;
+}
+
+/* Basic mode overrides */
+:global(.container:not(.embedded)) .input {
+  color: #ffffff !important;
+  font-size: 16px !important;
+  padding: 0 !important;
+  padding-right: 50px !important;
+}
+
+.input::placeholder {
+  color: rgba(0, 212, 255, 0.5);
+  opacity: 0.7;
+}
+
+/* Basic mode overrides */
+:global(.container:not(.embedded)) .input::placeholder {
+  color: #555555;
+}
+
+.input:focus {
+  caret-color: #00ffff !important;
+}
+
+/* Light mode overrides */
+:global(body.light-mode) .inputLine {
+  background: rgba(0, 81, 213, 0.05);
+  border-color: rgba(0, 81, 213, 0.2);
+}
+
+:global(body.light-mode) .inputLine:focus-within {
+  background: rgba(0, 81, 213, 0.08);
+  border-color: var(--cyber-blue, #0051d5);
+  box-shadow: 0 0 0 3px rgba(0, 81, 213, 0.15);
+}
+
+:global(body.light-mode) .prompt {
+  color: var(--cyber-blue, #0051d5);
+}
+
+:global(body.light-mode) .input {
+  color: var(--cyber-blue, #0051d5);
+}
+
+:global(body.light-mode) .input::placeholder {
+  color: rgba(0, 81, 213, 0.5);
+}
+
+.input:focus {
+  outline: none;
+}
+
+.input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.input:-webkit-autofill,
+.input:-webkit-autofill:hover,
+.input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 1000px transparent inset;
+  -webkit-text-fill-color: currentColor;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+.input::selection {
+  background: rgba(0, 188, 242, 0.25);
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.inputHint {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.55);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* -----------------------------------------------------------------------------
+   Theme Variants (global selectors)
+   ----------------------------------------------------------------------------- */
+
+:global(body.theme-executive) .inputSection {
+  background: rgba(12, 12, 18, 0.92);
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  color: rgba(245, 238, 220, 0.92);
+}
+
+:global(body.theme-executive) .prompt {
+  color: rgba(255, 215, 0, 0.95);
+}
+
+:global(body.theme-executive) .input::placeholder {
+  color: rgba(255, 215, 0, 0.45);
+}
+
+:global(body.theme-modern) .inputSection {
+  background: linear-gradient(
+    160deg,
+    rgba(18, 20, 36, 0.92) 0%,
+    rgba(12, 15, 28, 0.92) 100%
+  );
+  border: 1px solid rgba(98, 0, 255, 0.4);
+  box-shadow: 0 24px 48px rgba(98, 0, 255, 0.18);
+}
+
+:global(body.theme-modern) .input {
+  color: rgba(220, 220, 245, 0.95);
+}
+
+:global(body.theme-modern) .input::placeholder {
+  color: rgba(180, 175, 255, 0.45);
+}
+
+:global(body.theme-matrix) .inputSection {
+  background: rgba(0, 6, 0, 0.92);
+  border: 1px solid rgba(57, 255, 20, 0.35);
+}
+
+:global(body.theme-matrix) .prompt,
+:global(body.theme-matrix) .input {
+  color: rgba(57, 255, 20, 0.95);
+}
+
+:global(body.theme-retro) .inputSection {
+  background: rgba(24, 18, 0, 0.9);
+  border: 1px solid rgba(255, 170, 0, 0.35);
+}
+
+:global(body.theme-retro) .prompt {
+  color: rgba(255, 170, 0, 0.95);
+}
+
+:global(body.theme-powershell) .inputSection {
+  background: rgba(1, 36, 86, 0.9);
+  border: 1px solid rgba(0, 188, 242, 0.35);
+}
+
+:global(body.theme-powershell) .prompt {
+  color: rgba(249, 241, 165, 0.95);
+}
+
+:global(body.basic-terminal-mode) .inputSection {
+  background: rgba(0, 0, 0, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+}
+
+:global(body.light-mode) .inputSection {
+  background: rgba(250, 252, 255, 0.9);
+  border: 1px solid rgba(0, 81, 213, 0.2);
+  color: rgba(14, 18, 36, 0.92);
+}
+
+:global(body.light-mode) .prompt {
+  color: var(--cyber-blue, #0051d5);
+}
+
+:global(body.light-mode) .input {
+  color: rgba(14, 18, 36, 0.92);
+}
+
+:global(body.light-mode) .input::placeholder {
+  color: rgba(0, 81, 213, 0.45);
+}
+
+:global(body.modern-ui-futuristic) .inputSection {
+  background: var(--modern-bg-secondary, rgba(8, 14, 32, 0.85));
+  border: 1px solid var(--modern-border, rgba(0, 255, 210, 0.35));
+  box-shadow: 0 4px 18px var(--modern-shadow, rgba(0, 0, 0, 0.35));
+}
+
+:global(body.modern-ui-futuristic) .prompt {
+  color: var(--modern-primary, #00ffd2);
+}
+
+:global(body.modern-ui-futuristic) .input {
+  color: var(--modern-text-primary, rgba(245, 250, 255, 0.95));
+}
+
+:global(body.modern-ui-futuristic) .input::placeholder {
+  color: rgba(255, 255, 255, 0.65);
+}
+
+/* -----------------------------------------------------------------------------
+   Responsive Breakpoints
+   ----------------------------------------------------------------------------- */
+
+@media (max-width: 1400px) {
+  .inputSection {
+    padding: 14px 16px;
+  }
+
+  .prompt,
+  .input {
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .inputSection {
+    border-radius: 14px;
+  }
+
+  .inputLine {
+    gap: 10px;
+  }
+}
+
+@media (max-width: 768px) {
+  .inputSection {
+    width: 100vw;
+    margin-left: -12px;
+    padding: 14px 18px;
+    border-radius: 16px 16px 0 0;
+    background: rgba(0, 0, 0, 0.92);
+  }
+
+  .inputLine {
+    flex-wrap: nowrap;
+    align-items: center;
+  }
+
+  .prompt {
+    font-size: 15px;
+  }
+
+  .input {
+    font-size: 16px;
+  }
+
+  .inputHint {
+    font-size: 10px;
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .inputSection {
+    padding: 12px 16px;
+  }
+
+  .inputLine {
+    flex-wrap: nowrap;
+    gap: 8px;
+  }
+
+  .prompt {
+    font-size: 14px;
+  }
+
+  .input {
+    font-size: 16px;
+  }
+}
+
+@media (max-height: 600px) and (orientation: landscape) {
+  .inputSection {
+    padding: 10px 14px;
+  }
+
+  .prompt,
+  .input {
+    font-size: 14px;
+  }
+}
+
+/* -----------------------------------------------------------------------------
+   Feature Queries & Touch Enhancements
+   ----------------------------------------------------------------------------- */
+
+@supports (-webkit-touch-callout: none) {
+  .inputSection {
+    height: auto;
+    padding-bottom: max(14px, calc(14px + env(safe-area-inset-bottom)));
+  }
+
+  .input {
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+@supports (padding: max(0px)) {
+  .inputSection {
+    padding-left: max(16px, env(safe-area-inset-left));
+    padding-right: max(16px, env(safe-area-inset-right));
+    padding-bottom: max(16px, calc(16px + env(safe-area-inset-bottom)));
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .input {
+    font-size: 16px;
+  }
+
+  .inputSection :global(input[type="text"]),
+  .inputSection :global(input[type="password"]),
+  .inputSection :global(input[type="email"]),
+  .inputSection :global(input[type="number"]),
+  .inputSection :global(textarea),
+  .inputSection :global(select) {
+    font-size: 16px;
+  }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .inputLine {
+    min-height: 48px;
+  }
+
+  .prompt,
+  .input {
+    min-height: 44px;
+  }
+}
+
+.touchFriendly {
+  min-height: 48px;
+}
+
+.iosOptimized {
+  height: -webkit-fill-available;
+}

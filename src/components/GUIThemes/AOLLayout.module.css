@@ -1,0 +1,227 @@
+.container {
+  position: fixed;
+  inset: 0;
+  background: #c0c0c0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.window {
+  width: 900px;
+  height: 600px;
+  background: #f0f0f0;
+  border: 2px solid #999;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+}
+.titleBar {
+  background: #003399;
+  color: white;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 600;
+}
+.close {
+  background: #cc3333;
+  color: white;
+  border: none;
+  padding: 4px 8px;
+  cursor: pointer;
+}
+.content {
+  flex: 1;
+  display: flex;
+}
+.buddyList {
+  width: 220px;
+  background: #e6e6e6;
+  border-right: 1px solid #bbb;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.sectionHeader {
+  font-size: 12px;
+  color: #666;
+  text-transform: uppercase;
+  margin-top: 10px;
+}
+.buddy {
+  background: #fff;
+  border: 1px solid #bbb;
+  padding: 6px 8px;
+  cursor: pointer;
+  text-align: left;
+}
+.chat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.messages {
+  flex: 1;
+  padding: 12px;
+  overflow-y: auto;
+  background: #ffffff;
+}
+.message {
+  margin-bottom: 8px;
+}
+.inputRow {
+  display: flex;
+  border-top: 1px solid #ccc;
+  padding: 8px;
+  gap: 8px;
+  background: #efefef;
+}
+.input {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #bbb;
+  background: #fff;
+}
+.send {
+  padding: 8px 12px;
+  background: #003399;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+}
+
+/* -----------------------------------------------------------------------------
+   Mobile Variants & Compact Modes
+   ----------------------------------------------------------------------------- */
+
+.windowMobile {
+  width: 100vw;
+  height: 100vh;
+  border-radius: 0;
+}
+
+.appMobile {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.compactMode .window {
+  width: 720px;
+  height: 520px;
+}
+
+.compactMode .buddyList {
+  width: 180px;
+}
+
+/* -----------------------------------------------------------------------------
+   Responsive Breakpoints
+   ----------------------------------------------------------------------------- */
+
+@media (max-width: 1024px) {
+  .window {
+    width: 760px;
+    height: 540px;
+  }
+
+  .buddyList {
+    width: 200px;
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    position: relative;
+  }
+
+  .window {
+    width: 95vw;
+    height: 90vh;
+  }
+
+  .content {
+    flex-direction: column;
+  }
+
+  .buddyList {
+    width: 100%;
+    flex-direction: row;
+    overflow-x: auto;
+    border-right: none;
+    border-bottom: 1px solid #bbb;
+    padding: 8px;
+    gap: 6px;
+  }
+
+  .buddy {
+    flex: 0 0 auto;
+    min-width: 140px;
+  }
+
+  .chat {
+    flex: 1;
+  }
+
+  .inputRow {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .input {
+    font-size: 16px;
+  }
+
+  .send {
+    min-height: 44px;
+  }
+}
+
+@media (max-width: 480px) {
+  .window {
+    width: 100vw;
+    height: 100vh;
+    border-radius: 0;
+  }
+
+  .titleBar {
+    padding: 10px 16px;
+  }
+
+  .messages {
+    padding: 10px;
+  }
+
+  .inputRow {
+    padding: 10px;
+  }
+
+  .buddy {
+    min-width: 120px;
+    font-size: 13px;
+  }
+}
+
+/* -----------------------------------------------------------------------------
+   Safe Area & Touch Enhancements
+   ----------------------------------------------------------------------------- */
+
+@supports (padding: max(0px)) {
+  .window {
+    padding-bottom: max(0px, env(safe-area-inset-bottom));
+  }
+
+  .titleBar {
+    padding-top: max(8px, calc(8px + env(safe-area-inset-top)));
+  }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .close,
+  .buddy,
+  .send {
+    min-height: 44px;
+  }
+}

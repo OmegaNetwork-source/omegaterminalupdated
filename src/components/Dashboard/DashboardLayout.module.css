@@ -1,0 +1,297 @@
+/**
+ * @file DashboardLayout.module.css
+ * @description Futuristic dashboard grid with theme variants, animations, and responsive behavior.
+ * @sources styles/futuristic-theme.css, styles/mobile-terminal-fix.css
+ */
+
+/* -----------------------------------------------------------------------------
+   Core Dashboard Grid
+   ----------------------------------------------------------------------------- */
+
+.dashboard {
+  width: 100vw;
+  height: 100vh;
+  display: grid;
+  grid-template-areas: "sidebar terminal stats";
+  grid-template-columns: 280px 1fr 320px;
+  grid-template-rows: 1fr;
+  gap: 16px;
+  padding: 16px;
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+  box-sizing: border-box;
+  background: var(--void-black, #0a0a0f);
+  color: #ffffff;
+  font-family: "Courier New", monospace;
+}
+
+/* Background effects removed to match vanilla simplicity */
+
+.bothHidden {
+  grid-template-areas: "terminal";
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.sidebarHidden {
+  grid-template-areas: "terminal stats";
+  grid-template-columns: minmax(0, 1fr) 320px;
+}
+
+.statsHidden {
+  grid-template-areas: "sidebar terminal";
+  grid-template-columns: 280px minmax(0, 1fr);
+}
+
+.terminalArea {
+  grid-area: terminal;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  z-index: 2;
+  border-radius: 24px;
+  border: 1px solid rgba(0, 188, 242, 0.25);
+  background: linear-gradient(
+    160deg,
+    rgba(0, 4, 12, 0.85) 0%,
+    rgba(0, 10, 22, 0.85) 100%
+  );
+  box-shadow: 0 25px 55px rgba(0, 188, 242, 0.18);
+  overflow: hidden;
+}
+
+.dashboardHeader {
+  grid-area: header;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 24px;
+  background: rgba(0, 8, 18, 0.85);
+  border-radius: 18px;
+  border: 1px solid rgba(0, 188, 242, 0.25);
+  box-shadow: 0 18px 32px rgba(0, 188, 242, 0.18);
+  color: rgba(255, 255, 255, 0.9);
+  z-index: 3;
+}
+
+.panelSlideIn {
+  animation: panelSlideIn 0.45s ease forwards;
+}
+
+@keyframes panelSlideIn {
+  from {
+    opacity: 0;
+    transform: translate3d(20px, 0, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.panelFadeIn {
+  animation: panelFadeIn 0.6s ease forwards;
+}
+
+@keyframes panelFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.dashboardMobile {
+  display: none;
+}
+
+.forceBasicMode {
+  display: none;
+}
+
+:global(body.basic-terminal-mode) .dashboard {
+  display: none;
+}
+
+:global(body.basic-terminal-mode) .forceBasicMode {
+  display: block;
+}
+
+/* -----------------------------------------------------------------------------
+   Theme Variants (global selectors)
+   ----------------------------------------------------------------------------- */
+
+:global(body.theme-executive) .dashboard {
+  background: linear-gradient(
+    135deg,
+    rgba(10, 12, 20, 0.96) 0%,
+    rgba(4, 5, 9, 0.96) 100%
+  );
+  color: rgba(245, 238, 220, 0.92);
+}
+
+:global(body.theme-executive) .terminalArea {
+  border: 1px solid rgba(255, 215, 0, 0.25);
+  box-shadow: 0 30px 60px rgba(255, 215, 0, 0.18);
+}
+
+:global(body.modern-ui-futuristic) .terminalArea {
+  border: 1px solid rgba(0, 255, 210, 0.28);
+  box-shadow: 0 30px 60px rgba(0, 255, 210, 0.18);
+}
+
+:global(body.theme-modern) .dashboard {
+  background: linear-gradient(
+    160deg,
+    rgba(18, 20, 36, 0.94) 0%,
+    rgba(10, 12, 20, 0.94) 100%
+  );
+}
+
+:global(body.theme-modern) .terminalArea {
+  border: 1px solid rgba(98, 0, 255, 0.32);
+  box-shadow: 0 30px 60px rgba(98, 0, 255, 0.18);
+}
+
+:global(body.theme-matrix) .dashboard {
+  background: linear-gradient(
+    135deg,
+    rgba(0, 6, 0, 0.95) 0%,
+    rgba(0, 12, 2, 0.95) 100%
+  );
+  color: rgba(57, 255, 20, 0.9);
+}
+
+:global(body.theme-matrix) .terminalArea {
+  border: 1px solid rgba(57, 255, 20, 0.28);
+  box-shadow: 0 30px 60px rgba(57, 255, 20, 0.18);
+}
+
+:global(body.futuristic-mode) .dashboard {
+  background: linear-gradient(
+    135deg,
+    rgba(10, 14, 28, 0.96) 0%,
+    rgba(2, 4, 8, 0.96) 100%
+  );
+}
+
+/* -----------------------------------------------------------------------------
+   Responsive Breakpoints
+   ----------------------------------------------------------------------------- */
+
+@media (max-width: 1400px) {
+  .dashboard {
+    grid-template-areas: "sidebar terminal" "sidebar stats";
+    grid-template-columns: 240px minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr) auto;
+    padding: 20px;
+    gap: 16px;
+  }
+
+  .sidebarHidden {
+    grid-template-areas: "terminal" "stats";
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr) auto;
+  }
+
+  .statsHidden {
+    grid-template-areas: "sidebar" "terminal";
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 1024px) {
+  .dashboard {
+    grid-template-areas: "terminal terminal" "sidebar stats";
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr) auto;
+    padding: 18px;
+    gap: 14px;
+  }
+
+  .terminalArea {
+    min-height: 60vh;
+  }
+
+  .statsHidden {
+    grid-template-areas: "terminal" "sidebar";
+    grid-template-rows: minmax(0, 1fr) auto;
+  }
+
+  .sidebarHidden {
+    grid-template-areas: "terminal" "stats";
+    grid-template-rows: minmax(0, 1fr) auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard {
+    grid-template-areas: "terminal" "sidebar" "stats";
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(400px, 1fr) auto auto;
+    padding: 12px;
+    gap: 10px;
+    overflow-y: auto;
+  }
+
+  .terminalArea {
+    min-height: 400px;
+    max-height: 50vh;
+  }
+
+  .dashboardHeader {
+    display: none;
+  }
+
+  .dashboardMobile {
+    display: block;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard {
+    grid-template-rows: minmax(300px, 1fr) auto auto;
+    padding: 8px;
+    gap: 8px;
+  }
+
+  .terminalArea {
+    min-height: 320px;
+  }
+}
+
+@media (max-height: 600px) and (orientation: landscape) {
+  .dashboard {
+    padding: 10px;
+    gap: 10px;
+  }
+
+  .terminalArea {
+    min-height: 0;
+  }
+}
+
+/* -----------------------------------------------------------------------------
+   Feature Queries & Touch Enhancements
+   ----------------------------------------------------------------------------- */
+
+@supports (-webkit-touch-callout: none) {
+  .dashboard {
+    padding-bottom: max(12px, calc(12px + env(safe-area-inset-bottom)));
+  }
+}
+
+@supports (padding: max(0px)) {
+  .dashboard {
+    padding-left: max(18px, calc(18px + env(safe-area-inset-left)));
+    padding-right: max(18px, calc(18px + env(safe-area-inset-right)));
+  }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .dashboard {
+    gap: 12px;
+  }
+}

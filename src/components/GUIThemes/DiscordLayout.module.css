@@ -1,0 +1,221 @@
+.container {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  background: #2b2d31;
+  color: #ececec;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+.sidebar {
+  background: #1e1f22;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.server {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #5865f2;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.channelsHeader {
+  color: #a3a6aa;
+  font-size: 12px;
+  margin: 8px 0;
+}
+.channel {
+  background: transparent;
+  border: none;
+  color: #c9c9c9;
+  text-align: left;
+  padding: 8px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.active {
+  background: #393c41;
+  color: white;
+}
+.exit {
+  margin-top: auto;
+  background: #d83c3e;
+  color: white;
+  border: none;
+  padding: 8px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.main {
+  display: flex;
+  flex-direction: column;
+}
+.header {
+  padding: 12px 16px;
+  border-bottom: 1px solid #3f4147;
+  font-weight: 600;
+}
+.messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px 16px;
+}
+.message {
+  margin-bottom: 10px;
+}
+.inputRow {
+  display: flex;
+  padding: 12px;
+  gap: 8px;
+  border-top: 1px solid #3f4147;
+}
+.input {
+  flex: 1;
+  background: #313338;
+  border: 1px solid #3f4147;
+  color: #ececec;
+  padding: 10px;
+  border-radius: 8px;
+}
+.send {
+  background: #5865f2;
+  color: white;
+  border: none;
+  padding: 10px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+/* -----------------------------------------------------------------------------
+   Mobile Variants & Compact Modes
+   ----------------------------------------------------------------------------- */
+
+.windowMobile {
+  display: flex;
+  flex-direction: column;
+  width: 100vw;
+  height: 100vh;
+}
+
+.appMobile {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.compactMode .container {
+  grid-template-columns: 220px 1fr;
+}
+
+.compactMode .sidebar {
+  padding: 10px;
+}
+
+/* -----------------------------------------------------------------------------
+   Responsive Breakpoints
+   ----------------------------------------------------------------------------- */
+
+@media (max-width: 1024px) {
+  .container {
+    grid-template-columns: 220px 1fr;
+  }
+
+  .messages {
+    padding: 12px;
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+  }
+
+  .sidebar {
+    flex-direction: row;
+    align-items: center;
+    overflow-x: auto;
+    gap: 12px;
+    padding: 12px 16px;
+  }
+
+  .server {
+    flex: 0 0 auto;
+  }
+
+  .channelsHeader {
+    display: none;
+  }
+
+  .channel,
+  .exit {
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
+
+  .main {
+    min-height: 0;
+  }
+
+  .messages {
+    padding: 16px;
+  }
+
+  .inputRow {
+    flex-direction: column;
+  }
+
+  .input {
+    font-size: 16px;
+  }
+
+  .send {
+    width: 100%;
+    min-height: 44px;
+  }
+}
+
+@media (max-width: 480px) {
+  .sidebar {
+    padding: 10px 12px;
+    gap: 10px;
+  }
+
+  .messages {
+    padding: 12px;
+  }
+
+  .header {
+    padding: 12px;
+  }
+
+  .inputRow {
+    padding: 10px 12px;
+  }
+}
+
+/* -----------------------------------------------------------------------------
+   Safe Area & Touch Enhancements
+   ----------------------------------------------------------------------------- */
+
+@supports (padding: max(0px)) {
+  .messages {
+    padding-bottom: max(16px, calc(16px + env(safe-area-inset-bottom)));
+  }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .channel,
+  .exit,
+  .send {
+    min-height: 44px;
+  }
+}

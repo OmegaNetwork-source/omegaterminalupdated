@@ -1,0 +1,160 @@
+/**
+ * Solana Swap Interface Styles
+ */
+
+.container {
+  background: #1a1a1a;
+  border: 1px solid #00bfff;
+  padding: 20px;
+  margin: 10px 0;
+  border-radius: 8px;
+  font-family: "Courier New", monospace;
+}
+
+.header {
+  margin: 0 0 15px 0;
+  color: #00bfff;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.tokenSelect {
+  margin-bottom: 15px;
+}
+
+.label {
+  color: #cccccc;
+  display: block;
+  margin-bottom: 5px;
+  font-size: 14px;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 8px;
+  background: #222;
+  color: #fff;
+  border: 1px solid #444;
+  border-radius: 3px;
+  box-sizing: border-box;
+  font-family: "Courier New", monospace;
+}
+
+.searchInput:focus {
+  outline: none;
+  border-color: #00bfff;
+  box-shadow: 0 0 0 2px rgba(0, 191, 255, 0.3);
+}
+
+.dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  max-height: 200px;
+  overflow-y: auto;
+  background: #222;
+  border: 1px solid #444;
+  border-top: none;
+  z-index: 1000;
+  display: none;
+}
+
+.dropdownItem {
+  padding: 8px;
+  cursor: pointer;
+  border-bottom: 1px solid #333;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: background 0.2s;
+}
+
+.dropdownItem:hover {
+  background: #333;
+}
+
+.tokenLogo {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+}
+
+.tokenDisplay {
+  margin-top: 5px;
+  padding: 8px;
+  background: #333;
+  border-radius: 3px;
+  color: #00bfff;
+  border-left: 3px solid #00bfff;
+}
+
+.amountInput {
+  width: 100%;
+  padding: 8px;
+  background: #333;
+  border: 1px solid #555;
+  color: #fff;
+  border-radius: 4px;
+  font-family: "Courier New", monospace;
+}
+
+.buttonGroup {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.button {
+  flex: 1;
+  padding: 12px;
+  background: linear-gradient(45deg, #0080ff, #00bfff);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
+  font-family: "Courier New", monospace;
+  transition: all 0.2s;
+}
+
+.button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 191, 255, 0.3);
+}
+
+.infoBox {
+  background: #2a2a2a;
+  padding: 10px;
+  border-radius: 4px;
+  border-left: 3px solid #00bfff;
+  font-size: 12px;
+  color: #cccccc;
+}
+
+.infoBox p {
+  margin: 5px 0;
+}
+
+.infoBox code {
+  background: #333;
+  padding: 2px 6px;
+  border-radius: 3px;
+  color: #00bfff;
+  font-family: "Courier New", monospace;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 15px;
+    margin: 5px 0;
+  }
+
+  .buttonGroup {
+    flex-direction: column;
+  }
+
+  .button {
+    width: 100%;
+  }
+}

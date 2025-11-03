@@ -1,0 +1,1349 @@
+/**
+ * Basic Terminal Commands (Phase 1)
+ * Minimal command set migrated from legacy js/commands/basic.js
+ * Focused on keeping the terminal operational during recovery.
+ */
+
+import type { Command, CommandContext } from "@/types/commands";
+import { config } from "@/lib/config";
+import { AVAILABLE_THEMES, APP_TITLE, APP_VERSION } from "@/lib/constants";
+import type { Theme } from "@/types";
+
+// Helper functions for GUI transformations
+function createChatGptInterface(context: CommandContext): void {
+  const html = `
+    <div style="height: 100vh; width: 100vw; position: fixed; top: 0; left: 0; display: flex; flex-direction: column; background: #212121; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; z-index: 9999;">
+      <!-- Header with back button -->
+      <div style="position: absolute; top: 20px; left: 20px; z-index: 100;">
+        <button onclick="window.__omegaGuiRestore?.()" 
+          style="background: #424242; color: #ececec; border: 1px solid #565656; padding: 8px 16px; border-radius: 6px; cursor: pointer;">
+          ← Terminal
+        </button>
+      </div>
+      
+      <!-- Conversation area -->
+      <div class="chatgpt-conversation" style="flex: 1; overflow-y: auto; padding: 80px 20px 200px 20px; max-width: 768px; margin: 0 auto; width: 100%;">
+        <div style="text-align: center; margin-bottom: 40px;">
+          <div style="font-size: 48px; margin-bottom: 16px;">🤖</div>
+          <h1 style="color: #ececec; font-size: 32px; font-weight: 300; margin: 0;">Omega Terminal AI</h1>
+          <p style="color: #8e8ea0; margin-top: 12px; font-size: 16px;">How can I help you today?</p>
+        </div>
+        
+        <div style="display: flex; gap: 16px; margin-bottom: 32px; max-width: 100%;">
+          <div style="width: 40px; height: 40px; border-radius: 50%; background: #ab68ff; color: white; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 18px;">🤖</div>
+          <div style="max-width: 65%;">
+            <div style="background: transparent; padding: 0; font-size: 15px; line-height: 1.5; color: #ececec;">
+              Hi there! I'm your Omega Terminal assistant. I can help you with blockchain operations, answer crypto questions, or just have a friendly chat. What's on your mind today?
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Centered input at bottom -->
+      <div style="position: fixed; bottom: 0; left: 0; right: 0; background: #212121; padding: 32px 20px; border-top: 1px solid #424242;">
+        <div style="max-width: 768px; margin: 0 auto;">
+          <div style="position: relative; display: flex; align-items: center; background: #2f2f2f; border: 1px solid #565656; border-radius: 24px; padding: 12px 16px;">
+            <input type="text" 
+              placeholder="Ask anything or type a command..." 
+              id="chatgptInput" 
+              onkeypress="if(event.key==='Enter') window.__omegaGuiHandleInput?.('chatgpt')"
+              style="flex: 1; background: none; border: none; color: #ececec; font-size: 16px; outline: none; padding: 4px 0;" />
+            <div onclick="window.__omegaGuiHandleInput?.('chatgpt')" 
+              style="background: #19c37d; color: white; border: none; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+              ➤
+            </div>
+          </div>
+          <p style="text-align: center; color: #8e8ea0; font-size: 13px; margin-top: 16px; margin-bottom: 0;">
+            Omega Terminal can make mistakes. Check important info.
+          </p>
+        </div>
+      </div>
+    </div>
+  `;
+
+  context.logHtml(html);
+  setupGuiHandlers(context, "chatgpt");
+}
+
+function createAolInterface(context: CommandContext): void {
+  const html = `
+    <div class="aol-window" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #c0c0c0; font-family: 'MS Sans Serif', Arial, sans-serif; z-index: 9999; display: flex; flex-direction: column;">
+      <div class="aol-titlebar" style="background: linear-gradient(to bottom, #0000aa, #0000cc); color: white; padding: 4px 8px; display: flex; justify-content: space-between; align-items: center;">
+        <div class="aol-title" style="font-weight: bold;">Omega Terminal - AOL Instant Messenger</div>
+        <div class="aol-buttons">
+          <button onclick="window.__omegaGuiRestore?.()" style="background: #c0c0c0; border: 2px outset #fff; padding: 0 8px; cursor: pointer;">X</button>
+        </div>
+      </div>
+      <div class="aol-content" style="flex: 1; display: flex; background: white;">
+        <div class="aol-buddylist" style="width: 200px; background: #f0f0f0; border-right: 2px solid #808080; padding: 10px;">
+          <div class="aol-section" style="margin-bottom: 15px;">
+            <strong>🟢 Online (1)</strong>
+            <div class="buddy" style="padding: 4px; background: #fff; margin: 4px 0; border: 1px solid #ccc;">OmegaUser (You)</div>
+          </div>
+          <div class="aol-section">
+            <strong>📶 Commands</strong>
+            <div class="buddy clickable" onclick="window.__omegaGuiExecuteCommand?.('help')" style="padding: 4px; background: #fff; margin: 4px 0; border: 1px solid #ccc; cursor: pointer;">help</div>
+            <div class="buddy clickable" onclick="window.__omegaGuiExecuteCommand?.('balance')" style="padding: 4px; background: #fff; margin: 4px 0; border: 1px solid #ccc; cursor: pointer;">balance</div>
+            <div class="buddy clickable" onclick="window.__omegaGuiExecuteCommand?.('mine')" style="padding: 4px; background: #fff; margin: 4px 0; border: 1px solid #ccc; cursor: pointer;">mine</div>
+          </div>
+        </div>
+        <div class="aol-chat" style="flex: 1; display: flex; flex-direction: column;">
+          <div class="aol-messages" id="aolMessages" style="flex: 1; overflow-y: auto; padding: 10px;">
+            <div class="aol-message" style="margin-bottom: 10px; padding: 8px; background: #ffffcc; border-radius: 4px;">
+              <strong>OmegaSystem:</strong> Welcome to AOL Omega Terminal!<br>
+              Click commands on the left or type below.
+            </div>
+          </div>
+          <div class="aol-input" style="padding: 10px; background: #f0f0f0; border-top: 2px solid #808080; display: flex; gap: 8px;">
+            <input type="text" placeholder="Type a message..." id="aolInput" 
+              onkeypress="if(event.key==='Enter') window.__omegaGuiHandleInput?.('aol')" 
+              style="flex: 1; padding: 6px; border: 2px inset #fff;" />
+            <button onclick="window.__omegaGuiHandleInput?.('aol')" 
+              style="background: linear-gradient(to bottom, #d0d0d0, #a0a0a0); border: 2px outset #fff; padding: 6px 20px; cursor: pointer;">Send</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  context.logHtml(html);
+  setupGuiHandlers(context, "aol");
+}
+
+function createDiscordInterface(context: CommandContext): void {
+  const html = `
+    <div class="discord-app" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #36393f; font-family: Whitney, 'Helvetica Neue', Helvetica, Arial, sans-serif; z-index: 9999; display: flex;">
+      <div class="discord-sidebar" style="width: 240px; background: #2f3136; display: flex; flex-direction: column;">
+        <div class="discord-server" style="width: 60px; background: #202225; display: flex; flex-direction: column; align-items: center; padding: 12px 0;">
+          <div style="width: 48px; height: 48px; background: #5865f2; border-radius: 24px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 20px; margin-bottom: 8px;">Ω</div>
+        </div>
+        <div class="discord-channels" style="flex: 1; padding: 8px;">
+          <div class="channel-category" style="color: #8e9297; font-size: 12px; font-weight: 600; padding: 8px 0; text-transform: uppercase;">OMEGA CHANNELS</div>
+          <div class="channel active" onclick="window.__omegaGuiSwitchChannel?.('terminal')" style="color: white; background: #393c43; padding: 6px 8px; margin: 2px 0; border-radius: 4px; cursor: pointer;"># terminal</div>
+          <div class="channel" onclick="window.__omegaGuiSwitchChannel?.('mining')" style="color: #8e9297; padding: 6px 8px; margin: 2px 0; border-radius: 4px; cursor: pointer;"># mining</div>
+          <div class="channel" onclick="window.__omegaGuiSwitchChannel?.('trading')" style="color: #8e9297; padding: 6px 8px; margin: 2px 0; border-radius: 4px; cursor: pointer;"># trading</div>
+          <div class="channel" onclick="window.__omegaGuiRestore?.()" style="color: #5865f2; padding: 6px 8px; margin: 12px 0 2px 0; border-radius: 4px; cursor: pointer;">← Exit Discord</div>
+        </div>
+      </div>
+      <div class="discord-main" style="flex: 1; display: flex; flex-direction: column;">
+        <div class="discord-header" style="height: 48px; border-bottom: 1px solid #202225; padding: 0 16px; display: flex; align-items: center; color: white; font-weight: 600;">
+          <span># terminal</span>
+        </div>
+        <div class="discord-messages" id="discordMessages" style="flex: 1; overflow-y: auto; padding: 16px;">
+          <div class="discord-message" style="margin-bottom: 16px;">
+            <div class="message-author" style="color: #5865f2; font-weight: 500; margin-bottom: 4px;">OmegaBot</div>
+            <div class="message-text" style="color: #dcddde;">Welcome to the Omega Terminal Discord! Type commands below or click channels on the left.</div>
+          </div>
+        </div>
+        <div class="discord-input" style="padding: 16px;">
+          <div style="background: #40444b; border-radius: 8px; padding: 12px; display: flex; gap: 8px; align-items: center;">
+            <input type="text" placeholder="Message #terminal" id="discordInput" 
+              onkeypress="if(event.key==='Enter') window.__omegaGuiHandleInput?.('discord')" 
+              style="flex: 1; background: none; border: none; color: #dcddde; outline: none; font-size: 15px;" />
+            <button onclick="window.__omegaGuiHandleInput?.('discord')" 
+              style="background: #5865f2; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">Send</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  context.logHtml(html);
+  setupGuiHandlers(context, "discord");
+}
+
+function createWindows95Interface(context: CommandContext): void {
+  const html = `
+    <div class="win95-desktop" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #008080; font-family: 'MS Sans Serif', Arial, sans-serif; z-index: 9999;">
+      <div class="win95-window" style="position: absolute; top: 50px; left: 50px; right: 50px; bottom: 50px; background: #c0c0c0; border: 2px solid; border-color: #ffffff #808080 #808080 #ffffff; box-shadow: 2px 2px 4px rgba(0,0,0,0.3); display: flex; flex-direction: column;">
+        <div class="win95-titlebar" style="background: linear-gradient(to right, #000080, #0000aa); color: white; padding: 4px 8px; display: flex; justify-content: space-between; align-items: center; font-weight: bold;">
+          <div class="win95-title">Omega Terminal - MS-DOS Prompt</div>
+          <div class="win95-buttons">
+            <button onclick="window.__omegaGuiRestore?.()" style="background: #c0c0c0; border: 2px outset #fff; padding: 0 8px; margin-left: 4px; cursor: pointer; font-weight: bold;">X</button>
+          </div>
+        </div>
+        <div class="win95-menubar" style="background: #c0c0c0; padding: 2px 8px; border-bottom: 1px solid #808080; display: flex; gap: 12px;">
+          <span class="menu-item" style="padding: 2px 6px;">File</span>
+          <span class="menu-item" style="padding: 2px 6px;">Edit</span>
+          <span class="menu-item" style="padding: 2px 6px;">View</span>
+          <span class="menu-item" style="padding: 2px 6px;">Help</span>
+        </div>
+        <div class="win95-content" style="flex: 1; background: #000; color: #c0c0c0; padding: 8px; overflow-y: auto; font-family: 'Courier New', monospace;">
+          <div class="dos-prompt">
+            Microsoft Windows 95<br>
+            (C) Copyright Microsoft Corp 1981-1995.<br><br>
+            C:\\OMEGA&gt; Welcome to Omega Terminal<br>
+            C:\\OMEGA&gt; Type 'help' for available commands<br><br>
+            <span id="dos-output"></span>
+            <div class="dos-input-line" style="display: flex;">
+              C:\\OMEGA&gt; <input type="text" id="dosInput" 
+                onkeypress="if(event.key==='Enter') window.__omegaGuiHandleInput?.('windows95')" 
+                style="flex: 1; background: #000; border: none; color: #c0c0c0; outline: none; font-family: 'Courier New', monospace;" />
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="win95-taskbar" style="position: absolute; bottom: 0; left: 0; right: 0; height: 28px; background: #c0c0c0; border-top: 2px solid #ffffff; display: flex; align-items: center; padding: 0 4px;">
+        <div class="start-button" style="background: #c0c0c0; border: 2px outset #fff; padding: 2px 8px; margin-right: 4px; font-weight: bold;">Start</div>
+        <div class="taskbar-item" style="background: #c0c0c0; border: 2px inset #808080; padding: 2px 8px; flex: 1; max-width: 200px;">Omega Terminal</div>
+      </div>
+    </div>
+  `;
+
+  context.logHtml(html);
+  setupGuiHandlers(context, "windows95");
+}
+
+function createLimewireInterface(context: CommandContext): void {
+  const html = `
+    <div class="limewire-app" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: linear-gradient(to bottom, #1a472a, #0d2818); font-family: Arial, sans-serif; z-index: 9999; display: flex; flex-direction: column;">
+      <div class="limewire-header" style="background: linear-gradient(to bottom, #2d6b3f, #1a472a); padding: 12px 16px; border-bottom: 2px solid #0d2818; display: flex; justify-content: space-between; align-items: center;">
+        <div class="limewire-logo" style="color: #00ff00; font-weight: bold; font-size: 18px;">🔥 Omega Terminal - P2P Network</div>
+        <button onclick="window.__omegaGuiRestore?.()" style="background: #1a472a; color: #00ff00; border: 1px solid #00ff00; padding: 6px 16px; border-radius: 4px; cursor: pointer;">Exit</button>
+      </div>
+      <div class="limewire-tabs" style="background: #2d6b3f; display: flex; border-bottom: 1px solid #0d2818;">
+        <div class="tab active" style="padding: 8px 20px; background: #1a472a; color: #00ff00; border-right: 1px solid #0d2818; font-weight: bold;">Search</div>
+        <div class="tab" style="padding: 8px 20px; color: #88cc88; border-right: 1px solid #0d2818;">Monitor</div>
+        <div class="tab" style="padding: 8px 20px; color: #88cc88; border-right: 1px solid #0d2818;">Library</div>
+      </div>
+      <div class="limewire-search" style="padding: 16px; background: #1a472a;">
+        <div class="search-bar" style="display: flex; gap: 8px;">
+          <input type="text" placeholder="Search the blockchain network..." id="limewireSearch" 
+            onkeypress="if(event.key==='Enter') window.__omegaGuiHandleInput?.('limewire')" 
+            style="flex: 1; padding: 8px; background: #0d2818; border: 1px solid #00ff00; color: #00ff00; border-radius: 4px;" />
+          <button onclick="window.__omegaGuiHandleInput?.('limewire')" 
+            style="padding: 8px 24px; background: linear-gradient(to bottom, #00ff00, #00cc00); color: #0d2818; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;">Search</button>
+        </div>
+      </div>
+      <div class="limewire-results" id="limewireResults" style="flex: 1; overflow-y: auto; padding: 16px; background: #0d2818;">
+        <div class="result-header" style="color: #00ff00; margin-bottom: 12px; font-weight: bold;">Network Commands Available:</div>
+        <div class="result-item" onclick="window.__omegaGuiExecuteCommand?.('help')" style="background: #1a472a; padding: 12px; margin-bottom: 8px; border: 1px solid #2d6b3f; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; cursor: pointer;">
+          <span class="file-name" style="color: #00ff00; font-weight: bold;">help.cmd</span>
+          <span class="file-size" style="color: #88cc88;">1KB</span>
+          <span class="file-type" style="color: #88cc88;">Command</span>
+          <button style="background: #00ff00; color: #0d2818; border: none; padding: 4px 12px; border-radius: 3px; font-weight: bold;">Execute</button>
+        </div>
+        <div class="result-item" onclick="window.__omegaGuiExecuteCommand?.('balance')" style="background: #1a472a; padding: 12px; margin-bottom: 8px; border: 1px solid #2d6b3f; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; cursor: pointer;">
+          <span class="file-name" style="color: #00ff00; font-weight: bold;">balance.cmd</span>
+          <span class="file-size" style="color: #88cc88;">2KB</span>
+          <span class="file-type" style="color: #88cc88;">Wallet</span>
+          <button style="background: #00ff00; color: #0d2818; border: none; padding: 4px 12px; border-radius: 3px; font-weight: bold;">Execute</button>
+        </div>
+      </div>
+      <div class="limewire-status" style="background: #2d6b3f; padding: 8px 16px; border-top: 1px solid #00ff00;">
+        <div class="status-bar" style="color: #00ff00; font-size: 12px;">Connected to Omega Network | Terminal Commands Active</div>
+      </div>
+    </div>
+  `;
+
+  context.logHtml(html);
+  setupGuiHandlers(context, "limewire");
+}
+
+function restoreTerminalInterface(context: CommandContext): void {
+  // Clear GUI overlay by removing the injected HTML
+  if (typeof window !== "undefined") {
+    const guiOverlay = document.querySelector('[class*="gui-overlay"]');
+    if (guiOverlay) {
+      guiOverlay.remove();
+    }
+  }
+
+  context.log("✅ Terminal interface restored", "success");
+  context.log('Type "help" for available commands', "info");
+}
+
+function setupGuiHandlers(context: CommandContext, guiType: string): void {
+  if (typeof window === "undefined") return;
+
+  // Store restore function globally
+  (window as any).__omegaGuiRestore = () => {
+    restoreTerminalInterface(context);
+    if (typeof localStorage !== "undefined") {
+      localStorage.setItem("omega-gui-style", "terminal");
+    }
+  };
+
+  // Store input handler globally
+  (window as any).__omegaGuiHandleInput = (type: string) => {
+    const inputId =
+      type === "chatgpt"
+        ? "chatgptInput"
+        : type === "aol"
+        ? "aolInput"
+        : type === "discord"
+        ? "discordInput"
+        : type === "limewire"
+        ? "limewireSearch"
+        : "dosInput";
+
+    const input = document.getElementById(inputId) as HTMLInputElement;
+    if (!input || !input.value.trim()) return;
+
+    const command = input.value.trim();
+
+    // Add user message to appropriate interface
+    addGuiMessage(type, "user", command);
+
+    // Execute command
+    if (command === "gui terminal") {
+      restoreTerminalInterface(context);
+      if (typeof localStorage !== "undefined") {
+        localStorage.setItem("omega-gui-style", "terminal");
+      }
+      return;
+    }
+
+    // Execute the command through the terminal
+    executeCommandInGui(context, command, type);
+
+    input.value = "";
+  };
+
+  // Store execute command handler
+  (window as any).__omegaGuiExecuteCommand = (command: string) => {
+    executeCommandInGui(context, command, guiType);
+  };
+
+  // Store channel switch handler (for Discord)
+  (window as any).__omegaGuiSwitchChannel = (channel: string) => {
+    const header = document.querySelector(".discord-header span");
+    if (header) {
+      header.textContent = `# ${channel}`;
+    }
+    addGuiMessage("discord", "system", `Switched to #${channel} channel`);
+  };
+
+  // Focus input after a short delay
+  setTimeout(() => {
+    const inputId =
+      guiType === "chatgpt"
+        ? "chatgptInput"
+        : guiType === "aol"
+        ? "aolInput"
+        : guiType === "discord"
+        ? "discordInput"
+        : guiType === "limewire"
+        ? "limewireSearch"
+        : "dosInput";
+    const input = document.getElementById(inputId) as HTMLInputElement;
+    input?.focus();
+  }, 100);
+}
+
+function addGuiMessage(guiType: string, sender: string, message: string): void {
+  if (typeof document === "undefined") return;
+
+  switch (guiType) {
+    case "chatgpt":
+      addChatGptMessage(sender, message);
+      break;
+    case "aol":
+      addAolMessage(sender, message);
+      break;
+    case "discord":
+      addDiscordMessage(sender, message);
+      break;
+    case "windows95":
+      addDosMessage(message);
+      break;
+    case "limewire":
+      addLimewireMessage(message);
+      break;
+  }
+}
+
+function addChatGptMessage(sender: string, message: string): void {
+  const conversation = document.querySelector(".chatgpt-conversation");
+  if (!conversation) return;
+
+  const messageEl = document.createElement("div");
+  const isUser = sender === "user";
+
+  if (isUser) {
+    messageEl.style.cssText = `
+      display: flex; 
+      justify-content: flex-end;
+      margin-bottom: 32px; 
+      width: 100%;
+    `;
+
+    messageEl.innerHTML = `
+      <div style="display: flex; gap: 16px; align-items: flex-start; max-width: 70%;">
+        <div style="
+          background: #19c37d; 
+          padding: 12px 16px; 
+          border-radius: 18px;
+          font-size: 15px; 
+          line-height: 1.5; 
+          color: white;
+          border: 1px solid #22d35b;
+          word-wrap: break-word;
+          order: 1;
+        ">
+          ${message}
+        </div>
+        <div style="
+          width: 40px; 
+          height: 40px; 
+          border-radius: 50%; 
+          background: #19c37d; 
+          color: white; 
+          display: flex; 
+          align-items: center; 
+          justify-content: center; 
+          flex-shrink: 0; 
+          font-size: 18px;
+          order: 2;
+        ">👤</div>
+      </div>
+    `;
+  } else {
+    messageEl.style.cssText = `
+      display: flex; 
+      gap: 16px; 
+      margin-bottom: 32px; 
+      width: 100%;
+    `;
+
+    messageEl.innerHTML = `
+      <div style="
+        width: 40px; 
+        height: 40px; 
+        border-radius: 50%; 
+        background: #ab68ff; 
+        color: white; 
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+        flex-shrink: 0; 
+        font-size: 18px;
+      ">🤖</div>
+      <div style="max-width: 70%;">
+        <div style="
+          background: transparent; 
+          padding: 0; 
+          font-size: 15px; 
+          line-height: 1.5; 
+          color: #ececec;
+        ">
+          ${message}
+        </div>
+      </div>
+    `;
+  }
+
+  conversation.appendChild(messageEl);
+  conversation.scrollTop = conversation.scrollHeight;
+}
+
+function addAolMessage(sender: string, message: string): void {
+  const messages = document.getElementById("aolMessages");
+  if (!messages) return;
+
+  const messageEl = document.createElement("div");
+  messageEl.className = "aol-message";
+  messageEl.style.cssText =
+    "margin-bottom: 10px; padding: 8px; background: #ffffcc; border-radius: 4px;";
+  messageEl.innerHTML = `<strong>${sender}:</strong> ${message}`;
+  messages.appendChild(messageEl);
+  messages.scrollTop = messages.scrollHeight;
+}
+
+function addDiscordMessage(sender: string, message: string): void {
+  const messages = document.getElementById("discordMessages");
+  if (!messages) return;
+
+  const messageEl = document.createElement("div");
+  messageEl.className = "discord-message";
+  messageEl.style.cssText = "margin-bottom: 16px;";
+  messageEl.innerHTML = `
+    <div class="message-author" style="color: ${
+      sender === "user" ? "#00ff00" : "#5865f2"
+    }; font-weight: 500; margin-bottom: 4px;">${
+    sender === "user" ? "You" : "OmegaBot"
+  }</div>
+    <div class="message-text" style="color: #dcddde;">${message}</div>
+  `;
+  messages.appendChild(messageEl);
+  messages.scrollTop = messages.scrollHeight;
+}
+
+function addDosMessage(message: string): void {
+  const output = document.getElementById("dos-output");
+  if (!output) return;
+
+  output.innerHTML += `C:\\OMEGA&gt; ${message}<br>`;
+  output.scrollTop = output.scrollHeight;
+}
+
+function addLimewireMessage(message: string): void {
+  const results = document.getElementById("limewireResults");
+  if (!results) return;
+
+  const messageEl = document.createElement("div");
+  messageEl.style.cssText =
+    "background: #1a472a; padding: 12px; margin-bottom: 8px; border: 1px solid #2d6b3f; border-radius: 4px; color: #00ff00;";
+  messageEl.innerHTML = `📊 ${message}`;
+  results.appendChild(messageEl);
+  results.scrollTop = results.scrollHeight;
+}
+
+async function executeCommandInGui(
+  context: CommandContext,
+  command: string,
+  guiType: string
+): Promise<void> {
+  try {
+    // Show response
+    addGuiMessage(
+      guiType,
+      "system",
+      `Command "${command}" executed. (Full integration coming soon)`
+    );
+  } catch (error: any) {
+    addGuiMessage(
+      guiType,
+      "system",
+      `Error: ${error?.message || "Command failed"}`
+    );
+  }
+}
+
+// Category-specific help content
+const CATEGORY_HELP: Record<string, () => string[]> = {
+  wallet: () => [
+    "💰 WALLET COMMANDS:",
+    "  connect              → Connect MetaMask or create Omega wallet",
+    "  disconnect           → Disconnect current wallet",
+    "  balance              → Show all wallet balances & total value",
+    "  send <amount> <to>   → Send OMEGA tokens",
+    "  import <private-key> → Import wallet from private key",
+    "  export               → Export wallet for other apps",
+    "  test-wallet          → Test wallet connection & status",
+    "  fund                 → Try to fund wallet with 0.1 OMEGA",
+    "  fund-direct          → Direct blockchain funding (bypass relayer)",
+  ],
+  mining: () => [
+    "⛏️  MINING COMMANDS:",
+    "  mine                 → Start mining OMEGA tokens",
+    "  claim                → Claim mining rewards",
+    "  faucet               → Claim from faucet (24h cooldown)",
+    "  faucet status        → Check faucet claim status",
+    "  status               → Show mining status",
+    "  stats                → Show detailed mining statistics",
+  ],
+  market: () => [
+    "📊 MARKET DATA & ANALYTICS:",
+    "  ds search <token>    → DexScreener token search & analysis",
+    "  ds trending          → DexScreener trending tokens",
+    "  ds analytics <token> → Detailed token analytics",
+    "  ds portfolio         → Portfolio tracking & analytics",
+    "  defillama tvl        → Total DeFi TVL (calculated)",
+    "  defillama protocols [limit] → Top protocols by TVL",
+    "  defillama chains [limit] → TVL by blockchain",
+    "  defillama tvl <protocol> → Specific protocol TVL",
+    "  defillama price <token> → Current token price",
+    "  defillama tokens <t1,t2,t3> → Multiple token prices",
+    "  defillama trending   → Protocols by 24h change",
+    "  defillama debug <token> → Debug token price lookup",
+    "  llama <command>      → Alias for defillama commands",
+    "  chart <symbol>       → Live trading charts (BTC, ETH, SOL)",
+    "  cg search <token>    → GeckoTerminal token search",
+    "  cg networks          → GeckoTerminal networks",
+  ],
+  ai: () => [
+    "🤖 AI & NFT TOOLS:",
+    "  ai <message>         → Chat with OMEGA AI (natural language)",
+    "  chat init <api-key>  → Initialize ChainGPT AI",
+    '  chat ask "<question>" → Ask ChainGPT Web3 AI',
+    '  chat stream "<question>" → Real-time AI streaming',
+    '  chat context "<question>" → AI with custom context',
+    '  chat history "<question>" → AI with conversation memory',
+    "  chat test            → Test ChainGPT connection",
+    "  chat help            → Show chat commands help",
+    "  nft init <api-key>   → Initialize ChainGPT NFT Generator",
+    "  nft generate <prompt> → Generate AI NFT images",
+    "  nft enhance <prompt> → Enhance prompt with AI",
+    "  nft models           → Show available AI models",
+    "  nft styles           → Show art styles",
+    "  nft gallery          → View generated NFT gallery",
+    "  nft test             → Test NFT API connection",
+    "  nft help             → Show full NFT commands",
+  ],
+  news: () => [
+    "📰 CRYPTO NEWS:",
+    "  news latest          → Latest crypto news",
+    "  news hot             → Trending crypto news",
+    "  news btc             → Bitcoin news",
+    "  news eth             → Ethereum news",
+    "  news sol             → Solana news",
+    '  news search "<query>" → Search crypto news',
+    "  news category news   → News articles",
+    "  news sources         → News sources",
+    "  news expand-all      → Expand all articles",
+    "  news collapse-all    → Collapse all articles",
+    "  news clear-expansions → Clear & reload",
+    "  news help            → Show news commands help",
+  ],
+  blockchain: () => [
+    "🌐 MULTI-CHAIN SUPPORT:",
+    "  solana connect       → Connect Phantom wallet",
+    "  solana generate      → Generate browser wallet",
+    "  solana status        → Show available wallets",
+    "  solana search <token> → Search tokens with details",
+    "  solana swap          → Token swaps",
+    "  near connect         → Connect NEAR wallet",
+    "  near balance         → Check NEAR balance",
+    "  near account         → Get account information",
+    "  near validators      → Show network validators",
+    "  near agent           → Deploy/manage AI Shade Agents",
+    "  near deploy          → Deploy smart contracts",
+    "  near help            → Show detailed NEAR commands",
+    "  eclipse wallet       → Eclipse wallet operations",
+    "  eclipse swap         → Eclipse token swaps",
+  ],
+  games: () => [
+    "🎮 GAMES & ENTERTAINMENT:",
+    "  game list            → Show all available games",
+    "  play <game>          → Play a game (snake, pacman, clicker, etc.)",
+    "  game help            → Show game commands",
+    "  rickroll, matrix, hack, disco, fortune → Fun commands",
+  ],
+  theme: () => [
+    "🎨 INTERFACE & THEMES:",
+    "  theme [light|dark]   → Toggle light/dark mode",
+    "  gui <style>          → Transform UI (chatgpt, discord, aol, windows95, limewire)",
+    "  view [basic|futuristic] → Toggle view mode",
+    "  clear                → Clear terminal",
+  ],
+};
+
+function listAvailableThemes(context: CommandContext): void {
+  context.log("Available themes:", "info");
+  AVAILABLE_THEMES.forEach((theme) => {
+    context.log(` • ${theme}`, "output");
+  });
+}
+
+function ensureTheme(value: string): Theme | null {
+  const normalized = value.toLowerCase();
+  return AVAILABLE_THEMES.includes(normalized as Theme)
+    ? (normalized as Theme)
+    : null;
+}
+
+export const helpCommand: Command = {
+  name: "help",
+  aliases: ["?"],
+  description: "Display available commands",
+  handler: (context: CommandContext, args: string[]) => {
+    const category = args[1]?.toLowerCase();
+
+    // Show category-specific help
+    if (category && CATEGORY_HELP[category]) {
+      context.log(`=== ${category.toUpperCase()} HELP ===`, "info");
+      context.log("", "info");
+      CATEGORY_HELP[category]().forEach((line) => context.log(line, "output"));
+      context.log("", "info");
+      context.log('💡 Use "help" to see all commands', "info");
+      return;
+    }
+
+    if (category) {
+      context.log(`❌ Unknown category: ${category}`, "error");
+      context.log(
+        "💡 Available categories: wallet, mining, market, ai, news, blockchain, games, theme",
+        "info"
+      );
+      context.log('💡 Use "help" to see all commands', "info");
+      return;
+    }
+
+    // Full help display matching vanilla terminal
+    context.log("=== Ω Terminal v2.0.1 Commands ===", "info");
+    context.log("", "info");
+
+    // New Features Section
+    context.log("🆕 --- NEW FEATURES (v2.0.1) ----", "success");
+    context.log("🍎 Modern UI:", "info");
+    context.log("modern ui | modern-dark", "output");
+    context.log("Apple-style glass-morphism", "output");
+    context.log("", "output");
+    context.log("📊 DexScreener Analytics:", "info");
+    context.log(
+      "dexscreener search | analytics | portfolio | watchlist",
+      "output"
+    );
+    context.log("Complete token analysis suite", "output");
+    context.log("", "output");
+    context.log("🦙 DeFi Llama:", "info");
+    context.log("defillama tvl | protocols | price | chains", "output");
+    context.log("TVL & price data", "output");
+    context.log("", "output");
+    context.log("🎮 Games & Fun:", "info");
+    context.log("games | arcade | flappy | mystery-box", "output");
+    context.log("Entertainment & challenges", "output");
+    context.log("", "output");
+    context.log("🎯 PGT Portfolio:", "info");
+    context.log("pgt track <address> | pgt portfolio | pgt wallets", "output");
+    context.log("Auto-detect network, real-time tracking", "output");
+    context.log("", "output");
+    context.log("🏗️ Terminal Builder:", "info");
+    context.log("terminal create | list | launch", "output");
+    context.log("Create custom terminals with URLs", "output");
+    context.log("", "output");
+    context.log("🔵 NEAR Wallet:", "info");
+    context.log("near connect | balance | swap", "output");
+    context.log("NEAR ecosystem integration", "output");
+    context.log("", "output");
+    context.log("🌊 OpenSea NFTs:", "info");
+    context.log(
+      "nft search | collection | floor | trending | portfolio",
+      "output"
+    );
+    context.log("Professional NFT analytics & trading", "output");
+    context.log("", "output");
+    context.log("🤖 ChainGPT AI:", "info");
+    context.log("chat init | chat ask | nft init | nft generate", "output");
+    context.log(
+      "AI chatbot & NFT generator (default keys included!)",
+      "output"
+    );
+    context.log("", "output");
+    context.log("📜 Smart Contracts:", "info");
+    context.log(
+      "contract init | contract generate | auditor init | auditor audit",
+      "output"
+    );
+    context.log(
+      "AI smart contract creator & auditor (default keys included!)",
+      "output"
+    );
+    context.log("", "info");
+
+    // Core Wallet Functions
+    context.log("--- Core Wallet Functions ----", "info");
+    context.log(
+      "Commands: connect | disconnect | balance | faucet | send | network | forceadd | rpccheck",
+      "output"
+    );
+    context.log("", "info");
+
+    // AI Assistant
+    context.log("--- AI Assistant ----", "info");
+    context.log(
+      "AI Mode: ai - Toggle AI assistant to answer questions and execute commands naturally",
+      "output"
+    );
+    context.log("", "info");
+
+    // Mining & Rewards
+    context.log("--- Mining & Rewards ---", "info");
+    context.log("Commands: mine | claim | status | stats", "output");
+    context.log("", "info");
+
+    // Themes & Interface
+    context.log("🎨 --- Themes & Interface ----", "info");
+    context.log(
+      "Themes: modern ui | modern-dark | dark | matrix | retro | bitcoin | ethereum | solana | pepe",
+      "output"
+    );
+    context.log(
+      "GUI Modes: gui [ios, chatgpt, discord, aol, windows95, limewire]",
+      "output"
+    );
+    context.log("", "info");
+
+    // Analytics & Data
+    context.log("📊 --- Analytics & Data ----", "info");
+    context.log("DexScreener:", "info");
+    context.log("dexscreener search BONK", "output");
+    context.log("dexscreener analytics ETH", "output");
+    context.log("dexscreener portfolio", "output");
+    context.log("", "output");
+    context.log("DeFi Llama:", "info");
+    context.log("defillama tvl", "output");
+    context.log("defillama price ethereum", "output");
+    context.log("defillama protocols", "output");
+    context.log("", "output");
+    context.log("OpenSea NFTs:", "info");
+    context.log("nft search azuki", "output");
+    context.log("nft floor bayc", "output");
+    context.log("nft trending", "output");
+    context.log("", "output");
+    context.log("GeckoTerminal:", "info");
+    context.log("cg help", "output");
+    context.log("", "info");
+
+    // Blockchain Networks
+    context.log("--- Blockchain Networks ---", "info");
+    context.log("Solana:", "info");
+    context.log("solana help", "output");
+    context.log("", "output");
+    context.log("Eclipse:", "info");
+    context.log("eclipse help", "output");
+    context.log("", "output");
+    context.log("NEAR:", "info");
+    context.log("near connect | near help", "output");
+    context.log("", "output");
+    context.log("Hyperliquid:", "info");
+    context.log("hyperliquid help", "output");
+    context.log("", "output");
+    context.log("OpenSea NFTs:", "info");
+    context.log("nft search | nft trending | nft portfolio", "output");
+    context.log("", "info");
+
+    // Advanced Features
+    context.log("--- Advanced Features ---", "info");
+    context.log("Mixer (Privacy):", "info");
+    context.log("mixer help", "output");
+    context.log("", "output");
+    context.log("Ambassador:", "info");
+    context.log("ambassador help", "output");
+    context.log("", "output");
+    context.log("Polymarket:", "info");
+    context.log("polymarket help", "output");
+    context.log("", "output");
+    context.log("🎮 Games:", "info");
+    context.log("game list | play", "output");
+    context.log("", "output");
+    context.log("Email:", "info");
+    context.log("email | inbox", "output");
+    context.log("Encrypted messaging system", "output");
+    context.log("", "info");
+
+    // Quick Start Guide
+    context.log("🚀 --- Quick Start Guide ----", "info");
+    context.log(
+      "💡 Try: modern ui for beautiful Apple-style interface",
+      "output"
+    );
+    context.log("💡 Try: dexscreener search BONK for token analysis", "output");
+    context.log("💡 Try: defillama tvl for DeFi data", "output");
+    context.log("💡 Try: nft trending for hot NFT collections", "output");
+    context.log(
+      "💡 Try: pgt portfolio for multi-chain portfolio tracking",
+      "output"
+    );
+    context.log("💡 Try: game list for interactive games", "output");
+    context.log("", "info");
+
+    // Economy & Trading
+    context.log("--- Economy & Trading ---", "info");
+    context.log("alpha help stocks & economy data", "output");
+    context.log("", "info");
+
+    // Footer
+    context.log("---", "output");
+    context.log(
+      "Ω Terminal v2.0.1 - Modern Apple UI • Enhanced Analytics • DeFi Integration • NFT Trading",
+      "info"
+    );
+  },
+};
+
+export const clearCommand: Command = {
+  name: "clear",
+  aliases: ["cls"],
+  description: "Clear terminal output",
+  handler: (context: CommandContext) => {
+    console.log("🧹 Clear command executing...");
+    console.log("🧹 clearTerminal function:", typeof context.clearTerminal);
+    context.clearTerminal();
+    console.log("🧹 Terminal cleared!");
+  },
+};
+
+export const statusCommand: Command = {
+  name: "status",
+  description: "Display system status",
+  handler: (context: CommandContext) => {
+    context.log("=== Omega Terminal Status ===", "info");
+    context.log(`Version: ${config.VERSION}`, "output");
+    context.log(`Theme: ${context.theme.currentTheme}`, "output");
+
+    if (context.wallet.state.isConnected && context.wallet.state.address) {
+      context.log("Wallet: Connected", "success");
+      context.log(`Address: ${context.wallet.state.address}`, "output");
+      context.log(
+        `Balance: ${context.wallet.state.balance ?? "Unknown"}`,
+        "output"
+      );
+    } else {
+      context.log("Wallet: Not connected", "warning");
+      context.log("Use `connect` to link MetaMask.", "info");
+    }
+
+    context.log("", "output");
+    context.log("Network:", "info");
+    context.log(` Relayer: ${config.RELAYER_URL}`, "output");
+    context.log(` RPC: ${config.OMEGA_RPC_URL}`, "output");
+  },
+};
+
+export const themeCommand: Command = {
+  name: "theme",
+  aliases: ["themes"],
+  description: "Switch terminal theme",
+  usage: "theme <name>|list",
+  handler: (context: CommandContext, args: string[]) => {
+    const next = args[1];
+
+    if (!next || next === "list" || next === "help") {
+      listAvailableThemes(context);
+      return;
+    }
+
+    const theme = ensureTheme(next);
+    if (!theme) {
+      context.log(`Unknown theme: ${next}`, "error");
+      listAvailableThemes(context);
+      return;
+    }
+
+    context.theme.setTheme(theme);
+    context.log(`Theme switched to ${theme}.`, "success");
+  },
+};
+
+export const viewCommand: Command = {
+  name: "view",
+  description: "Toggle between basic and futuristic dashboard view",
+  usage: "view [basic|futuristic|toggle]",
+  handler: (context: CommandContext, args: string[]) => {
+    // Access viewMode from context
+    const viewModeContext = context.viewMode;
+
+    if (!viewModeContext) {
+      context.log("❌ View mode system not available", "error");
+      return;
+    }
+
+    if (!args || args.length < 2) {
+      // Show current mode
+      const currentMode = viewModeContext.viewMode;
+      context.log("📺 Terminal View Modes:", "info");
+      context.log("", "info");
+      context.log(
+        `  Current mode: ${currentMode.toUpperCase()}`,
+        currentMode === "basic" ? "success" : "info"
+      );
+      context.log("", "info");
+      context.log("Available commands:", "info");
+      context.log(
+        "  view basic       → Modern terminal only (no dashboard)",
+        "output"
+      );
+      context.log(
+        "  view futuristic  → Full dashboard with sidebar & stats",
+        "output"
+      );
+      context.log("  view toggle      → Switch between modes", "output");
+      context.log("", "info");
+      context.log("💡 Your preference is saved automatically!", "info");
+      return;
+    }
+
+    const mode = args[1]?.toLowerCase();
+
+    switch (mode) {
+      case "basic":
+      case "classic":
+      case "simple":
+        viewModeContext.setViewMode("basic");
+        context.log("✅ Switched to basic terminal view", "success");
+        break;
+
+      case "futuristic":
+      case "dashboard":
+      case "advanced":
+        viewModeContext.setViewMode("futuristic");
+        context.log("✅ Switched to futuristic dashboard view", "success");
+        break;
+
+      case "toggle":
+      case "switch":
+        const beforeMode = viewModeContext.viewMode;
+        viewModeContext.toggleViewMode();
+        const newMode = beforeMode === "basic" ? "futuristic" : "basic";
+        context.log(`✅ Toggled to ${newMode} view`, "success");
+        break;
+
+      default:
+        context.log("❌ Invalid view mode", "error");
+        context.log("Use: view basic, view futuristic, or view toggle", "info");
+    }
+  },
+};
+
+export const guiCommand: Command = {
+  name: "gui",
+  description:
+    "Transform UI to different interface styles (ChatGPT, Discord, AOL, Windows95, LimeWire, Terminal)",
+  usage: "gui <chatgpt|discord|aol|windows95|limewire|terminal|help>",
+  handler: (context: CommandContext, args: string[]) => {
+    const availableStyles = [
+      "chatgpt",
+      "aol",
+      "discord",
+      "windows95",
+      "limewire",
+      "terminal",
+    ];
+
+    if (!args[1] || args[1] === "help" || args[1] === "list") {
+      const currentStyle =
+        typeof localStorage !== "undefined"
+          ? localStorage.getItem("omega-gui-style") || "terminal"
+          : "terminal";
+      const currentTheme =
+        typeof localStorage !== "undefined"
+          ? localStorage.getItem("omega-theme-mode") || "dark"
+          : "dark";
+
+      context.log("🎮 GUI Interface Styles", "info");
+      context.log("═══════════════════════════════════════", "output");
+      context.log("", "info");
+
+      context.log(
+        "💬 gui chatgpt      - ChatGPT conversation interface",
+        "output"
+      );
+      context.log("   Modern chat UI with sidebar and message bubbles", "info");
+      context.log("", "info");
+
+      context.log("👾 gui discord      - Discord server interface", "output");
+      context.log("   Channel-based chat with Discord aesthetics", "info");
+      context.log("", "info");
+
+      context.log("📧 gui aol          - AOL Instant Messenger", "output");
+      context.log('   Classic AOL chat with "You\'ve got mail" vibes', "info");
+      context.log("", "info");
+
+      context.log("🪟 gui windows95    - Windows 95 retro", "output");
+      context.log("   Classic Windows 95 window chrome and style", "info");
+      context.log("", "info");
+
+      context.log("🔥 gui limewire     - LimeWire P2P interface", "output");
+      context.log("   Y2K-era file sharing aesthetic", "info");
+      context.log("", "info");
+
+      context.log("⌨️  gui terminal     - Default terminal UI", "output");
+      context.log("   Return to standard terminal interface", "info");
+      context.log("", "info");
+
+      context.log("💡 ALL GUI STYLES:", "success");
+      context.log("  ✅ Work in both Light & Dark mode", "output");
+      context.log("  ✅ Preserve all terminal commands", "output");
+      context.log("  ✅ Support futuristic dashboard features", "output");
+      context.log("  ✅ Auto-save your preference", "output");
+      context.log("", "info");
+
+      context.log("🎯 CURRENT:", "info");
+      context.log(`  GUI Style: ${currentStyle}`, "output");
+      context.log(
+        `  Theme: ${currentTheme === "light" ? "🌞 Light" : "🌙 Dark"}`,
+        "output"
+      );
+      context.log("", "info");
+      context.log("💡 Try: gui chatgpt", "success");
+      return;
+    }
+
+    const style = args[1].toLowerCase();
+    if (!availableStyles.includes(style)) {
+      context.log(`❌ Invalid GUI style: ${style}`, "error");
+      context.log(
+        "💡 Available: chatgpt, discord, aol, windows95, limewire, terminal",
+        "info"
+      );
+      return;
+    }
+
+    context.log(`✅ Transforming interface to ${style}...`, "success");
+
+    // Save preference
+    if (typeof localStorage !== "undefined") {
+      localStorage.setItem("omega-gui-style", style);
+    }
+
+    // Apply the GUI transformation based on style
+    switch (style) {
+      case "chatgpt":
+        createChatGptInterface(context);
+        break;
+      case "aol":
+        createAolInterface(context);
+        break;
+      case "discord":
+        createDiscordInterface(context);
+        break;
+      case "windows95":
+        createWindows95Interface(context);
+        break;
+      case "limewire":
+        createLimewireInterface(context);
+        break;
+      case "terminal":
+      default:
+        restoreTerminalInterface(context);
+        break;
+    }
+
+    context.log(`✅ Interface transformed to: ${style}`, "success");
+    context.log(
+      `💡 All commands still work! Type "gui terminal" to restore.`,
+      "info"
+    );
+  },
+};
+
+export const aiCommand: Command = {
+  name: "ai",
+  description: "Chat with OMEGA AI using natural language",
+  usage: "ai <your message>",
+  handler: async (context: CommandContext, args: string[]) => {
+    if (!args || args.length === 0 || !args[1]) {
+      context.log("🤖 OMEGA AI Assistant", "info");
+      context.log("Usage: ai <your message>", "info");
+      context.log('Example: ai "What is my balance?"', "info");
+      context.log('Example: ai "Help me create a token"', "info");
+      context.log("", "info");
+      // Check AI mode from context (matches vanilla behavior)
+      const isAIMode = context.aiProvider && context.aiProvider !== "off";
+      context.log(`AI Mode: ${isAIMode ? "ON 🟢" : "OFF 🔴"}`, "info");
+      context.log("Toggle AI Mode using the button in the header", "info");
+      return;
+    }
+
+    const message = args.slice(1).join(" ");
+    await callAI(context, message, false);
+  },
+};
+
+export const tabCommand: Command = {
+  name: "tab",
+  description: "Manage terminal tabs",
+  usage: "tab <new|close|switch> [number]",
+  handler: (context: CommandContext, args: string[]) => {
+    if (args.length < 2 || !args[1]) {
+      context.log("Usage: tab <new|close|switch> [number]", "info");
+      return;
+    }
+
+    const action = args[1].toLowerCase();
+    switch (action) {
+      case "new":
+        context.log("Creating new tab...", "info");
+        context.log(
+          "💡 Tab management coming soon in Next.js version",
+          "warning"
+        );
+        break;
+      case "close":
+        context.log("Closing current tab...", "info");
+        context.log(
+          "💡 Tab management coming soon in Next.js version",
+          "warning"
+        );
+        break;
+      case "switch":
+        if (!args[2]) {
+          context.log("Please specify tab number", "error");
+          return;
+        }
+        const tabNum = parseInt(args[2]);
+        if (isNaN(tabNum)) {
+          context.log("Please specify tab number", "error");
+          return;
+        }
+        context.log(`Switching to tab ${tabNum}...`, "info");
+        context.log(
+          "💡 Tab management coming soon in Next.js version",
+          "warning"
+        );
+        break;
+      default:
+        context.log("Invalid tab command", "error");
+    }
+  },
+};
+
+export const stopCommand: Command = {
+  name: "stop",
+  description: "Stop running animations and activities",
+  handler: (context: CommandContext) => {
+    const stoppedActivities: string[] = [];
+
+    // Stop mining
+    if (context.miningState?.isMining) {
+      context.miningState.stopMining();
+      stoppedActivities.push("mining");
+    }
+
+    // Clear animations (if any running)
+    if (typeof window !== "undefined") {
+      // Clear any pending animation timers (safe approach)
+      stoppedActivities.push("animations");
+    }
+
+    if (stoppedActivities.length > 0) {
+      context.log(`⏹️ Stopped: ${stoppedActivities.join(", ")}`, "success");
+    } else {
+      context.log("ℹ️ No activities currently running", "info");
+    }
+  },
+};
+
+// AI helper function
+async function callAI(
+  context: CommandContext,
+  prompt: string,
+  isAIMode: boolean = false
+): Promise<void> {
+  if (!prompt || prompt.trim() === "") {
+    context.log("❌ Please provide a message for the AI", "error");
+    return;
+  }
+
+  try {
+    // Matches vanilla terminal.html lines 4763-4841
+    const url = "https://ai.omeganetwork.co/chat";
+    const evm = context.wallet?.address || null;
+    const solana = context.wallet?.solana?.address || null;
+
+    console.log("[DEBUG] 🎯 Calling AI endpoint:", url);
+    console.log("[DEBUG] EVM:", evm, "Solana:", solana);
+
+    const response = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        question: prompt,
+        evm,
+        solana,
+        chatHistory: context.chatHistory || [],
+        ...(context.aiProvider && context.aiProvider !== "off"
+          ? { provider: context.aiProvider }
+          : {}),
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log("[DEBUG] AI Response:", data);
+
+    if (data && data.data) {
+      const d = data.data;
+
+      // Track AI reply in chat history
+      if (d.additionalInfoRequired && context.chatHistory) {
+        context.chatHistory.push({
+          type: "ai",
+          message: d.additionalInfo,
+        });
+      }
+
+      // Show additional info if required
+      if (d.additionalInfoRequired) {
+        context.log(d.additionalInfo, "info");
+      }
+
+      // Execute commands from array
+      if (Array.isArray(d.commands) && d.commands.length > 0) {
+        console.log("AI returned commands array:", d.commands);
+
+        // Track commands in history
+        if (context.chatHistory) {
+          context.chatHistory.push({
+            type: "command",
+            command: d.commands,
+          });
+        }
+
+        try {
+          // Set flag to prevent recursive AI calls (mutate the context property)
+          if (context.executingAICommands !== undefined) {
+            context.executingAICommands = true;
+          }
+
+          for (let i = 0; i < d.commands.length; i++) {
+            const cmd = d.commands[i];
+            console.log(
+              `Executing AI command ${i + 1}/${d.commands.length}: "${cmd}"`
+            );
+            if (typeof cmd === "string") {
+              // Pass true flag to indicate this is from AI (matches vanilla line 4814)
+              await (context.executeCommand as any)(cmd, true);
+            } else {
+              console.warn("Skipping non-string command:", cmd);
+            }
+          }
+          console.log("AI command execution completed successfully");
+        } catch (error: any) {
+          console.error("Error executing AI commands:", error);
+          context.log(`AI command execution failed: ${error.message}`, "error");
+        } finally {
+          // Always reset the flag when done
+          if (context.executingAICommands !== undefined) {
+            context.executingAICommands = false;
+          }
+        }
+      } else if (!d.additionalInfoRequired) {
+        context.log("Can't perform this action", "error");
+      }
+    } else {
+      context.log("AI agent error: Invalid response.", "error");
+    }
+  } catch (error: any) {
+    context.log("AI agent error: " + error.message, "error");
+  }
+}
+
+/**
+ * URL Command
+ * Display helpful URLs and resources
+ */
+export const urlCommand: Command = {
+  name: "url",
+  aliases: ["urls"],
+  description: "Display helpful URLs and resources",
+  category: "system",
+  handler: (context: CommandContext) => {
+    context.log("📚 Helpful URLs:", "info");
+    context.log("", "output");
+    context.logHtml(
+      '<a href="https://omega-6.gitbook.io/omega" target="_blank" style="color:#00d4ff">📖 Gitbook Documentation</a>'
+    );
+    context.logHtml(
+      '<a href="https://discord.gg/omega" target="_blank" style="color:#00d4ff">💬 Discord Community</a>'
+    );
+    context.logHtml(
+      '<a href="https://twitter.com/omegaterminal" target="_blank" style="color:#00d4ff">🐦 Twitter</a>'
+    );
+    context.logHtml(
+      '<a href="https://github.com/omega-terminal" target="_blank" style="color:#00d4ff">💻 GitHub</a>'
+    );
+    context.log("", "output");
+    context.log("💡 Click any link to visit", "info");
+  },
+};
+
+export const basicCommands: Command[] = [
+  helpCommand,
+  clearCommand,
+  statusCommand,
+  themeCommand,
+  viewCommand,
+  guiCommand,
+  aiCommand,
+  tabCommand,
+  stopCommand,
+  urlCommand,
+];
+
+export default basicCommands;

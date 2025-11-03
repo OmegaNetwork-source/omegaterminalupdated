@@ -1,0 +1,510 @@
+/**
+ * @file DashboardSidebar.module.css
+ * @description Sidebar navigation styling with theme variants, collapsible sections, and mobile overlays.
+ * @sources styles/futuristic-theme.css, styles/mobile-terminal-fix.css
+ */
+
+/* -----------------------------------------------------------------------------
+   Sidebar Shell
+   ----------------------------------------------------------------------------- */
+
+.sidebar {
+  grid-area: sidebar;
+  background: rgba(21, 21, 32, 0.7);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(0, 212, 255, 0.15);
+  border-radius: 12px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  overflow-y: auto;
+  font-family: "Courier New", monospace;
+}
+
+.sidebar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  background: linear-gradient(
+    180deg,
+    rgba(0, 188, 242, 0.7),
+    rgba(0, 255, 210, 0.7)
+  );
+  border-radius: 3px;
+}
+
+.sidebarCollapsed {
+  transform: translateX(-110%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.sidebarOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(10px);
+  z-index: 30;
+  display: flex;
+  justify-content: flex-start;
+  align-items: stretch;
+}
+
+.sidebarMobile {
+  width: 90vw;
+  max-width: 320px;
+  margin: 0;
+  border-radius: 0 22px 22px 0;
+}
+
+/* -----------------------------------------------------------------------------
+   Section & Action Styling
+   ----------------------------------------------------------------------------- */
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.sectionDivider {
+  width: calc(100% - 32px);
+  height: 1px;
+  margin: 8px auto 12px;
+  background: linear-gradient(
+    90deg,
+    rgba(0, 188, 242, 0) 0%,
+    rgba(0, 188, 242, 0.45) 50%,
+    rgba(0, 188, 242, 0) 100%
+  );
+  opacity: 0.4;
+}
+
+.sectionTitle {
+  font-size: 9px;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: rgba(0, 212, 255, 0.7);
+  margin-bottom: 8px;
+  padding: 4px 8px;
+  background: rgba(0, 212, 255, 0.05);
+  border: 1px solid rgba(0, 212, 255, 0.15);
+  border-radius: 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: "Courier New", monospace;
+}
+
+.sectionTitle:hover {
+  background: rgba(0, 212, 255, 0.08);
+  color: #00d4ff;
+}
+
+.sectionToggle {
+  background: transparent;
+  border: none;
+  color: currentColor;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease;
+}
+
+.toggleIcon {
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+  transition: transform 0.2s ease;
+}
+
+.sectionCollapsed .toggleIcon {
+  transform: rotate(-90deg);
+}
+
+.sectionContent {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 4px 0;
+}
+
+.disabledMessage {
+  margin: 0 16px 8px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: rgba(255, 193, 7, 0.12);
+  border: 1px solid rgba(255, 193, 7, 0.28);
+  color: rgba(255, 193, 7, 0.92);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.sectionSkeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 0 16px;
+}
+
+.sectionSkeletonBar {
+  height: 36px;
+  border-radius: 10px;
+  background: rgba(0, 188, 242, 0.12);
+  position: relative;
+  overflow: hidden;
+}
+
+.sectionSkeletonBar::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(0, 188, 242, 0) 0%,
+    rgba(0, 188, 242, 0.35) 50%,
+    rgba(0, 188, 242, 0) 100%
+  );
+  animation: shimmer-slide 1.4s ease-in-out infinite;
+}
+
+.sectionCollapsed .sectionContent {
+  display: none;
+}
+
+.button {
+  background: rgba(0, 212, 255, 0.08);
+  border: 1px solid rgba(0, 212, 255, 0.15);
+  border-radius: 8px;
+  padding: 10px 12px;
+  color: #00d4ff;
+  font-family: "Courier New", monospace;
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 36px;
+  margin-bottom: 4px;
+  position: relative;
+  overflow: hidden;
+}
+
+.button:hover {
+  background: rgba(0, 212, 255, 0.18);
+  border-color: #00d4ff;
+  box-shadow: 0 0 20px rgba(0, 212, 255, 0.3),
+    inset 0 0 10px rgba(0, 212, 255, 0.1);
+  transform: translateX(6px) scale(1.02);
+  color: #00ffff;
+}
+
+.buttonActive {
+  background: rgba(0, 188, 242, 0.35);
+  border-color: rgba(0, 188, 242, 0.55);
+  box-shadow: 0 20px 36px rgba(0, 188, 242, 0.3);
+}
+
+.buttonDisabled {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.buttonLoading {
+  position: relative;
+  color: rgba(0, 188, 242, 0.65);
+}
+
+.buttonLoading::after {
+  content: "";
+  position: absolute;
+  right: 16px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  animation: spin 0.9s linear infinite;
+}
+
+@keyframes shimmer-slide {
+  0% {
+    transform: translateX(-100%);
+  }
+
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.buttonIcon {
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+  flex-shrink: 0;
+  filter: drop-shadow(0 0 2px currentColor);
+}
+
+.buttonText {
+  flex: 1;
+}
+
+/* Expandable buttons (like AI Assistant, Terminal Style) */
+.expandable {
+  margin-bottom: 4px;
+}
+
+.expandableButton {
+  background: rgba(0, 212, 255, 0.08);
+  border: 1px solid rgba(0, 212, 255, 0.15);
+  border-radius: 8px;
+  padding: 10px 12px;
+  color: #00d4ff;
+  font-family: "Courier New", monospace;
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 36px;
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  text-align: left;
+  list-style: none;
+}
+
+.expandableButton:hover {
+  background: rgba(0, 212, 255, 0.18);
+  border-color: #00d4ff;
+  box-shadow: 0 0 20px rgba(0, 212, 255, 0.3),
+    inset 0 0 10px rgba(0, 212, 255, 0.1);
+  transform: translateX(6px) scale(1.02);
+  color: #00ffff;
+}
+
+.expandableButton::-webkit-details-marker {
+  display: none;
+}
+
+.expandIcon {
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+  margin-left: auto;
+  transition: transform 0.2s ease;
+}
+
+details[open] .expandIcon {
+  transform: rotate(180deg);
+}
+
+/* Sub-actions (nested items) */
+.subActions {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 0 4px 28px;
+  margin-top: 4px;
+}
+
+.subButton {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.65);
+  font-family: "Courier New", monospace;
+  font-size: 11px;
+  font-weight: 400;
+  padding: 6px 8px;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border-radius: 4px;
+  display: block;
+}
+
+.subButton:hover {
+  color: #00d4ff;
+  background: rgba(0, 212, 255, 0.08);
+  transform: translateX(4px);
+}
+
+.subSectionHeader {
+  padding: 12px 0 6px 0;
+  font-size: 9px;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: rgba(0, 212, 255, 0.5);
+  font-weight: 600;
+  border-top: 1px solid rgba(0, 212, 255, 0.1);
+  margin-top: 8px;
+}
+
+.subSectionHeader:first-child {
+  border-top: none;
+  margin-top: 0;
+  padding-top: 4px;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  background: rgba(0, 188, 242, 0.15);
+  color: rgba(0, 188, 242, 0.95);
+}
+
+.badgeNew {
+  background: rgba(255, 120, 220, 0.18);
+  color: rgba(255, 120, 220, 0.95);
+}
+
+.badgeCount {
+  background: rgba(0, 255, 136, 0.18);
+  color: rgba(0, 255, 136, 0.95);
+}
+
+/* -----------------------------------------------------------------------------
+   Theme Variants (global body selectors)
+   ----------------------------------------------------------------------------- */
+
+:global(body.theme-executive) .sidebar {
+  background: rgba(8, 8, 16, 0.92);
+  border: 1px solid rgba(255, 215, 0, 0.32);
+  box-shadow: 0 28px 60px rgba(255, 215, 0, 0.22);
+}
+
+:global(body.theme-executive) .sectionTitle {
+  color: rgba(255, 215, 0, 0.92);
+}
+
+:global(body.theme-executive) .button {
+  background: rgba(255, 215, 0, 0.08);
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  color: rgba(245, 238, 220, 0.92);
+}
+
+:global(body.theme-modern) .sidebar {
+  background: linear-gradient(
+    170deg,
+    rgba(18, 20, 36, 0.92) 0%,
+    rgba(10, 12, 24, 0.92) 100%
+  );
+  border: 1px solid rgba(98, 0, 255, 0.32);
+}
+
+:global(body.theme-modern) .button {
+  background: rgba(98, 0, 255, 0.12);
+  border: 1px solid rgba(98, 0, 255, 0.28);
+  color: rgba(220, 220, 245, 0.88);
+}
+
+:global(body.theme-matrix) .sidebar {
+  background: rgba(0, 6, 0, 0.95);
+  border: 1px solid rgba(57, 255, 20, 0.28);
+  color: rgba(57, 255, 20, 0.88);
+}
+
+:global(body.theme-matrix) .button {
+  border-color: rgba(57, 255, 20, 0.25);
+}
+
+/* -----------------------------------------------------------------------------
+   Responsive Breakpoints
+   ----------------------------------------------------------------------------- */
+
+@media (max-width: 1400px) {
+  .sidebar {
+    border-radius: 18px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .sidebar {
+    display: none;
+  }
+
+  .sidebarOverlay {
+    display: flex;
+  }
+}
+
+@media (max-width: 768px) {
+  .sidebarMobile {
+    max-height: 60vh;
+    overflow-y: auto;
+  }
+
+  .button {
+    margin: 0 12px;
+    padding: 12px;
+    font-size: 11px;
+  }
+
+  .buttonIcon {
+    width: 16px;
+    height: 16px;
+  }
+
+  .sectionTitle {
+    padding: 8px 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .sidebarMobile {
+    width: 100vw;
+    max-width: none;
+    border-radius: 0;
+  }
+
+  .button {
+    padding: 12px 14px;
+    font-size: 10px;
+  }
+}
+
+/* -----------------------------------------------------------------------------
+   Feature Queries & Touch Enhancements
+   ----------------------------------------------------------------------------- */
+
+@supports (-webkit-touch-callout: none) {
+  .sidebarMobile {
+    padding-bottom: max(28px, calc(28px + env(safe-area-inset-bottom)));
+  }
+}
+
+@supports (padding: max(0px)) {
+  .sidebar {
+    padding-left: max(16px, env(safe-area-inset-left));
+  }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .button,
+  .sectionTitle {
+    min-height: 48px;
+  }
+}

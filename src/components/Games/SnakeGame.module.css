@@ -1,0 +1,86 @@
+/**
+ * SnakeGame Styles
+ * Canvas-based game component styling
+ */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  padding: 20px;
+}
+
+.canvas {
+  border: 2px solid #00ff99;
+  border-radius: 8px;
+  background: #000;
+  box-shadow: 0 0 20px rgba(0, 255, 153, 0.3);
+}
+
+.controls {
+  display: flex;
+  gap: 10px;
+}
+
+.button {
+  background: rgba(0, 255, 153, 0.2);
+  border: 1px solid #00ff99;
+  color: #00ff99;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: "Courier New", monospace;
+  font-size: 14px;
+}
+
+.button:hover:not(:disabled) {
+  background: rgba(0, 255, 153, 0.4);
+  box-shadow: 0 0 10px rgba(0, 255, 153, 0.4);
+}
+
+.button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.scoreDisplay {
+  font-size: 20px;
+  color: #00ff99;
+  font-weight: bold;
+  font-family: "Courier New", monospace;
+}
+
+.instructions {
+  font-size: 14px;
+  color: #cccccc;
+  text-align: center;
+  font-family: "Courier New", monospace;
+  line-height: 1.6;
+}
+
+.instructions small {
+  color: #888;
+  font-size: 12px;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .canvas {
+    max-width: 90vw;
+    max-height: 90vw;
+    width: auto;
+    height: auto;
+  }
+
+  .controls {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .button {
+    padding: 10px 20px;
+    font-size: 16px;
+  }
+}

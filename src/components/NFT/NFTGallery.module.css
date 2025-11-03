@@ -1,0 +1,179 @@
+/**
+ * NFTGallery Component Styles
+ * Responsive grid layout for NFT cards
+ */
+
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+  margin: 16px 0;
+  align-items: stretch;
+}
+
+.virtualContainer {
+  max-height: 70vh;
+  overflow-y: auto;
+  position: relative;
+  margin: 16px 0;
+  padding-right: 4px;
+  scrollbar-width: thin;
+}
+
+.virtualContainer::-webkit-scrollbar {
+  width: 6px;
+}
+
+.virtualContainer::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.virtualContainer::-webkit-scrollbar-thumb {
+  background: linear-gradient(
+    180deg,
+    rgba(138, 43, 226, 0.35),
+    rgba(188, 71, 255, 0.35)
+  );
+  border-radius: 3px;
+}
+
+.galleryGrid2Col {
+  grid-template-columns: repeat(2, minmax(260px, 1fr));
+}
+
+.galleryGrid3Col {
+  grid-template-columns: repeat(3, minmax(240px, 1fr));
+}
+
+.galleryGrid4Col {
+  grid-template-columns: repeat(4, minmax(220px, 1fr));
+}
+
+.galleryLoading {
+  display: grid;
+  gap: 18px;
+}
+
+.galleryLoadingItem {
+  height: 320px;
+  border-radius: 20px;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.04) 0%,
+    rgba(138, 43, 226, 0.18) 50%,
+    rgba(255, 255, 255, 0.04) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.6s ease infinite;
+}
+
+.galleryEmpty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 60px 20px;
+  border-radius: 20px;
+  background: rgba(138, 43, 226, 0.08);
+  border: 1px dashed rgba(138, 43, 226, 0.35);
+  color: rgba(255, 255, 255, 0.75);
+  text-align: center;
+}
+
+.loadMoreContainer {
+  text-align: center;
+  margin: 20px 0;
+}
+
+.loadMoreButton {
+  background: linear-gradient(135deg, #8a2be2, #9a4cf0);
+  color: #fff;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 1em;
+  transition: all 0.2s ease;
+}
+
+.loadMoreButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(138, 43, 226, 0.3);
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* -----------------------------------------------------------------------------
+   Responsive Breakpoints
+   ----------------------------------------------------------------------------- */
+
+@media (max-width: 1400px) {
+  .gallery {
+    gap: 18px;
+  }
+
+  .galleryGrid4Col {
+    grid-template-columns: repeat(3, minmax(220px, 1fr));
+  }
+}
+
+@media (max-width: 1024px) {
+  .gallery {
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+  }
+
+  .galleryGrid3Col,
+  .galleryGrid4Col {
+    grid-template-columns: repeat(2, minmax(240px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .gallery {
+    grid-template-columns: 1fr;
+    gap: 14px;
+    margin: 12px 0;
+  }
+
+  .loadMoreButton {
+    width: 90%;
+    max-width: 320px;
+    min-height: 44px;
+  }
+}
+
+@media (max-width: 480px) {
+  .gallery {
+    gap: 12px;
+  }
+
+  .loadMoreButton {
+    width: 100%;
+  }
+}
+
+/* -----------------------------------------------------------------------------
+   Safe Area & Touch Enhancements
+   ----------------------------------------------------------------------------- */
+
+@supports (padding: max(0px)) {
+  .gallery {
+    padding-bottom: max(0px, env(safe-area-inset-bottom));
+  }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .loadMoreButton {
+    min-height: 48px;
+  }
+}

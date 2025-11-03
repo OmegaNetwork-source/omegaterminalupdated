@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Spotify Authorization</title>
+    <style>
+      body {
+        font-family: "Courier New", monospace;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        margin: 0;
+        background: linear-gradient(135deg, #1db954 0%, #191414 100%);
+        color: white;
+      }
+      .container {
+        text-align: center;
+        padding: 40px;
+        background: rgba(0, 0, 0, 0.8);
+        border-radius: 12px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+      }
+      h1 {
+        margin: 0 0 20px 0;
+        font-size: 24px;
+        color: #1db954;
+      }
+      p {
+        margin: 0;
+        font-size: 16px;
+        opacity: 0.9;
+      }
+      .success {
+        font-size: 48px;
+        margin-bottom: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="success">✓</div>
+      <h1>Authorization Successful!</h1>
+      <p>You can close this window.</p>
+    </div>
+
+    <script>
+      // Extract authorization code from URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const code = urlParams.get("code");
+      const state = urlParams.get("state");
+      const error = urlParams.get("error");
+
+      if (error) {
+        // Handle authorization error
+        console.error("Spotify authorization error:", error);
+        document.querySelector(".container").innerHTML = `
+        <div class="success" style="color: #ff4444;">✗</div>
+        <h1 style="color: #ff4444;">Authorization Failed</h1>
+        <p>Error: ${error}</p>
+        <p style="margin-top: 10px;">You can close this window.</p>
+      `;
+      } else if (code) {
+        // Send authorization code back to parent window
+        // Use '*' for target origin to allow cross-origin messaging
+        // The parent window will validate the message content
+        if (window.opener) {
+          window.opener.postMessage(
+            {
+              type: "spotify-auth",
+              code: code,
+              state: state,
+            },
+            "*"
+          );
+        }
+
+        // Auto-close window after 2 seconds
+        setTimeout(() => {
+          window.close();
+        }, 2000);
+      } else {
+        // No code or error - something went wrong
+        document.querySelector(".container").innerHTML = `
+        <div class="success" style="color: #ff4444;">✗</div>
+        <h1 style="color: #ff4444;">Invalid Response</h1>
+        <p>No authorization code received.</p>
+        <p style="margin-top: 10px;">You can close this window.</p>
+      `;
+      }
+    </script>
+  </body>
+</html>

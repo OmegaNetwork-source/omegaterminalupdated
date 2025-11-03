@@ -1,0 +1,470 @@
+/**
+ * @file DashboardStatsPanel.module.css
+ * @description Stats panel styling with theme variants, charts, progress bars, and responsive behavior.
+ * @sources styles/futuristic-theme.css, styles/mobile-terminal-fix.css
+ */
+
+/* -----------------------------------------------------------------------------
+   Panel Container
+   ----------------------------------------------------------------------------- */
+
+.statsPanel {
+  grid-area: stats;
+  background: rgba(21, 21, 32, 0.7);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(0, 212, 255, 0.15);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  max-height: 100vh;
+  scrollbar-width: thin;
+  scrollbar-color: #00d4ff rgba(0, 0, 0, 0.2);
+  font-family: "Courier New", monospace;
+}
+
+.statsPanel::-webkit-scrollbar {
+  width: 6px;
+}
+
+.statsPanel::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.statsPanel::-webkit-scrollbar-thumb {
+  background: linear-gradient(
+    180deg,
+    rgba(0, 188, 242, 0.7),
+    rgba(0, 255, 210, 0.7)
+  );
+  border-radius: 3px;
+}
+
+.statsPanelCollapsed {
+  display: none;
+}
+
+.statsPanelOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(12px);
+  z-index: 32;
+  display: flex;
+  justify-content: flex-end;
+  align-items: stretch;
+}
+
+.statsPanelMobile {
+  width: 90vw;
+  max-width: 320px;
+  border-radius: 22px 0 0 22px;
+}
+
+/* -----------------------------------------------------------------------------
+   Headings & Sections
+   ----------------------------------------------------------------------------- */
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(0, 188, 242, 0.22);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(0, 188, 242, 0.95);
+}
+
+.section {
+  background: rgba(21, 21, 32, 0.7);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(0, 212, 255, 0.15);
+  border-radius: 12px;
+  padding: 24px;
+  flex-shrink: 0;
+}
+
+.sectionCollapsible .sectionContent {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease;
+}
+
+.sectionExpanded .sectionContent {
+  max-height: 800px;
+}
+
+.sectionTitle {
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: rgba(0, 212, 255, 0.7);
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(0, 212, 255, 0.15);
+  font-family: "Courier New", monospace;
+}
+
+.sectionTitle button {
+  background: transparent;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+.sectionContent {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.statCardPrimary {
+  border-left: 3px solid rgba(0, 188, 242, 0.85);
+}
+
+.statCardSecondary {
+  border-left: 3px solid rgba(0, 255, 136, 0.85);
+}
+
+.statItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.statLabel {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.55);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.statValue {
+  font-size: 12px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.92);
+  text-align: right;
+}
+
+.statValueHighlight {
+  color: rgba(0, 255, 136, 0.95);
+}
+
+.statValueMuted {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+/* -----------------------------------------------------------------------------
+   Status Indicators & Progress
+   ----------------------------------------------------------------------------- */
+
+.statusIndicator {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 8px;
+  box-shadow: 0 0 12px currentColor;
+}
+
+.statusConnected {
+  color: #00ff88;
+}
+
+.statusConnecting {
+  color: #fbbf24;
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+.statusDisconnected {
+  color: #ff5a5f;
+}
+
+.statusError {
+  color: #ff3d7f;
+}
+
+.progressBar {
+  position: relative;
+  width: 100%;
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+}
+
+.progressTrack {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: rgba(0, 188, 242, 0.08);
+}
+
+.progressFill {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    90deg,
+    rgba(0, 188, 242, 0.95),
+    rgba(0, 255, 136, 0.95)
+  );
+  transform-origin: left center;
+  transition: transform 0.45s ease;
+}
+
+.progressFill::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.45),
+    transparent 80%
+  );
+  opacity: 0.4;
+}
+
+.progressText {
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+/* -----------------------------------------------------------------------------
+   Charts & Activity Log
+   ----------------------------------------------------------------------------- */
+
+.chartPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: rgba(0, 8, 18, 0.8);
+  border: 1px solid rgba(0, 188, 242, 0.2);
+  border-radius: 16px;
+  padding: 16px;
+  position: relative;
+}
+
+.chartPanelActive {
+  box-shadow: 0 22px 40px rgba(0, 188, 242, 0.2);
+}
+
+.chartPanelMinimized {
+  display: none;
+}
+
+.chartHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.chartSymbol {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(0, 188, 242, 0.95);
+}
+
+.infoBar {
+  display: flex;
+  gap: 10px;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.closeButton {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.45);
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 8px;
+  transition: background 0.2s ease;
+}
+
+.closeButton:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.chartContainer {
+  width: 100%;
+  height: 260px;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.35);
+  overflow: hidden;
+}
+
+.loadingOverlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.55);
+}
+
+.loadingSpinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid rgba(255, 255, 255, 0.25);
+  border-top-color: rgba(0, 188, 242, 0.85);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.activityLog {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 200px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.activityEntry {
+  font-size: 11px;
+  padding: 6px 0;
+  color: rgba(255, 255, 255, 0.55);
+  border-bottom: 1px solid rgba(0, 188, 242, 0.12);
+}
+
+.activityEntryRecent {
+  color: rgba(0, 255, 136, 0.95);
+}
+
+.activityEntryOld {
+  color: rgba(255, 255, 255, 0.35);
+}
+
+/* -----------------------------------------------------------------------------
+   Theme Variants (global body selectors)
+   ----------------------------------------------------------------------------- */
+
+:global(body.theme-executive) .statsPanel {
+  background: rgba(12, 12, 18, 0.92);
+  border: 1px solid rgba(255, 215, 0, 0.32);
+  box-shadow: 0 28px 60px rgba(255, 215, 0, 0.2);
+}
+
+:global(body.theme-executive) .section {
+  background: rgba(255, 215, 0, 0.08);
+  border: 1px solid rgba(255, 215, 0, 0.28);
+  color: rgba(245, 238, 220, 0.92);
+}
+
+:global(body.theme-modern) .statsPanel {
+  background: linear-gradient(
+    170deg,
+    rgba(18, 20, 36, 0.92) 0%,
+    rgba(10, 12, 24, 0.92) 100%
+  );
+  border: 1px solid rgba(98, 0, 255, 0.32);
+}
+
+:global(body.theme-modern) .section {
+  background: rgba(98, 0, 255, 0.12);
+  border: 1px solid rgba(98, 0, 255, 0.28);
+}
+
+:global(body.theme-matrix) .statsPanel {
+  background: rgba(0, 6, 0, 0.95);
+  border: 1px solid rgba(57, 255, 20, 0.28);
+  color: rgba(57, 255, 20, 0.88);
+}
+
+:global(body.theme-matrix) .section {
+  border: 1px solid rgba(57, 255, 20, 0.24);
+}
+
+/* -----------------------------------------------------------------------------
+   Responsive Breakpoints
+   ----------------------------------------------------------------------------- */
+
+@media (max-width: 1400px) {
+  .statsPanel {
+    display: none;
+  }
+}
+
+@media (max-width: 1024px) {
+  .statsPanelOverlay {
+    display: flex;
+  }
+
+  .activityLog {
+    max-height: 160px;
+  }
+}
+
+@media (max-width: 768px) {
+  .statsPanelMobile {
+    max-height: 40vh;
+    overflow-y: auto;
+    border-radius: 22px 22px 0 0;
+  }
+
+  .section {
+    padding: 14px;
+  }
+
+  .statItem {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .statValue {
+    font-size: 11px;
+  }
+
+  .chartContainer {
+    height: 200px;
+  }
+}
+
+@media (max-width: 480px) {
+  .statsPanelMobile {
+    width: 100vw;
+    max-width: none;
+    border-radius: 0;
+  }
+
+  .section {
+    padding: 12px;
+  }
+}
+
+/* -----------------------------------------------------------------------------
+   Feature Queries & Touch Enhancements
+   ----------------------------------------------------------------------------- */
+
+@supports (-webkit-touch-callout: none) {
+  .statsPanelMobile {
+    padding-bottom: max(24px, calc(24px + env(safe-area-inset-bottom)));
+  }
+}
+
+@supports (padding: max(0px)) {
+  .statsPanel {
+    padding-right: max(18px, env(safe-area-inset-right));
+  }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .section {
+    gap: 14px;
+  }
+
+  .statItem {
+    min-height: 44px;
+  }
+}

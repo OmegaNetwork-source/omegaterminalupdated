@@ -1,0 +1,243 @@
+/**
+ * Mining Status Component Styles
+ * Styles for the real-time mining status display
+ */
+
+.container {
+  background: rgba(0, 188, 242, 0.08);
+  border: 1px solid rgba(0, 188, 242, 0.35);
+  border-radius: 16px;
+  padding: 18px;
+  margin-bottom: 18px;
+  font-family: "Courier New", monospace;
+  box-shadow: 0 12px 28px rgba(0, 188, 242, 0.12);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.containerCompact {
+  border-radius: 14px;
+  padding: 16px;
+}
+
+.containerMobile {
+  border-radius: 14px;
+  padding: 16px;
+  gap: 10px;
+}
+
+.header {
+  font-size: 16px;
+  font-weight: bold;
+  color: #00bcf2;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.miningIndicator {
+  display: inline-block;
+  animation: rotate 2s linear infinite;
+}
+
+.status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.statusIndicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.statusIndicatorPulse {
+  animation: pulse 1.8s ease-in-out infinite;
+}
+
+.statusIndicatorGlow {
+  animation: glowPulse 2.6s ease-in-out infinite;
+  box-shadow: 0 0 12px rgba(0, 255, 136, 0.4);
+}
+
+.statusActive {
+  background: #00ff88;
+  box-shadow: 0 0 10px #00ff88;
+}
+
+.statusIdle {
+  background: #666666;
+}
+
+.statusText {
+  color: #00ff88;
+  font-weight: bold;
+  font-size: 14px;
+  letter-spacing: 1px;
+}
+
+.stats {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.statRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+}
+
+.statLabel {
+  color: #cccccc;
+}
+
+.statValue {
+  color: #ffffff;
+  font-weight: bold;
+}
+
+.stopButton {
+  background: rgba(255, 51, 51, 0.2);
+  border: 1px solid rgba(255, 51, 51, 0.5);
+  color: #ff3333;
+  padding: 10px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-family: "Courier New", monospace;
+  font-size: 12px;
+  margin-top: 12px;
+  width: 100%;
+  transition: all 0.2s ease;
+  min-height: 44px;
+}
+
+.stopButton:hover {
+  background: rgba(255, 51, 51, 0.3);
+  border-color: rgba(255, 51, 51, 0.7);
+  box-shadow: 0 0 8px rgba(255, 51, 51, 0.4);
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.2);
+  }
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes glowPulse {
+  0%,
+  100% {
+    box-shadow: 0 0 8px rgba(0, 255, 136, 0.35);
+  }
+  50% {
+    box-shadow: 0 0 16px rgba(0, 255, 136, 0.6);
+  }
+}
+
+/* -----------------------------------------------------------------------------
+   Theme Variants
+   ----------------------------------------------------------------------------- */
+
+:global(body.theme-executive) .container {
+  background: rgba(255, 215, 0, 0.08);
+  border-color: rgba(255, 215, 0, 0.35);
+  box-shadow: 0 12px 28px rgba(255, 215, 0, 0.18);
+}
+
+:global(body.theme-modern) .container {
+  background: rgba(102, 51, 255, 0.08);
+  border-color: rgba(102, 51, 255, 0.35);
+  box-shadow: 0 12px 28px rgba(102, 51, 255, 0.18);
+}
+
+:global(body.theme-matrix) .container {
+  background: rgba(57, 255, 20, 0.08);
+  border-color: rgba(57, 255, 20, 0.35);
+  box-shadow: 0 12px 28px rgba(57, 255, 20, 0.18);
+}
+
+/* -----------------------------------------------------------------------------
+   Responsive Breakpoints
+   ----------------------------------------------------------------------------- */
+
+@media (max-width: 1024px) {
+  .container {
+    padding: 16px;
+  }
+
+  .header {
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 14px;
+    border-radius: 14px;
+  }
+
+  .header {
+    font-size: 14px;
+  }
+
+  .statRow {
+    font-size: 12px;
+  }
+
+  .status {
+    gap: 8px;
+  }
+
+  .miningIndicator {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 12px;
+  }
+
+  .header {
+    font-size: 13px;
+  }
+
+  .stopButton {
+    font-size: 11px;
+  }
+}
+
+/* -----------------------------------------------------------------------------
+   Safe Area & Touch Enhancements
+   ----------------------------------------------------------------------------- */
+
+@supports (padding: max(0px)) {
+  .container {
+    padding-bottom: max(14px, calc(14px + env(safe-area-inset-bottom)));
+  }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .stopButton {
+    min-height: 48px;
+  }
+}

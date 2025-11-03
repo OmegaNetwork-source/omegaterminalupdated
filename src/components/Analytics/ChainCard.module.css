@@ -1,0 +1,102 @@
+/**
+ * ChainCard Component Styles
+ * Matches the DeFi Llama plugin styling from defillama-api-plugin.js
+ */
+
+.card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(0, 122, 255, 0.2);
+  border-radius: 16px;
+  padding: 16px;
+  margin: 8px 0;
+  backdrop-filter: blur(20px);
+  box-shadow: 0 4px 16px rgba(0, 122, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: 0 8px 24px rgba(0, 122, 255, 0.2);
+}
+
+.content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.leftSection {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.rank {
+  background: #007aff;
+  color: #fff;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.info {
+  flex: 1;
+  min-width: 0;
+}
+
+.name {
+  font-size: 18px;
+  font-weight: bold;
+  color: #1565c0;
+}
+
+.tokenSymbol {
+  color: #666;
+  font-size: 14px;
+}
+
+.tvlSection {
+  text-align: right;
+}
+
+.tvl {
+  color: #1565c0;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.change {
+  font-size: 14px;
+}
+
+.changePositive {
+  color: #34c759;
+}
+
+.changeNegative {
+  color: #ff3b30;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .content {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .leftSection {
+    width: 100%;
+  }
+
+  .tvlSection {
+    text-align: left;
+    width: 100%;
+  }
+}
