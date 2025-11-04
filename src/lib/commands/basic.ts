@@ -8,6 +8,7 @@ import type { Command, CommandContext } from "@/types/commands";
 import { config } from "@/lib/config";
 import { AVAILABLE_THEMES, APP_TITLE, APP_VERSION } from "@/lib/constants";
 import type { Theme } from "@/types";
+import { commandRegistry } from "./CommandRegistry";
 
 // Helper functions for GUI transformations
 function createChatGptInterface(context: CommandContext): void {
@@ -640,13 +641,127 @@ export const helpCommand: Command = {
   handler: (context: CommandContext, args: string[]) => {
     const category = args[1]?.toLowerCase();
 
-    // Show category-specific help
+    // Show category-specific help with enhanced formatting
     if (category && CATEGORY_HELP[category]) {
-      context.log(`=== ${category.toUpperCase()} HELP ===`, "info");
-      context.log("", "info");
-      CATEGORY_HELP[category]().forEach((line) => context.log(line, "output"));
-      context.log("", "info");
-      context.log('💡 Use "help" to see all commands', "info");
+      const categoryLines = CATEGORY_HELP[category]();
+             let categoryHtml = `
+         <div style="
+           font-family: 'Courier New', monospace;
+           line-height: 1.8;
+           color: var(--palette-text, var(--color-text-primary, #e0e0e0));
+           padding: 10px;
+         ">
+           <div style="
+             font-size: 20px;
+             font-weight: bold;
+             color: var(--palette-primary, var(--color-primary, #00d4ff));
+             margin-bottom: 20px;
+             text-align: center;
+             padding: 15px;
+             background: linear-gradient(135deg, 
+               color-mix(in srgb, var(--palette-primary, var(--color-primary, #00d4ff)) 15%, transparent),
+               color-mix(in srgb, var(--palette-secondary, var(--color-secondary, #00ff88)) 10%, transparent)
+             );
+             border: 2px solid var(--palette-primary, var(--color-primary, #00d4ff));
+             border-radius: 8px;
+             box-shadow: 0 0 20px var(--palette-primary-glow, rgba(0, 212, 255, 0.3));
+             text-shadow: 0 0 10px var(--palette-primary-glow, rgba(0, 212, 255, 0.5));
+             letter-spacing: 2px;
+             transition: all 0.3s ease;
+           ">
+             ═══ ${category.toUpperCase()} HELP ═══
+           </div>
+           <div style="padding: 10px;">
+       `;
+      
+      categoryLines.forEach((line) => {
+                 // Check if line is a header (contains emoji and uppercase text)
+         if (line.match(/^[🎮💰⛏️📊🤖📰🌐🎨]|^[A-Z\s]+:$/)) {
+           categoryHtml += `
+             <div style="
+               font-size: 16px;
+               font-weight: bold;
+               color: var(--palette-primary, var(--color-primary, #00d4ff));
+               margin: 15px 0 10px 0;
+               padding: 10px;
+               background: linear-gradient(90deg, 
+                 color-mix(in srgb, var(--palette-primary, var(--color-primary, #00d4ff)) 20%, transparent),
+                 color-mix(in srgb, var(--palette-primary, var(--color-primary, #00d4ff)) 5%, transparent)
+               );
+               border-left: 4px solid var(--palette-primary, var(--color-primary, #00d4ff));
+               border-radius: 4px;
+               transition: all 0.3s ease;
+             ">${line}</div>
+           `;
+         } else if (line.trim().startsWith("  ") && line.includes("→")) {
+           // Command line with arrow
+           const parts = line.split("→");
+           const commandPart = parts[0]?.trim() || "";
+           const descPart = parts[1]?.trim() || "";
+           
+           categoryHtml += `
+             <div style="margin: 8px 0; padding-left: 20px; padding-bottom: 6px;">
+               <span style="
+                 color: var(--palette-secondary, var(--color-secondary, #00ff88));
+                 font-weight: bold;
+                 font-size: 1.05em;
+                 font-family: 'Courier New', monospace;
+                 text-shadow: 0 0 6px var(--palette-secondary-glow, rgba(0, 255, 136, 0.3));
+                 transition: all 0.2s ease;
+               ">${commandPart}</span>
+               ${descPart ? `<span style="
+                 color: var(--palette-text, var(--color-text-primary, #ccd4e0));
+                 margin-left: 15px;
+                 font-size: 0.95em;
+                 opacity: 0.95;
+                 transition: all 0.2s ease;
+               ">→ ${descPart}</span>` : ""}
+             </div>
+           `;
+         } else if (line.trim()) {
+           categoryHtml += `
+             <div style="
+               color: var(--palette-text, var(--color-text-primary, #ccd4e0));
+               margin: 6px 0;
+               padding-left: 15px;
+               font-size: 0.95em;
+               line-height: 1.6;
+               transition: all 0.2s ease;
+             ">${line}</div>
+           `;
+         } else {
+           categoryHtml += `<div style="margin: 8px 0;"></div>`;
+         }
+      });
+      
+             categoryHtml += `
+           </div>
+           <div style="
+             margin-top: 25px;
+             padding: 15px;
+             background: color-mix(in srgb, var(--palette-primary, var(--color-primary, #00d4ff)) 10%, transparent);
+             border: 1px solid var(--palette-border, var(--color-border, rgba(0, 212, 255, 0.3)));
+             border-radius: 6px;
+             text-align: center;
+             transition: all 0.3s ease;
+           ">
+             <span style="color: var(--palette-primary, var(--color-primary, #00d4ff)); font-weight: bold; transition: all 0.2s ease;">💡</span>
+             <span style="color: var(--palette-text, var(--color-text-primary, #ccd4e0)); margin-left: 8px; transition: all 0.2s ease;">
+               Use <code style="
+                 color: var(--palette-secondary, var(--color-secondary, #00ff88));
+                 background: color-mix(in srgb, var(--palette-secondary, var(--color-secondary, #00ff88)) 10%, transparent);
+                 padding: 2px 6px;
+                 border-radius: 3px;
+                 font-weight: bold;
+                 border: 1px solid var(--palette-border, var(--color-border, rgba(0, 255, 136, 0.3)));
+                 transition: all 0.2s ease;
+               ">help</code> to see all commands
+             </span>
+           </div>
+         </div>
+       `;
+      
+      context.logHtml(categoryHtml);
       return;
     }
 
@@ -660,7 +775,289 @@ export const helpCommand: Command = {
       return;
     }
 
-    // Full help display matching vanilla terminal
+    // Dynamic help display using command registry
+    const allCommands = commandRegistry.getAllCommands();
+    
+    // Group commands by category
+    const commandsByCategory = new Map<string, Command[]>();
+    const uncategorized: Command[] = [];
+    
+    allCommands.forEach((cmd) => {
+      if (cmd.category) {
+        if (!commandsByCategory.has(cmd.category)) {
+          commandsByCategory.set(cmd.category, []);
+        }
+        commandsByCategory.get(cmd.category)!.push(cmd);
+      } else {
+        uncategorized.push(cmd);
+      }
+    });
+
+         // Generate HTML help with enhanced color coding - theme and palette aware
+     let helpHtml = `
+       <div style="
+         font-family: 'Courier New', monospace;
+         line-height: 1.8;
+         color: var(--palette-text, var(--color-text-primary, #e0e0e0));
+         padding: 10px;
+       ">
+         <div style="
+           font-size: 22px;
+           font-weight: bold;
+           color: var(--palette-primary, var(--color-primary, #00d4ff));
+           margin-bottom: 25px;
+           text-align: center;
+           padding: 15px;
+           background: linear-gradient(135deg, 
+             color-mix(in srgb, var(--palette-primary, var(--color-primary, #00d4ff)) 15%, transparent),
+             color-mix(in srgb, var(--palette-secondary, var(--color-secondary, #00ff88)) 10%, transparent)
+           );
+           border: 2px solid var(--palette-primary, var(--color-primary, #00d4ff));
+           border-radius: 8px;
+           box-shadow: 0 0 20px var(--palette-primary-glow, rgba(0, 212, 255, 0.3));
+           text-shadow: 0 0 10px var(--palette-primary-glow, rgba(0, 212, 255, 0.5));
+           letter-spacing: 2px;
+           transition: all 0.3s ease;
+         ">
+           ═══ Ω Terminal v2.0.1 Commands ═══
+         </div>
+     `;
+
+    // Display commands grouped by category with enhanced color coding
+    const categoryOrder = [
+      "wallet", "mining", "network", "news", "entertainment", "games",
+      "market", "trading", "analytics", "nft", "ai", "chaingpt-chat",
+      "chaingpt-contract", "chaingpt-nft", "chaingpt-auditor",
+      "solana", "near", "eclipse", "hyperliquid", "rome", "monad", "fair",
+      "spotify", "youtube", "blues", "lofi", "tech", "funky",
+      "dexscreener", "defillama", "alphavantage", "opensea", "magiceden",
+      "pgt", "mixer", "referral", "perps", "email", "eth", "ens",
+      "kalshi", "polymarket", "token-factory", "nft-mint", "airdrop",
+      "chatter", "profile", "chart", "color"
+    ];
+
+    // Display categorized commands
+    categoryOrder.forEach((cat) => {
+      const commands = commandsByCategory.get(cat);
+      if (commands && commands.length > 0) {
+                 helpHtml += `
+           <div style="margin: 25px 0; padding: 5px;">
+             <div style="
+               font-size: 15px;
+               font-weight: bold;
+               color: var(--palette-primary, var(--color-primary, #00d4ff));
+               text-transform: uppercase;
+               margin-bottom: 12px;
+               padding: 10px 15px;
+               background: linear-gradient(90deg, 
+                 color-mix(in srgb, var(--palette-primary, var(--color-primary, #00d4ff)) 20%, transparent),
+                 color-mix(in srgb, var(--palette-primary, var(--color-primary, #00d4ff)) 5%, transparent)
+               );
+               border-left: 4px solid var(--palette-primary, var(--color-primary, #00d4ff));
+               border-radius: 4px;
+               box-shadow: 0 2px 8px var(--palette-primary-glow, rgba(0, 212, 255, 0.2));
+               letter-spacing: 1px;
+               transition: all 0.3s ease;
+             ">
+               ═ ${cat.replace(/-/g, " ")} ═
+             </div>
+         `;
+
+                 commands
+           .sort((a, b) => a.name.localeCompare(b.name))
+           .forEach((cmd) => {
+             const aliases = cmd.aliases && cmd.aliases.length > 0 
+               ? ` <span style="
+                   color: var(--palette-secondary, var(--color-secondary, #00ff88));
+                   font-size: 0.85em;
+                   font-weight: normal;
+                   font-style: italic;
+                   opacity: 0.85;
+                   margin-left: 5px;
+                   transition: all 0.2s ease;
+                 ">[${cmd.aliases.join(", ")}]</span>` 
+               : "";
+             
+             const usage = cmd.usage 
+               ? `<div style="
+                   color: var(--palette-muted, var(--color-text-muted, #99ccff));
+                   font-size: 0.9em;
+                   margin-left: 30px;
+                   margin-top: 2px;
+                   font-family: 'Courier New', monospace;
+                   opacity: 0.9;
+                   transition: all 0.2s ease;
+                 ">→ Usage: <span style="
+                   color: var(--palette-secondary, var(--color-secondary, #00ff88));
+                   font-weight: 600;
+                   text-shadow: 0 0 4px var(--palette-secondary-glow, rgba(0, 255, 136, 0.3));
+                 ">${cmd.usage}</span></div>`
+               : "";
+             
+             helpHtml += `
+               <div style="margin: 10px 0; padding-left: 25px; padding-bottom: 8px;">
+                 <div style="display: flex; align-items: baseline; flex-wrap: wrap; gap: 5px;">
+                   <span style="
+                     color: var(--palette-secondary, var(--color-secondary, #00ff88));
+                     font-weight: bold;
+                     font-size: 1.1em;
+                     text-shadow: 0 0 8px var(--palette-secondary-glow, rgba(0, 255, 136, 0.4));
+                     font-family: 'Courier New', monospace;
+                     transition: all 0.2s ease;
+                   ">${cmd.name}</span>${aliases}
+                 </div>
+                 ${cmd.description ? `<div style="
+                   color: var(--palette-text, var(--color-text-primary, #ccd4e0));
+                   margin-left: 30px;
+                   margin-top: 4px;
+                   font-size: 0.95em;
+                   line-height: 1.5;
+                   opacity: 0.95;
+                   transition: all 0.2s ease;
+                 ">${cmd.description}</div>` : ""}
+                 ${usage}
+               </div>
+             `;
+           });
+
+        helpHtml += `</div>`;
+      }
+    });
+
+         // Display uncategorized commands
+     if (uncategorized.length > 0) {
+       helpHtml += `
+         <div style="margin: 25px 0; padding: 5px;">
+           <div style="
+             font-size: 15px;
+             font-weight: bold;
+             color: var(--palette-primary, var(--color-primary, #00d4ff));
+             text-transform: uppercase;
+             margin-bottom: 12px;
+             padding: 10px 15px;
+             background: linear-gradient(90deg, 
+               color-mix(in srgb, var(--palette-primary, var(--color-primary, #00d4ff)) 20%, transparent),
+               color-mix(in srgb, var(--palette-primary, var(--color-primary, #00d4ff)) 5%, transparent)
+             );
+             border-left: 4px solid var(--palette-primary, var(--color-primary, #00d4ff));
+             border-radius: 4px;
+             box-shadow: 0 2px 8px var(--palette-primary-glow, rgba(0, 212, 255, 0.2));
+             letter-spacing: 1px;
+             transition: all 0.3s ease;
+           ">
+             ═ Other Commands ═
+           </div>
+       `;
+
+             uncategorized
+         .sort((a, b) => a.name.localeCompare(b.name))
+         .forEach((cmd) => {
+           const aliases = cmd.aliases && cmd.aliases.length > 0 
+             ? ` <span style="
+                 color: var(--palette-secondary, var(--color-secondary, #00ff88));
+                 font-size: 0.85em;
+                 font-weight: normal;
+                 font-style: italic;
+                 opacity: 0.85;
+                 margin-left: 5px;
+                 transition: all 0.2s ease;
+               ">[${cmd.aliases.join(", ")}]</span>` 
+             : "";
+           
+           const usage = cmd.usage 
+             ? `<div style="
+                 color: var(--palette-muted, var(--color-text-muted, #99ccff));
+                 font-size: 0.9em;
+                 margin-left: 30px;
+                 margin-top: 2px;
+                 font-family: 'Courier New', monospace;
+                 opacity: 0.9;
+                 transition: all 0.2s ease;
+               ">→ Usage: <span style="
+                 color: var(--palette-secondary, var(--color-secondary, #00ff88));
+                 font-weight: 600;
+                 text-shadow: 0 0 4px var(--palette-secondary-glow, rgba(0, 255, 136, 0.3));
+               ">${cmd.usage}</span></div>`
+             : "";
+           
+           helpHtml += `
+             <div style="margin: 10px 0; padding-left: 25px; padding-bottom: 8px;">
+               <div style="display: flex; align-items: baseline; flex-wrap: wrap; gap: 5px;">
+                 <span style="
+                   color: var(--palette-secondary, var(--color-secondary, #00ff88));
+                   font-weight: bold;
+                   font-size: 1.1em;
+                   text-shadow: 0 0 8px var(--palette-secondary-glow, rgba(0, 255, 136, 0.4));
+                   font-family: 'Courier New', monospace;
+                   transition: all 0.2s ease;
+                 ">${cmd.name}</span>${aliases}
+               </div>
+               ${cmd.description ? `<div style="
+                 color: var(--palette-text, var(--color-text-primary, #ccd4e0));
+                 margin-left: 30px;
+                 margin-top: 4px;
+                 font-size: 0.95em;
+                 line-height: 1.5;
+                 opacity: 0.95;
+                 transition: all 0.2s ease;
+               ">${cmd.description}</div>` : ""}
+               ${usage}
+             </div>
+           `;
+         });
+
+      helpHtml += `</div>`;
+    }
+
+         helpHtml += `
+         <div style="
+           margin-top: 35px;
+           padding: 20px;
+           background: linear-gradient(135deg, 
+             color-mix(in srgb, var(--palette-primary, var(--color-primary, #00d4ff)) 10%, transparent),
+             color-mix(in srgb, var(--palette-secondary, var(--color-secondary, #00ff88)) 5%, transparent)
+           );
+           border: 2px solid var(--palette-border, var(--color-border, rgba(0, 212, 255, 0.4)));
+           border-radius: 8px;
+           text-align: center;
+           box-shadow: 0 4px 12px var(--palette-primary-glow, rgba(0, 212, 255, 0.2));
+           transition: all 0.3s ease;
+         ">
+           <div style="
+             color: var(--palette-primary, var(--color-primary, #00d4ff));
+             font-weight: bold;
+             font-size: 1.1em;
+             margin-bottom: 10px;
+             transition: all 0.2s ease;
+           ">💡 Tip</div>
+           <div style="color: var(--palette-text, var(--color-text-primary, #ccd4e0)); font-size: 0.95em; line-height: 1.6; transition: all 0.2s ease;">
+             Type <code style="
+               color: var(--palette-secondary, var(--color-secondary, #00ff88));
+               background: color-mix(in srgb, var(--palette-secondary, var(--color-secondary, #00ff88)) 10%, transparent);
+               padding: 3px 8px;
+               border-radius: 4px;
+               font-weight: bold;
+               font-family: 'Courier New', monospace;
+               border: 1px solid var(--palette-border, var(--color-border, rgba(0, 255, 136, 0.3)));
+               transition: all 0.2s ease;
+             ">help &lt;command&gt;</code> or <code style="
+               color: var(--palette-secondary, var(--color-secondary, #00ff88));
+               background: color-mix(in srgb, var(--palette-secondary, var(--color-secondary, #00ff88)) 10%, transparent);
+               padding: 3px 8px;
+               border-radius: 4px;
+               font-weight: bold;
+               font-family: 'Courier New', monospace;
+               border: 1px solid var(--palette-border, var(--color-border, rgba(0, 255, 136, 0.3)));
+               transition: all 0.2s ease;
+             ">&lt;command&gt; help</code> for detailed help
+           </div>
+         </div>
+       </div>
+     `;
+
+    context.logHtml(helpHtml);
+
+    // Also show legacy text version for compatibility
     context.log("=== Ω Terminal v2.0.1 Commands ===", "info");
     context.log("", "info");
 

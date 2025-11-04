@@ -3,6 +3,7 @@
 import { useCallback } from "react";
 import { useTerminal } from "@/providers/TerminalProvider";
 import styles from "../DashboardSidebar.module.css";
+import { getSubActionIcon } from "../utils/subActionIcons";
 
 /**
  * Trading & Analytics Section - Market data and analytics
@@ -56,37 +57,43 @@ export function TradingAnalyticsSection(): JSX.Element {
             className={styles.subButton}
             onClick={() => handleCommand("chart BTC")}
           >
-            <span>→ Bitcoin Chart</span>
+            {getSubActionIcon("Bitcoin Chart")}
+            <span>Bitcoin Chart</span>
           </button>
           <button
             className={styles.subButton}
             onClick={() => handleCommand("chart ETH")}
           >
-            <span>→ Ethereum Chart</span>
+            {getSubActionIcon("Ethereum Chart")}
+            <span>Ethereum Chart</span>
           </button>
           <button
             className={styles.subButton}
             onClick={() => handleCommand("chart SOL")}
           >
-            <span>→ Solana Chart</span>
+            {getSubActionIcon("Solana Chart")}
+            <span>Solana Chart</span>
           </button>
           <button
             className={styles.subButton}
             onClick={() => handleCommand("chart TVC:GOLD")}
           >
-            <span>→ Gold Chart</span>
+            {getSubActionIcon("Gold Chart")}
+            <span>Gold Chart</span>
           </button>
           <button
             className={styles.subButton}
             onClick={() => handleCommand("chart TVC:SILVER")}
           >
-            <span>→ Silver Chart</span>
+            {getSubActionIcon("Silver Chart")}
+            <span>Silver Chart</span>
           </button>
           <button
             className={styles.subButton}
             onClick={() => handleCommand("chart")}
           >
-            <span>→ Custom Chart</span>
+            {getSubActionIcon("Custom Chart")}
+            <span>Custom Chart</span>
           </button>
         </div>
       </details>
@@ -115,25 +122,29 @@ export function TradingAnalyticsSection(): JSX.Element {
             className={styles.subButton}
             onClick={() => handleCommand("dexscreener search BTC")}
           >
-            <span>→ BTC Analytics</span>
+            {getSubActionIcon("BTC Analytics")}
+            <span>BTC Analytics</span>
           </button>
           <button
             className={styles.subButton}
             onClick={() => handleCommand("dexscreener search ETH")}
           >
-            <span>→ ETH Analytics</span>
+            {getSubActionIcon("ETH Analytics")}
+            <span>ETH Analytics</span>
           </button>
           <button
             className={styles.subButton}
             onClick={() => handleCommand("dexscreener search SOL")}
           >
-            <span>→ SOL Analytics</span>
+            {getSubActionIcon("SOL Analytics")}
+            <span>SOL Analytics</span>
           </button>
           <button
             className={styles.subButton}
             onClick={() => handleCommand("dexscreener")}
           >
-            <span>→ Custom Token</span>
+            {getSubActionIcon("Custom Token")}
+            <span>Custom Token</span>
           </button>
         </div>
       </details>

@@ -151,17 +151,6 @@ export interface OmegaConfig {
   SOLAR_DEX_API_URL: string;
   /** Deserialize aggregator API URL for Eclipse network */
   DESERIALIZE_API_URL: string;
-  /** Spotify player configuration */
-  SPOTIFY_CONFIG: {
-    /** Spotify OAuth client ID */
-    CLIENT_ID: string;
-    /** OAuth redirect URI */
-    REDIRECT_URI: string;
-    /** OAuth scopes array */
-    SCOPES: string[];
-    /** Spotify token endpoint */
-    TOKEN_ENDPOINT: string;
-  };
   /** YouTube player configuration */
   YOUTUBE_CONFIG: {
     /** YouTube OAuth client ID */
@@ -176,5 +165,18 @@ export interface OmegaConfig {
     DEFAULT_CHANNEL_HANDLE: string;
     /** Default channel name */
     DEFAULT_CHANNEL_NAME: string;
+  };
+  /** Spotify player configuration */
+  SPOTIFY_CONFIG: {
+    /** Spotify OAuth client ID */
+    CLIENT_ID: string;
+    /** OAuth redirect URI */
+    REDIRECT_URI: string;
+    /** OAuth scopes array */
+    SCOPES: string[];
+    /** Spotify token endpoint */
+    TOKEN_ENDPOINT: string;
+    /** Spotify API base URL */
+    API_BASE_URL: string;
   };
 }

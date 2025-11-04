@@ -86,9 +86,16 @@ export function WelcomeScreen({ onComplete }: WelcomeScreenProps): JSX.Element {
       if (!isReady) return;
       if (isMobile && mode === "futuristic") return;
       setSelectedMode(mode);
-      // Play interface selection sound (non-blocking)
+      // Play appropriate sound based on selection:
+      // - Dashboard (futuristic) → interface-select (wookie.mp4.mp3)
+      // - Basic Terminal → basic-view (oh-fucking.mp3) - handled by ViewModeProvider
+      // Note: ViewModeProvider will also play basic-view when setViewMode is called,
+      // so we only play interface-select here for Dashboard selection
       try {
-        soundEffects.playSound("interface-select");
+        if (mode === "futuristic") {
+          soundEffects.playSound("interface-select");
+        }
+        // Basic mode sound is handled by ViewModeProvider when setViewMode("basic") is called
       } catch {}
       try {
         localStorage.setItem("omega-view-mode", mode);

@@ -52,28 +52,42 @@ export function ViewModeProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (typeof window === "undefined") return;
 
-    // On first mount: detect device and load saved mode
-    const forcedBasic = isMobile();
-    if (forcedBasic) {
+    try {
+      // On first mount: detect device and load saved mode
+      const forcedBasic = isMobile();
+      if (forcedBasic) {
+        setViewModeState("basic");
+        try {
+          localStorage.setItem(VIEW_MODE_STORAGE_KEY, "basic");
+        } catch {
+          // localStorage may be unavailable
+        }
+        applyBodyClasses("basic");
+        return;
+      }
+
+      try {
+        const saved = localStorage.getItem(
+          VIEW_MODE_STORAGE_KEY
+        ) as ViewMode | null;
+        const initial: ViewMode =
+          saved === "basic" || saved === "futuristic" ? saved : "futuristic";
+        setViewModeState(initial);
+        applyBodyClasses(initial);
+      } catch (err) {
+        console.warn("[ViewModeProvider] Failed to load saved mode:", err);
+        setViewModeState("futuristic");
+        applyBodyClasses("futuristic");
+      }
+    } catch (error) {
+      // Fallback to basic mode if anything fails
+      console.error("[ViewModeProvider] Initialization error:", error);
       setViewModeState("basic");
       try {
-        localStorage.setItem(VIEW_MODE_STORAGE_KEY, "basic");
-      } catch {}
-      applyBodyClasses("basic");
-      return;
-    }
-
-    try {
-      const saved = localStorage.getItem(
-        VIEW_MODE_STORAGE_KEY
-      ) as ViewMode | null;
-      const initial: ViewMode =
-        saved === "basic" || saved === "futuristic" ? saved : "futuristic";
-      setViewModeState(initial);
-      applyBodyClasses(initial);
-    } catch {
-      setViewModeState("futuristic");
-      applyBodyClasses("futuristic");
+        applyBodyClasses("basic");
+      } catch {
+        // Even body class application failed - this is bad but we continue
+      }
     }
   }, [applyBodyClasses, isMobile]);
 

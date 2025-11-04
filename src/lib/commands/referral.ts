@@ -365,17 +365,7 @@ function generateMockReferralCode(): string {
   return result;
 }
 
-/**
- * Ambassador command alias
- */
-export const ambassadorCommand: Command = {
-  name: "ambassador",
-  description: "Omega Ambassador program (alias for referral)",
-  usage: "ambassador <create|stats|share|leaderboard|help>",
-  category: "social",
-  handler: async (context: CommandContext, args: string[]) => {
-    await referralCommand.handler(context, args);
-  },
-};
+// Note: "ambassador" is already registered as an alias of "referral" command above
+// No need for separate ambassadorCommand
 
-export const referralCommands: Command[] = [referralCommand, ambassadorCommand];
+export const referralCommands: Command[] = [referralCommand];

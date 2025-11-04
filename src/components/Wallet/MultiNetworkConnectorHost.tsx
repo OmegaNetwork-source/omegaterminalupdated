@@ -168,10 +168,16 @@ export function MultiNetworkConnectorHost(): JSX.Element | null {
   useEffect(() => {
     const handler = (event: Event) => {
       const customEvent = event as CustomEvent<NetworkSelectorRequest>;
+      console.log('[MultiNetworkConnectorHost] Event received:', {
+        hasDetail: !!customEvent.detail,
+        source: customEvent.detail?.source,
+      });
       requestRef.current = customEvent.detail;
       setState({ open: true, isProcessing: false, error: null });
+      console.log('[MultiNetworkConnectorHost] Modal state set to open');
     };
 
+    console.log('[MultiNetworkConnectorHost] Setting up event listener for:', NETWORK_SELECTOR_EVENT);
     window.addEventListener(NETWORK_SELECTOR_EVENT, handler);
     return () => {
       window.removeEventListener(NETWORK_SELECTOR_EVENT, handler);
@@ -477,29 +483,139 @@ export function MultiNetworkConnectorHost(): JSX.Element | null {
     }
 
     return (
-      <div className="network-modal" data-state-open={state.open}>
+      <div 
+        className="network-modal" 
+        data-state-open={state.open}
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          zIndex: 10000,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          opacity: 1,
+          transition: 'opacity 0.3s ease',
+          pointerEvents: 'auto',
+        }}
+      >
         <div
           className="network-modal-overlay"
           onClick={() => !state.isProcessing && closeModal()}
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            background: 'rgba(0, 0, 0, 0.8)',
+            backdropFilter: 'blur(10px)',
+            WebkitBackdropFilter: 'blur(10px)',
+            zIndex: 1,
+          }}
         />
-        <div className="network-modal-content">
-          <div className="network-modal-header">
-            <h2>🌐 Select Network</h2>
+        <div 
+          className="network-modal-content"
+          style={{
+            position: 'relative',
+            background: `linear-gradient(135deg, var(--palette-surface, rgba(10, 15, 30, 0.95)) 0%, var(--palette-bg, rgba(15, 20, 35, 0.95)) 100%)`,
+            border: `2px solid var(--palette-primary, #00d4ff)`,
+            borderRadius: '12px',
+            boxShadow: `0 0 40px var(--palette-primary-glow, rgba(0, 212, 255, 0.3)), inset 0 0 20px var(--palette-primary-glow, rgba(0, 212, 255, 0.1))`,
+            maxWidth: '600px',
+            width: '90%',
+            maxHeight: '80vh',
+            overflowY: 'auto',
+            zIndex: 2,
+            padding: 0,
+            animation: 'modalSlideIn 0.3s ease-out',
+            transition: 'all 0.3s ease',
+          }}
+        >
+          <div 
+            className="network-modal-header"
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              padding: '20px',
+              borderBottom: `1px solid var(--palette-border, rgba(0, 212, 255, 0.3))`,
+              transition: 'border-color 0.3s ease',
+            }}
+          >
+            <h2 style={{
+              margin: 0,
+              fontSize: '20px',
+              color: 'var(--palette-primary, #00d4ff)',
+              fontFamily: "var(--theme-font-primary, 'Courier New'), monospace",
+              textTransform: 'uppercase',
+              letterSpacing: '2px',
+              transition: 'color 0.3s ease',
+            }}>🌐 Select Network</h2>
             <button
               className="network-modal-close"
               onClick={() => !state.isProcessing && closeModal()}
               aria-label="Close selector"
               type="button"
+              style={{
+                background: 'none',
+                border: 'none',
+                color: 'var(--palette-muted, #666)',
+                fontSize: '24px',
+                cursor: 'pointer',
+                padding: '4px 8px',
+                borderRadius: '4px',
+                transition: 'all 0.2s ease',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.color = 'var(--palette-error, #ff0000)';
+                e.currentTarget.style.background = 'rgba(255, 0, 0, 0.1)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.color = 'var(--palette-muted, #666)';
+                e.currentTarget.style.background = 'none';
+              }}
             >
               ✕
             </button>
           </div>
-          <div className="network-modal-body">
-            <div className="network-section">
-              <div className="network-section-title">⟠ EVM NETWORKS</div>
-              <div className="network-grid">
+          <div 
+            className="network-modal-body"
+            style={{
+              padding: '20px',
+            }}
+          >
+            <div 
+              className="network-section"
+              style={{
+                marginBottom: '20px',
+              }}
+            >
+              <div 
+                className="network-section-title"
+                style={{
+                  fontSize: '14px',
+                  fontWeight: 600,
+                  color: 'var(--palette-primary, #00d4ff)',
+                  marginBottom: '12px',
+                  textTransform: 'uppercase',
+                  letterSpacing: '1px',
+                  transition: 'color 0.3s ease',
+                }}
+              >⟠ EVM NETWORKS</div>
+              <div 
+                className="network-grid"
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
+                  gap: '12px',
+                }}
+              >
                 {EVM_NETWORK_KEYS.map((key) => {
                   const network = NETWORKS[key];
+                  if (!network) return null;
                   return (
                     <button
                       key={network.key}
@@ -507,10 +623,67 @@ export function MultiNetworkConnectorHost(): JSX.Element | null {
                       onClick={() => handleConnectNetwork(network.key)}
                       disabled={state.isProcessing}
                       type="button"
+                      style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        padding: '16px',
+                        background: 'var(--palette-bg-overlay, rgba(0, 212, 255, 0.05))',
+                        border: `1px solid var(--palette-border, rgba(0, 212, 255, 0.3))`,
+                        borderRadius: '8px',
+                        cursor: state.isProcessing ? 'not-allowed' : 'pointer',
+                        transition: 'all 0.2s ease',
+                        minHeight: '120px',
+                        opacity: state.isProcessing ? 0.5 : 1,
+                      }}
+                      onMouseEnter={(e) => {
+                        if (!state.isProcessing) {
+                          e.currentTarget.style.background = 'var(--palette-primary-glow, rgba(0, 212, 255, 0.15))';
+                          e.currentTarget.style.borderColor = 'var(--palette-primary, #00d4ff)';
+                          e.currentTarget.style.transform = 'translateY(-2px)';
+                          e.currentTarget.style.boxShadow = `0 4px 12px var(--palette-primary-glow, rgba(0, 212, 255, 0.3))`;
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = 'var(--palette-bg-overlay, rgba(0, 212, 255, 0.05))';
+                        e.currentTarget.style.borderColor = 'var(--palette-border, rgba(0, 212, 255, 0.3))';
+                        e.currentTarget.style.transform = 'translateY(0)';
+                        e.currentTarget.style.boxShadow = 'none';
+                      }}
                     >
-                      <div className="network-logo-wrapper">
+                      <div 
+                        className="network-logo-wrapper"
+                        style={{
+                          marginBottom: '12px',
+                          width: '48px',
+                          height: '48px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                        }}
+                      >
                         {network.key === "omega" ? (
-                          <div className="network-icon omega-network-icon">
+                          <div 
+                            className="network-icon omega-network-icon"
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              width: '48px',
+                              height: '48px',
+                              background: 'var(--palette-surface, rgba(0, 0, 0, 0.9))',
+                              borderRadius: '50%',
+                              fontSize: '32px',
+                              fontWeight: 'bold',
+                              fontFamily: "serif, 'Times New Roman'",
+                              color: 'var(--palette-text, #ffffff)',
+                              boxShadow: `0 0 12px var(--palette-primary-glow, rgba(255, 255, 255, 0.6))`,
+                              border: `2px solid var(--palette-primary, #ffffff)`,
+                              backdropFilter: 'blur(10px)',
+                              transition: 'all 0.3s ease',
+                            }}
+                          >
                             Ω
                           </div>
                         ) : network.logo ? (
@@ -518,13 +691,54 @@ export function MultiNetworkConnectorHost(): JSX.Element | null {
                             src={network.logo}
                             alt={network.name}
                             className="network-logo"
+                            style={{
+                              width: '48px',
+                              height: '48px',
+                              objectFit: 'contain',
+                            }}
+                            onError={(e) => {
+                              const target = e.currentTarget;
+                              target.style.display = 'none';
+                              const fallback = target.nextElementSibling as HTMLElement;
+                              if (fallback) {
+                                fallback.style.display = 'flex';
+                              }
+                            }}
                           />
                         ) : (
-                          <div className="network-icon">{network.icon}</div>
+                          <div 
+                            className="network-icon"
+                            style={{
+                              display: 'none',
+                              fontSize: '32px',
+                            }}
+                          >
+                            {network.icon}
+                          </div>
                         )}
                       </div>
-                      <div className="network-name">{network.name}</div>
-                      <div className="network-symbol">
+                      <div 
+                        className="network-name"
+                        style={{
+                          fontSize: '14px',
+                          fontWeight: 600,
+                          color: 'var(--palette-primary, #00d4ff)',
+                          marginBottom: '4px',
+                          textAlign: 'center',
+                          transition: 'color 0.3s ease',
+                        }}
+                      >
+                        {network.name}
+                      </div>
+                      <div 
+                        className="network-symbol"
+                        style={{
+                          fontSize: '12px',
+                          color: 'var(--palette-muted, #99ccff)',
+                          textAlign: 'center',
+                          transition: 'color 0.3s ease',
+                        }}
+                      >
                         {network.currency.symbol}
                       </div>
                     </button>
@@ -533,32 +747,135 @@ export function MultiNetworkConnectorHost(): JSX.Element | null {
               </div>
             </div>
 
-            <div className="network-section">
-              <div className="network-section-title">◎ SOLANA</div>
-              <div className="network-grid">
+            <div 
+              className="network-section"
+              style={{
+                marginBottom: '20px',
+              }}
+            >
+              <div 
+                className="network-section-title"
+                style={{
+                  fontSize: '14px',
+                  fontWeight: 600,
+                  color: 'var(--palette-primary, #00d4ff)',
+                  marginBottom: '12px',
+                  textTransform: 'uppercase',
+                  letterSpacing: '1px',
+                  transition: 'color 0.3s ease',
+                }}
+              >◎ SOLANA</div>
+              <div 
+                className="network-grid"
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
+                  gap: '12px',
+                }}
+              >
                 <button
                   className="network-button"
                   onClick={() => handleConnectNetwork("solana")}
                   disabled={state.isProcessing}
                   type="button"
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: '16px',
+                    background: 'var(--palette-bg-overlay, rgba(0, 212, 255, 0.05))',
+                    border: `1px solid var(--palette-border, rgba(0, 212, 255, 0.3))`,
+                    borderRadius: '8px',
+                    cursor: state.isProcessing ? 'not-allowed' : 'pointer',
+                    transition: 'all 0.2s ease',
+                    minHeight: '120px',
+                    opacity: state.isProcessing ? 0.5 : 1,
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!state.isProcessing) {
+                      e.currentTarget.style.background = 'var(--palette-primary-glow, rgba(0, 212, 255, 0.15))';
+                      e.currentTarget.style.borderColor = 'var(--palette-primary, #00d4ff)';
+                      e.currentTarget.style.transform = 'translateY(-2px)';
+                      e.currentTarget.style.boxShadow = `0 4px 12px var(--palette-primary-glow, rgba(0, 212, 255, 0.3))`;
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = 'var(--palette-bg-overlay, rgba(0, 212, 255, 0.05))';
+                    e.currentTarget.style.borderColor = 'var(--palette-border, rgba(0, 212, 255, 0.3))';
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.boxShadow = 'none';
+                  }}
                 >
-                  <div className="network-logo-wrapper">
-                    <img
-                      src={NETWORKS.solana.logo}
-                      alt="Solana"
-                      className="network-logo"
-                    />
+                  <div 
+                    className="network-logo-wrapper"
+                    style={{
+                      marginBottom: '12px',
+                      width: '48px',
+                      height: '48px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    {NETWORKS.solana?.logo && (
+                      <img
+                        src={NETWORKS.solana.logo}
+                        alt="Solana"
+                        className="network-logo"
+                        style={{
+                          width: '48px',
+                          height: '48px',
+                          objectFit: 'contain',
+                        }}
+                      />
+                    )}
                   </div>
-                  <div className="network-name">{NETWORKS.solana.name}</div>
-                  <div className="network-symbol">
-                    {NETWORKS.solana.currency.symbol}
+                  <div 
+                    className="network-name"
+                    style={{
+                      fontSize: '14px',
+                      fontWeight: 600,
+                      color: 'var(--palette-primary, #00d4ff)',
+                      marginBottom: '4px',
+                      textAlign: 'center',
+                      transition: 'color 0.3s ease',
+                    }}
+                  >
+                    {NETWORKS.solana?.name || 'Solana'}
+                  </div>
+                  <div 
+                    className="network-symbol"
+                    style={{
+                      fontSize: '12px',
+                      color: 'var(--palette-muted, #99ccff)',
+                      textAlign: 'center',
+                      transition: 'color 0.3s ease',
+                    }}
+                  >
+                    {NETWORKS.solana?.currency.symbol || 'SOL'}
                   </div>
                 </button>
               </div>
             </div>
           </div>
-          <div className="network-modal-footer">
-            <p>
+          <div 
+            className="network-modal-footer"
+            style={{
+              padding: '20px',
+              borderTop: `1px solid var(--palette-border, rgba(0, 212, 255, 0.3))`,
+              textAlign: 'center',
+              transition: 'border-color 0.3s ease',
+            }}
+          >
+            <p
+              style={{
+                margin: 0,
+                color: 'var(--palette-muted, #99ccff)',
+                fontSize: '13px',
+                transition: 'color 0.3s ease',
+              }}
+            >
               💡 Make sure you have MetaMask (EVM) or Phantom (Solana) installed
             </p>
           </div>

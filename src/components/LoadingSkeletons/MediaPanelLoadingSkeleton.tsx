@@ -3,7 +3,7 @@
 import styles from "./MediaPanelLoadingSkeleton.module.css";
 
 /**
- * Sidebar media placeholder that keeps spatial continuity while Spotify, YouTube or News
+ * Sidebar media placeholder that keeps spatial continuity while YouTube or News
  * interfaces are dynamically imported.
  */
 export function MediaPanelLoadingSkeleton(): JSX.Element {

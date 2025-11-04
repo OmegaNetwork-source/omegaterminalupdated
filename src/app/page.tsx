@@ -13,11 +13,14 @@ const DashboardLayout = dynamic(
     import("@/components/Dashboard").then((mod) => ({
       default: mod.DashboardLayout,
     })),
-  { ssr: false, loading: () => <DashboardLoadingSkeleton /> }
+  { 
+    ssr: false, 
+    loading: () => <DashboardLoadingSkeleton />,
+  }
 );
 
 // Render dashboard or basic terminal based on view mode
-export default function HomePage() {
+function HomePageContent() {
   const { isBasicMode } = useViewMode();
   const [mounted, setMounted] = useState(false);
 
@@ -31,7 +34,7 @@ export default function HomePage() {
   }
 
   return (
-    <ErrorBoundary>
+    <>
       {isBasicMode ? (
         <TerminalContainer />
       ) : (
@@ -39,6 +42,62 @@ export default function HomePage() {
           <DashboardLayout />
         </Suspense>
       )}
+    </>
+  );
+}
+
+export default function HomePage() {
+  return (
+    <ErrorBoundary
+      fallback={(error, reset) => (
+        <div style={{ 
+          padding: "24px", 
+          color: "#fff", 
+          fontFamily: "monospace",
+          backgroundColor: "#0a0a0f",
+          minHeight: "100vh",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center"
+        }}>
+          <h2 style={{ color: "#ff6b6b", marginBottom: "16px" }}>⚠️ Initialization Error</h2>
+          <p style={{ marginBottom: "16px", color: "#ccc" }}>
+            {error.message || "Unknown error occurred"}
+          </p>
+          <pre style={{ 
+            backgroundColor: "#1a1a1f", 
+            padding: "16px", 
+            borderRadius: "4px",
+            overflow: "auto",
+            maxWidth: "80%",
+            fontSize: "12px",
+            color: "#888"
+          }}>
+            {error.stack}
+          </pre>
+          <button
+            onClick={reset}
+            style={{
+              marginTop: "24px",
+              padding: "12px 24px",
+              backgroundColor: "#00bcf2",
+              color: "#fff",
+              border: "none",
+              borderRadius: "4px",
+              cursor: "pointer",
+              fontFamily: "monospace"
+            }}
+          >
+            Retry
+          </button>
+          <p style={{ marginTop: "24px", color: "#888", fontSize: "12px" }}>
+            Attempting to render terminal in fallback mode...
+          </p>
+        </div>
+      )}
+    >
+      <HomePageContent />
     </ErrorBoundary>
   );
 }

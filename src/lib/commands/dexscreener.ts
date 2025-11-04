@@ -57,19 +57,8 @@ export const dexscreenerCommand: Command = {
   },
 };
 
-/**
- * DS short alias command
- */
-export const dsCommand: Command = {
-  name: "ds",
-  description: "DexScreener (short alias)",
-  usage: "ds <search|trending|analytics|portfolio> [query]",
-  category: "api",
-  handler: async (context: CommandContext, args: string[]) => {
-    // Delegate to dexscreener command
-    await dexscreenerCommand.handler(context, args);
-  },
-};
+// Note: "ds" is already registered as an alias of "dexscreener" command above
+// No need for separate dsCommand
 
 /**
  * Search for tokens on DexScreener
@@ -563,23 +552,10 @@ async function cgDexes(context: CommandContext, args: string[]): Promise<void> {
   context.logHtml(html);
 }
 
-/**
- * CG short alias command for GeckoTerminal
- */
-export const cgCommand: Command = {
-  name: "cg",
-  description: "GeckoTerminal (short alias)",
-  usage: "cg <search|networks|dexes> [params]",
-  category: "api",
-  handler: async (context: CommandContext, args: string[]) => {
-    // Delegate to geckoterminal command
-    await geckoterminalCommand.handler(context, args);
-  },
-};
+// Note: "cg" is already registered as an alias of "geckoterminal" command above
+// No need for separate cgCommand
 
 export const apiCommands = [
   dexscreenerCommand,
-  dsCommand,
   geckoterminalCommand,
-  cgCommand,
 ];

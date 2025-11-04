@@ -392,13 +392,17 @@ export function SoundEffectsProvider({ children }: PropsWithChildren<{}>) {
       duration: null,
       description: "Help command",
     });
-    await registerSound("command-execute", {
-      src: "/sounds/wookie.mp4.mp3",
-      volume: 0.7,
-      duration: null,
-      preload: false,
-      description: "Command execution",
-    });
+    // NOTE: Removed command-execute sound registration
+    // The wookie.mp4.mp3 sound should ONLY play for interface selection (WelcomeScreen)
+    // Quick action buttons execute commands, but they shouldn't play the wookie sound
+    // If you want command execution sounds, use a different sound file or implement it separately
+    // await registerSound("command-execute", {
+    //   src: "/sounds/wookie.mp4.mp3", // Removed - conflicts with interface-select
+    //   volume: 0.7,
+    //   duration: null,
+    //   preload: false,
+    //   description: "Command execution",
+    // });
   }, [registerSound]);
 
   useEffect(() => {
@@ -425,44 +429,21 @@ export function SoundEffectsProvider({ children }: PropsWithChildren<{}>) {
     document.addEventListener("click", handler);
     document.addEventListener("touchstart", handler, { passive: true });
 
-    const buttonDelegation = (e: Event) => {
-      const target = e.target as HTMLElement | null;
-      if (!target) return;
-      const isButtonLike = (el: HTMLElement) => {
-        const tag = el.tagName?.toLowerCase();
-        if (tag === "button") return true;
-        if (el.getAttribute("role") === "button") return true;
-        const style = window.getComputedStyle(el);
-        if (style.cursor === "pointer") return true;
-        if (
-          el.classList.contains("interface-option") ||
-          el.classList.contains("tab") ||
-          el.classList.contains("theme-toggle")
-        ) {
-          return true;
-        }
-        return false;
-      };
-      let el: HTMLElement | null = target;
-      while (el) {
-        if (isButtonLike(el)) {
-          // non-blocking; ignore errors
-          playSound("interface-select").catch(() => {});
-          break;
-        }
-        el = el.parentElement;
-      }
-    };
-    document.addEventListener("click", buttonDelegation);
-    document.addEventListener("touchstart", buttonDelegation, {
-      passive: true,
-    });
+    // NOTE: Removed global button delegation for interface-select sound
+    // The interface-select sound (wookie.mp3) should ONLY play when:
+    // 1. User selects interface mode in WelcomeScreen (explicitly handled in WelcomeScreen.tsx)
+    // 
+    // It should NOT play for:
+    // - Sidebar quick action buttons
+    // - Nav bar toggle buttons
+    // - Terminal command buttons
+    // - Any other UI buttons
+    //
+    // If you need to play interface-select sound elsewhere, call playSound("interface-select") explicitly.
 
     return () => {
       document.removeEventListener("click", handler);
       document.removeEventListener("touchstart", handler);
-      document.removeEventListener("click", buttonDelegation);
-      document.removeEventListener("touchstart", buttonDelegation);
     };
   }, [initializeAudioContext, loadDefaultSounds, playSound]);
 

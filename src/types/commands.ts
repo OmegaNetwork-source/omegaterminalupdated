@@ -308,8 +308,12 @@ export interface CommandContext {
       logout: () => void;
       /** Search Spotify catalog for tracks */
       searchTracks: (query: string) => Promise<void>;
+      /** Get user playlists */
+      getUserPlaylists: () => Promise<void>;
       /** Play a specific track by URI */
       playTrack: (uri: string) => Promise<void>;
+      /** Play a playlist by URI */
+      playPlaylist: (uri: string) => Promise<void>;
       /** Toggle play/pause */
       togglePlayPause: () => Promise<void>;
       /** Skip to next track */

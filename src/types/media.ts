@@ -99,6 +99,7 @@ export interface YouTubeVideo {
     title: string;
     description: string;
     channelTitle: string;
+    publishedAt?: string;
     thumbnails: {
       default: { url: string };
       medium: { url: string };

@@ -34,12 +34,24 @@ export function YouTubePanel() {
   useEffect(() => {
     if (playerState.isPanelOpen && !playerReady) {
       initializeAPI().then(() => {
-        if (playerContainerRef.current) {
-          createPlayer("youtube-player-iframe");
-          setPlayerReady(true);
-          // Load default channel videos
-          getDefaultChannelVideos();
-        }
+        // Wait a bit for API to be fully ready
+        setTimeout(() => {
+          if (playerContainerRef.current && typeof window !== "undefined" && window.YT) {
+            try {
+              createPlayer("youtube-player-iframe");
+              // Wait for player to be created before marking as ready
+              setTimeout(() => {
+                setPlayerReady(true);
+                // Load default channel videos
+                getDefaultChannelVideos();
+              }, 1000);
+            } catch (error) {
+              console.error("[YouTube] Failed to create player:", error);
+            }
+          }
+        }, 500);
+      }).catch((error) => {
+        console.error("[YouTube] Failed to initialize API:", error);
       });
     }
   }, [
@@ -61,9 +73,11 @@ export function YouTubePanel() {
     playVideo(videoId, index);
   };
 
-  if (!playerState.isPanelOpen) {
-    return null;
-  }
+  // Panel is now conditionally rendered from DashboardStatsPanel
+  // Remove early return check since parent handles visibility
+  // if (!playerState.isPanelOpen) {
+  //   return null;
+  // }
 
   return (
     <div className={styles.panel}>
@@ -186,12 +200,25 @@ export function YouTubePanel() {
                     : ""
                 }`}
                 onClick={() => handlePlayVideo(video.id.videoId, index)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    handlePlayVideo(video.id.videoId, index);
+                  }
+                }}
+                title={`Play ${video.snippet.title}`}
               >
                 <div className={styles.videoThumbnail}>
-                  <img
-                    src={video.snippet.thumbnails.medium.url}
-                    alt={video.snippet.title}
-                  />
+                  {video.snippet.thumbnails.medium?.url ? (
+                    <img
+                      src={video.snippet.thumbnails.medium.url}
+                      alt={video.snippet.title}
+                    />
+                  ) : (
+                    <div className={styles.videoPlaceholder}>🎥</div>
+                  )}
                   {playerState.currentVideoId === video.id.videoId && (
                     <div className={styles.playingIndicator}>
                       {playerState.isPlaying ? "▶️" : "⏸️"}

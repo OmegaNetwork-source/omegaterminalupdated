@@ -554,10 +554,12 @@ export function useCommandExecution(): UseCommandExecutionReturn {
         setCommandHistory((prev) => [...prev, trimmedCommand]);
         setHistoryIndex(-1);
 
-        // Play command execution sound (non-blocking)
-        if (soundEffects.state.isEnabled) {
-          soundEffects.playSound("command-execute").catch(() => {});
-        }
+        // NOTE: Removed command-execute sound playback
+        // The wookie.mp4.mp3 sound should ONLY play for interface selection (WelcomeScreen)
+        // Quick action buttons execute commands, but they shouldn't play the wookie sound
+        // If (soundEffects.state.isEnabled) {
+        //   soundEffects.playSound("command-execute").catch(() => {});
+        // }
 
         // Create command context
         const context: CommandContext = {
@@ -732,7 +734,9 @@ export function useCommandExecution(): UseCommandExecutionReturn {
               authenticate: spotify.authenticate,
               logout: spotify.logout,
               searchTracks: spotify.searchTracks,
+              getUserPlaylists: spotify.getUserPlaylists,
               playTrack: spotify.playTrack,
+              playPlaylist: spotify.playPlaylist,
               togglePlayPause: spotify.togglePlayPause,
               skipNext: spotify.skipNext,
               skipPrevious: spotify.skipPrevious,

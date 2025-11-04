@@ -56,6 +56,11 @@ export class CommandRegistry {
     const commandName = command.name.toLowerCase();
     if (this.commands.has(commandName)) {
       const existing = this.commands.get(commandName);
+      // If it's the same command name, silently skip (idempotent - allows re-registration)
+      if (existing?.name.toLowerCase() === command.name.toLowerCase()) {
+        return; // Already registered, skip silently
+      }
+      // Otherwise it's a different command with same name - error
       throw new Error(
         `Cannot register command '${command.name}': name already in use by command '${existing?.name}'`
       );
@@ -67,6 +72,11 @@ export class CommandRegistry {
         const aliasName = alias.toLowerCase();
         if (this.commands.has(aliasName)) {
           const existing = this.commands.get(aliasName);
+          // If the existing alias points to the same command name, skip this alias
+          if (existing?.name.toLowerCase() === command.name.toLowerCase()) {
+            continue; // This alias already points to same command, skip
+          }
+          // Otherwise it's a conflict with a different command
           throw new Error(
             `Cannot register command '${command.name}': alias '${alias}' already in use by command '${existing?.name}'`
           );
@@ -81,7 +91,10 @@ export class CommandRegistry {
     if (command.aliases && command.aliases.length > 0) {
       for (const alias of command.aliases) {
         const aliasName = alias.toLowerCase();
-        this.commands.set(aliasName, command);
+        // Only register alias if not already registered
+        if (!this.commands.has(aliasName)) {
+          this.commands.set(aliasName, command);
+        }
       }
     }
   }

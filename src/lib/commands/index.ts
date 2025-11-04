@@ -11,6 +11,10 @@ import { eclipseCommands } from "./eclipse";
 import { newsCommand } from "./news";
 import { spotifyCommands } from "./spotify";
 import { youtubeCommand } from "./youtube";
+import { bluesCommands } from "./blues";
+import { lofiCommands } from "./lofi";
+import { techCommands } from "./tech";
+import { funkyCommands } from "./funky";
 import { magicedenCommands } from "./magiceden";
 import { profileCommand } from "./profile";
 import { mixerCommands } from "./mixer";
@@ -66,6 +70,10 @@ const COMMAND_GROUPS: Array<{ label: string; commands: Command[] }> = [
   { label: "news", commands: [newsCommand] },
   { label: "spotify", commands: spotifyCommands },
   { label: "youtube", commands: [youtubeCommand] },
+  { label: "blues", commands: bluesCommands },
+  { label: "lofi", commands: lofiCommands },
+  { label: "tech", commands: techCommands },
+  { label: "funky", commands: funkyCommands },
   { label: "magiceden", commands: magicedenCommands },
   { label: "profile", commands: [profileCommand] },
   { label: "mixer", commands: mixerCommands },
@@ -116,6 +124,14 @@ function registerCommandGroup(
       commandRegistry.register(command);
       succeeded.push(command.name);
     } catch (error) {
+      // Check if error is due to duplicate registration (already exists)
+      const errorMessage = error instanceof Error ? error.message : String(error ?? "");
+      if (errorMessage.includes("already in use")) {
+        // Command already registered (likely from HMR or double registration) - skip silently
+        succeeded.push(command.name);
+        continue;
+      }
+      // Otherwise it's a real error
       console.error(
         `[Command System] Failed to register command '${command.name}' from ${label}:`,
         error

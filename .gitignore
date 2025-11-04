@@ -67,3 +67,6 @@ next-env.d.ts
 .settings/
 .loadpath
 
+# legacy/backup folders
+omegaterminalupdated/
+

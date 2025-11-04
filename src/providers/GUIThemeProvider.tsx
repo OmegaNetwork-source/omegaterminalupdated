@@ -8,7 +8,6 @@ import React, {
   useCallback,
 } from "react";
 import type { GUITheme, GUIThemeContextValue } from "@/types/ui";
-import { useSoundEffects } from "@/hooks/useSoundEffects";
 
 const GUI_THEME_STORAGE_KEY = "omega-gui-style";
 
@@ -33,7 +32,7 @@ const ALL_GUI_CLASSES = [
  */
 export function GUIThemeProvider({ children }: { children: React.ReactNode }) {
   const [guiTheme, setGuiThemeState] = useState<GUITheme>("terminal");
-  const soundEffects = useSoundEffects();
+  // Removed soundEffects - interface-select sound should only play in WelcomeScreen
 
   const applyBodyClass = useCallback((theme: GUITheme): void => {
     if (typeof document === "undefined") return;
@@ -90,14 +89,12 @@ export function GUIThemeProvider({ children }: { children: React.ReactNode }) {
       // eslint-disable-next-line no-console
       console.log(`[Omega] GUI theme set to: ${next}`);
 
-      // Play interface selection sound for non-terminal GUI themes
-      if (next !== "terminal") {
-        try {
-          soundEffects.playSound("interface-select");
-        } catch {}
-      }
+      // NOTE: Removed interface-select sound trigger
+      // The interface-select sound (wookie.mp4.mp3) should ONLY play when:
+      // - User selects Dashboard in WelcomeScreen (explicitly handled in WelcomeScreen.tsx)
+      // It should NOT play when changing GUI themes via buttons or other UI interactions
     },
-    [applyBodyClass, soundEffects]
+    [applyBodyClass]
   );
 
   const isTerminalMode = guiTheme === "terminal";

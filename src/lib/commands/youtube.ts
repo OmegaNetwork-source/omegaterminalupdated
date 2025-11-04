@@ -28,75 +28,38 @@ import config from "@/lib/config";
 // ============================================================================
 
 async function handleOpen(context: CommandContext, args: string[]) {
-  context.log(
-    "╔═══════════════════════════════════════════════════════════╗",
-    "info"
-  );
-  context.log(
-    "║           🎥 YOUTUBE PLAYER - PHASE 15 PREVIEW           ║",
-    "info"
-  );
-  context.log(
-    "╚═══════════════════════════════════════════════════════════╝",
-    "info"
-  );
-  context.log("", "info");
-  context.log(
-    "📱 YouTube player panel will open as a sidebar in Phase 15",
-    "info"
-  );
-  context.log("   (futuristic UI system integration)", "info");
-  context.log("", "info");
-  context.log("✨ Features:", "info");
-  context.log("  • Search YouTube with any query", "info");
-  context.log("  • Watch videos in sidebar panel", "info");
-  context.log("  • Click thumbnails to play", "info");
-  context.log("  • Auto-play next video in playlist", "info");
-  context.log(
-    "  • Full playback controls (play, pause, next, prev, mute)",
-    "info"
-  );
-  context.log("  • Bloomberg Technology default channel", "info");
-  context.log("", "info");
-  context.log("⚙️  Configuration:", "info");
-  context.log(
-    `  • API Key: ${config.YOUTUBE_CONFIG.API_KEY.substring(0, 20)}...`,
-    "info"
-  );
-  context.log(
-    `  • Default Channel: ${config.YOUTUBE_CONFIG.DEFAULT_CHANNEL_NAME}`,
-    "info"
-  );
-  context.log(
-    `  • Search Limit: ${config.YOUTUBE_CONFIG.SEARCH_RESULTS_LIMIT} videos`,
-    "info"
-  );
-  context.log("", "info");
-  context.log("🎯 Requirements:", "info");
-  context.log("  • Internet connection", "info");
-  context.log(
-    "  • YouTube API key (optional, but recommended for search)",
-    "info"
-  );
-  context.log("", "info");
-  context.log("📚 Usage Tips:", "info");
-  context.log("  • No authentication required for basic playback", "info");
-  context.log("  • Search results show video thumbnails", "info");
-  context.log("  • Panel integrates with futuristic dashboard", "info");
-  context.log("  • Works with all terminal themes", "info");
-  context.log("", "info");
-  context.log(
-    "💡 Tip: Once panel UI is implemented, you'll see a sidebar",
-    "info"
-  );
-  context.log(
-    "   with video player, search, controls, and results list.",
-    "info"
-  );
+  try {
+    // Get YouTube from media context
+    if (context.media?.youtube?.openPanel) {
+      context.media.youtube.openPanel();
+      context.log("🎥 Opening YouTube player panel...", "info");
+      context.log("", "output");
+      context.log("📺 Panel opened in right sidebar", "success");
+      context.log("", "output");
+      context.log("💡 Default videos from Bloomberg Technology will load", "info");
+      context.log("💡 Use 'youtube search <query>' to find other videos", "info");
+      return;
+    }
+    
+    context.log("🎥 Opening YouTube player panel...", "info");
+    context.log("⚠️  YouTube context not available", "warning");
+  } catch (error: any) {
+    context.log(`❌ Failed to open YouTube panel: ${error.message}`, "error");
+  }
 }
 
 async function handleClose(context: CommandContext, args: string[]) {
-  context.log("🎥 YouTube player panel will close (Phase 15)", "info");
+  try {
+    if (context.media?.youtube?.closePanel) {
+      context.media.youtube.closePanel();
+      context.log("🎥 Closing YouTube player panel...", "info");
+      context.log("✓ Panel closed", "success");
+    } else {
+      context.log("🎥 YouTube panel already closed", "info");
+    }
+  } catch (error: any) {
+    context.log(`❌ Failed to close YouTube panel: ${error.message}`, "error");
+  }
 }
 
 async function handleSearch(context: CommandContext, args: string[]) {
@@ -108,61 +71,119 @@ async function handleSearch(context: CommandContext, args: string[]) {
     return;
   }
 
-  context.log(`🔍 Searching YouTube for "${query}"...`, "info");
-  context.log("", "info");
-  context.log("📱 Search UI coming in Phase 15 (futuristic UI system)", "info");
-  context.log("", "info");
-  context.log("   In Phase 15, you'll see:", "info");
-  context.log("   • Video thumbnails with titles", "info");
-  context.log("   • Channel names and view counts", "info");
-  context.log("   • Click to play functionality", "info");
-  context.log("   • Playlist queue management", "info");
-  context.log("", "info");
-  context.log(
-    '💡 Tip: Use "youtube open" to access full player once UI is ready',
-    "info"
-  );
+  try {
+    if (context.media?.youtube?.searchVideos) {
+      context.log(`🔍 Searching YouTube for "${query}"...`, "info");
+      await context.media.youtube.searchVideos(query);
+      context.log("", "output");
+      context.log("✓ Search complete - check the YouTube panel", "success");
+    } else {
+      context.log(`🔍 Searching YouTube for "${query}"...`, "info");
+      context.log("⚠️  YouTube context not available", "warning");
+    }
+  } catch (error: any) {
+    context.log(`❌ Search failed: ${error.message}`, "error");
+  }
 }
 
 async function handlePlay(context: CommandContext, args: string[]) {
   const videoId = args[2];
 
   if (!videoId) {
-    context.log("▶️  Play command (Phase 15 UI integration)", "info");
-    context.log("   Will resume playback or play selected video", "info");
+    // Resume playback or play first in playlist
+    if (context.media?.youtube?.togglePlayPause) {
+      context.media.youtube.togglePlayPause();
+      context.log("▶️  Toggling playback...", "info");
+    } else {
+      context.log("▶️  Play/pause requires YouTube panel to be open", "info");
+    }
     return;
   }
 
-  context.log(
-    `▶️  Playing video: ${videoId} (Phase 15 UI integration)`,
-    "info"
-  );
-  context.log("   Video will load in YouTube player panel", "info");
+  try {
+    // Play specific video by ID
+    if (context.media?.youtube?.playVideo) {
+      context.log(`▶️  Playing video: ${videoId}...`, "info");
+      context.media.youtube.playVideo(videoId, 0);
+      context.log("✓ Video loading in player", "success");
+    } else {
+      context.log(`▶️  Would play: ${videoId}`, "info");
+      context.log("⚠️  YouTube panel must be open first", "warning");
+      context.log("💡 Use 'youtube open' first", "info");
+    }
+  } catch (error: any) {
+    context.log(`❌ Failed to play video: ${error.message}`, "error");
+  }
 }
 
 async function handlePause(context: CommandContext, args: string[]) {
-  context.log("⏸️  Pause command (Phase 15 UI integration)", "info");
-  context.log("   Will pause current video", "info");
+  try {
+    if (context.media?.youtube?.togglePlayPause) {
+      context.media.youtube.togglePlayPause();
+      context.log("⏸️  Pausing playback...", "info");
+      context.log("✓ Playback paused", "success");
+    } else {
+      context.log("⏸️  Pause requires YouTube panel to be open", "info");
+    }
+  } catch (error: any) {
+    context.log(`❌ Failed to pause: ${error.message}`, "error");
+  }
 }
 
 async function handleNext(context: CommandContext, args: string[]) {
-  context.log("⏭️  Next command (Phase 15 UI integration)", "info");
-  context.log("   Will play next video in playlist", "info");
+  try {
+    if (context.media?.youtube?.next) {
+      context.media.youtube.next();
+      context.log("⏭️  Playing next video...", "info");
+      context.log("✓ Next video loading", "success");
+    } else {
+      context.log("⏭️  Next requires YouTube panel to be open", "info");
+    }
+  } catch (error: any) {
+    context.log(`❌ Failed to play next: ${error.message}`, "error");
+  }
 }
 
 async function handlePrev(context: CommandContext, args: string[]) {
-  context.log("⏮️  Previous command (Phase 15 UI integration)", "info");
-  context.log("   Will play previous video in playlist", "info");
+  try {
+    if (context.media?.youtube?.previous) {
+      context.media.youtube.previous();
+      context.log("⏮️  Playing previous video...", "info");
+      context.log("✓ Previous video loading", "success");
+    } else {
+      context.log("⏮️  Previous requires YouTube panel to be open", "info");
+    }
+  } catch (error: any) {
+    context.log(`❌ Failed to play previous: ${error.message}`, "error");
+  }
 }
 
 async function handleMute(context: CommandContext, args: string[]) {
-  context.log("🔇 Mute command (Phase 15 UI integration)", "info");
-  context.log("   Will mute video audio", "info");
+  try {
+    if (context.media?.youtube?.toggleMute) {
+      context.media.youtube.toggleMute();
+      context.log("🔇 Muting audio...", "info");
+      context.log("✓ Audio muted", "success");
+    } else {
+      context.log("🔇 Mute requires YouTube panel to be open", "info");
+    }
+  } catch (error: any) {
+    context.log(`❌ Failed to mute: ${error.message}`, "error");
+  }
 }
 
 async function handleUnmute(context: CommandContext, args: string[]) {
-  context.log("🔊 Unmute command (Phase 15 UI integration)", "info");
-  context.log("   Will unmute video audio", "info");
+  try {
+    if (context.media?.youtube?.toggleMute) {
+      context.media.youtube.toggleMute(); // Toggle works for both mute/unmute
+      context.log("🔊 Unmuting audio...", "info");
+      context.log("✓ Audio unmuted", "success");
+    } else {
+      context.log("🔊 Unmute requires YouTube panel to be open", "info");
+    }
+  } catch (error: any) {
+    context.log(`❌ Failed to unmute: ${error.message}`, "error");
+  }
 }
 
 async function handleHelp(context: CommandContext, args: string[]) {

@@ -62,11 +62,13 @@
 .title {
   font-size: 28px;
   font-weight: bold;
-  text-shadow: 0 0 15px #ffffff, 0 0 30px #ffffff;
+  text-shadow: 0 0 15px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #ffffff) 30%, transparent)), 
+               0 0 30px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #ffffff) 30%, transparent));
   letter-spacing: 2px;
   text-transform: uppercase;
   margin: 0;
-  color: #ffffff;
+  color: var(--palette-text, #ffffff);
+  transition: color 0.3s ease, text-shadow 0.3s ease;
 }
 
 .subtitle {
@@ -84,30 +86,31 @@
 }
 
 .socialLink {
-  background: rgba(0, 188, 242, 0.1);
-  border: 1px solid rgba(0, 188, 242, 0.3);
+  background: color-mix(in srgb, var(--palette-primary, #00bcf2) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--palette-primary, #00bcf2) 30%, transparent);
   border-radius: 6px;
   padding: 6px;
-  color: #00bcf2;
+  color: var(--palette-primary, #00bcf2);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   text-decoration: none;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
 }
 
 .socialLink:hover {
-  background: rgba(0, 188, 242, 0.2);
-  border-color: rgba(0, 188, 242, 0.5);
-  box-shadow: 0 0 10px rgba(0, 188, 242, 0.3);
+  background: color-mix(in srgb, var(--palette-primary, #00bcf2) 20%, transparent);
+  border-color: color-mix(in srgb, var(--palette-primary, #00bcf2) 50%, transparent);
+  box-shadow: 0 0 10px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #00bcf2) 30%, transparent));
 }
 
 .divider {
   width: 1px;
   height: 20px;
-  background: rgba(0, 188, 242, 0.3);
+  background: color-mix(in srgb, var(--palette-primary, #00bcf2) 30%, transparent);
   margin: 0 4px;
+  transition: background 0.3s ease;
 }
 
 .controls {
@@ -122,11 +125,11 @@
 }
 
 .controlButton {
-  background: rgba(0, 188, 242, 0.1);
-  border: 1px solid rgba(0, 188, 242, 0.3);
+  background: color-mix(in srgb, var(--palette-primary, #00bcf2) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--palette-primary, #00bcf2) 30%, transparent);
   border-radius: 6px;
   padding: 6px 12px;
-  color: #00bcf2;
+  color: var(--palette-primary, #00bcf2);
   font-family: "Courier New", monospace;
   font-size: 11px;
   font-weight: 600;
@@ -136,30 +139,43 @@
   gap: 6px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
 }
 
 .controlButton:hover {
-  background: rgba(0, 188, 242, 0.2);
-  border-color: rgba(0, 188, 242, 0.5);
-  box-shadow: 0 0 10px rgba(0, 188, 242, 0.3);
+  background: color-mix(in srgb, var(--palette-primary, #00bcf2) 20%, transparent);
+  border-color: color-mix(in srgb, var(--palette-primary, #00bcf2) 50%, transparent);
+  box-shadow: 0 0 10px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #00bcf2) 30%, transparent));
+}
+
+.controlButton svg {
+  width: 14px;
+  height: 14px;
+  fill: currentColor;
+  display: block;
+  flex-shrink: 0;
+}
+
+.controlButton svg path {
+  fill: currentColor;
 }
 
 .aiLabel {
-  color: #00bcf2;
+  color: var(--palette-primary, #00bcf2);
   font-family: "Courier New", monospace;
   font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  transition: color 0.3s ease;
 }
 
 .aiSelect {
-  background: rgba(0, 188, 242, 0.1);
-  border: 1px solid rgba(0, 188, 242, 0.3);
+  background: color-mix(in srgb, var(--palette-primary, #00bcf2) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--palette-primary, #00bcf2) 30%, transparent);
   border-radius: 6px;
   padding: 6px 10px;
-  color: #00bcf2;
+  color: var(--palette-primary, #00bcf2);
   font-family: "Courier New", monospace;
   font-size: 11px;
   font-weight: 600;
@@ -169,18 +185,20 @@
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
-  background-image: linear-gradient(45deg, transparent 50%, #00bcf2 50%),
-    linear-gradient(135deg, #00bcf2 50%, transparent 50%);
+  background-image: linear-gradient(45deg, transparent 50%, var(--palette-primary, #00bcf2) 50%),
+    linear-gradient(135deg, var(--palette-primary, #00bcf2) 50%, transparent 50%);
   background-position: calc(100% - 15px) calc(1em + 2px),
     calc(100% - 10px) calc(1em + 2px);
   background-size: 5px 5px, 5px 5px;
   background-repeat: no-repeat;
   min-width: 110px;
+  transition: all 0.3s ease;
 }
 
 .aiSelect:focus {
   outline: none;
-  border-color: rgba(0, 188, 242, 0.6);
+  border-color: color-mix(in srgb, var(--palette-primary, #00bcf2) 60%, transparent);
+  box-shadow: 0 0 8px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #00bcf2) 30%, transparent));
 }
 
 .connectionStatus {
@@ -207,7 +225,7 @@
    ----------------------------------------------------------------------------- */
 
 :global(body.theme-executive) .header {
-  border-bottom-color: rgba(255, 215, 0, 0.38);
+  border-bottom-color: color-mix(in srgb, var(--palette-primary, rgba(255, 215, 0, 1)) 38%, transparent);
   background: linear-gradient(
     180deg,
     rgba(8, 10, 16, 0.85) 0%,
@@ -216,12 +234,12 @@
 }
 
 :global(body.theme-executive) .title {
-  color: rgba(255, 215, 0, 0.95);
-  text-shadow: 0 0 18px rgba(255, 215, 0, 0.35);
+  color: var(--palette-primary, rgba(255, 215, 0, 0.95));
+  text-shadow: 0 0 18px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, rgba(255, 215, 0, 0.95)) 35%, transparent));
 }
 
 :global(body.theme-modern) .header {
-  border-bottom-color: rgba(98, 0, 255, 0.4);
+  border-bottom-color: color-mix(in srgb, var(--palette-primary, rgba(98, 0, 255, 1)) 40%, transparent);
   background: linear-gradient(
     180deg,
     rgba(18, 20, 36, 0.85) 0%,
@@ -230,31 +248,31 @@
 }
 
 :global(body.theme-modern) .title {
-  color: rgba(180, 175, 255, 0.95);
-  text-shadow: 0 0 20px rgba(98, 0, 255, 0.35);
+  color: var(--palette-primary, rgba(180, 175, 255, 0.95));
+  text-shadow: 0 0 20px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, rgba(98, 0, 255, 1)) 35%, transparent));
 }
 
 :global(body.theme-matrix) .title {
-  color: #39ff14;
-  text-shadow: 0 0 18px rgba(57, 255, 20, 0.45);
+  color: var(--palette-primary, #39ff14);
+  text-shadow: 0 0 18px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #39ff14) 45%, transparent));
 }
 
 :global(body.theme-retro) .title {
-  color: #ffaa00;
-  text-shadow: 0 0 18px rgba(255, 170, 0, 0.45);
+  color: var(--palette-primary, #ffaa00);
+  text-shadow: 0 0 18px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #ffaa00) 45%, transparent));
 }
 
 :global(body.theme-powershell) .title {
-  color: #f9f1a5;
-  text-shadow: 0 0 18px rgba(249, 241, 165, 0.35);
+  color: var(--palette-primary, #f9f1a5);
+  text-shadow: 0 0 18px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #f9f1a5) 35%, transparent));
 }
 
 :global(body.futuristic-mode) .header {
-  border-bottom-color: rgba(0, 255, 210, 0.4);
+  border-bottom-color: color-mix(in srgb, var(--palette-primary, rgba(0, 255, 210, 1)) 40%, transparent);
 }
 
 :global(body.light-mode) .header {
-  border-bottom-color: rgba(0, 81, 213, 0.25);
+  border-bottom-color: color-mix(in srgb, var(--palette-primary, rgba(0, 81, 213, 1)) 25%, transparent);
   background: linear-gradient(
     180deg,
     rgba(240, 247, 255, 0.35) 0%,
@@ -263,40 +281,40 @@
 }
 
 :global(body.light-mode) .title {
-  color: var(--cyber-blue, #0051d5);
-  text-shadow: 0 0 12px rgba(0, 81, 213, 0.25);
+  color: var(--palette-primary, var(--cyber-blue, #0051d5));
+  text-shadow: 0 0 12px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, rgba(0, 81, 213, 1)) 25%, transparent));
 }
 
 :global(body.light-mode) .controlButton {
-  background: rgba(0, 81, 213, 0.08);
-  border: 1px solid rgba(0, 81, 213, 0.2);
-  color: var(--cyber-blue, #0051d5);
+  background: color-mix(in srgb, var(--palette-primary, rgba(0, 81, 213, 1)) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--palette-primary, rgba(0, 81, 213, 1)) 20%, transparent);
+  color: var(--palette-primary, var(--cyber-blue, #0051d5));
 }
 
 :global(body.light-mode) .controlButton:hover {
-  background: rgba(0, 81, 213, 0.15);
-  border-color: var(--cyber-blue, #0051d5);
-  box-shadow: 0 0 10px rgba(0, 81, 213, 0.2);
+  background: color-mix(in srgb, var(--palette-primary, rgba(0, 81, 213, 1)) 15%, transparent);
+  border-color: var(--palette-primary, var(--cyber-blue, #0051d5));
+  box-shadow: 0 0 10px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, rgba(0, 81, 213, 1)) 20%, transparent));
 }
 
 :global(body.light-mode) .socialLink {
-  background: rgba(0, 81, 213, 0.08);
-  border: 1px solid rgba(0, 81, 213, 0.2);
-  color: var(--cyber-blue, #0051d5);
+  background: color-mix(in srgb, var(--palette-primary, rgba(0, 81, 213, 1)) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--palette-primary, rgba(0, 81, 213, 1)) 20%, transparent);
+  color: var(--palette-primary, var(--cyber-blue, #0051d5));
 }
 
 :global(body.light-mode) .socialLink:hover {
-  background: rgba(0, 81, 213, 0.15);
-  border-color: var(--cyber-blue, #0051d5);
-  box-shadow: 0 0 10px rgba(0, 81, 213, 0.2);
+  background: color-mix(in srgb, var(--palette-primary, rgba(0, 81, 213, 1)) 15%, transparent);
+  border-color: var(--palette-primary, var(--cyber-blue, #0051d5));
+  box-shadow: 0 0 10px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, rgba(0, 81, 213, 1)) 20%, transparent));
 }
 
 :global(body.light-mode) .divider {
-  background: rgba(0, 81, 213, 0.2);
+  background: color-mix(in srgb, var(--palette-primary, rgba(0, 81, 213, 1)) 20%, transparent);
 }
 
 :global(body.modern-ui-futuristic) .header {
-  border-bottom-color: rgba(0, 255, 210, 0.35);
+  border-bottom-color: color-mix(in srgb, var(--palette-primary, rgba(0, 255, 210, 1)) 35%, transparent);
   background: linear-gradient(
     180deg,
     rgba(8, 14, 32, 0.85) 0%,
@@ -305,15 +323,15 @@
 }
 
 :global(body.modern-ui-futuristic) .controlButton {
-  background: rgba(0, 255, 210, 0.12);
-  border: 1px solid rgba(0, 255, 210, 0.25);
-  color: rgba(0, 255, 210, 0.9);
+  background: color-mix(in srgb, var(--palette-primary, rgba(0, 255, 210, 1)) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--palette-primary, rgba(0, 255, 210, 1)) 25%, transparent);
+  color: var(--palette-primary, rgba(0, 255, 210, 0.9));
 }
 
 :global(body.modern-ui-futuristic) .socialLink {
-  background: rgba(0, 255, 210, 0.1);
-  border: 1px solid rgba(0, 255, 210, 0.25);
-  color: rgba(0, 255, 210, 0.95);
+  background: color-mix(in srgb, var(--palette-primary, rgba(0, 255, 210, 1)) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--palette-primary, rgba(0, 255, 210, 1)) 25%, transparent);
+  color: var(--palette-primary, rgba(0, 255, 210, 0.95));
 }
 
 /* -----------------------------------------------------------------------------

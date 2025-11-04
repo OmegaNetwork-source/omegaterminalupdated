@@ -159,14 +159,7 @@ function setupPerpsHandlers(context: CommandContext): void {
 /**
  * Perp command alias
  */
-export const perpCommand: Command = {
-  name: "perp",
-  description: "Perpetual futures trading (alias)",
-  usage: "perp <open|close|help> [pair]",
-  category: "trading",
-  handler: async (context: CommandContext, args: string[]) => {
-    await perpsCommand.handler(context, args);
-  },
-};
+// Note: "perp" is already registered as an alias of "perps" command above
+// No need for separate perpCommand
 
-export const perpsCommands: Command[] = [perpsCommand, perpCommand];
+export const perpsCommands: Command[] = [perpsCommand];

@@ -197,56 +197,6 @@ pre {
   }
 }
 
-/* ============================================================================
-   Multi-Network Connector Styles (ported from legacy terminal)
-   ============================================================================ */
-
-.network-modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 10000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.network-modal[data-state-open="true"] {
-  opacity: 1;
-}
-
-.network-modal-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.8);
-  backdrop-filter: blur(10px);
-}
-
-.network-modal-content {
-  position: relative;
-  background: linear-gradient(
-    135deg,
-    rgba(10, 15, 30, 0.95) 0%,
-    rgba(15, 20, 35, 0.95) 100%
-  );
-  border: 2px solid var(--cyber-blue, #00bcf2);
-  border-radius: var(--radius-lg, 12px);
-  box-shadow: 0 0 40px rgba(0, 212, 255, 0.3),
-    inset 0 0 20px rgba(0, 212, 255, 0.1);
-  max-width: 600px;
-  width: 90%;
-  max-height: 80vh;
-  overflow-y: auto;
-  animation: modalSlideIn 0.3s ease-out;
-}
-
 @keyframes modalSlideIn {
   from {
     transform: translateY(-50px);
@@ -258,395 +208,666 @@ pre {
   }
 }
 
-.network-modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: var(--spacing-lg, 24px);
-  border-bottom: 1px solid var(--glass-border, rgba(0, 212, 255, 0.2));
-}
-
-.network-modal-header h2 {
-  margin: 0;
-  font-size: 20px;
-  color: var(--cyber-blue-bright, #00f7ff);
-  font-family: var(--font-tech, "Courier New", monospace);
-  text-transform: uppercase;
-  letter-spacing: 2px;
-}
-
-.network-modal-close {
-  background: none;
-  border: none;
-  color: var(--cyber-blue, #00bcf2);
-  font-size: 24px;
-  cursor: pointer;
-  padding: 4px 8px;
-  transition: all var(--transition-fast, 0.15s ease);
-  border-radius: var(--radius-sm, 4px);
-}
-
-.network-modal-close:hover {
-  color: var(--color-error, #ff3333);
-  background: rgba(255, 0, 0, 0.1);
-}
-
-.network-modal-body {
-  padding: var(--spacing-lg, 24px);
-}
-
-.network-section {
-  margin-bottom: var(--spacing-lg, 24px);
-}
-
-.network-section:last-child {
-  margin-bottom: 0;
-}
-
-.network-section-title {
-  font-size: 12px;
-  color: var(--cyber-blue-dim, #5ecffd);
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
-  margin-bottom: var(--spacing-md, 16px);
-  padding-bottom: var(--spacing-sm, 8px);
-  border-bottom: 1px solid var(--glass-border, rgba(0, 212, 255, 0.2));
-  font-family: var(--font-tech, "Courier New", monospace);
-}
-
-.network-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-  gap: var(--spacing-md, 16px);
-}
-
-.network-button {
-  background: var(--glass-bg, rgba(4, 7, 15, 0.85));
-  border: 1px solid var(--glass-border, rgba(0, 212, 255, 0.2));
-  border-radius: var(--radius-md, 8px);
-  padding: var(--spacing-md, 16px);
-  cursor: pointer;
-  transition: all var(--transition-fast, 0.15s ease);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--spacing-sm, 8px);
-  position: relative;
-  overflow: hidden;
-}
-
-.network-button::before {
-  content: "";
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: linear-gradient(
-    45deg,
-    transparent,
-    rgba(0, 212, 255, 0.1),
-    transparent
-  );
-  transform: rotate(45deg);
-  transition: all 0.6s;
-  opacity: 0;
-}
-
-.network-button:hover::before {
-  opacity: 1;
-  transform: rotate(45deg) translate(50%, 50%);
-}
-
-.network-button:hover {
-  border-color: var(--cyber-blue, #00bcf2);
-  box-shadow: 0 0 20px rgba(0, 212, 255, 0.3),
-    inset 0 0 15px rgba(0, 212, 255, 0.1);
-  transform: translateY(-4px);
-}
-
-.network-logo-wrapper {
-  width: 48px;
-  height: 48px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 4px;
-  background: var(--palette-bg-primary, rgba(0, 0, 0, 0.8));
-  border: 1px solid var(--palette-border, rgba(0, 212, 255, 0.3));
-  border-radius: 12px;
-  backdrop-filter: blur(10px);
-  box-shadow: 0 4px 12px var(--palette-shadow, rgba(0, 0, 0, 0.3));
-  transition: all var(--transition-fast, 0.15s ease);
-}
-
-.network-logo-wrapper:hover {
-  background: var(--palette-bg-overlay, rgba(0, 0, 0, 0.9));
-  border-color: var(--palette-primary, #00d4ff);
-  box-shadow: 0 0 20px var(--palette-primary-glow, rgba(0, 212, 255, 0.3));
-  transform: scale(1.05);
-}
-
-.network-logo {
-  width: 36px;
-  height: 36px;
-  border-radius: 8px;
-  object-fit: contain;
-  filter: drop-shadow(
-    0 2px 8px var(--palette-primary-glow, rgba(0, 212, 255, 0.3))
-  );
-  transition: all var(--transition-fast, 0.15s ease);
-}
-
-.network-button:hover .network-logo {
-  filter: drop-shadow(
-    0 4px 12px var(--palette-primary-glow, rgba(0, 212, 255, 0.6))
-  );
-  transform: scale(1.1);
-}
-
-.network-icon {
-  font-size: 32px;
-  filter: drop-shadow(0 0 10px var(--palette-primary-glow, currentColor));
-  color: var(--palette-primary, #00d4ff);
-}
-
-.omega-network-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 48px;
-  height: 48px;
-  background: var(--palette-bg-primary, rgba(0, 0, 0, 0.9));
-  border-radius: 50%;
-  font-size: 32px;
-  font-weight: bold;
-  font-family: serif, "Times New Roman";
-  color: var(--palette-primary, #ffffff);
-  box-shadow: 0 0 12px var(--palette-primary-glow, rgba(255, 255, 255, 0.6));
-  border: 2px solid var(--palette-primary, #ffffff);
-  backdrop-filter: blur(10px);
-}
-
-.network-name {
-  font-size: 13px;
-  color: var(--palette-primary, #00d4ff);
-  text-align: center;
-  font-weight: 600;
-  font-family: var(--font-tech, "Courier New", monospace);
-}
-
-.network-symbol {
-  font-size: 11px;
-  color: var(--palette-text-secondary, #888888);
-  font-family: var(--font-mono, "Courier New", monospace);
-  letter-spacing: 0.5px;
-}
-
-.network-modal-footer {
-  padding: var(--spacing-md, 16px) var(--spacing-lg, 24px);
-  border-top: 1px solid var(--glass-border, rgba(0, 212, 255, 0.2));
-  text-align: center;
-}
-
-.network-modal-footer p {
-  margin: 0;
-  font-size: 11px;
-  color: var(--cyber-blue-dim, #5ecffd);
-  line-height: 1.5;
-}
-
-.network-display {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 4px 12px;
-  background: rgba(0, 212, 255, 0.1);
-  border: 1px solid var(--cyber-blue, #00bcf2);
-  border-radius: var(--radius-sm, 4px);
-  margin-right: 12px;
-  animation: networkPulse 2s ease-in-out infinite;
-}
-
-@keyframes networkPulse {
-  0%,
-  100% {
-    box-shadow: 0 0 5px rgba(0, 212, 255, 0.3);
-  }
-  50% {
-    box-shadow: 0 0 15px rgba(0, 212, 255, 0.5);
-  }
-}
-
-.network-modal-content::-webkit-scrollbar {
-  width: 6px;
-}
-
-.network-modal-content::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.3);
-}
-
-.network-modal-content::-webkit-scrollbar-thumb {
-  background: var(--cyber-blue, #00bcf2);
-  border-radius: 3px;
-}
-
-.network-modal-content::-webkit-scrollbar-thumb:hover {
-  background: var(--cyber-blue-bright, #00f7ff);
-}
-
-@media (max-width: 640px) {
-  .network-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .network-modal-content {
-    width: 95%;
-    max-height: 85vh;
-  }
-
-  .network-button {
-    padding: var(--spacing-sm, 8px);
-  }
-
-  .network-icon {
-    font-size: 24px;
-  }
-
-  .network-name {
-    font-size: 11px;
-  }
-}
-
 /* =============================================================================
-   Utility Classes
+   COMPREHENSIVE THEME SYSTEM
+   Each theme has unique typography, fonts, spacing, and visual styling
    ============================================================================= */
 
-.hidden {
-  display: none !important;
-}
-
-.flex {
-  display: flex;
-}
-
-.flex-col {
-  flex-direction: column;
-}
-
-.flex-center {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.text-center {
-  text-align: center;
-}
-
-.text-left {
-  text-align: left;
-}
-
-.text-right {
-  text-align: right;
-}
-
-.truncate {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.animate-pulse {
-  animation: pulse 2s infinite;
-}
-
-.animate-fadeIn {
-  animation: fadeIn var(--transition-normal);
-}
-
-.animate-slideIn {
-  animation: slideIn var(--transition-normal);
-}
-
-.animate-glow {
-  animation: glow 2s infinite;
-}
-
-/* =============================================================================
-   Selection
-   ============================================================================= */
-
-::selection {
-  background: var(--color-primary);
-  color: var(--color-terminal-bg);
-}
-
-::-moz-selection {
-  background: var(--color-primary);
-  color: var(--color-terminal-bg);
-}
-
-/* =============================================================================
-   Theme Classes
-   Applied to body element by ThemeProvider
-   CSS Modules handle component-specific styles
-   ============================================================================= */
-
+/* -----------------------------------------------------------------------------
+   DARK THEME - Classic Terminal
+   Monospace fonts, tight spacing, traditional terminal aesthetic
+   ----------------------------------------------------------------------------- */
 body.theme-dark {
-  background: #000;
-  color: #fff;
+  /* Base Colors */
+  background: #000000;
+  color: #ffffff;
+  
+  /* Typography */
+  font-family: "Courier New", "Monaco", "Consolas", "Liberation Mono", monospace;
+  font-size: 14px;
+  line-height: 1.4;
+  letter-spacing: 0.05em;
+  font-weight: 400;
+  
+  /* Theme Variables */
+  --theme-font-primary: "Courier New", "Monaco", "Consolas", monospace;
+  --theme-font-heading: "Courier New", "Monaco", monospace;
+  --theme-font-mono: "Courier New", "Monaco", "Consolas", monospace;
+  --theme-font-body: "Courier New", "Monaco", monospace;
+  --theme-letter-spacing: 0.05em;
+  --theme-line-height: 1.4;
+  --theme-font-weight-normal: 400;
+  --theme-font-weight-bold: 700;
+  --theme-spacing-xs: 4px;
+  --theme-spacing-sm: 8px;
+  --theme-spacing-md: 16px;
+  --theme-spacing-lg: 24px;
+  --theme-spacing-xl: 32px;
+  --theme-radius-sm: 4px;
+  --theme-radius-md: 8px;
+  --theme-radius-lg: 12px;
+  --theme-radius-xl: 16px;
+  --theme-text-transform: none;
 }
 
+/* -----------------------------------------------------------------------------
+   LIGHT THEME - Clean Professional
+   System fonts, comfortable spacing, modern light interface
+   ----------------------------------------------------------------------------- */
 body.theme-light {
-  background: #fff;
-  color: #111;
+  /* Base Colors */
+  background: #ffffff;
+  color: #111111;
+  
+  /* Typography */
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+  letter-spacing: 0;
+  font-weight: 400;
+  
+  /* Theme Variables */
+  --theme-font-primary: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", sans-serif;
+  --theme-font-heading: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --theme-font-mono: "SF Mono", "Monaco", "Cascadia Code", "Consolas", monospace;
+  --theme-font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --theme-letter-spacing: 0;
+  --theme-line-height: 1.6;
+  --theme-font-weight-normal: 400;
+  --theme-font-weight-bold: 600;
+  --theme-spacing-xs: 4px;
+  --theme-spacing-sm: 8px;
+  --theme-spacing-md: 16px;
+  --theme-spacing-lg: 24px;
+  --theme-spacing-xl: 32px;
+  --theme-radius-sm: 6px;
+  --theme-radius-md: 8px;
+  --theme-radius-lg: 12px;
+  --theme-radius-xl: 16px;
+  --theme-text-transform: none;
 }
 
+/* -----------------------------------------------------------------------------
+   MATRIX THEME - Green-on-Black Matrix
+   Authentic Matrix movie aesthetic, tight spacing, uppercase, glow effects
+   ----------------------------------------------------------------------------- */
 body.theme-matrix {
-  background: #000;
+  /* Base Colors */
+  background: #000000;
   color: #00ff00;
+  
+  /* Typography */
+  font-family: "Courier New", "Monaco", monospace;
+  font-size: 13px;
+  line-height: 1.3;
+  letter-spacing: 0.08em;
+  font-weight: 400;
+  text-transform: uppercase;
+  
+  /* Theme Variables */
+  --theme-font-primary: "Courier New", "Monaco", monospace;
+  --theme-font-heading: "Courier New", monospace;
+  --theme-font-mono: "Courier New", "Monaco", monospace;
+  --theme-font-body: "Courier New", monospace;
+  --theme-letter-spacing: 0.08em;
+  --theme-line-height: 1.3;
+  --theme-font-weight-normal: 400;
+  --theme-font-weight-bold: 700;
+  --theme-spacing-xs: 4px;
+  --theme-spacing-sm: 8px;
+  --theme-spacing-md: 12px;
+  --theme-spacing-lg: 16px;
+  --theme-spacing-xl: 24px;
+  --theme-radius-sm: 0px;
+  --theme-radius-md: 2px;
+  --theme-radius-lg: 4px;
+  --theme-radius-xl: 6px;
+  --theme-text-transform: uppercase;
 }
 
+/* -----------------------------------------------------------------------------
+   RETRO THEME - Vintage CRT Terminal
+   Amber/orange glow, VT323 font, retro aesthetic
+   ----------------------------------------------------------------------------- */
 body.theme-retro {
+  /* Base Colors */
   background: #181200;
   color: #ffaa00;
+  
+  /* Typography */
+  font-family: "VT323", "Courier New", monospace;
+  font-size: 16px;
+  line-height: 1.4;
+  letter-spacing: 0.05em;
+  font-weight: 400;
+  
+  /* Theme Variables */
+  --theme-font-primary: "VT323", "Courier New", monospace;
+  --theme-font-heading: "VT323", "Courier New", monospace;
+  --theme-font-mono: "VT323", "Courier New", monospace;
+  --theme-font-body: "VT323", "Courier New", monospace;
+  --theme-letter-spacing: 0.05em;
+  --theme-line-height: 1.4;
+  --theme-font-weight-normal: 400;
+  --theme-font-weight-bold: 400;
+  --theme-spacing-xs: 4px;
+  --theme-spacing-sm: 8px;
+  --theme-spacing-md: 12px;
+  --theme-spacing-lg: 16px;
+  --theme-spacing-xl: 24px;
+  --theme-radius-sm: 0px;
+  --theme-radius-md: 2px;
+  --theme-radius-lg: 4px;
+  --theme-radius-xl: 6px;
+  --theme-text-transform: none;
 }
 
+/* -----------------------------------------------------------------------------
+   POWERSHELL THEME - Windows PowerShell
+   Microsoft styling, Windows fonts, blue theme
+   ----------------------------------------------------------------------------- */
 body.theme-powershell {
+  /* Base Colors */
   background: #012456;
   color: #ffffff;
+  
+  /* Typography */
+  font-family: "Segoe UI", "Microsoft Sans Serif", sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  letter-spacing: 0;
+  font-weight: 400;
+  
+  /* Theme Variables */
+  --theme-font-primary: "Segoe UI", "Microsoft Sans Serif", sans-serif;
+  --theme-font-heading: "Segoe UI", "Microsoft Sans Serif", sans-serif;
+  --theme-font-mono: "Consolas", "Courier New", monospace;
+  --theme-font-body: "Segoe UI", "Microsoft Sans Serif", sans-serif;
+  --theme-letter-spacing: 0;
+  --theme-line-height: 1.5;
+  --theme-font-weight-normal: 400;
+  --theme-font-weight-bold: 600;
+  --theme-spacing-xs: 4px;
+  --theme-spacing-sm: 8px;
+  --theme-spacing-md: 16px;
+  --theme-spacing-lg: 24px;
+  --theme-spacing-xl: 32px;
+  --theme-radius-sm: 4px;
+  --theme-radius-md: 6px;
+  --theme-radius-lg: 8px;
+  --theme-radius-xl: 12px;
+  --theme-text-transform: none;
 }
 
-/* Executive and Modern themes reference full CSS files */
+/* -----------------------------------------------------------------------------
+   EXECUTIVE THEME - Premium Professional
+   Elegant typography, gold accents, serif fonts
+   ----------------------------------------------------------------------------- */
 body.theme-executive {
-  /* Full styles in styles/executive-theme.css */
+  /* Base Colors */
   background: #0a0a0f;
   color: #ffffff;
+  
+  /* Typography */
+  font-family: "Playfair Display", "Georgia", "Times New Roman", serif;
+  font-size: 15px;
+  line-height: 1.6;
+  letter-spacing: 0.01em;
+  font-weight: 400;
+  
+  /* Theme Variables */
+  --theme-font-primary: "Playfair Display", "Georgia", "Times New Roman", serif;
+  --theme-font-heading: "Playfair Display", "Georgia", serif;
+  --theme-font-mono: "SF Mono", "Monaco", "Cascadia Code", "Fira Code", monospace;
+  --theme-font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", "SF Pro Display", sans-serif;
+  --theme-letter-spacing: 0.01em;
+  --theme-line-height: 1.6;
+  --theme-font-weight-normal: 400;
+  --theme-font-weight-bold: 600;
+  --theme-spacing-xs: 6px;
+  --theme-spacing-sm: 12px;
+  --theme-spacing-md: 20px;
+  --theme-spacing-lg: 32px;
+  --theme-spacing-xl: 48px;
+  --theme-radius-sm: 6px;
+  --theme-radius-md: 10px;
+  --theme-radius-lg: 14px;
+  --theme-radius-xl: 20px;
+  --theme-text-transform: none;
 }
 
-body.theme-modern {
-  /* Full styles in styles/modern-ui-futuristic-theme.css */
-  background: #000000;
-  color: #ffffff;
-}
-
-/* Modern theme aliases */
+/* -----------------------------------------------------------------------------
+   MODERN THEME - Apple-Inspired Sleek Design
+   SF Pro fonts, glassmorphism, modern spacing
+   ----------------------------------------------------------------------------- */
+body.theme-modern,
 body.modern-ui-futuristic,
 body.modern-terminal-ui {
+  /* Base Colors */
   background: #000000;
   color: #ffffff;
+  
+  /* Typography */
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", "Roboto", sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  letter-spacing: -0.01em;
+  font-weight: 400;
+  
+  /* Theme Variables */
+  --theme-font-primary: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", "Roboto", sans-serif;
+  --theme-font-heading: "SF Pro Display", -apple-system, BlinkMacSystemFont, sans-serif;
+  --theme-font-mono: "SF Mono", "Monaco", "Cascadia Code", "Fira Code", monospace;
+  --theme-font-body: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+  --theme-letter-spacing: -0.01em;
+  --theme-line-height: 1.5;
+  --theme-font-weight-normal: 400;
+  --theme-font-weight-bold: 600;
+  --theme-spacing-xs: 4px;
+  --theme-spacing-sm: 8px;
+  --theme-spacing-md: 16px;
+  --theme-spacing-lg: 24px;
+  --theme-spacing-xl: 32px;
+  --theme-radius-sm: 8px;
+  --theme-radius-md: 12px;
+  --theme-radius-lg: 16px;
+  --theme-radius-xl: 24px;
+  --theme-text-transform: none;
 }
 
 /* =============================================================================
-   Futuristic UI System - View Modes and GUI Themes
+   THEME-SPECIFIC BUTTON STYLING
+   Buttons adapt to each theme's unique style and typography
    ============================================================================= */
 
-body.basic-terminal-mode {
-  /* Basic mode uses the terminal full-screen */
-  background: var(--color-terminal-bg, #000000);
-  color: var(--color-terminal-text, #ffffff);
+/* Dark Theme Buttons */
+body.theme-dark button,
+body.theme-dark [class*="button"],
+body.theme-dark [class*="Button"] {
+  font-family: var(--theme-font-mono, "Courier New", monospace);
+  font-weight: var(--theme-font-weight-bold, 700);
+  letter-spacing: var(--theme-letter-spacing, 0.05em);
+  border-radius: var(--theme-radius-md, 8px);
+  padding: var(--theme-spacing-sm, 8px) var(--theme-spacing-md, 16px);
+  transition: all var(--transition-normal, 0.3s ease);
+}
+
+/* Light Theme Buttons */
+body.theme-light button,
+body.theme-light [class*="button"],
+body.theme-light [class*="Button"] {
+  font-family: var(--theme-font-body, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif);
+  font-weight: var(--theme-font-weight-bold, 600);
+  letter-spacing: var(--theme-letter-spacing, 0);
+  border-radius: var(--theme-radius-md, 8px);
+  padding: var(--theme-spacing-sm, 8px) var(--theme-spacing-md, 16px);
+  transition: all var(--transition-normal, 0.3s ease);
+}
+
+/* Matrix Theme Buttons */
+body.theme-matrix button,
+body.theme-matrix [class*="button"],
+body.theme-matrix [class*="Button"] {
+  font-family: var(--theme-font-mono, "Courier New", monospace);
+  font-weight: var(--theme-font-weight-bold, 700);
+  letter-spacing: var(--theme-letter-spacing, 0.08em);
+  text-transform: uppercase;
+  border-radius: var(--theme-radius-sm, 0px);
+  padding: var(--theme-spacing-sm, 8px) var(--theme-spacing-md, 12px);
+  transition: all var(--transition-fast, 0.15s ease);
+  border: 1px solid var(--palette-primary, #39ff14);
+  background: color-mix(in srgb, var(--palette-primary, #39ff14) 10%, transparent);
+  color: var(--palette-primary, #39ff14);
+}
+
+body.theme-matrix button:hover,
+body.theme-matrix [class*="button"]:hover {
+  background: color-mix(in srgb, var(--palette-primary, #39ff14) 20%, transparent);
+  box-shadow: 0 0 10px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #39ff14) 30%, transparent));
+}
+
+/* Retro Theme Buttons */
+body.theme-retro button,
+body.theme-retro [class*="button"],
+body.theme-retro [class*="Button"] {
+  font-family: var(--theme-font-body, "VT323", "Courier New", monospace);
+  font-weight: var(--theme-font-weight-normal, 400);
+  letter-spacing: var(--theme-letter-spacing, 0.05em);
+  border-radius: var(--theme-radius-md, 2px);
+  padding: var(--theme-spacing-sm, 8px) var(--theme-spacing-md, 12px);
+  transition: all var(--transition-normal, 0.3s ease);
+  border: 1px solid var(--palette-primary, #ffaa00);
+  background: color-mix(in srgb, var(--palette-primary, #ffaa00) 10%, transparent);
+  color: var(--palette-primary, #ffaa00);
+}
+
+body.theme-retro button:hover,
+body.theme-retro [class*="button"]:hover {
+  background: color-mix(in srgb, var(--palette-primary, #ffaa00) 20%, transparent);
+  box-shadow: 0 0 10px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #ffaa00) 30%, transparent));
+}
+
+/* PowerShell Theme Buttons */
+body.theme-powershell button,
+body.theme-powershell [class*="button"],
+body.theme-powershell [class*="Button"] {
+  font-family: var(--theme-font-body, "Segoe UI", "Microsoft Sans Serif", sans-serif);
+  font-weight: var(--theme-font-weight-bold, 600);
+  letter-spacing: var(--theme-letter-spacing, 0);
+  border-radius: var(--theme-radius-md, 6px);
+  padding: var(--theme-spacing-sm, 8px) var(--theme-spacing-md, 16px);
+  transition: all var(--transition-normal, 0.3s ease);
+  border: 1px solid var(--palette-primary, rgba(0, 188, 242, 0.3));
+  background: color-mix(in srgb, var(--palette-primary, rgba(0, 188, 242, 1)) 10%, transparent);
+  color: var(--palette-primary, #00bcf2);
+}
+
+body.theme-powershell button:hover,
+body.theme-powershell [class*="button"]:hover {
+  background: color-mix(in srgb, var(--palette-primary, rgba(0, 188, 242, 1)) 20%, transparent);
+  box-shadow: 0 0 10px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, rgba(0, 188, 242, 1)) 30%, transparent));
+}
+
+/* Executive Theme Buttons */
+body.theme-executive button,
+body.theme-executive [class*="button"],
+body.theme-executive [class*="Button"] {
+  font-family: var(--theme-font-body, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif);
+  font-weight: var(--theme-font-weight-bold, 600);
+  letter-spacing: var(--theme-letter-spacing, 0.01em);
+  border-radius: var(--theme-radius-md, 10px);
+  padding: var(--theme-spacing-sm, 12px) var(--theme-spacing-md, 20px);
+  transition: all var(--transition-normal, 0.3s ease);
+  border: 1px solid var(--palette-border, color-mix(in srgb, var(--palette-primary, rgba(255, 215, 0, 1)) 30%, transparent));
+  background: color-mix(in srgb, var(--palette-primary, rgba(255, 215, 0, 1)) 8%, transparent);
+  color: var(--palette-primary, rgba(255, 215, 0, 0.95));
+}
+
+body.theme-executive button:hover,
+body.theme-executive [class*="button"]:hover {
+  background: color-mix(in srgb, var(--palette-primary, rgba(255, 215, 0, 1)) 15%, transparent);
+  box-shadow: 0 0 15px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, rgba(255, 215, 0, 1)) 25%, transparent));
+}
+
+/* Modern Theme Buttons */
+body.theme-modern button,
+body.modern-ui-futuristic button,
+body.modern-terminal-ui button,
+body.theme-modern [class*="button"],
+body.modern-ui-futuristic [class*="button"],
+body.modern-terminal-ui [class*="button"] {
+  font-family: var(--theme-font-body, -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif);
+  font-weight: var(--theme-font-weight-bold, 600);
+  letter-spacing: var(--theme-letter-spacing, -0.01em);
+  border-radius: var(--theme-radius-md, 12px);
+  padding: var(--theme-spacing-sm, 8px) var(--theme-spacing-md, 16px);
+  transition: all var(--transition-normal, 0.3s ease);
+  border: 1px solid var(--palette-border, color-mix(in srgb, var(--palette-primary, rgba(0, 255, 210, 1)) 20%, transparent));
+  background: color-mix(in srgb, var(--palette-primary, rgba(0, 255, 210, 1)) 8%, transparent);
+  color: var(--palette-primary, rgba(0, 255, 210, 0.95));
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+body.theme-modern button:hover,
+body.modern-ui-futuristic button:hover,
+body.modern-terminal-ui button:hover,
+body.theme-modern [class*="button"]:hover,
+body.modern-ui-futuristic [class*="button"]:hover,
+body.modern-terminal-ui [class*="button"]:hover {
+  background: color-mix(in srgb, var(--palette-primary, rgba(0, 255, 210, 1)) 15%, transparent);
+  box-shadow: 0 0 15px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, rgba(0, 255, 210, 1)) 25%, transparent));
+}
+
+/* =============================================================================
+   THEME-SPECIFIC HEADINGS
+   Headings adapt to each theme's typography
+   ============================================================================= */
+
+body.theme-dark h1,
+body.theme-dark h2,
+body.theme-dark h3,
+body.theme-dark [class*="title"],
+body.theme-dark [class*="Title"] {
+  font-family: var(--theme-font-heading, "Courier New", monospace);
+  font-weight: var(--theme-font-weight-bold, 700);
+  letter-spacing: var(--theme-letter-spacing, 0.05em);
+  color: var(--palette-primary, #00bcf2);
+}
+
+body.theme-light h1,
+body.theme-light h2,
+body.theme-light h3,
+body.theme-light [class*="title"],
+body.theme-light [class*="Title"] {
+  font-family: var(--theme-font-heading, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif);
+  font-weight: var(--theme-font-weight-bold, 600);
+  letter-spacing: var(--theme-letter-spacing, 0);
+  color: var(--palette-primary, #0051d5);
+}
+
+body.theme-matrix h1,
+body.theme-matrix h2,
+body.theme-matrix h3,
+body.theme-matrix [class*="title"],
+body.theme-matrix [class*="Title"] {
+  font-family: var(--theme-font-heading, "Courier New", monospace);
+  font-weight: var(--theme-font-weight-bold, 700);
+  letter-spacing: var(--theme-letter-spacing, 0.08em);
+  text-transform: uppercase;
+  color: var(--palette-primary, #39ff14);
+  text-shadow: 0 0 10px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #39ff14) 50%, transparent));
+}
+
+body.theme-retro h1,
+body.theme-retro h2,
+body.theme-retro h3,
+body.theme-retro [class*="title"],
+body.theme-retro [class*="Title"] {
+  font-family: var(--theme-font-heading, "VT323", "Courier New", monospace);
+  font-weight: var(--theme-font-weight-normal, 400);
+  letter-spacing: var(--theme-letter-spacing, 0.05em);
+  color: var(--palette-primary, #ffaa00);
+  text-shadow: 0 0 10px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #ffaa00) 50%, transparent));
+}
+
+body.theme-powershell h1,
+body.theme-powershell h2,
+body.theme-powershell h3,
+body.theme-powershell [class*="title"],
+body.theme-powershell [class*="Title"] {
+  font-family: var(--theme-font-heading, "Segoe UI", "Microsoft Sans Serif", sans-serif);
+  font-weight: var(--theme-font-weight-bold, 600);
+  letter-spacing: var(--theme-letter-spacing, 0);
+  color: var(--palette-primary, #00bcf2);
+}
+
+body.theme-executive h1,
+body.theme-executive h2,
+body.theme-executive h3,
+body.theme-executive [class*="title"],
+body.theme-executive [class*="Title"] {
+  font-family: var(--theme-font-heading, "Playfair Display", "Georgia", serif);
+  font-weight: var(--theme-font-weight-bold, 600);
+  letter-spacing: var(--theme-letter-spacing, 0.01em);
+  color: var(--palette-primary, rgba(255, 215, 0, 0.95));
+}
+
+body.theme-modern h1,
+body.modern-ui-futuristic h1,
+body.modern-terminal-ui h1,
+body.theme-modern h2,
+body.modern-ui-futuristic h2,
+body.modern-terminal-ui h2,
+body.theme-modern h3,
+body.modern-ui-futuristic h3,
+body.modern-terminal-ui h3,
+body.theme-modern [class*="title"],
+body.modern-ui-futuristic [class*="title"],
+body.modern-terminal-ui [class*="title"] {
+  font-family: var(--theme-font-heading, "SF Pro Display", -apple-system, BlinkMacSystemFont, sans-serif);
+  font-weight: var(--theme-font-weight-bold, 600);
+  letter-spacing: var(--theme-letter-spacing, -0.01em);
+  color: var(--palette-primary, rgba(0, 255, 210, 0.95));
+}
+
+/* =============================================================================
+   THEME-SPECIFIC INPUTS
+   Inputs adapt to theme styling
+   ============================================================================= */
+
+body.theme-dark input,
+body.theme-dark textarea,
+body.theme-dark [class*="input"],
+body.theme-dark [class*="Input"] {
+  font-family: var(--theme-font-mono, "Courier New", monospace);
+  letter-spacing: var(--theme-letter-spacing, 0.05em);
+  border-radius: var(--theme-radius-md, 8px);
+}
+
+body.theme-light input,
+body.theme-light textarea,
+body.theme-light [class*="input"],
+body.theme-light [class*="Input"] {
+  font-family: var(--theme-font-body, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif);
+  letter-spacing: var(--theme-letter-spacing, 0);
+  border-radius: var(--theme-radius-md, 8px);
+}
+
+body.theme-matrix input,
+body.theme-matrix textarea,
+body.theme-matrix [class*="input"],
+body.theme-matrix [class*="Input"] {
+  font-family: var(--theme-font-mono, "Courier New", monospace);
+  letter-spacing: var(--theme-letter-spacing, 0.08em);
+  text-transform: uppercase;
+  border-radius: var(--theme-radius-sm, 0px);
+}
+
+body.theme-retro input,
+body.theme-retro textarea,
+body.theme-retro [class*="input"],
+body.theme-retro [class*="Input"] {
+  font-family: var(--theme-font-body, "VT323", "Courier New", monospace);
+  letter-spacing: var(--theme-letter-spacing, 0.05em);
+  border-radius: var(--theme-radius-md, 2px);
+}
+
+body.theme-powershell input,
+body.theme-powershell textarea,
+body.theme-powershell [class*="input"],
+body.theme-powershell [class*="Input"] {
+  font-family: var(--theme-font-body, "Segoe UI", "Microsoft Sans Serif", sans-serif);
+  letter-spacing: var(--theme-letter-spacing, 0);
+  border-radius: var(--theme-radius-md, 6px);
+}
+
+body.theme-executive input,
+body.theme-executive textarea,
+body.theme-executive [class*="input"],
+body.theme-executive [class*="Input"] {
+  font-family: var(--theme-font-body, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif);
+  letter-spacing: var(--theme-letter-spacing, 0.01em);
+  border-radius: var(--theme-radius-md, 10px);
+}
+
+body.theme-modern input,
+body.modern-ui-futuristic input,
+body.modern-terminal-ui input,
+body.theme-modern textarea,
+body.modern-ui-futuristic textarea,
+body.modern-terminal-ui textarea,
+body.theme-modern [class*="input"],
+body.modern-ui-futuristic [class*="input"],
+body.modern-terminal-ui [class*="input"] {
+  font-family: var(--theme-font-body, -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif);
+  letter-spacing: var(--theme-letter-spacing, -0.01em);
+  border-radius: var(--theme-radius-md, 12px);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+/* =============================================================================
+   THEME-SPECIFIC SIDEBAR STYLING
+   Sidebar elements adapt to each theme's unique style
+   ============================================================================= */
+
+body.theme-dark [class*="sidebar"],
+body.theme-dark [class*="Sidebar"] {
+  font-family: var(--theme-font-mono, "Courier New", monospace);
+  letter-spacing: var(--theme-letter-spacing, 0.05em);
+}
+
+body.theme-light [class*="sidebar"],
+body.theme-light [class*="Sidebar"] {
+  font-family: var(--theme-font-body, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif);
+  letter-spacing: var(--theme-letter-spacing, 0);
+}
+
+body.theme-matrix [class*="sidebar"],
+body.theme-matrix [class*="Sidebar"],
+body.theme-matrix [class*="sectionTitle"],
+body.theme-matrix [class*="SectionTitle"] {
+  font-family: var(--theme-font-mono, "Courier New", monospace);
+  letter-spacing: var(--theme-letter-spacing, 0.08em);
+  text-transform: uppercase;
+}
+
+body.theme-retro [class*="sidebar"],
+body.theme-retro [class*="Sidebar"] {
+  font-family: var(--theme-font-body, "VT323", "Courier New", monospace);
+  letter-spacing: var(--theme-letter-spacing, 0.05em);
+}
+
+body.theme-powershell [class*="sidebar"],
+body.theme-powershell [class*="Sidebar"] {
+  font-family: var(--theme-font-body, "Segoe UI", "Microsoft Sans Serif", sans-serif);
+  letter-spacing: var(--theme-letter-spacing, 0);
+}
+
+body.theme-executive [class*="sidebar"],
+body.theme-executive [class*="Sidebar"] {
+  font-family: var(--theme-font-body, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif);
+  letter-spacing: var(--theme-letter-spacing, 0.01em);
+}
+
+body.theme-modern [class*="sidebar"],
+body.modern-ui-futuristic [class*="sidebar"],
+body.modern-terminal-ui [class*="sidebar"],
+body.theme-modern [class*="Sidebar"],
+body.modern-ui-futuristic [class*="Sidebar"],
+body.modern-terminal-ui [class*="Sidebar"] {
+  font-family: var(--theme-font-body, -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif);
+  letter-spacing: var(--theme-letter-spacing, -0.01em);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+/* =============================================================================
+   PRESERVE THEME STYLES WHEN PALETTE IS ACTIVE
+   Theme fonts, letter-spacing, and text-transform must persist with palettes
+   ============================================================================= */
+
+/* Dark Theme - Preserve fonts when palette active */
+body[data-color-palette].theme-dark button,
+body[data-color-palette].theme-dark [class*="button"],
+body[data-color-palette].theme-dark [class*="Button"],
+body[data-color-palette].theme-dark [class*="sidebar"] button,
+body[data-color-palette].theme-dark [class*="Sidebar"] button {
+  font-family: var(--theme-font-mono, "Courier New", monospace) !important;
+  letter-spacing: var(--theme-letter-spacing, 0.05em) !important;
+  font-weight: var(--theme-font-weight-bold, 700) !important;
+}
+
+/* Light Theme - Preserve fonts when palette active */
+body[data-color-palette].theme-light button,
+body[data-color-palette].theme-light [class*="button"],
+body[data-color-palette].theme-light [class*="Button"],
+body[data-color-palette].theme-light [class*="sidebar"] button,
+body[data-color-palette].theme-light [class*="Sidebar"] button {
+  font-family: var(--theme-font-body, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif) !important;
+  letter-spacing: var(--theme-letter-spacing, 0) !important;
+  font-weight: var(--theme-font-weight-bold, 600) !important;
 }
 
 /* =============================================================================
@@ -670,6 +891,13 @@ body.basic-terminal-mode {
   --palette-success: #16c782;
   --palette-warning: #f2b705;
   --palette-error: #ff4d4f;
+  /* Glow effects for palette colors */
+  --palette-primary-glow: rgba(0, 188, 242, 0.3);
+  --palette-secondary-glow: rgba(0, 255, 136, 0.3);
+  --palette-accent-glow: rgba(255, 0, 255, 0.3);
+  --palette-success-glow: rgba(22, 199, 130, 0.3);
+  --palette-warning-glow: rgba(242, 183, 5, 0.3);
+  --palette-error-glow: rgba(255, 77, 79, 0.3);
 }
 
 body[data-color-palette="default"] {
@@ -972,8 +1200,8 @@ body[data-color-palette="rose"] {
   --palette-accent: #fda4af;
   --palette-bg: #160a0e;
   --palette-surface: #210f15;
-  --palette-text: #ffeef2;
-  --palette-muted: #f8c7d1;
+  --palette-text: #fff1f4;
+  --palette-muted: #f0c4cd;
   --palette-border: #3a1a24;
   --palette-success: #34d399;
   --palette-warning: #fbbf24;
@@ -981,14 +1209,14 @@ body[data-color-palette="rose"] {
 }
 
 body[data-color-palette="pink"] {
-  --palette-primary: #ff69b4;
-  --palette-secondary: #ff9ad5;
-  --palette-accent: #ffd1f0;
+  --palette-primary: #ec4899;
+  --palette-secondary: #f472b6;
+  --palette-accent: #fbcfe8;
   --palette-bg: #150a12;
-  --palette-surface: #200f1a;
-  --palette-text: #ffeaf6;
-  --palette-muted: #f6c4e3;
-  --palette-border: #3a1c2d;
+  --palette-surface: #1f0f1a;
+  --palette-text: #fff1f8;
+  --palette-muted: #f3c4db;
+  --palette-border: #331a29;
   --palette-success: #34d399;
   --palette-warning: #fbbf24;
   --palette-error: #ef4444;
@@ -998,27 +1226,27 @@ body[data-color-palette="amber"] {
   --palette-primary: #f59e0b;
   --palette-secondary: #fbbf24;
   --palette-accent: #fde68a;
-  --palette-bg: #140f07;
-  --palette-surface: #1d170c;
-  --palette-text: #fff8e7;
-  --palette-muted: #f2d9a5;
-  --palette-border: #3a2b14;
+  --palette-bg: #120d08;
+  --palette-surface: #1a140f;
+  --palette-text: #fff9e6;
+  --palette-muted: #f3d9a6;
+  --palette-border: #2e2215;
   --palette-success: #34d399;
   --palette-warning: #f59e0b;
   --palette-error: #ef4444;
 }
 
 body[data-color-palette="honey"] {
-  --palette-primary: #ffb703;
-  --palette-secondary: #ffd166;
-  --palette-accent: #ffe29a;
-  --palette-bg: #141005;
-  --palette-surface: #1e190a;
-  --palette-text: #fff7dd;
-  --palette-muted: #f3e2a7;
-  --palette-border: #3a2f12;
+  --palette-primary: #d97706;
+  --palette-secondary: #f59e0b;
+  --palette-accent: #fbbf24;
+  --palette-bg: #100d08;
+  --palette-surface: #18140f;
+  --palette-text: #fff8e6;
+  --palette-muted: #f0d9a6;
+  --palette-border: #2a2215;
   --palette-success: #34d399;
-  --palette-warning: #ffb703;
+  --palette-warning: #d97706;
   --palette-error: #ef4444;
 }
 
@@ -1026,35 +1254,35 @@ body[data-color-palette="slate"] {
   --palette-primary: #64748b;
   --palette-secondary: #94a3b8;
   --palette-accent: #cbd5e1;
-  --palette-bg: #0b0e12;
-  --palette-surface: #121720;
-  --palette-text: #e5e7eb;
+  --palette-bg: #0f1115;
+  --palette-surface: #151821;
+  --palette-text: #f1f5f9;
   --palette-muted: #cbd5e1;
-  --palette-border: #1f2937;
+  --palette-border: #1e293b;
   --palette-success: #34d399;
   --palette-warning: #fbbf24;
   --palette-error: #ef4444;
 }
 
 body[data-color-palette="silver"] {
-  --palette-primary: #c0c0c0;
-  --palette-secondary: #d9d9d9;
-  --palette-accent: #f0f0f0;
-  --palette-bg: #0c0c0c;
-  --palette-surface: #151515;
-  --palette-text: #f5f5f5;
-  --palette-muted: #dcdcdc;
-  --palette-border: #2a2a2a;
+  --palette-primary: #94a3b8;
+  --palette-secondary: #cbd5e1;
+  --palette-accent: #e2e8f0;
+  --palette-bg: #0f1115;
+  --palette-surface: #151821;
+  --palette-text: #f8fafc;
+  --palette-muted: #e2e8f0;
+  --palette-border: #1e293b;
   --palette-success: #34d399;
   --palette-warning: #fbbf24;
   --palette-error: #ef4444;
 }
 
 body[data-color-palette="lavender"] {
-  --palette-primary: #b57edc;
-  --palette-secondary: #d1b3ff;
-  --palette-accent: #f3e8ff;
-  --palette-bg: #100b14;
+  --palette-primary: #a78bfa;
+  --palette-secondary: #c4b5fd;
+  --palette-accent: #ddd6fe;
+  --palette-bg: #0f0a16;
   --palette-surface: #190f21;
   --palette-text: #f9f5ff;
   --palette-muted: #e6d7fb;
@@ -1111,82 +1339,475 @@ body.futuristic-mode {
   background: var(--void-black, #0a0a0f);
   color: var(--color-text-primary, #ffffff);
 }
-/* GUI Theme base classes (individual layouts provide their own styling) */
-body.gui-chatgpt,
-body.gui-aol,
-body.gui-discord,
-body.gui-windows95,
-body.gui-limewire {
-  margin: 0;
-  padding: 0;
-}
 
-/* Animation helpers for customizer */
-.no-grid .grid-bg {
-  display: none !important;
-}
-.no-scanline .scanline {
-  display: none !important;
-}
-.no-glow {
-  --shadow-glow: none;
-}
-.no-fade {
-  animation: none !important;
-}
-
-/* Theme switching smoothing */
-.switching-theme {
-  transition: background 0.3s ease, color 0.3s ease;
-}
-
-/* Additional keyframes used by welcome screen and grid */
-@keyframes gridMove {
-  from {
-    background-position: 0 0, 0 0;
-  }
-  to {
-    background-position: 50px 50px, 50px 50px;
-  }
-}
-
-@keyframes fadeOut {
-  from {
-    opacity: 1;
-  }
-  to {
-    opacity: 0;
-  }
+body.basic-terminal-mode {
+  /* Basic mode uses the terminal full-screen */
+  background: var(--color-terminal-bg, #000000);
+  color: var(--color-terminal-text, #ffffff);
 }
 
 /* =============================================================================
-   Mobile & Touch Utilities
+   TERMINAL PALETTE OVERRIDES
+   High-specificity rules to ensure terminal elements update with color palettes
    ============================================================================= */
 
-@media screen and (max-width: 768px) {
-  input,
-  select,
-  textarea,
-  button {
-    font-size: 16px;
-  }
+/* Terminal Input Elements - Palette Overrides */
+body[data-color-palette] [class*="inputSection"],
+body[data-color-palette] [class*="InputSection"] {
+  border-top-color: var(--palette-border, rgba(0, 212, 255, 0.15)) !important;
+  transition: border-color 0.3s ease !important;
 }
 
-@media (hover: none) and (pointer: coarse) {
-  button,
-  input,
-  select,
-  textarea,
-  a {
-    min-height: 44px;
-    min-width: 44px;
-    touch-action: manipulation;
-    -webkit-tap-highlight-color: rgba(255, 255, 255, 0.2);
-  }
+body[data-color-palette] [class*="inputLine"],
+body[data-color-palette] [class*="InputLine"] {
+  background: color-mix(in srgb, var(--palette-primary, #00bcf2) 5%, transparent) !important;
+  border-color: var(--palette-border, rgba(0, 212, 255, 0.2)) !important;
+  transition: background 0.3s ease, border-color 0.3s ease !important;
 }
 
-@supports (padding: max(0px)) {
-  .safe-area-pad {
-    padding-bottom: max(16px, calc(16px + env(safe-area-inset-bottom)));
-  }
+body[data-color-palette] [class*="inputLine"]:focus-within,
+body[data-color-palette] [class*="InputLine"]:focus-within {
+  border-color: var(--palette-primary, #00d4ff) !important;
+  box-shadow: 0 0 0 3px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #00bcf2) 15%, transparent)) !important;
+  background: color-mix(in srgb, var(--palette-primary, #00bcf2) 8%, transparent) !important;
+}
+
+body[data-color-palette] [class*="prompt"],
+body[data-color-palette] [class*="Prompt"] {
+  color: var(--palette-primary, #00d4ff) !important;
+  transition: color 0.3s ease !important;
+}
+
+body[data-color-palette] [class*="input"]:not([type="checkbox"]):not([type="radio"]),
+body[data-color-palette] input[type="text"],
+body[data-color-palette] textarea {
+  color: var(--palette-primary, #00d4ff) !important;
+  caret-color: var(--palette-primary, #00ffff) !important;
+  transition: color 0.3s ease, caret-color 0.3s ease !important;
+}
+
+body[data-color-palette] [class*="input"]::placeholder,
+body[data-color-palette] input::placeholder,
+body[data-color-palette] textarea::placeholder {
+  color: color-mix(in srgb, var(--palette-primary, #00bcf2) 50%, transparent) !important;
+  transition: color 0.3s ease !important;
+}
+
+/* Terminal Output Elements - Palette Overrides */
+body[data-color-palette] [class*="container"][class*="terminal"] [class*="prompt"],
+body[data-color-palette] [class*="TerminalOutput"] [class*="prompt"],
+body[data-color-palette] [class*="prompt"]:not([class*="input"]) {
+  color: var(--palette-primary, #00d4ff) !important;
+  transition: color 0.3s ease !important;
+}
+
+body[data-color-palette] [class*="container"][class*="terminal"] [class*="command"],
+body[data-color-palette] [class*="TerminalOutput"] [class*="command"] {
+  color: var(--palette-text, #ffffff) !important;
+  transition: color 0.3s ease !important;
+}
+
+body[data-color-palette] [class*="container"][class*="terminal"] [class*="output"],
+body[data-color-palette] [class*="TerminalOutput"] [class*="output"] {
+  color: var(--palette-muted, #cccccc) !important;
+  transition: color 0.3s ease !important;
+}
+
+body[data-color-palette] [class*="error"],
+body[data-color-palette] [data-line-type="error"] {
+  color: var(--palette-error, #ff6666) !important;
+  transition: color 0.3s ease !important;
+}
+
+body[data-color-palette] [class*="success"],
+body[data-color-palette] [data-line-type="success"] {
+  color: var(--palette-success, #16c782) !important;
+  transition: color 0.3s ease !important;
+}
+
+body[data-color-palette] [class*="warning"],
+body[data-color-palette] [data-line-type="warning"] {
+  color: var(--palette-warning, #f2b705) !important;
+  transition: color 0.3s ease !important;
+}
+
+body[data-color-palette] [class*="info"],
+body[data-color-palette] [data-line-type="info"] {
+  color: var(--palette-primary, #00bcf2) !important;
+  transition: color 0.3s ease !important;
+}
+
+body[data-color-palette] [class*="copyable"],
+body[data-color-palette] [class*="Copyable"] {
+  color: var(--palette-primary, rgba(0, 188, 242, 0.98)) !important;
+  transition: color 0.3s ease !important;
+}
+
+body[data-color-palette] [class*="copyable"]:hover,
+body[data-color-palette] [class*="Copyable"]:hover {
+  color: var(--palette-secondary, rgba(0, 255, 216, 0.95)) !important;
+}
+
+body[data-color-palette] [class*="lineTimestamp"],
+body[data-color-palette] [class*="LineTimestamp"] {
+  color: var(--palette-muted, rgba(255, 255, 255, 0.35)) !important;
+  transition: color 0.3s ease !important;
+}
+
+/* Terminal Code Blocks and Tables */
+body[data-color-palette] [class*="codeBlock"],
+body[data-color-palette] [class*="CodeBlock"],
+body[data-color-palette] code,
+body[data-color-palette] pre {
+  background: color-mix(in srgb, var(--palette-bg, rgba(0, 8, 18, 1)) 60%, transparent) !important;
+  border-color: color-mix(in srgb, var(--palette-primary, rgba(0, 188, 242, 1)) 20%, transparent) !important;
+  transition: background 0.3s ease, border-color 0.3s ease !important;
+}
+
+body[data-color-palette] [class*="table"],
+body[data-color-palette] table {
+  background: color-mix(in srgb, var(--palette-bg, rgba(0, 8, 18, 1)) 60%, transparent) !important;
+  transition: background 0.3s ease !important;
+}
+
+body[data-color-palette] [class*="tableRow"],
+body[data-color-palette] tr {
+  border-bottom-color: color-mix(in srgb, var(--palette-primary, rgba(0, 188, 242, 1)) 18%, transparent) !important;
+  transition: border-color 0.3s ease !important;
+}
+
+body[data-color-palette] [class*="tableRow"]:hover,
+body[data-color-palette] tr:hover {
+  background: color-mix(in srgb, var(--palette-primary, rgba(0, 188, 242, 1)) 8%, transparent) !important;
+  transition: background 0.3s ease !important;
+}
+
+body[data-color-palette] [class*="tableHeader"],
+body[data-color-palette] th {
+  color: var(--palette-primary, rgba(0, 188, 242, 0.95)) !important;
+  transition: color 0.3s ease !important;
+}
+
+body[data-color-palette] [class*="tableCell"],
+body[data-color-palette] td {
+  color: var(--palette-text, rgba(220, 225, 235, 0.85)) !important;
+  transition: color 0.3s ease !important;
+}
+
+/* Terminal Container Wrapper */
+body[data-color-palette] [class*="terminalWrapper"],
+body[data-color-palette] [class*="TerminalWrapper"] {
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--palette-bg, rgba(0, 12, 28, 1)) 70%, transparent) 0%,
+    color-mix(in srgb, var(--palette-bg, rgba(0, 6, 14, 1)) 95%, transparent) 100%
+  ) !important;
+  border-color: var(--palette-border, rgba(0, 188, 242, 0.25)) !important;
+  transition: background 0.3s ease, border-color 0.3s ease !important;
+}
+
+body[data-color-palette] [class*="tabBar"],
+body[data-color-palette] [class*="TabBar"] {
+  background: color-mix(in srgb, var(--palette-bg, rgba(17, 17, 17, 1)) 95%, transparent) !important;
+  border-bottom-color: var(--palette-primary, #00bcf2) !important;
+  box-shadow: 0 1px 10px var(--palette-primary-glow, rgba(0, 188, 242, 0.3)) !important;
+  transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease !important;
+}
+
+/* Matrix Theme - Preserve fonts and uppercase when palette active */
+body[data-color-palette].theme-matrix button,
+body[data-color-palette].theme-matrix [class*="button"],
+body[data-color-palette].theme-matrix [class*="Button"],
+body[data-color-palette].theme-matrix [class*="sidebar"] button,
+body[data-color-palette].theme-matrix [class*="Sidebar"] button,
+body[data-color-palette].theme-matrix [class*="sectionTitle"],
+body[data-color-palette].theme-matrix [class*="SectionTitle"] {
+  font-family: var(--theme-font-mono, "Courier New", monospace) !important;
+  letter-spacing: var(--theme-letter-spacing, 0.08em) !important;
+  text-transform: uppercase !important;
+  font-weight: var(--theme-font-weight-bold, 700) !important;
+}
+
+/* Retro Theme - Preserve fonts when palette active */
+body[data-color-palette].theme-retro button,
+body[data-color-palette].theme-retro [class*="button"],
+body[data-color-palette].theme-retro [class*="Button"],
+body[data-color-palette].theme-retro [class*="sidebar"] button,
+body[data-color-palette].theme-retro [class*="Sidebar"] button {
+  font-family: var(--theme-font-body, "VT323", "Courier New", monospace) !important;
+  letter-spacing: var(--theme-letter-spacing, 0.05em) !important;
+  font-weight: var(--theme-font-weight-normal, 400) !important;
+}
+
+/* PowerShell Theme - Preserve fonts when palette active */
+body[data-color-palette].theme-powershell button,
+body[data-color-palette].theme-powershell [class*="button"],
+body[data-color-palette].theme-powershell [class*="Button"],
+body[data-color-palette].theme-powershell [class*="sidebar"] button,
+body[data-color-palette].theme-powershell [class*="Sidebar"] button {
+  font-family: var(--theme-font-body, "Segoe UI", "Microsoft Sans Serif", sans-serif) !important;
+  letter-spacing: var(--theme-letter-spacing, 0) !important;
+  font-weight: var(--theme-font-weight-bold, 600) !important;
+}
+
+/* Executive Theme - Preserve fonts when palette active */
+body[data-color-palette].theme-executive button,
+body[data-color-palette].theme-executive [class*="button"],
+body[data-color-palette].theme-executive [class*="Button"],
+body[data-color-palette].theme-executive [class*="sidebar"] button,
+body[data-color-palette].theme-executive [class*="Sidebar"] button {
+  font-family: var(--theme-font-body, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif) !important;
+  letter-spacing: var(--theme-letter-spacing, 0.01em) !important;
+  font-weight: var(--theme-font-weight-bold, 600) !important;
+}
+
+/* Modern Theme - Preserve fonts when palette active */
+body[data-color-palette].theme-modern button,
+body[data-color-palette].modern-ui-futuristic button,
+body[data-color-palette].modern-terminal-ui button,
+body[data-color-palette].theme-modern [class*="button"],
+body[data-color-palette].modern-ui-futuristic [class*="button"],
+body[data-color-palette].modern-terminal-ui [class*="button"],
+body[data-color-palette].theme-modern [class*="sidebar"] button,
+body[data-color-palette].modern-ui-futuristic [class*="sidebar"] button,
+body[data-color-palette].modern-terminal-ui [class*="sidebar"] button {
+  font-family: var(--theme-font-body, -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif) !important;
+  letter-spacing: var(--theme-letter-spacing, -0.01em) !important;
+  font-weight: var(--theme-font-weight-bold, 600) !important;
+}
+
+/* Preserve theme input styles when palette active */
+body[data-color-palette].theme-dark input,
+body[data-color-palette].theme-dark textarea,
+body[data-color-palette].theme-dark [class*="input"],
+body[data-color-palette].theme-dark [class*="Input"] {
+  font-family: var(--theme-font-mono, "Courier New", monospace) !important;
+  letter-spacing: var(--theme-letter-spacing, 0.05em) !important;
+}
+
+body[data-color-palette].theme-light input,
+body[data-color-palette].theme-light textarea,
+body[data-color-palette].theme-light [class*="input"],
+body[data-color-palette].theme-light [class*="Input"] {
+  font-family: var(--theme-font-body, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif) !important;
+  letter-spacing: var(--theme-letter-spacing, 0) !important;
+}
+
+body[data-color-palette].theme-matrix input,
+body[data-color-palette].theme-matrix textarea,
+body[data-color-palette].theme-matrix [class*="input"],
+body[data-color-palette].theme-matrix [class*="Input"] {
+  font-family: var(--theme-font-mono, "Courier New", monospace) !important;
+  letter-spacing: var(--theme-letter-spacing, 0.08em) !important;
+  text-transform: uppercase !important;
+}
+
+body[data-color-palette].theme-retro input,
+body[data-color-palette].theme-retro textarea,
+body[data-color-palette].theme-retro [class*="input"],
+body[data-color-palette].theme-retro [class*="Input"] {
+  font-family: var(--theme-font-body, "VT323", "Courier New", monospace) !important;
+  letter-spacing: var(--theme-letter-spacing, 0.05em) !important;
+}
+
+body[data-color-palette].theme-powershell input,
+body[data-color-palette].theme-powershell textarea,
+body[data-color-palette].theme-powershell [class*="input"],
+body[data-color-palette].theme-powershell [class*="Input"] {
+  font-family: var(--theme-font-body, "Segoe UI", "Microsoft Sans Serif", sans-serif) !important;
+  letter-spacing: var(--theme-letter-spacing, 0) !important;
+}
+
+body[data-color-palette].theme-executive input,
+body[data-color-palette].theme-executive textarea,
+body[data-color-palette].theme-executive [class*="input"],
+body[data-color-palette].theme-executive [class*="Input"] {
+  font-family: var(--theme-font-body, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif) !important;
+  letter-spacing: var(--theme-letter-spacing, 0.01em) !important;
+}
+
+body[data-color-palette].theme-modern input,
+body[data-color-palette].modern-ui-futuristic input,
+body[data-color-palette].modern-terminal-ui input,
+body[data-color-palette].theme-modern textarea,
+body[data-color-palette].modern-ui-futuristic textarea,
+body[data-color-palette].modern-terminal-ui textarea,
+body[data-color-palette].theme-modern [class*="input"],
+body[data-color-palette].modern-ui-futuristic [class*="input"],
+body[data-color-palette].modern-terminal-ui [class*="input"] {
+  font-family: var(--theme-font-body, -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif) !important;
+  letter-spacing: var(--theme-letter-spacing, -0.01em) !important;
+}
+
+/* Preserve theme heading styles when palette active */
+body[data-color-palette].theme-dark h1,
+body[data-color-palette].theme-dark h2,
+body[data-color-palette].theme-dark h3,
+body[data-color-palette].theme-dark [class*="title"],
+body[data-color-palette].theme-dark [class*="Title"] {
+  font-family: var(--theme-font-heading, "Courier New", monospace) !important;
+  letter-spacing: var(--theme-letter-spacing, 0.05em) !important;
+  font-weight: var(--theme-font-weight-bold, 700) !important;
+}
+
+body[data-color-palette].theme-light h1,
+body[data-color-palette].theme-light h2,
+body[data-color-palette].theme-light h3,
+body[data-color-palette].theme-light [class*="title"],
+body[data-color-palette].theme-light [class*="Title"] {
+  font-family: var(--theme-font-heading, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif) !important;
+  letter-spacing: var(--theme-letter-spacing, 0) !important;
+  font-weight: var(--theme-font-weight-bold, 600) !important;
+}
+
+body[data-color-palette].theme-matrix h1,
+body[data-color-palette].theme-matrix h2,
+body[data-color-palette].theme-matrix h3,
+body[data-color-palette].theme-matrix [class*="title"],
+body[data-color-palette].theme-matrix [class*="Title"] {
+  font-family: var(--theme-font-heading, "Courier New", monospace) !important;
+  letter-spacing: var(--theme-letter-spacing, 0.08em) !important;
+  text-transform: uppercase !important;
+  font-weight: var(--theme-font-weight-bold, 700) !important;
+}
+
+body[data-color-palette].theme-retro h1,
+body[data-color-palette].theme-retro h2,
+body[data-color-palette].theme-retro h3,
+body[data-color-palette].theme-retro [class*="title"],
+body[data-color-palette].theme-retro [class*="Title"] {
+  font-family: var(--theme-font-heading, "VT323", "Courier New", monospace) !important;
+  letter-spacing: var(--theme-letter-spacing, 0.05em) !important;
+  font-weight: var(--theme-font-weight-normal, 400) !important;
+}
+
+body[data-color-palette].theme-powershell h1,
+body[data-color-palette].theme-powershell h2,
+body[data-color-palette].theme-powershell h3,
+body[data-color-palette].theme-powershell [class*="title"],
+body[data-color-palette].theme-powershell [class*="Title"] {
+  font-family: var(--theme-font-heading, "Segoe UI", "Microsoft Sans Serif", sans-serif) !important;
+  letter-spacing: var(--theme-letter-spacing, 0) !important;
+  font-weight: var(--theme-font-weight-bold, 600) !important;
+}
+
+body[data-color-palette].theme-executive h1,
+body[data-color-palette].theme-executive h2,
+body[data-color-palette].theme-executive h3,
+body[data-color-palette].theme-executive [class*="title"],
+body[data-color-palette].theme-executive [class*="Title"] {
+  font-family: var(--theme-font-heading, "Playfair Display", "Georgia", serif) !important;
+  letter-spacing: var(--theme-letter-spacing, 0.01em) !important;
+  font-weight: var(--theme-font-weight-bold, 600) !important;
+}
+
+body[data-color-palette].theme-modern h1,
+body[data-color-palette].modern-ui-futuristic h1,
+body[data-color-palette].modern-terminal-ui h1,
+body[data-color-palette].theme-modern h2,
+body[data-color-palette].modern-ui-futuristic h2,
+body[data-color-palette].modern-terminal-ui h2,
+body[data-color-palette].theme-modern h3,
+body[data-color-palette].modern-ui-futuristic h3,
+body[data-color-palette].modern-terminal-ui h3,
+body[data-color-palette].theme-modern [class*="title"],
+body[data-color-palette].modern-ui-futuristic [class*="title"],
+body[data-color-palette].modern-terminal-ui [class*="title"] {
+  font-family: var(--theme-font-heading, "SF Pro Display", -apple-system, BlinkMacSystemFont, sans-serif) !important;
+  letter-spacing: var(--theme-letter-spacing, -0.01em) !important;
+  font-weight: var(--theme-font-weight-bold, 600) !important;
+}
+
+/* =============================================================================
+   NAV BAR ICON BUTTONS - Theme-Aware Styling
+   Ensure all toggle icons work correctly across all themes
+   ============================================================================= */
+
+/* Base icon button styling - works with all themes */
+body [class*="terminalIconBtn"],
+body [class*="TerminalIconBtn"],
+body [class*="controlButton"],
+body [class*="ControlButton"] {
+  color: var(--palette-primary, #00bcf2);
+  transition: all 0.3s ease;
+}
+
+body [class*="terminalIconBtn"] svg,
+body [class*="TerminalIconBtn"] svg,
+body [class*="controlButton"] svg,
+body [class*="ControlButton"] svg {
+  fill: currentColor;
+  width: 14px;
+  height: 14px;
+  display: block;
+  flex-shrink: 0;
+}
+
+body [class*="terminalIconBtn"] svg path,
+body [class*="TerminalIconBtn"] svg path,
+body [class*="controlButton"] svg path,
+body [class*="ControlButton"] svg path {
+  fill: currentColor;
+}
+
+/* Theme-specific icon button colors */
+body.theme-dark [class*="terminalIconBtn"],
+body.theme-dark [class*="controlButton"] {
+  color: var(--palette-primary, #00bcf2);
+}
+
+body.theme-light [class*="terminalIconBtn"],
+body.theme-light [class*="controlButton"] {
+  color: var(--palette-primary, #0051d5);
+}
+
+body.theme-matrix [class*="terminalIconBtn"],
+body.theme-matrix [class*="controlButton"] {
+  color: var(--palette-primary, #39ff14);
+}
+
+body.theme-retro [class*="terminalIconBtn"],
+body.theme-retro [class*="controlButton"] {
+  color: var(--palette-primary, #ffaa00);
+}
+
+body.theme-powershell [class*="terminalIconBtn"],
+body.theme-powershell [class*="controlButton"] {
+  color: var(--palette-primary, #00bcf2);
+}
+
+body.theme-executive [class*="terminalIconBtn"],
+body.theme-executive [class*="controlButton"] {
+  color: var(--palette-primary, rgba(255, 215, 0, 0.95));
+}
+
+body.theme-modern [class*="terminalIconBtn"],
+body.modern-ui-futuristic [class*="terminalIconBtn"],
+body.modern-terminal-ui [class*="terminalIconBtn"],
+body.theme-modern [class*="controlButton"],
+body.modern-ui-futuristic [class*="controlButton"],
+body.modern-terminal-ui [class*="controlButton"] {
+  color: var(--palette-primary, rgba(0, 255, 210, 0.95));
+}
+
+/* Preserve icon colors when palette is active */
+body[data-color-palette] [class*="terminalIconBtn"],
+body[data-color-palette] [class*="TerminalIconBtn"],
+body[data-color-palette] [class*="controlButton"],
+body[data-color-palette] [class*="ControlButton"] {
+  color: var(--palette-primary, #00bcf2) !important;
+}
+
+body[data-color-palette] [class*="terminalIconBtn"] svg,
+body[data-color-palette] [class*="TerminalIconBtn"] svg,
+body[data-color-palette] [class*="controlButton"] svg,
+body[data-color-palette] [class*="ControlButton"] svg {
+  fill: currentColor !important;
+}
+
+body[data-color-palette] [class*="terminalIconBtn"] svg path,
+body[data-color-palette] [class*="TerminalIconBtn"] svg path,
+body[data-color-palette] [class*="controlButton"] svg path,
+body[data-color-palette] [class*="ControlButton"] svg path {
+  fill: currentColor !important;
 }

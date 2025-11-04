@@ -1,7 +1,7 @@
 /**
  * Spotify Integration Commands
  * Control Spotify playback, search music, and manage player
- * Based on vanilla js/commands/entertainment.js spotify implementation
+ * Based on Spotify Web Playback SDK example
  */
 
 import type { Command, CommandContext } from "@/types/commands";
@@ -12,7 +12,7 @@ import type { Command, CommandContext } from "@/types/commands";
 export const spotifyCommand: Command = {
   name: "spotify",
   description: "Spotify music player integration",
-  usage: "spotify <open|connect|disconnect|play|next|prev|search|close|help>",
+  usage: "spotify <open|connect|disconnect|play|pause|next|prev|search|playlists|close|help>",
   category: "entertainment",
   handler: async (context: CommandContext, args: string[]) => {
     const subcommand = args[1]?.toLowerCase();
@@ -48,6 +48,9 @@ export const spotifyCommand: Command = {
       case "search":
         await searchMusic(context, args);
         break;
+      case "playlists":
+        await listPlaylists(context);
+        break;
       case "help":
         showSpotifyHelp(context);
         break;
@@ -61,7 +64,6 @@ export const spotifyCommand: Command = {
 function openSpotifyPlayer(context: CommandContext): void {
   context.log("🎵 Opening Spotify player...", "info");
 
-  // Use the actual Spotify panel from context
   if (context.media?.spotify?.openPanel) {
     try {
       context.media.spotify.openPanel();
@@ -78,14 +80,12 @@ function openSpotifyPlayer(context: CommandContext): void {
 async function connectSpotify(context: CommandContext): Promise<void> {
   context.log("🎵 Connecting to Spotify...", "info");
 
-  // Use the actual Spotify authenticate function from context
   if (context.media?.spotify?.authenticate) {
     try {
       await context.media.spotify.authenticate();
       context.log("✅ Spotify authentication started", "success");
       context.log("💡 Follow the prompts in your browser", "info");
     } catch (error: any) {
-      // Check if it's a missing client_id error
       if (
         error.message.includes("client_id") ||
         error.message.includes("CLIENT_ID")
@@ -117,12 +117,16 @@ async function connectSpotify(context: CommandContext): Promise<void> {
         const redirectUri =
           typeof window !== "undefined"
             ? `${window.location.origin}/spotify-callback.html`
-            : "http://localhost:3000/spotify-callback.html";
+            : "http://127.0.0.1:3000/spotify-callback.html";
         context.log(
-          `  Add this to your Spotify app's redirect URIs:`,
+          `  Add this EXACT URL to your Spotify app's redirect URIs:`,
           "output"
         );
         context.log(`  ${redirectUri}`, "success");
+        context.log("", "output");
+        context.log("  ⚠️  Important: Use 127.0.0.1 (NOT localhost) for local dev", "warning");
+        context.log("  ⚠️  Add both http://127.0.0.1:PORT/spotify-callback.html", "warning");
+        context.log("  ⚠️  The redirect URI must match EXACTLY (including port)", "warning");
         context.log("", "output");
         context.log("📝 Step 4: Restart the App", "info");
         context.log("  Stop the dev server and run: npm run dev", "output");
@@ -142,7 +146,6 @@ async function connectSpotify(context: CommandContext): Promise<void> {
 }
 
 function disconnectSpotify(context: CommandContext): void {
-  // Use the actual Spotify logout function from context
   if (context.media?.spotify?.logout) {
     try {
       context.media.spotify.logout();
@@ -151,16 +154,11 @@ function disconnectSpotify(context: CommandContext): void {
       context.log(`❌ Error disconnecting: ${error.message}`, "error");
     }
   } else {
-    // Fallback to clearing localStorage
-    if (typeof localStorage !== "undefined") {
-      localStorage.removeItem("spotify-auth-token");
-    }
     context.log("✅ Disconnected from Spotify", "success");
   }
 }
 
 function closeSpotifyPlayer(context: CommandContext): void {
-  // Use the actual Spotify closePanel function from context
   if (context.media?.spotify?.closePanel) {
     try {
       context.media.spotify.closePanel();
@@ -174,7 +172,6 @@ function closeSpotifyPlayer(context: CommandContext): void {
 }
 
 function togglePlayback(context: CommandContext): void {
-  // Use the actual Spotify togglePlayPause function from context
   if (context.media?.spotify?.togglePlayPause) {
     try {
       context.media.spotify.togglePlayPause();
@@ -189,7 +186,6 @@ function togglePlayback(context: CommandContext): void {
 }
 
 function nextTrack(context: CommandContext): void {
-  // Use the actual Spotify skipNext function from context
   if (context.media?.spotify?.skipNext) {
     try {
       context.media.spotify.skipNext();
@@ -204,7 +200,6 @@ function nextTrack(context: CommandContext): void {
 }
 
 function previousTrack(context: CommandContext): void {
-  // Use the actual Spotify skipPrevious function from context
   if (context.media?.spotify?.skipPrevious) {
     try {
       context.media.spotify.skipPrevious();
@@ -234,14 +229,11 @@ async function searchMusic(
 
   context.log(`🔍 Searching for: ${query}`, "info");
 
-  // Use the actual Spotify searchTracks function from context
   if (context.media?.spotify?.searchTracks) {
     try {
-      // Open panel first
       if (context.media.spotify.openPanel) {
         context.media.spotify.openPanel();
       }
-      // Search after a brief delay to let panel open
       setTimeout(async () => {
         try {
           await context.media?.spotify?.searchTracks(query);
@@ -262,6 +254,34 @@ async function searchMusic(
   }
 }
 
+async function listPlaylists(context: CommandContext): Promise<void> {
+  context.log("📋 Loading playlists...", "info");
+
+  if (context.media?.spotify?.getUserPlaylists) {
+    try {
+      if (context.media.spotify.openPanel) {
+        context.media.spotify.openPanel();
+      }
+      setTimeout(async () => {
+        try {
+          await context.media?.spotify?.getUserPlaylists();
+          context.log(
+            `✅ Playlists loaded in Spotify panel`,
+            "success"
+          );
+        } catch (error: any) {
+          context.log(`❌ Failed to load playlists: ${error.message}`, "error");
+        }
+      }, 500);
+    } catch (error: any) {
+      context.log(`❌ Error loading playlists: ${error.message}`, "error");
+    }
+  } else {
+    context.log("💡 Playlists not available", "warning");
+    context.log("💡 Connect to Spotify first: spotify connect", "info");
+  }
+}
+
 function showSpotifyHelp(context: CommandContext): void {
   context.log("🎵 Spotify Player Commands", "info");
   context.log("", "info");
@@ -272,6 +292,7 @@ function showSpotifyHelp(context: CommandContext): void {
   context.log("spotify next           - Next track", "output");
   context.log("spotify prev           - Previous track", "output");
   context.log("spotify search <query> - Search music", "output");
+  context.log("spotify playlists      - Load your playlists", "output");
   context.log("spotify close          - Close player", "output");
   context.log("", "info");
   context.log("📝 Setup Instructions:", "warning");
@@ -283,9 +304,5 @@ function showSpotifyHelp(context: CommandContext): void {
   context.log("🎧 Listen to music while coding!", "success");
 }
 
-function setupSpotifyHandlers(context: CommandContext): void {
-  // No longer needed - we use context methods directly
-  // This function is kept for backwards compatibility but does nothing
-}
-
 export const spotifyCommands: Command[] = [spotifyCommand];
+

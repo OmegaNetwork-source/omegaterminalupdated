@@ -12,14 +12,16 @@
   grid-area: sidebar;
   background: rgba(21, 21, 32, 0.7);
   backdrop-filter: blur(20px);
-  border: 1px solid rgba(0, 212, 255, 0.15);
+  border: 1px solid var(--palette-border, rgba(0, 212, 255, 0.15));
   border-radius: 12px;
   padding: 24px;
   display: flex;
   flex-direction: column;
   gap: 24px;
   overflow-y: auto;
-  font-family: "Courier New", monospace;
+  font-family: var(--theme-font-body, "Courier New", monospace);
+  letter-spacing: var(--theme-letter-spacing, 0.05em);
+  transition: border-color 0.3s ease;
 }
 
 .sidebar::-webkit-scrollbar {
@@ -33,10 +35,11 @@
 .sidebar::-webkit-scrollbar-thumb {
   background: linear-gradient(
     180deg,
-    rgba(0, 188, 242, 0.7),
-    rgba(0, 255, 210, 0.7)
+    var(--palette-primary, rgba(0, 188, 242, 0.7)),
+    var(--palette-secondary, rgba(0, 255, 210, 0.7))
   );
   border-radius: 3px;
+  transition: background 0.3s ease;
 }
 
 .sidebarCollapsed {
@@ -80,34 +83,72 @@
   margin: 8px auto 12px;
   background: linear-gradient(
     90deg,
-    rgba(0, 188, 242, 0) 0%,
-    rgba(0, 188, 242, 0.45) 50%,
-    rgba(0, 188, 242, 0) 100%
+    transparent 0%,
+    var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #00bcf2) 45%, transparent)) 50%,
+    transparent 100%
   );
   opacity: 0.4;
+  transition: background 0.3s ease;
 }
 
 .sectionTitle {
   font-size: 9px;
-  letter-spacing: 1.2px;
-  text-transform: uppercase;
-  color: rgba(0, 212, 255, 0.7);
-  margin-bottom: 8px;
-  padding: 4px 8px;
-  background: rgba(0, 212, 255, 0.05);
-  border: 1px solid rgba(0, 212, 255, 0.15);
-  border-radius: 6px;
+  letter-spacing: var(--theme-letter-spacing, 1.2px);
+  text-transform: var(--theme-text-transform, uppercase);
+  color: color-mix(in srgb, var(--palette-primary, #00d4ff) 70%, transparent);
+  margin-bottom: var(--theme-spacing-sm, 8px);
+  padding: var(--theme-spacing-xs, 4px) var(--theme-spacing-sm, 8px);
+  background: color-mix(in srgb, var(--palette-primary, #00bcf2) 5%, transparent);
+  border: 1px solid var(--palette-border, rgba(0, 212, 255, 0.15));
+  border-radius: var(--theme-radius-md, 6px);
   display: flex;
   justify-content: space-between;
   align-items: center;
   cursor: pointer;
+  transition: all 0.15s ease, border-color 0.3s ease, background-color 0.3s ease, color 0.3s ease;
+  font-family: var(--theme-font-body, "Courier New", monospace);
+  font-weight: var(--theme-font-weight-bold, 700);
+  gap: 6px;
+}
+
+.sectionTitle svg {
+  display: block;
+  flex-shrink: 0;
+}
+
+.sectionTitleIcon {
+  width: 14px;
+  height: 14px;
+  min-width: 14px;
+  min-height: 14px;
+  fill: currentColor;
+  display: block;
+  flex-shrink: 0;
+  vertical-align: middle;
+  color: inherit;
   transition: all 0.15s ease;
-  font-family: "Courier New", monospace;
+  filter: drop-shadow(0 0 2px currentColor);
+  opacity: 0.85;
+}
+
+.sectionTitleIcon path {
+  fill: currentColor;
+}
+
+.sectionTitle:hover .sectionTitleIcon {
+  opacity: 1;
+  filter: drop-shadow(0 0 4px currentColor);
+  transform: scale(1.1);
+}
+
+.sectionToggle svg {
+  display: block;
+  flex-shrink: 0;
 }
 
 .sectionTitle:hover {
-  background: rgba(0, 212, 255, 0.08);
-  color: #00d4ff;
+  background: color-mix(in srgb, var(--palette-primary, #00bcf2) 8%, transparent);
+  color: var(--palette-primary, #00d4ff);
 }
 
 .sectionToggle {
@@ -125,8 +166,18 @@
 .toggleIcon {
   width: 16px;
   height: 16px;
+  min-width: 16px;
+  min-height: 16px;
   fill: currentColor;
+  display: inline-block;
+  vertical-align: middle;
+  flex-shrink: 0;
   transition: transform 0.2s ease;
+  color: inherit;
+}
+
+.toggleIcon path {
+  fill: currentColor;
 }
 
 .sectionCollapsed .toggleIcon {
@@ -185,38 +236,45 @@
 }
 
 .button {
-  background: rgba(0, 212, 255, 0.08);
-  border: 1px solid rgba(0, 212, 255, 0.15);
-  border-radius: 8px;
-  padding: 10px 12px;
-  color: #00d4ff;
-  font-family: "Courier New", monospace;
+  background: color-mix(in srgb, var(--palette-primary, #00bcf2) 8%, transparent);
+  border: 1px solid var(--palette-border, rgba(0, 212, 255, 0.15));
+  border-radius: var(--theme-radius-md, 8px);
+  padding: var(--theme-spacing-sm, 8px) var(--theme-spacing-md, 12px);
+  color: var(--palette-primary, #00d4ff);
+  font-family: var(--theme-font-body, "Courier New", monospace);
   font-size: 11px;
-  font-weight: 500;
+  font-weight: var(--theme-font-weight-normal, 500);
+  letter-spacing: var(--theme-letter-spacing, 0.05em);
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.15s ease, border-color 0.3s ease, background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--theme-spacing-sm, 8px);
   min-height: 36px;
   margin-bottom: 4px;
   position: relative;
-  overflow: hidden;
+  overflow: visible;
+}
+
+.button svg {
+  display: block;
+  flex-shrink: 0;
 }
 
 .button:hover {
-  background: rgba(0, 212, 255, 0.18);
-  border-color: #00d4ff;
-  box-shadow: 0 0 20px rgba(0, 212, 255, 0.3),
-    inset 0 0 10px rgba(0, 212, 255, 0.1);
+  background: color-mix(in srgb, var(--palette-primary, #00bcf2) 18%, transparent);
+  border-color: var(--palette-primary, #00d4ff);
+  box-shadow: 0 0 20px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #00bcf2) 30%, transparent)),
+    inset 0 0 10px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #00bcf2) 10%, transparent));
   transform: translateX(6px) scale(1.02);
-  color: #00ffff;
+  color: var(--palette-secondary, #00ffff);
 }
 
 .buttonActive {
-  background: rgba(0, 188, 242, 0.35);
-  border-color: rgba(0, 188, 242, 0.55);
-  box-shadow: 0 20px 36px rgba(0, 188, 242, 0.3);
+  background: color-mix(in srgb, var(--palette-primary, #00bcf2) 35%, transparent);
+  border-color: color-mix(in srgb, var(--palette-primary, #00bcf2) 55%, transparent);
+  box-shadow: 0 20px 36px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #00bcf2) 30%, transparent));
+  transition: all 0.3s ease;
 }
 
 .buttonDisabled {
@@ -254,9 +312,30 @@
 .buttonIcon {
   width: 16px;
   height: 16px;
+  min-width: 16px;
+  min-height: 16px;
   fill: currentColor;
   flex-shrink: 0;
+  display: block;
+  vertical-align: middle;
   filter: drop-shadow(0 0 2px currentColor);
+  color: inherit;
+}
+
+.buttonIcon path {
+  fill: currentColor;
+}
+
+/* Ensure SVG icons are visible and styled correctly */
+.button svg.buttonIcon,
+.expandableButton svg.buttonIcon {
+  fill: currentColor !important;
+  color: inherit;
+}
+
+.button svg.buttonIcon path,
+.expandableButton svg.buttonIcon path {
+  fill: currentColor !important;
 }
 
 .buttonText {
@@ -269,34 +348,39 @@
 }
 
 .expandableButton {
-  background: rgba(0, 212, 255, 0.08);
-  border: 1px solid rgba(0, 212, 255, 0.15);
+  background: color-mix(in srgb, var(--palette-primary, #00bcf2) 8%, transparent);
+  border: 1px solid var(--palette-border, rgba(0, 212, 255, 0.15));
   border-radius: 8px;
   padding: 10px 12px;
-  color: #00d4ff;
+  color: var(--palette-primary, #00d4ff);
   font-family: "Courier New", monospace;
   font-size: 11px;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.15s ease, border-color 0.3s ease, background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
   display: flex;
   align-items: center;
   gap: 8px;
   min-height: 36px;
   position: relative;
-  overflow: hidden;
+  overflow: visible;
   width: 100%;
   text-align: left;
   list-style: none;
 }
 
+.expandableButton svg {
+  display: block;
+  flex-shrink: 0;
+}
+
 .expandableButton:hover {
-  background: rgba(0, 212, 255, 0.18);
-  border-color: #00d4ff;
-  box-shadow: 0 0 20px rgba(0, 212, 255, 0.3),
-    inset 0 0 10px rgba(0, 212, 255, 0.1);
+  background: color-mix(in srgb, var(--palette-primary, #00bcf2) 18%, transparent);
+  border-color: var(--palette-primary, #00d4ff);
+  box-shadow: 0 0 20px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #00bcf2) 30%, transparent)),
+    inset 0 0 10px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #00bcf2) 10%, transparent));
   transform: translateX(6px) scale(1.02);
-  color: #00ffff;
+  color: var(--palette-secondary, #00ffff);
 }
 
 .expandableButton::-webkit-details-marker {
@@ -306,9 +390,19 @@
 .expandIcon {
   width: 16px;
   height: 16px;
+  min-width: 16px;
+  min-height: 16px;
   fill: currentColor;
   margin-left: auto;
+  display: inline-block;
+  vertical-align: middle;
+  flex-shrink: 0;
   transition: transform 0.2s ease;
+  color: inherit;
+}
+
+.expandIcon path {
+  fill: currentColor;
 }
 
 details[open] .expandIcon {
@@ -336,13 +430,39 @@ details[open] .expandIcon {
   cursor: pointer;
   transition: all 0.15s ease;
   border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.subButtonIcon {
+  width: 12px;
+  height: 12px;
+  min-width: 12px;
+  min-height: 12px;
+  fill: currentColor;
   display: block;
+  flex-shrink: 0;
+  vertical-align: middle;
+  color: inherit;
+  transition: all 0.15s ease;
+  opacity: 0.75;
+}
+
+.subButtonIcon path {
+  fill: currentColor;
+}
+
+.subButton:hover .subButtonIcon {
+  opacity: 1;
+  transform: translateX(2px);
 }
 
 .subButton:hover {
-  color: #00d4ff;
-  background: rgba(0, 212, 255, 0.08);
+  color: var(--palette-primary, #00d4ff);
+  background: color-mix(in srgb, var(--palette-primary, #00bcf2) 8%, transparent);
   transform: translateX(4px);
+  transition: all 0.15s ease, color 0.3s ease, background-color 0.3s ease;
 }
 
 .subSectionHeader {
@@ -350,10 +470,11 @@ details[open] .expandIcon {
   font-size: 9px;
   letter-spacing: 1.2px;
   text-transform: uppercase;
-  color: rgba(0, 212, 255, 0.5);
+  color: color-mix(in srgb, var(--palette-primary, #00d4ff) 50%, transparent);
   font-weight: 600;
-  border-top: 1px solid rgba(0, 212, 255, 0.1);
+  border-top: 1px solid var(--palette-border, rgba(0, 212, 255, 0.1));
   margin-top: 8px;
+  transition: color 0.3s ease, border-color 0.3s ease;
 }
 
 .subSectionHeader:first-child {
@@ -382,8 +503,9 @@ details[open] .expandIcon {
 }
 
 .badgeCount {
-  background: rgba(0, 255, 136, 0.18);
-  color: rgba(0, 255, 136, 0.95);
+  background: color-mix(in srgb, var(--palette-secondary, #00ff88) 18%, transparent);
+  color: var(--palette-secondary, rgba(0, 255, 136, 0.95));
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* -----------------------------------------------------------------------------
@@ -392,8 +514,9 @@ details[open] .expandIcon {
 
 :global(body.theme-executive) .sidebar {
   background: rgba(8, 8, 16, 0.92);
-  border: 1px solid rgba(255, 215, 0, 0.32);
-  box-shadow: 0 28px 60px rgba(255, 215, 0, 0.22);
+  border: 1px solid var(--palette-border, rgba(255, 215, 0, 0.32));
+  box-shadow: 0 28px 60px var(--palette-primary-glow, rgba(255, 215, 0, 0.22));
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 :global(body.theme-executive) .sectionTitle {
@@ -412,7 +535,8 @@ details[open] .expandIcon {
     rgba(18, 20, 36, 0.92) 0%,
     rgba(10, 12, 24, 0.92) 100%
   );
-  border: 1px solid rgba(98, 0, 255, 0.32);
+  border: 1px solid var(--palette-border, rgba(98, 0, 255, 0.32));
+  transition: border-color 0.3s ease;
 }
 
 :global(body.theme-modern) .button {
@@ -423,8 +547,9 @@ details[open] .expandIcon {
 
 :global(body.theme-matrix) .sidebar {
   background: rgba(0, 6, 0, 0.95);
-  border: 1px solid rgba(57, 255, 20, 0.28);
-  color: rgba(57, 255, 20, 0.88);
+  border: 1px solid var(--palette-border, rgba(57, 255, 20, 0.28));
+  color: var(--palette-primary, rgba(57, 255, 20, 0.88));
+  transition: border-color 0.3s ease, color 0.3s ease;
 }
 
 :global(body.theme-matrix) .button {

@@ -158,6 +158,8 @@ export function SnakeGame({ onScoreUpdate, onGameEnd }: SnakeGameProps) {
 
     // Calculate new head position
     const head = snake[0];
+    if (!head) return; // Guard against empty snake
+    
     let newHead: Position;
 
     switch (direction) {

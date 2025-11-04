@@ -4,6 +4,7 @@ import { useCallback } from "react";
 import { useTerminal } from "@/providers/TerminalProvider";
 import { useYouTube } from "@/hooks/useYouTube";
 import styles from "../DashboardSidebar.module.css";
+import { getSubActionIcon } from "../utils/subActionIcons";
 
 /**
  * YouTube Player Section - Complete YouTube player controls
@@ -58,31 +59,36 @@ export function YouTubePlayerSection(): JSX.Element {
             className={styles.subButton}
             onClick={() => handleCommand("yt search bitcoin")}
           >
-            <span>→ ₿ Bitcoin Videos</span>
+            {getSubActionIcon("Bitcoin Videos")}
+            <span>Bitcoin Videos</span>
           </button>
           <button
             className={styles.subButton}
             onClick={() => handleCommand("yt search ethereum")}
           >
-            <span>→ Ξ Ethereum Videos</span>
+            {getSubActionIcon("Ethereum Videos")}
+            <span>Ethereum Videos</span>
           </button>
           <button
             className={styles.subButton}
             onClick={() => handleCommand("yt search crypto news")}
           >
-            <span>→ 📰 Crypto News</span>
+            {getSubActionIcon("Crypto News")}
+            <span>Crypto News</span>
           </button>
           <button
             className={styles.subButton}
             onClick={() => handleCommand("yt search web3 tutorial")}
           >
-            <span>→ 📚 Web3 Tutorials</span>
+            {getSubActionIcon("Web3 Tutorials")}
+            <span>Web3 Tutorials</span>
           </button>
           <button
             className={styles.subButton}
             onClick={() => handleCommand("yt search")}
           >
-            <span>→ 🔍 Custom Search</span>
+            {getSubActionIcon("Custom Search")}
+            <span>Custom Search</span>
           </button>
         </div>
       </details>
@@ -111,49 +117,57 @@ export function YouTubePlayerSection(): JSX.Element {
             className={styles.subButton}
             onClick={() => handleCommand("yt pause")}
           >
-            <span>→ ⏯️ Play/Pause</span>
+            {getSubActionIcon("Play/Pause")}
+            <span>Play/Pause</span>
           </button>
           <button
             className={styles.subButton}
             onClick={() => handleCommand("yt stop")}
           >
-            <span>→ ⏹️ Stop</span>
+            {getSubActionIcon("Stop")}
+            <span>Stop</span>
           </button>
           <button
             className={styles.subButton}
             onClick={() => handleCommand("yt next")}
           >
-            <span>→ ⏭️ Next</span>
+            {getSubActionIcon("Next")}
+            <span>Next</span>
           </button>
           <button
             className={styles.subButton}
             onClick={() => handleCommand("yt prev")}
           >
-            <span>→ ⏮️ Previous</span>
+            {getSubActionIcon("Previous")}
+            <span>Previous</span>
           </button>
           <button
             className={styles.subButton}
             onClick={() => handleCommand("yt volume up")}
           >
-            <span>→ 🔊 Volume Up</span>
+            {getSubActionIcon("Volume Up")}
+            <span>Volume Up</span>
           </button>
           <button
             className={styles.subButton}
             onClick={() => handleCommand("yt volume down")}
           >
-            <span>→ 🔉 Volume Down</span>
+            {getSubActionIcon("Volume Down")}
+            <span>Volume Down</span>
           </button>
           <button
             className={styles.subButton}
             onClick={() => handleCommand("yt mute")}
           >
-            <span>→ 🔇 Mute</span>
+            {getSubActionIcon("Mute")}
+            <span>Mute</span>
           </button>
           <button
             className={styles.subButton}
             onClick={() => handleCommand("yt unmute")}
           >
-            <span>→ 🔊 Unmute</span>
+            {getSubActionIcon("Mute")}
+            <span>Unmute</span>
           </button>
         </div>
       </details>

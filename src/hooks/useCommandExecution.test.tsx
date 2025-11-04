@@ -10,7 +10,6 @@ import { ViewModeProvider } from "@/providers/ViewModeProvider";
 import { GUIThemeProvider } from "@/providers/GUIThemeProvider";
 import { NewsReaderProvider } from "@/providers/NewsReaderProvider";
 import { GamesProvider } from "@/providers/GamesProvider";
-import { SpotifyProvider } from "@/providers/SpotifyProvider";
 import { YouTubeProvider } from "@/providers/YouTubeProvider";
 import { MultiChainProvider } from "@/providers/MultiChainProvider";
 import { WalletProvider } from "@/providers/WalletProvider";
@@ -36,13 +35,11 @@ const AllProviders: React.FC<{ children: React.ReactNode }> = ({
           <GUIThemeProvider>
             <NewsReaderProvider>
               <GamesProvider>
-                <SpotifyProvider>
-                  <YouTubeProvider>
-                    <MultiChainProvider>
-                      <WalletProvider>{children}</WalletProvider>
-                    </MultiChainProvider>
-                  </YouTubeProvider>
-                </SpotifyProvider>
+                <YouTubeProvider>
+                  <MultiChainProvider>
+                    <WalletProvider>{children}</WalletProvider>
+                  </MultiChainProvider>
+                </YouTubeProvider>
               </GamesProvider>
             </NewsReaderProvider>
           </GUIThemeProvider>

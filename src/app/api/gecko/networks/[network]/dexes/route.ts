@@ -8,7 +8,7 @@ import type { NextRequest } from "next/server";
 import { createSecureResponse } from "@/lib/middleware";
 import { config } from "@/lib/config";
 
-const RELAYER_URL = config.relayerUrl;
+const RELAYER_URL = config.RELAYER_URL;
 
 export async function GET(
   request: NextRequest,

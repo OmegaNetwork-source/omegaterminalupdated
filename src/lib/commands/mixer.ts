@@ -234,8 +234,5 @@ async function withdrawExecute(context: CommandContext): Promise<void> {
   context.log("🔐 Then submit the withdrawal transaction via MetaMask", "info");
 }
 
-function setupSpotifyHandlers(context: CommandContext): void {
-  // Placeholder for future Spotify integration
-}
 
 export const mixerCommands: Command[] = [mixerCommand];

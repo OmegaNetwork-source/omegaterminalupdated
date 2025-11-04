@@ -22,7 +22,6 @@ export const connectCommand: Command = {
   description: "Connect MetaMask wallet",
   category: "wallet",
   handler: async (context: CommandContext) => {
-    context.log("🌐 Opening multi-network selector…", "info");
     if (typeof window === "undefined") {
       context.log(
         "Environment does not support wallet connection (SSR).",
@@ -31,6 +30,8 @@ export const connectCommand: Command = {
       return;
     }
 
+    // Open network selector - this will show the modal
+    // The selector will handle all logging internally
     openNetworkSelector({
       log: context.log,
       logHtml: context.logHtml,

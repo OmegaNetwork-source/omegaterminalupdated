@@ -160,6 +160,14 @@ export function YouTubeProvider({ children }: { children: ReactNode }) {
       const apiKey = config.YOUTUBE_CONFIG.API_KEY;
       const maxResults = config.YOUTUBE_CONFIG.SEARCH_RESULTS_LIMIT;
 
+      // If no API key, show helpful message
+      if (!apiKey || apiKey.trim() === "") {
+        console.warn("[YouTube] API key not configured - search requires API key");
+        console.warn("[YouTube] Please set NEXT_PUBLIC_YOUTUBE_API_KEY in your .env.local file");
+        setSearchResults([]);
+        return;
+      }
+
       const response = await fetch(
         `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(
           query
@@ -167,7 +175,8 @@ export function YouTubeProvider({ children }: { children: ReactNode }) {
       );
 
       if (!response.ok) {
-        throw new Error("YouTube search failed");
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error?.message || "YouTube search failed");
       }
 
       const data = await response.json();
@@ -191,6 +200,7 @@ export function YouTubeProvider({ children }: { children: ReactNode }) {
     } catch (error) {
       console.error("[YouTube] Search failed:", error);
       setSearchResults([]);
+      throw error; // Re-throw so command can show error message
     }
   }, []);
 
@@ -200,12 +210,26 @@ export function YouTubeProvider({ children }: { children: ReactNode }) {
       const channelId = config.YOUTUBE_CONFIG.DEFAULT_CHANNEL_ID;
       const maxResults = config.YOUTUBE_CONFIG.SEARCH_RESULTS_LIMIT;
 
+      // If no API key, show helpful message but still allow player to work
+      if (!apiKey || apiKey.trim() === "") {
+        console.warn("[YouTube] API key not configured - default videos will not load");
+        console.warn("[YouTube] Player will still work, but search and channel videos require API key");
+        // Set empty results but don't throw error
+        setSearchResults([]);
+        setPlayerState((prev) => ({
+          ...prev,
+          playlist: [],
+        }));
+        return;
+      }
+
       const response = await fetch(
         `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${channelId}&order=date&type=video&maxResults=${maxResults}&key=${apiKey}`
       );
 
       if (!response.ok) {
-        throw new Error("Failed to fetch channel videos");
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error?.message || "Failed to fetch channel videos");
       }
 
       const data = await response.json();
@@ -230,6 +254,8 @@ export function YouTubeProvider({ children }: { children: ReactNode }) {
       );
     } catch (error) {
       console.error("[YouTube] Failed to fetch channel videos:", error);
+      // Set empty results on error so player can still work
+      setSearchResults([]);
     }
   }, []);
 
@@ -238,8 +264,44 @@ export function YouTubeProvider({ children }: { children: ReactNode }) {
   // ==========================================================================
 
   const playVideo = useCallback((videoId: string, index: number) => {
+    // Check if player exists and is ready
     if (!ytPlayerRef.current) {
-      console.warn("[YouTube] Player not initialized");
+      console.warn("[YouTube] Player not initialized - initializing now...");
+      // Try to initialize if API is ready
+      if (apiReadyRef.current && typeof window !== "undefined" && window.YT) {
+        // Find or create player container
+        const containerId = "youtube-player-iframe";
+        const container = document.getElementById(containerId);
+        if (container) {
+          try {
+            createPlayer(containerId);
+            // Wait a bit for player to initialize, then try again
+            setTimeout(() => {
+              if (ytPlayerRef.current) {
+                try {
+                  ytPlayerRef.current.loadVideoById(videoId);
+                  setPlayerState((prev) => ({
+                    ...prev,
+                    currentVideoId: videoId,
+                    currentIndex: index,
+                    isPlaying: true,
+                  }));
+                } catch (err) {
+                  console.error("[YouTube] Failed to play video after init:", err);
+                }
+              }
+            }, 500);
+          } catch (err) {
+            console.error("[YouTube] Failed to create player:", err);
+          }
+        }
+      }
+      return;
+    }
+
+    // Check if player has the required methods
+    if (typeof ytPlayerRef.current.loadVideoById !== "function") {
+      console.warn("[YouTube] Player not ready yet - methods not available");
       return;
     }
 
@@ -254,7 +316,7 @@ export function YouTubeProvider({ children }: { children: ReactNode }) {
     } catch (error) {
       console.error("[YouTube] Failed to play video:", error);
     }
-  }, []);
+  }, [createPlayer]);
 
   const togglePlayPause = useCallback(() => {
     if (!ytPlayerRef.current) return;

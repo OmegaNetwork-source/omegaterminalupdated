@@ -83,9 +83,11 @@ export function NewsReaderPanel() {
     return "Neutral";
   };
 
-  if (!readerState.isPanelOpen) {
-    return null;
-  }
+  // Panel is now conditionally rendered from DashboardStatsPanel
+  // Remove early return check since parent handles visibility
+  // if (!readerState.isPanelOpen) {
+  //   return null;
+  // }
 
   return (
     <div className={styles.panel}>

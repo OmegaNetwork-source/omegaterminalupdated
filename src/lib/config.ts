@@ -782,6 +782,7 @@ export const config: OmegaConfig = {
     "spotify next",
     "spotify prev",
     "spotify search",
+    "spotify playlists",
     "spotify close",
     "spotify help",
     "music",
@@ -877,6 +878,25 @@ export const config: OmegaConfig = {
     loadCapabilities: loadChainGPTCapabilities,
   },
 
+
+  /**
+   * YouTube Player Configuration
+   * YouTube IFrame API for video playback
+   * YouTube Data API v3 for search and channel videos
+   *
+   * Note: YouTube API key is optional but recommended for search functionality.
+   * Default API key provided for out-of-the-box functionality (matches vanilla version).
+   * Users can override with NEXT_PUBLIC_YOUTUBE_API_KEY env var.
+   * Get your own at https://console.cloud.google.com/apis/credentials
+   */
+  YOUTUBE_CONFIG: {
+    CLIENT_ID: process.env.NEXT_PUBLIC_YOUTUBE_CLIENT_ID || "119481701339-b4fm5sujtt2mjupu2rk1s2v749cess44.apps.googleusercontent.com", // Optional - not needed for basic playback
+    API_KEY: process.env.NEXT_PUBLIC_YOUTUBE_API_KEY || "AIzaSyCpz49l79hdPYN1VmREpPjylwlHmfki3S0", // Default key from vanilla version - can override with env var
+    SEARCH_RESULTS_LIMIT: 10,
+    DEFAULT_CHANNEL_ID: "UCrM7B7SL_g1edFOnmj-SDKg",
+    DEFAULT_CHANNEL_HANDLE: "@BloombergTechnology",
+    DEFAULT_CHANNEL_NAME: "Bloomberg Technology",
+  },
   /**
    * Spotify Player Configuration
    * OAuth 2.0 PKCE flow for secure authentication
@@ -885,8 +905,7 @@ export const config: OmegaConfig = {
    * IMPORTANT: You MUST set your own Spotify credentials:
    * 1. Create a Spotify app at https://developer.spotify.com/dashboard
    * 2. Set NEXT_PUBLIC_SPOTIFY_CLIENT_ID in .env.local
-   * 3. Set NEXT_PUBLIC_SPOTIFY_REDIRECT_URI in .env.local
-   * 4. Configure the redirect URI in your Spotify app settings
+   * 3. Configure the redirect URI in your Spotify app settings
    */
   SPOTIFY_CONFIG: {
     CLIENT_ID: process.env.NEXT_PUBLIC_SPOTIFY_CLIENT_ID || "", // No default - user must provide valid Spotify client ID
@@ -905,23 +924,7 @@ export const config: OmegaConfig = {
       "playlist-read-private",
     ],
     TOKEN_ENDPOINT: "https://accounts.spotify.com/api/token",
-  },
-
-  /**
-   * YouTube Player Configuration
-   * YouTube IFrame API for video playback
-   * YouTube Data API v3 for search and channel videos
-   *
-   * Note: YouTube API key is optional but recommended for search functionality.
-   * Get one at https://console.cloud.google.com/apis/credentials
-   */
-  YOUTUBE_CONFIG: {
-    CLIENT_ID: process.env.NEXT_PUBLIC_YOUTUBE_CLIENT_ID || "", // Optional - not needed for basic playback
-    API_KEY: process.env.NEXT_PUBLIC_YOUTUBE_API_KEY || "", // Optional but recommended for search
-    SEARCH_RESULTS_LIMIT: 10,
-    DEFAULT_CHANNEL_ID: "UCrM7B7SL_g1edFOnmj-SDKg",
-    DEFAULT_CHANNEL_HANDLE: "@BloombergTechnology",
-    DEFAULT_CHANNEL_NAME: "Bloomberg Technology",
+    API_BASE_URL: "https://api.spotify.com/v1",
   },
 };
 

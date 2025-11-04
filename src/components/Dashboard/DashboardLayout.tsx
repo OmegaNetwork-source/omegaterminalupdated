@@ -1,58 +1,10 @@
 "use client";
 
-import dynamic from "next/dynamic";
-import { Suspense } from "react";
 import { DashboardSidebar } from "./DashboardSidebar";
 import { DashboardStatsPanel } from "./DashboardStatsPanel";
 import { TerminalContainer } from "@/components/Terminal";
 import { useCustomizer } from "@/hooks/useCustomizer";
 import styles from "./DashboardLayout.module.css";
-import { MediaPanelLoadingSkeleton } from "@/components/LoadingSkeletons";
-import type { MediaPanelContainerProps } from "@/components/Media";
-
-const SpotifyPanel = dynamic(
-  () =>
-    import("@/components/Media").then((mod) => ({
-      default: mod.SpotifyPanel,
-    })),
-  {
-    ssr: false,
-    suspense: true,
-  }
-);
-
-const YouTubePanel = dynamic(
-  () =>
-    import("@/components/Media").then((mod) => ({
-      default: mod.YouTubePanel,
-    })),
-  {
-    ssr: false,
-    suspense: true,
-  }
-);
-
-const NewsReaderPanel = dynamic(
-  () =>
-    import("@/components/Media").then((mod) => ({
-      default: mod.NewsReaderPanel,
-    })),
-  {
-    ssr: false,
-    suspense: true,
-  }
-);
-
-const MediaPanelContainer = dynamic<MediaPanelContainerProps>(
-  () =>
-    import("@/components/Media").then((mod) => ({
-      default: mod.MediaPanelContainer,
-    })),
-  {
-    ssr: false,
-    suspense: true,
-  }
-);
 
 /**
  * DashboardLayout
@@ -80,14 +32,8 @@ export function DashboardLayout(): JSX.Element {
         <TerminalContainer />
       </main>
       {statsVisible && <DashboardStatsPanel />}
-      {/* Media panels are lazy loaded because they depend on heavy external SDKs. */}
-      <Suspense fallback={<MediaPanelLoadingSkeleton />}>
-        <MediaPanelContainer
-          SpotifyPanel={SpotifyPanel}
-          YouTubePanel={YouTubePanel}
-          NewsReaderPanel={NewsReaderPanel}
-        />
-      </Suspense>
+      {/* Media panels are now rendered INSIDE DashboardStatsPanel as sections */}
+      {/* This matches the vanilla version where panels are appended to .omega-stats */}
     </div>
   );
 }
