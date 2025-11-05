@@ -3,7 +3,8 @@
 /**
  * Bashido Game Component
  * 
- * Iframe-based terminal command typing game from bushidogame.solarstudios.co
+ * Iframe-based samurai code game from bushidogame.solarstudios.co
+ * Immersive text-based combat scenarios following "The Way of the Warrior"
  * Uniform design matching PerpsPanel and other media panels
  */
 
@@ -108,7 +109,7 @@ export function BashidoGame({ onScoreUpdate, onGameEnd }: BashidoGameProps) {
           <span className={styles.logo}>⚔️</span>
           <div>
             <h2 className={styles.title}>Bashido</h2>
-            <div className={styles.subtitle}>Terminal Command Mastery</div>
+            <div className={styles.subtitle}>The Way of the Warrior</div>
           </div>
         </div>
         <div className={styles.headerButtons}>
@@ -157,7 +158,7 @@ export function BashidoGame({ onScoreUpdate, onGameEnd }: BashidoGameProps) {
               ref={iframeRef}
               src={BASHIDO_GAME_URL}
               className={styles.iframe}
-              title="Bashido Terminal Command Game"
+              title="Bashido - The Way of the Warrior"
               allow="clipboard-read; clipboard-write; gamepad; fullscreen"
               allowFullScreen
               style={{
@@ -172,7 +173,7 @@ export function BashidoGame({ onScoreUpdate, onGameEnd }: BashidoGameProps) {
             <div className={styles.loading}>
               <div className={styles.spinner} />
               <div className={styles.loadingText}>Loading Bashido...</div>
-              <div className={styles.loadingSubtext}>Master the terminal, one command at a time</div>
+              <div className={styles.loadingSubtext}>Embrace the samurai code - Honor, loyalty, discipline</div>
             </div>
           )}
 
@@ -220,7 +221,7 @@ export function BashidoGame({ onScoreUpdate, onGameEnd }: BashidoGameProps) {
       </div>
 
       <div className={styles.footer}>
-        <span>ℹ️ Terminal Command Training Game</span>
+        <span>ℹ️ The Way of the Warrior - Samurai Code Game</span>
       </div>
     </div>
   );

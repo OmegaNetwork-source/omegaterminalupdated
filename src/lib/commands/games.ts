@@ -620,19 +620,20 @@ async function handlePlay(
         padding: 16px;
         margin-bottom: 12px;
       ">
-        <div style="color: var(--palette-secondary, #00ff88); font-weight: 600; margin-bottom: 12px; font-size: 14px;">⚔️ Bashido - Game Instructions:</div>
+        <div style="color: var(--palette-secondary, #00ff88); font-weight: 600; margin-bottom: 12px; font-size: 14px;">⚔️ Bashido - The Way of the Warrior:</div>
         <div style="color: var(--palette-text, #e0e0e0); font-size: 12px;">
-          <div style="margin-bottom: 6px;"><strong>Controls:</strong> Type terminal commands as fast as you can!</div>
-          <div style="margin-bottom: 6px;"><strong>Objective:</strong> Master terminal commands through speed and accuracy</div>
-          <div style="margin-bottom: 6px;"><strong>Features:</strong></div>
+          <div style="margin-bottom: 6px;"><strong>Concept:</strong> Immerse yourself in the ancient Japanese samurai code</div>
+          <div style="margin-bottom: 6px;"><strong>Objective:</strong> Engage in text-based combat scenarios and make strategic decisions</div>
+          <div style="margin-bottom: 6px;"><strong>Principles:</strong> Honor, loyalty, and discipline - the core of the samurai ethos</div>
+          <div style="margin-bottom: 6px;"><strong>Gameplay:</strong></div>
           <div style="margin-left: 12px; margin-bottom: 4px;">
-            • Real-time typing speed (WPM)<br/>
-            • Accuracy tracking<br/>
-            • Progressive difficulty<br/>
-            • Terminal command mastery
+            • Strategic terminal-based combat<br/>
+            • Interactive storytelling<br/>
+            • Historical samurai culture immersion<br/>
+            • Decisions that reflect warrior values
           </div>
           <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid color-mix(in srgb, var(--palette-border, rgba(0, 255, 136, 0.3)) 50%, transparent);">
-            <strong>💡 Tip:</strong> Practice regularly to improve your command typing speed!
+            <strong>💡 Tip:</strong> Embrace the way of the warrior - every decision reflects honor and discipline!
           </div>
         </div>
       </div>
@@ -935,11 +936,11 @@ async function handleScores(
                 ${game.name}
               </div>
               <div style="color: var(--palette-secondary, #00ff88); font-weight: 600;">
-                ${topScore.score.toLocaleString()}
+                ${topScore?.score.toLocaleString() || "0"}
               </div>
             </div>
             <div style="color: color-mix(in srgb, var(--palette-text, #ffffff) 60%, transparent); font-size: 11px;">
-              by ${topScore.username}
+              by ${topScore?.username || "N/A"}
             </div>
           </div>
         `;
