@@ -1,0 +1,262 @@
+/* Scoped styles for ravaged-planet - only apply within #ravaged-planet-root */
+/* This prevents global style leaks when integrated into Omega Terminal */
+
+#ravaged-planet-root * {
+  box-sizing: border-box;
+}
+
+/* Don't apply global body/html styles - they're scoped to the container */
+#ravaged-planet-root {
+  padding: 0;
+  margin: 0;
+  background: #000;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  font-family: 'Courier New', monospace;
+  cursor: default;
+  color: #fff;
+  position: relative;
+  isolation: isolate; /* Create new stacking context */
+}
+
+/* Make sure root and game-container can receive keyboard events */
+#ravaged-planet-root #root {
+  outline: none;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+#ravaged-planet-root #game-container {
+  width: 100%;
+  height: 100%;
+  position: relative; /* Changed from fixed to relative for modal compatibility */
+  top: 0;
+  left: 0;
+  overflow: hidden;
+  background: #000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1;
+}
+
+#ravaged-planet-root .panel-title {
+  font-size: 16px;
+  font-weight: bold;
+  color: #ffd700;
+  text-align: center;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #444;
+  text-shadow: 0 0 10px rgba(255,215,0,0.5);
+  flex-shrink: 0;
+}
+
+#ravaged-planet-root #player-roster {
+  flex: 1;
+}
+
+#ravaged-planet-root .player-item {
+  display: flex;
+  align-items: center;
+  padding: 8px;
+  margin-bottom: 6px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 4px;
+  transition: all 0.2s;
+  font-size: 11px;
+}
+
+#ravaged-planet-root .player-item:hover {
+  background: rgba(255,255,255,0.1);
+  border-color: rgba(255,255,255,0.3);
+}
+
+#ravaged-planet-root .player-item.current {
+  background: rgba(255,215,0,0.2);
+  border: 2px solid #ffd700;
+  box-shadow: 0 0 10px rgba(255,215,0,0.3);
+}
+
+#ravaged-planet-root .player-item.dead {
+  opacity: 0.4;
+  filter: grayscale(100%);
+}
+
+#ravaged-planet-root .color-box {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid;
+  margin-right: 10px;
+  flex-shrink: 0;
+}
+
+#ravaged-planet-root .player-info {
+  flex: 1;
+}
+
+#ravaged-planet-root .player-name {
+  font-weight: bold;
+  font-size: 12px;
+  margin-bottom: 3px;
+}
+
+#ravaged-planet-root .player-stats {
+  font-size: 10px;
+  color: #aaa;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  line-height: 1.3;
+}
+
+#ravaged-planet-root #player-status {
+  flex: 1;
+}
+
+#ravaged-planet-root .status-section {
+  margin-bottom: 12px;
+  padding: 10px;
+  background: rgba(0,0,0,0.3);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 4px;
+  font-size: 11px;
+}
+
+#ravaged-planet-root .status-label {
+  font-size: 13px;
+  font-weight: bold;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+#ravaged-planet-root .status-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 6px;
+  font-size: 10px;
+  line-height: 1.4;
+}
+
+#ravaged-planet-root .status-row strong {
+  color: #ffd700;
+}
+
+#ravaged-planet-root .wind-indicator {
+  font-size: 24px;
+  text-align: center;
+  color: #ffd700;
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+#ravaged-planet-root .status-placeholder {
+  text-align: center;
+  color: #666;
+  padding: 20px;
+}
+
+#ravaged-planet-root .health-bar-container {
+  margin-bottom: 15px;
+}
+
+#ravaged-planet-root .health-bar-label {
+  font-size: 11px;
+  color: #aaa;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+}
+
+#ravaged-planet-root .health-bar {
+  position: relative;
+  width: 100%;
+  height: 20px;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+#ravaged-planet-root .health-bar-fill {
+  height: 100%;
+  transition: width 0.3s ease;
+  position: relative;
+}
+
+#ravaged-planet-root .health-bar-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 10px;
+  font-weight: bold;
+  color: white;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+  z-index: 1;
+}
+
+#ravaged-planet-root canvas:not([data-menu]) {
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  z-index: 10;
+  box-shadow: 
+    0 0 50px rgba(0, 0, 0, 0.8),
+    inset 0 0 100px rgba(0, 0, 0, 0.3);
+  pointer-events: auto;
+}
+
+#ravaged-planet-root #game-canvas-wrapper {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+  background: #000;
+}
+
+#ravaged-planet-root canvas[data-menu] {
+  z-index: 1000;
+  pointer-events: auto;
+}
+
+#ravaged-planet-root .menu-action-buttons {
+  pointer-events: auto !important;
+}
+
+#ravaged-planet-root .menu-action-buttons button {
+  pointer-events: auto !important;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+#ravaged-planet-root .menu-action-buttons button:active {
+  transform: scale(0.95);
+}
+
+#ravaged-planet-root .menu-action-buttons button:hover {
+  transform: scale(1.05);
+  transition: transform 0.1s ease;
+}
+
+@font-face {
+  font-family: 'text';
+  src: url('/games/ravaged-planet/assets/font.ttf');
+}
+

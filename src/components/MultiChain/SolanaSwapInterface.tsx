@@ -135,37 +135,39 @@ export function SolanaSwapInterface(props: SolanaSwapInterfaceProps) {
 
   return (
     <div className={styles.container}>
-      <div className={styles.header}>🌟 Solana Token Swap (Jupiter)</div>
+      <div className={styles.header}>🟣 Solana Token Swap (Jupiter)</div>
 
       {/* From Token */}
       <div className={styles.tokenInput}>
         <label>From Token</label>
-        <input
-          type="text"
-          placeholder="Search token (e.g., SOL, BONK)"
-          value={fromSearchQuery}
-          onChange={(e) => setFromSearchQuery(e.target.value)}
-          className={styles.searchInput}
-        />
-        {fromSearchResults.length > 0 && (
-          <div className={styles.searchResults}>
-            {fromSearchResults.slice(0, 5).map((token) => (
-              <div
-                key={token.address}
-                className={styles.tokenResult}
-                onClick={() => {
-                  setFromToken(token);
-                  setFromSearchQuery(token.symbol);
-                  setFromSearchResults([]);
-                }}
-              >
-                <span className={styles.tokenSymbol}>{token.symbol}</span>
-                <span className={styles.tokenName}>{token.name}</span>
-                {token.verified && <span className={styles.verified}>✓</span>}
-              </div>
-            ))}
-          </div>
-        )}
+        <div style={{ position: "relative" }}>
+          <input
+            type="text"
+            placeholder="Search token (e.g., SOL, BONK)"
+            value={fromSearchQuery}
+            onChange={(e) => setFromSearchQuery(e.target.value)}
+            className={styles.searchInput}
+          />
+          {fromSearchResults.length > 0 && (
+            <div className={styles.searchResults}>
+              {fromSearchResults.slice(0, 5).map((token) => (
+                <div
+                  key={token.address}
+                  className={styles.tokenResult}
+                  onClick={() => {
+                    setFromToken(token);
+                    setFromSearchQuery(token.symbol);
+                    setFromSearchResults([]);
+                  }}
+                >
+                  <span className={styles.tokenSymbol}>{token.symbol}</span>
+                  <span className={styles.tokenName}>{token.name}</span>
+                  {token.verified && <span className={styles.verified}>✓</span>}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
         {fromToken && (
           <div className={styles.selectedToken}>
             Selected: {fromToken.symbol} - {fromToken.name}
@@ -188,32 +190,34 @@ export function SolanaSwapInterface(props: SolanaSwapInterfaceProps) {
       {/* To Token */}
       <div className={styles.tokenInput}>
         <label>To Token</label>
-        <input
-          type="text"
-          placeholder="Search token (e.g., USDC)"
-          value={toSearchQuery}
-          onChange={(e) => setToSearchQuery(e.target.value)}
-          className={styles.searchInput}
-        />
-        {toSearchResults.length > 0 && (
-          <div className={styles.searchResults}>
-            {toSearchResults.slice(0, 5).map((token) => (
-              <div
-                key={token.address}
-                className={styles.tokenResult}
-                onClick={() => {
-                  setToToken(token);
-                  setToSearchQuery(token.symbol);
-                  setToSearchResults([]);
-                }}
-              >
-                <span className={styles.tokenSymbol}>{token.symbol}</span>
-                <span className={styles.tokenName}>{token.name}</span>
-                {token.verified && <span className={styles.verified}>✓</span>}
-              </div>
-            ))}
-          </div>
-        )}
+        <div style={{ position: "relative" }}>
+          <input
+            type="text"
+            placeholder="Search token (e.g., USDC)"
+            value={toSearchQuery}
+            onChange={(e) => setToSearchQuery(e.target.value)}
+            className={styles.searchInput}
+          />
+          {toSearchResults.length > 0 && (
+            <div className={styles.searchResults}>
+              {toSearchResults.slice(0, 5).map((token) => (
+                <div
+                  key={token.address}
+                  className={styles.tokenResult}
+                  onClick={() => {
+                    setToToken(token);
+                    setToSearchQuery(token.symbol);
+                    setToSearchResults([]);
+                  }}
+                >
+                  <span className={styles.tokenSymbol}>{token.symbol}</span>
+                  <span className={styles.tokenName}>{token.name}</span>
+                  {token.verified && <span className={styles.verified}>✓</span>}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
         {toToken && (
           <div className={styles.selectedToken}>
             Selected: {toToken.symbol} - {toToken.name}

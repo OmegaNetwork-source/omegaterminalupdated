@@ -1,0 +1,54 @@
+/**
+ * Scoped styles for ravaged-planet game
+ * Prevents global style leaks when integrated into Omega Terminal
+ */
+
+/* Only apply styles within the ravaged-planet container */
+#ravaged-planet-root,
+#ravaged-planet-root * {
+  box-sizing: border-box;
+}
+
+#ravaged-planet-root {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+  background: #000;
+  font-family: 'Courier New', monospace;
+  color: #fff;
+}
+
+#ravaged-planet-root #root {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+#ravaged-planet-root #game-container {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  overflow: hidden;
+  background: #000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1;
+}
+
+/* Rest of styles from original index.css, but scoped */
+#ravaged-planet-root .panel-title {
+  font-size: 16px;
+  font-weight: bold;
+  color: #fff;
+  margin-bottom: 10px;
+}
+
+/* Add more scoped styles as needed from the original index.css */
+
+
+

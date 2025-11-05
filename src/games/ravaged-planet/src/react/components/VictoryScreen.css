@@ -1,0 +1,304 @@
+.victory-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  min-width: 100vw;
+  min-height: 100vh;
+  background: color-mix(in srgb, var(--palette-bg, #0a0a0f) 95%, transparent);
+  z-index: 10000 !important; /* Very high z-index to ensure it's above everything */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  pointer-events: auto;
+  opacity: 0;
+  transition: opacity 0.5s ease-in;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.victory-screen.show {
+  opacity: 1;
+}
+
+.victory-content {
+  text-align: center;
+  animation: slideInScale 0.8s ease-out;
+  max-width: 600px;
+  width: 90%;
+}
+
+.victory-title {
+  font-family: 'Courier New', monospace;
+  font-size: 64px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  text-shadow: 0 0 30px currentColor;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.victory-title.victory {
+  color: var(--palette-secondary, #00ff88);
+  animation: victoryPulse 2s ease-in-out infinite;
+}
+
+.victory-title.defeat {
+  color: var(--palette-error, #ff4d4f);
+}
+
+.victory-subtitle {
+  font-family: 'Courier New', monospace;
+  font-size: 24px;
+  color: var(--palette-muted, color-mix(in srgb, var(--palette-text, #ffffff) 60%, transparent));
+  margin-bottom: 40px;
+}
+
+.victory-winner {
+  margin: 40px 0;
+}
+
+.winner-name {
+  font-family: 'Courier New', monospace;
+  font-size: 36px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  text-shadow: 0 0 20px currentColor;
+}
+
+.winner-stats {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  margin-top: 20px;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.stat-label {
+  font-size: 14px;
+  color: var(--palette-muted, color-mix(in srgb, var(--palette-text, #ffffff) 60%, transparent));
+}
+
+.stat-value {
+  font-size: 24px;
+  font-weight: bold;
+  color: var(--palette-text, #ffffff);
+}
+
+.final-leaderboard {
+  margin: 40px 0;
+  background: color-mix(in srgb, var(--palette-surface, #111218) 50%, transparent);
+  border: 2px solid var(--palette-border, color-mix(in srgb, var(--palette-secondary, #00ff88) 20%, transparent));
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.leaderboard-title {
+  font-family: 'Courier New', monospace;
+  font-size: 20px;
+  font-weight: bold;
+  color: var(--palette-secondary, #00ff88);
+  margin-bottom: 16px;
+  text-shadow: 0 0 10px var(--palette-secondary-glow, color-mix(in srgb, var(--palette-secondary, #00ff88) 50%, transparent));
+}
+
+.leaderboard-entry {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  margin-bottom: 8px;
+  background: color-mix(in srgb, var(--palette-surface, #111218) 50%, transparent);
+  border-radius: 4px;
+  transition: all 0.3s;
+}
+
+.leaderboard-entry:hover {
+  background: color-mix(in srgb, var(--palette-surface, #111218) 70%, transparent);
+}
+
+.leaderboard-entry.winner {
+  border: 2px solid var(--palette-secondary, #00ff88);
+  box-shadow: 0 0 20px var(--palette-secondary-glow, color-mix(in srgb, var(--palette-secondary, #00ff88) 50%, transparent));
+  background: color-mix(in srgb, var(--palette-secondary, #00ff88) 10%, transparent);
+}
+
+.leaderboard-entry.dead {
+  opacity: 0.5;
+  filter: grayscale(50%);
+}
+
+.entry-rank {
+  width: 40px;
+  font-weight: bold;
+  color: var(--palette-muted, color-mix(in srgb, var(--palette-text, #ffffff) 60%, transparent));
+}
+
+.entry-color {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  margin-right: 12px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.entry-name {
+  flex: 1;
+  text-align: left;
+  font-weight: bold;
+}
+
+.entry-score {
+  width: 80px;
+  text-align: right;
+  font-weight: bold;
+  color: var(--palette-secondary, #00ff88);
+}
+
+.entry-kills {
+  width: 60px;
+  text-align: right;
+  color: var(--palette-error, #ff4d4f);
+}
+
+.victory-instruction {
+  margin-top: 40px;
+  font-family: 'Courier New', monospace;
+  font-size: 20px;
+  color: var(--palette-secondary, #00ff88);
+  font-weight: bold;
+  text-shadow: 0 0 10px var(--palette-secondary-glow, color-mix(in srgb, var(--palette-secondary, #00ff88) 50%, transparent));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.auto-next-level-countdown {
+  font-size: 16px;
+  color: var(--palette-success, #16c782);
+  font-weight: 600;
+  text-shadow: 0 0 15px var(--palette-success-glow, color-mix(in srgb, var(--palette-success, #16c782) 80%, transparent));
+  animation: countdownPulse 1s ease-in-out infinite;
+  margin-top: 8px;
+  padding: 8px 16px;
+  background: color-mix(in srgb, var(--palette-success, #16c782) 15%, transparent);
+  border: 1px solid var(--palette-success-glow, color-mix(in srgb, var(--palette-success, #16c782) 40%, transparent));
+  border-radius: 6px;
+}
+
+@keyframes countdownPulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
+}
+
+.victory-buttons {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  margin-top: 30px;
+  flex-wrap: wrap;
+}
+
+.victory-button {
+  padding: 14px 28px;
+  font-family: 'Courier New', monospace;
+  font-size: 16px;
+  font-weight: bold;
+  border: 2px solid;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s;
+  background: color-mix(in srgb, var(--palette-bg, #0a0a0f) 70%, transparent);
+  pointer-events: auto;
+  text-transform: uppercase;
+}
+
+.victory-button.next-level {
+  color: var(--palette-success, #16c782);
+  border-color: var(--palette-success, #16c782);
+  box-shadow: 0 0 15px var(--palette-success-glow, color-mix(in srgb, var(--palette-success, #16c782) 50%, transparent));
+}
+
+.victory-button.next-level:hover {
+  background: color-mix(in srgb, var(--palette-success, #16c782) 20%, transparent);
+  box-shadow: 0 0 25px var(--palette-success-glow, color-mix(in srgb, var(--palette-success, #16c782) 80%, transparent));
+  transform: scale(1.05);
+}
+
+.victory-button.restart {
+  color: var(--palette-secondary, #00ff88);
+  border-color: var(--palette-secondary, #00ff88);
+  box-shadow: 0 0 15px var(--palette-secondary-glow, color-mix(in srgb, var(--palette-secondary, #00ff88) 50%, transparent));
+}
+
+.victory-button.restart:hover {
+  background: color-mix(in srgb, var(--palette-secondary, #00ff88) 20%, transparent);
+  box-shadow: 0 0 25px var(--palette-secondary-glow, color-mix(in srgb, var(--palette-secondary, #00ff88) 80%, transparent));
+  transform: scale(1.05);
+}
+
+.victory-button.menu {
+  color: var(--palette-muted, color-mix(in srgb, var(--palette-text, #ffffff) 60%, transparent));
+  border-color: var(--palette-border, color-mix(in srgb, var(--palette-text, #ffffff) 30%, transparent));
+  box-shadow: 0 0 10px var(--palette-border, color-mix(in srgb, var(--palette-text, #ffffff) 30%, transparent));
+}
+
+.victory-button.menu:hover {
+  background: color-mix(in srgb, var(--palette-surface, #111218) 50%, transparent);
+  box-shadow: 0 0 15px var(--palette-border, color-mix(in srgb, var(--palette-text, #ffffff) 50%, transparent));
+  transform: scale(1.05);
+}
+
+@keyframes slideInScale {
+  from {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+@keyframes victoryPulse {
+  0%, 100% {
+    transform: scale(1);
+    text-shadow: 0 0 30px var(--palette-secondary, #00ff88);
+  }
+  50% {
+    transform: scale(1.1);
+    text-shadow: 
+      0 0 50px var(--palette-secondary, #00ff88),
+      0 0 80px var(--palette-secondary-glow, color-mix(in srgb, var(--palette-secondary, #00ff88) 80%, transparent));
+  }
+}
+
+@keyframes blink {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
