@@ -1,0 +1,186 @@
+.menu-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1000;
+  pointer-events: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* Background is provided by game canvas showing terrain/sky */
+  background: transparent;
+}
+
+.menu-background-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.menu-content {
+  position: relative;
+  width: 600px;
+  max-width: 90vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 40px;
+  padding: 40px;
+  background: rgba(0, 0, 0, 0.75);
+  border: 3px solid rgba(255, 215, 0, 0.4);
+  box-shadow: 
+    0 0 30px rgba(0, 0, 0, 0.8),
+    inset 0 0 20px rgba(255, 215, 0, 0.1);
+  backdrop-filter: blur(2px);
+}
+
+.menu-header {
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.menu-title {
+  font-family: 'Courier New', monospace;
+  font-size: 42px;
+  font-weight: bold;
+  color: #ffd700;
+  text-shadow: 
+    0 0 10px rgba(255, 215, 0, 0.8),
+    0 0 20px rgba(255, 215, 0, 0.4),
+    0 2px 4px rgba(0, 0, 0, 0.8);
+  letter-spacing: 4px;
+  margin-bottom: 8px;
+}
+
+.menu-subtitle {
+  font-family: 'Courier New', monospace;
+  font-size: 18px;
+  font-weight: bold;
+  color: rgba(255, 255, 255, 0.7);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+  letter-spacing: 2px;
+}
+
+.menu-buttons-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  align-items: center;
+}
+
+.menu-button {
+  width: 100%;
+  max-width: 480px;
+  height: 56px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.9);
+  font-family: 'Courier New', monospace;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  pointer-events: auto;
+  user-select: none;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.menu-button:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.35);
+  color: #fff;
+  transform: translateX(4px);
+}
+
+.menu-button:active {
+  transform: translateX(2px) scale(0.98);
+}
+
+.menu-button.selected {
+  background: rgba(255, 215, 0, 0.15);
+  border-color: #ffd700;
+  border-width: 3px;
+  color: #ffd700;
+  box-shadow: 
+    0 0 15px rgba(255, 215, 0, 0.4),
+    inset 0 0 10px rgba(255, 215, 0, 0.1);
+  transform: translateX(8px);
+}
+
+.menu-button.selected::before {
+  content: '▶';
+  position: absolute;
+  left: 16px;
+  font-size: 14px;
+  color: #ffd700;
+  text-shadow: 0 0 8px rgba(255, 215, 0, 0.8);
+}
+
+.menu-footer {
+  width: 100%;
+  margin-top: 10px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.menu-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  font-family: 'Courier New', monospace;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.5);
+  flex-wrap: wrap;
+}
+
+.control-key {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 4px 8px;
+  border-radius: 3px;
+  font-weight: bold;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.control-text {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.control-separator {
+  color: rgba(255, 255, 255, 0.3);
+  margin: 0 4px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .menu-content {
+    width: 90vw;
+    padding: 30px 20px;
+    gap: 30px;
+  }
+
+  .menu-title {
+    font-size: 32px;
+  }
+
+  .menu-subtitle {
+    font-size: 14px;
+  }
+
+  .menu-button {
+    height: 50px;
+    font-size: 14px;
+  }
+}

@@ -1,0 +1,49 @@
+.kill-feed {
+  position: fixed;
+  top: 100px;
+  right: 20px;
+  width: 300px;
+  z-index: 999;
+  pointer-events: none;
+}
+
+.kill-feed-entry {
+  background: rgba(0, 0, 0, 0.8);
+  border-left: 3px solid #ff4444;
+  padding: 8px 12px;
+  margin-bottom: 8px;
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+  color: #fff;
+  animation: slideInRight 0.3s ease-out;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+.kill-feed-killer {
+  color: #4ade80;
+  font-weight: bold;
+}
+
+.kill-feed-weapon {
+  color: #ffd700;
+  margin: 0 6px;
+}
+
+.kill-feed-victim {
+  color: #ff4444;
+  font-weight: bold;
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+
+
