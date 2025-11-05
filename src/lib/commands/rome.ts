@@ -277,6 +277,237 @@ async function checkRomeBalance(context: CommandContext): Promise<void> {
 }
 
 /**
+ * Create Rome Token
+ */
+async function createRomeToken(
+  context: CommandContext,
+  args: string[]
+): Promise<void> {
+  if (
+    typeof window === "undefined" ||
+    !window.ethereum ||
+    !(window.ethereum as any).selectedAddress
+  ) {
+    context.log(
+      "❌ Please connect your wallet first using: rome connect",
+      "error"
+    );
+    return;
+  }
+
+  if (args.length < 3) {
+    context.log(
+      "❌ Usage: rome token create <name> <symbol> <supply> [decimals]",
+      "error"
+    );
+    context.log("Example: rome token create RomeCoin ROME 1000000 18", "info");
+    return;
+  }
+
+  try {
+    const name = args[0];
+    const symbol = args[1];
+    const supply = args[2];
+    const decimals = args[3] ? parseInt(args[3]) : 18;
+
+    // Check if we're on Rome Network
+    const chainId = await window.ethereum.request({
+      method: "eth_chainId",
+    });
+
+    if (chainId !== ROME_CONFIG.chainId) {
+      context.log(
+        "❌ Please connect to Rome Network first using: rome connect",
+        "error"
+      );
+      return;
+    }
+
+    context.log("🏛️ Creating Rome Token...", "info");
+    context.log(`Name: ${name}`, "output");
+    context.log(`Symbol: ${symbol}`, "output");
+    context.log(`Supply: ${supply}`, "output");
+    context.log(`Decimals: ${decimals}`, "output");
+
+    const { BrowserProvider } = await import("ethers");
+    const provider = new BrowserProvider(window.ethereum);
+    const signer = await provider.getSigner();
+
+    const factory = new Contract(FACTORY_ADDRESS, FACTORY_ABI, signer);
+
+    // Get creation fee
+    const creationFee = await factory.creationFee();
+    context.log(`Creation Fee: ${formatEther(creationFee)} RSOL`, "output");
+
+    // Parse supply with decimals
+    const totalSupply = parseUnits(supply, decimals);
+
+    // Create token
+    const tx = await factory.createToken(name, symbol, totalSupply, decimals, {
+      value: creationFee,
+    });
+
+    context.log(`✅ Token creation submitted! Hash: ${tx.hash}`, "success");
+    context.log("⏳ Waiting for confirmation...", "info");
+
+    const receipt = await tx.wait();
+
+    // Try to extract token address from events
+    let tokenAddress: string | null = null;
+    if (receipt.logs && receipt.logs.length > 0) {
+      for (const log of receipt.logs) {
+        try {
+          const parsed = factory.interface.parseLog(log);
+          if (parsed && parsed.name === "TokenCreated") {
+            tokenAddress = parsed.args[0]; // tokenAddress is first arg
+            break;
+          }
+        } catch {
+          // Continue to next log
+        }
+      }
+    }
+
+    context.log("", "output");
+    if (tokenAddress) {
+      context.log("🎉 Your Rome token is ready!", "success");
+      context.log(`Token Address: ${tokenAddress}`, "output");
+      context.logHtml(
+        `<a href="${ROME_CONFIG.blockExplorerUrls[0]}/address/${tokenAddress}" target="_blank" style="color:#00d4ff">🔍 View on Explorer</a>`
+      );
+    } else {
+      context.log("✅ Token created successfully!", "success");
+      context.log(`Transaction: ${receipt.transactionHash}`, "output");
+      context.logHtml(
+        `<a href="${ROME_CONFIG.blockExplorerUrls[0]}/tx/${receipt.transactionHash}" target="_blank" style="color:#00d4ff">🔍 View on Explorer</a>`
+      );
+    }
+  } catch (error: any) {
+    context.log(`❌ Failed to create token: ${error.message}`, "error");
+    if (error.message.includes("user rejected")) {
+      context.log("Transaction was rejected by user.", "warning");
+    }
+  }
+}
+
+/**
+ * Register Rome ENS Name
+ */
+async function registerRomeENS(
+  context: CommandContext,
+  name: string | undefined
+): Promise<void> {
+  if (!name) {
+    context.log("❌ Usage: rome ens register <name>", "error");
+    context.log("Example: rome ens register myname", "info");
+    return;
+  }
+
+  if (
+    typeof window === "undefined" ||
+    !window.ethereum ||
+    !(window.ethereum as any).selectedAddress
+  ) {
+    context.log(
+      "❌ Please connect your wallet first using: rome connect",
+      "error"
+    );
+    return;
+  }
+
+  try {
+    // Check if we're on Rome Network
+    const chainId = await window.ethereum.request({
+      method: "eth_chainId",
+    });
+
+    if (chainId !== ROME_CONFIG.chainId) {
+      context.log(
+        "❌ Please connect to Rome Network first using: rome connect",
+        "error"
+      );
+      return;
+    }
+
+    context.log(`🏛️ Registering Rome ENS name: ${name}.rome...`, "info");
+
+    const { BrowserProvider } = await import("ethers");
+    const provider = new BrowserProvider(window.ethereum);
+    const signer = await provider.getSigner();
+
+    const registry = new Contract(REGISTRY_ADDRESS, REGISTRY_ABI, signer);
+
+    // Check if available
+    const isAvailable = await registry.isUsernameAvailable(name);
+    if (!isAvailable) {
+      context.log(`❌ Name ${name}.rome is already taken`, "error");
+      return;
+    }
+
+    // Get registration fee
+    const registrationFee = await registry.registrationFee();
+    context.log(`Registration Fee: ${formatEther(registrationFee)} RSOL`, "output");
+
+    // Register
+    const tx = await registry.registerUsername(name, {
+      value: registrationFee,
+    });
+
+    context.log(`✅ Registration submitted! Hash: ${tx.hash}`, "success");
+    context.log("⏳ Waiting for confirmation...", "info");
+
+    await tx.wait();
+    context.log(`✅ Name registered: ${name}.rome`, "success");
+    context.logHtml(
+      `<a href="${ROME_CONFIG.blockExplorerUrls[0]}/tx/${tx.hash}" target="_blank" style="color:#00d4ff">🔍 View on Explorer</a>`
+    );
+  } catch (error: any) {
+    context.log(`❌ Registration failed: ${error.message}`, "error");
+    if (error.message.includes("user rejected")) {
+      context.log("Transaction was rejected by user.", "warning");
+    }
+  }
+}
+
+/**
+ * Resolve Rome ENS Name
+ */
+async function resolveRomeENS(
+  context: CommandContext,
+  name: string | undefined
+): Promise<void> {
+  if (!name) {
+    context.log("❌ Usage: rome ens resolve <name>", "error");
+    context.log("Example: rome ens resolve myname", "info");
+    return;
+  }
+
+  try {
+    context.log(`🏛️ Resolving Rome ENS name: ${name}.rome...`, "info");
+
+    const { JsonRpcProvider } = await import("ethers");
+    const provider = new JsonRpcProvider(ROME_CONFIG.rpcUrls[0]);
+
+    const registry = new Contract(REGISTRY_ADDRESS, REGISTRY_ABI, provider);
+
+    const info = await registry.getUsernameInfo(name);
+    const owner = info.usernameOwner;
+
+    if (owner && owner !== "0x0000000000000000000000000000000000000000") {
+      context.log(`✅ ${name}.rome resolves to: ${owner}`, "success");
+      context.logHtml(
+        `<span style="font-family: monospace; cursor: pointer;" onclick="navigator.clipboard.writeText('${owner}'); this.nextElementSibling.style.display='inline';">${owner}</span><span style="display: none; color: #00ff88; margin-left: 8px;">✓ Copied!</span>`
+      );
+    } else {
+      context.log(`❌ Name not found: ${name}.rome`, "error");
+      context.log("💡 This ENS name has not been registered yet", "info");
+    }
+  } catch (error: any) {
+    context.log(`❌ Resolve failed: ${error.message}`, "error");
+  }
+}
+
+/**
  * Generate Rome Wallet
  */
 async function generateRomeWallet(context: CommandContext): Promise<void> {
@@ -292,10 +523,16 @@ async function generateRomeWallet(context: CommandContext): Promise<void> {
     context.log("✅ Rome wallet generated successfully!", "success");
     context.log("", "output");
     context.log("📋 WALLET DETAILS:", "info");
-    context.log(`🏛️ Address: ${wallet.address}`, "output");
-    context.log(`🔑 Private Key: ${wallet.privateKey}`, "output");
+    context.logHtml(
+      `<b>Address:</b> <span class="copyable" style="cursor:pointer;color:#00d4ff" onclick="navigator.clipboard.writeText('${wallet.address}').then(() => alert('✅ Address copied!'))">${wallet.address}</span>`
+    );
+    context.logHtml(
+      `<b>Private Key:</b> <span class="copyable" style="cursor:pointer;color:#ff6b6b" onclick="navigator.clipboard.writeText('${wallet.privateKey}').then(() => alert('✅ Private key copied!'))">${wallet.privateKey}</span>`
+    );
     if (wallet.mnemonic) {
-      context.log(`📧 Mnemonic: ${wallet.mnemonic.phrase}`, "output");
+      context.logHtml(
+        `<b>Mnemonic:</b> <span class="copyable" style="cursor:pointer;color:#00d4ff" onclick="navigator.clipboard.writeText('${wallet.mnemonic.phrase}').then(() => alert('✅ Mnemonic copied!'))">${wallet.mnemonic.phrase}</span>`
+      );
     }
     context.log("", "output");
     context.log("⚠️  SECURITY WARNING: Save these details securely!", "error");
@@ -407,28 +644,33 @@ export const romeCommand: Command = {
         break;
 
       case "token":
-        context.log("🏛️ Rome Token Factory", "info");
-        context.log("═══════════════════════", "output");
-        context.log("", "output");
-        context.log("📋 Token creation requires:", "info");
-        context.log("  1. Connection to Rome Network (rome connect)", "output");
-        context.log("  2. RSOL for creation fee", "output");
-        context.log("", "output");
-        context.log("💡 Use the 'create' command for token creation", "info");
-        context.log("   It supports all networks including Rome!", "success");
+        if (args[2] === "create") {
+          await createRomeToken(context, args.slice(3));
+        } else {
+          context.log("🏛️ Rome Token Factory", "info");
+          context.log("═══════════════════════", "output");
+          context.log("", "output");
+          context.log("Usage: rome token create <name> <symbol> <supply> [decimals]", "info");
+          context.log("", "output");
+          context.log("Example: rome token create RomeCoin ROME 1000000 18", "output");
+        }
         break;
 
       case "ens":
-        context.log("🏛️ Rome ENS System", "info");
-        context.log("═══════════════════════", "output");
-        context.log("", "output");
-        context.log("📋 ENS features:", "info");
-        context.log("  • Register .rome usernames", "output");
-        context.log("  • Resolve names to addresses", "output");
-        context.log("  • Transfer ownership", "output");
-        context.log("", "output");
-        context.log("💡 Connect to Rome Network first:", "info");
-        context.log("   rome connect", "success");
+        if (args[2] === "register") {
+          await registerRomeENS(context, args[3]);
+        } else if (args[2] === "resolve") {
+          await resolveRomeENS(context, args[3]);
+        } else {
+          context.log("🏛️ Rome ENS System", "info");
+          context.log("═══════════════════════", "output");
+          context.log("", "output");
+          context.log("📋 ENS Commands:", "info");
+          context.log("  rome ens register <name>  - Register a .rome username", "output");
+          context.log("  rome ens resolve <name>   - Resolve name to address", "output");
+          context.log("", "output");
+          context.log("💡 Connect to Rome Network first: rome connect", "info");
+        }
         break;
 
       case "send":
@@ -447,16 +689,22 @@ export const romeCommand: Command = {
         break;
 
       case "nft":
-        context.log("🏛️ Rome NFT System", "info");
-        context.log("═══════════════════════", "output");
-        context.log("", "output");
-        context.log("📋 NFT features:", "info");
-        context.log("  • Mint NFTs on Rome Network", "output");
-        context.log("  • Upload metadata and images", "output");
-        context.log("  • Low minting fees", "output");
-        context.log("", "output");
-        context.log("💡 Use the 'omega mint' command", "info");
-        context.log("   It supports Rome Network!", "success");
+        if (args[2] === "mint") {
+          context.log("🏛️ Rome NFT Minting", "info");
+          context.log("", "output");
+          context.log("💡 Use the 'nft mint' command to mint NFTs on Rome Network", "info");
+          context.log("   Make sure you're connected to Rome Network first: rome connect", "success");
+          context.log("", "output");
+          context.log("The NFT minting system supports Rome Network!", "output");
+        } else {
+          context.log("🏛️ Rome NFT System", "info");
+          context.log("═══════════════════════", "output");
+          context.log("", "output");
+          context.log("📋 NFT Commands:", "info");
+          context.log("  rome nft mint  - Mint NFT on Rome Network", "output");
+          context.log("", "output");
+          context.log("💡 Use 'nft mint' command - it supports Rome Network!", "info");
+        }
         break;
 
       default:

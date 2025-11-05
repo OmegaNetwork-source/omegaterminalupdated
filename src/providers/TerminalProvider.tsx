@@ -24,6 +24,18 @@ export function TerminalProvider({ children }: { children: ReactNode }) {
   // If any provider is missing, React will throw and error boundary will catch it
   const terminal = useCommandExecution();
 
+  // Expose executeCommand to window for external access (e.g., network selector)
+  React.useEffect(() => {
+    if (typeof window !== "undefined") {
+      (window as any).__omegaExecuteCommand = terminal.executeCommand;
+    }
+    return () => {
+      if (typeof window !== "undefined") {
+        delete (window as any).__omegaExecuteCommand;
+      }
+    };
+  }, [terminal.executeCommand]);
+
   return (
     <TerminalContext.Provider value={terminal}>
       {children}

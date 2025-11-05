@@ -12,6 +12,47 @@ import styles from "./DashboardTerminalHeader.module.css";
 import { useSoundEffects } from "@/hooks/useSoundEffects";
 import { useWallet } from "@/hooks/useWallet";
 
+/**
+ * Get network icon based on chainId or network name
+ */
+function getNetworkIcon(chainId: number | null, networkName: string | null): string {
+  if (chainId) {
+    const iconMap: Record<number, string> = {
+      1: "⟠", // Ethereum
+      56: "🟡", // BNB Smart Chain
+      137: "🟣", // Polygon
+      42161: "🔵", // Arbitrum
+      10: "🔴", // Optimism
+      8453: "🔷", // Base
+      1313161256: "Ω", // Omega Network
+      121212: "🏛️", // Rome Protocol
+      935: "⚖️", // FAIR Testnet
+      120000: "🔷", // Monad
+    };
+    return iconMap[chainId] || "🌐";
+  }
+  
+  if (networkName) {
+    const nameMap: Record<string, string> = {
+      "Ethereum": "⟠",
+      "BNB Smart Chain": "🟡",
+      "Polygon": "🟣",
+      "Arbitrum One": "🔵",
+      "Optimism": "🔴",
+      "Base": "🔷",
+      "Omega Network": "Ω",
+      "Rome Protocol": "🏛️",
+      "FAIR Testnet": "⚖️",
+      "Monad": "🔷",
+      "NEAR Protocol": "🔷",
+      "Solana": "◎",
+    };
+    return nameMap[networkName] || "🌐";
+  }
+  
+  return "🌐";
+}
+
 interface DashboardTerminalHeaderProps {
   onThemeCycle: () => void;
   onPaletteCycle: () => void;
@@ -74,11 +115,13 @@ export function DashboardTerminalHeader({
         )}
 
         {/* Network status display - if connected */}
-        {wallet.state.isConnected && (
+        {wallet.state.isConnected && wallet.state.networkName && (
           <div className={styles.statusIndicator}>
             <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-              <div className={styles.networkLogo}>Ω</div>
-              <span>Omega Network</span>
+              <div className={styles.networkLogo}>
+                {getNetworkIcon(wallet.state.chainId, wallet.state.networkName)}
+              </div>
+              <span>{wallet.state.networkName}</span>
             </div>
           </div>
         )}

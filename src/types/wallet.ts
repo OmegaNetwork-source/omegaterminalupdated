@@ -33,6 +33,8 @@ export interface WalletState {
   balance: string | null;
   /** Current chain ID */
   chainId: number | null;
+  /** Current network name (e.g., "Omega Network", "Ethereum", "Rome Protocol") */
+  networkName: string | null;
   /** Error message if connection or operation failed */
   error: string | null;
 }

@@ -2,6 +2,25 @@
 
 import dynamic from "next/dynamic";
 import { useCallback, useEffect, useMemo, useState, Suspense } from "react";
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+  DragStartEvent,
+  DragOverlay,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import { useTerminal } from "@/providers/TerminalProvider";
 import { useSpotify } from "@/hooks/useSpotify";
 import { useYouTube } from "@/hooks/useYouTube";
@@ -22,6 +41,99 @@ const SectionSkeleton = (): JSX.Element => (
     <div className={styles.sectionSkeletonBar} />
   </div>
 );
+
+// Sortable Section Component
+interface SortableSectionProps {
+  section: {
+    id: string;
+    title: string;
+    content: JSX.Element;
+  };
+  isOpen: boolean;
+  onToggle: (id: string) => void;
+  getSectionIcon: (id: string) => JSX.Element | null;
+  styles: any;
+}
+
+function SortableSection({
+  section,
+  isOpen,
+  onToggle,
+  getSectionIcon,
+  styles: cssStyles,
+}: SortableSectionProps): JSX.Element {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: section.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={`${cssStyles.section} ${isDragging ? cssStyles.sectionDragging : ""}`}
+    >
+      <div
+        className={cssStyles.sectionTitle}
+        onClick={(e) => {
+          // Don't toggle if clicking on drag handle
+          const target = e.target as HTMLElement;
+          if (!target.closest(`.${cssStyles.dragHandle}`)) {
+            onToggle(section.id);
+          }
+        }}
+      >
+        {/* Drag Handle */}
+        <div
+          className={cssStyles.dragHandle}
+          {...attributes}
+          {...listeners}
+          onClick={(e) => e.stopPropagation()}
+          title="Drag to reorder"
+        >
+          <svg
+            className={cssStyles.dragHandleIcon}
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="currentColor"
+          >
+            <path d="M9,3V5H7V3H9M13,3V5H11V3H13M17,3V5H15V3H17M7,7V9H5V7H7M13,7V9H11V7H13M19,7V9H17V7H19M7,11V13H5V11H7M13,11V13H11V11H13M19,11V13H17V11H19M7,15V17H5V15H7M13,15V17H11V15H13M19,15V17H17V15H19M7,19V21H5V19H7M13,19V21H11V19H13M17,19V21H15V19H17Z" fill="currentColor" />
+          </svg>
+        </div>
+        {getSectionIcon(section.id)}
+        <span>{section.title}</span>
+        <button
+          className={cssStyles.sectionToggle}
+          aria-label="Toggle"
+          onClick={(e) => {
+            e.stopPropagation();
+            onToggle(section.id);
+          }}
+        >
+          <svg
+            className={cssStyles.toggleIcon}
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="currentColor"
+          >
+            <path d="M7 10l5 5 5-5z" fill="currentColor" />
+          </svg>
+        </button>
+      </div>
+      {isOpen && section.content}
+    </div>
+  );
+}
 
 const TradingAnalyticsSection = dynamic(
   () =>
@@ -111,6 +223,83 @@ export function DashboardSidebar(): JSX.Element {
 
   const [isHydrated, setIsHydrated] = useState(false);
   const [expandedSections, setExpandedSections] = useState<string[]>(["quick"]);
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [sectionOrder, setSectionOrder] = useState<string[]>([]);
+  const [activeId, setActiveId] = useState<string | null>(null);
+
+  // Drag and drop sensors
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8, // Require 8px movement before drag starts
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  // Searchable index of all quick actions
+  // This includes section titles and common button labels
+  const searchableIndex = useMemo(() => {
+    const index: Record<string, string[]> = {
+      quick: [
+        "System Help", "Connect Wallet", "Claim Faucet", "AI Assistant", "AI Toggle", "AI Help",
+        "Basic View", "Clear Terminal", "Terminal Style", "Color Palettes", "Cycle Palette",
+        "Crimson", "Anime", "Ocean", "Forest", "Sunset", "Purple", "Cyber", "Gold", "Ice", "Fire",
+        "Reset Default", "Themes", "Cycle Theme", "Executive", "Modern UI", "Dark", "Light",
+        "Matrix", "Retro", "PowerShell"
+      ],
+      news: [
+        "Crypto News", "Open News Reader", "Latest News", "Trending News", "Bitcoin News",
+        "Ethereum News", "Solana News", "Search News", "News Articles", "News Sources",
+        "Expand All", "Collapse All", "Clear & Reload", "News Help"
+      ],
+      media: [
+        "Music Player", "Open Spotify", "Omega Blues", "Omega Lo-Fi", "Omega Tech",
+        "Omega Funky", "Omega Trance", "Omega Melodies"
+      ],
+      youtube: [
+        "YouTube Player", "Search Videos", "Play Video", "Playlist", "Controls"
+      ],
+      mining: [
+        "Mining & Rewards", "Start Mining", "Claim Rewards", "Mining Status", "Mining Stats"
+      ],
+      "advanced-trading": [
+        "Advanced Trading", "Markets", "List Markets", "View Market", "Heatmap",
+        "Similar Markets", "Markets Help", "AI Forecast", "Get Forecast", "Daily Picks",
+        "Submit Forecast", "My Score", "Portfolio", "Sync Portfolio", "Portfolio View",
+        "List Bundles", "View Bundle", "Backtest", "Social", "Activity Feed", "Follow User",
+        "View Profile", "Leaderboards", "Polymarket", "Kalshi", "Hyperliquid"
+      ],
+      entertainment: [
+        "Entertainment & Games", "Games", "Screensaver"
+      ],
+      trading: [
+        "Trading & Analytics", "Chart", "DexScreener", "GeckoTerminal", "Alpha Vantage"
+      ],
+      nft: [
+        "NFT Explorer", "Generate NFT", "Magic Eden", "Search", "Collections"
+      ],
+      portfolio: [
+        "Portfolio Tracker", "Check Balance", "Track Wallet", "Track New Wallet",
+        "View Portfolio", "List Wallets", "Refresh Data", "Remove Wallet"
+      ],
+      network: [
+        "Network", "EVM Networks", "Ethereum", "BNB Smart Chain", "Polygon", "Arbitrum",
+        "Optimism", "Base", "Omega Network", "Rome Protocol", "Fair Testnet", "Monad",
+        "Solana", "NEAR Protocol", "Connect Wallet", "Disconnect", "Check Balance",
+        "Create Token", "Mint NFT", "Register ENS", "Account Info", "Token Swap"
+      ],
+      tx: [
+        "Transactions", "Send Tokens", "Send Email", "View Inbox"
+      ],
+      chaingpt: [
+        "ChainGPT Tools", "Chat", "NFT Generator", "Tutorials"
+      ],
+    };
+    return index;
+  }, []);
 
   useEffect(() => {
     setIsHydrated(true);
@@ -1449,42 +1638,219 @@ export function DashboardSidebar(): JSX.Element {
     [handleCommandClick, news, spotify, youtube, renderCommandButton]
   );
 
+  // Apply custom section order
+  const orderedSections = useMemo(() => {
+    if (sectionOrder.length === 0) {
+      return sections;
+    }
+
+    // Create a map for quick lookup
+    const sectionMap = new Map(sections.map((s) => [s.id, s]));
+    const ordered: typeof sections = [];
+
+    // Add sections in the saved order
+    sectionOrder.forEach((id) => {
+      const section = sectionMap.get(id);
+      if (section) {
+        ordered.push(section);
+        sectionMap.delete(id);
+      }
+    });
+
+    // Add any remaining sections that weren't in the saved order (new sections)
+    sectionMap.forEach((section) => {
+      ordered.push(section);
+    });
+
+    return ordered;
+  }, [sections, sectionOrder]);
+
+  // Filter sections based on search query
+  const filteredSections = useMemo(() => {
+    const sectionsToFilter = orderedSections;
+    
+    if (!searchQuery.trim()) {
+      return sectionsToFilter;
+    }
+
+    const query = searchQuery.toLowerCase().trim();
+    const matching: typeof sectionsToFilter = [];
+
+    sectionsToFilter.forEach((section) => {
+      // Check if section title matches
+      if (section.title.toLowerCase().includes(query)) {
+        matching.push(section);
+        return;
+      }
+
+      // Check if any button in section matches using searchable index
+      const sectionKeywords = searchableIndex[section.id] || [];
+      const hasMatch = sectionKeywords.some((keyword) =>
+        keyword.toLowerCase().includes(query)
+      );
+
+      if (hasMatch) {
+        matching.push(section);
+      }
+    });
+
+    return matching;
+  }, [orderedSections, searchQuery, searchableIndex]);
+
+  // Handle drag start
+  const handleDragStart = useCallback((event: DragStartEvent) => {
+    setActiveId(event.active.id as string);
+  }, []);
+
+  // Handle drag end
+  const handleDragEnd = useCallback(
+    (event: DragEndEvent) => {
+      const { active, over } = event;
+
+      if (!over || active.id === over.id) {
+        setActiveId(null);
+        return;
+      }
+
+      setSectionOrder((items) => {
+        // If no saved order, use current section order
+        const currentOrder =
+          items.length > 0 ? items : sections.map((s) => s.id);
+
+        const oldIndex = currentOrder.indexOf(active.id as string);
+        const newIndex = currentOrder.indexOf(over.id as string);
+
+        if (oldIndex === -1 || newIndex === -1) {
+          setActiveId(null);
+          return items;
+        }
+
+        const newOrder = arrayMove(currentOrder, oldIndex, newIndex);
+
+        // Save to localStorage
+        try {
+          localStorage.setItem(
+            "omega-sidebar-section-order",
+            JSON.stringify(newOrder)
+          );
+        } catch (error) {
+          console.error("Failed to save section order:", error);
+        }
+
+        setActiveId(null);
+        return newOrder;
+      });
+    },
+    [sections]
+  );
+
+  // Auto-expand sections when searching
+  useEffect(() => {
+    if (searchQuery.trim()) {
+      const matchingSectionIds = filteredSections.map((s) => s.id);
+      setExpandedSections((prev) => {
+        const combined = new Set([...prev, ...matchingSectionIds]);
+        return Array.from(combined);
+      });
+    }
+  }, [searchQuery, filteredSections]);
+
   if (!isHydrated) {
     return <aside className={styles.sidebar} />;
   }
 
   return (
     <aside className={styles.sidebar}>
+      {/* Search Bar */}
+      <div className={styles.searchContainer}>
+        <div className={styles.searchInputWrapper}>
+          <svg
+            className={styles.searchIcon}
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="currentColor"
+          >
+            <path d="M9.5,3A6.5,6.5 0 0,1 16,9.5C16,11.11 15.41,12.59 14.44,13.73L14.71,14H15.5L20.5,19L19,20.5L14,15.5V14.71L13.73,14.44C12.59,15.41 11.11,16 9.5,16A6.5,6.5 0 0,1 3,9.5A6.5,6.5 0 0,1 9.5,3M9.5,5C7,5 5,7 5,9.5C5,12 7,14 9.5,14C12,14 14,12 14,9.5C14,7 12,5 9.5,5Z" fill="currentColor" />
+          </svg>
+          <input
+            type="text"
+            className={styles.searchInput}
+            placeholder="Search quick actions..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onFocus={() => {
+              // Expand all sections when searching starts
+              if (searchQuery.trim()) {
+                const allIds = filteredSections.map((s) => s.id);
+                setExpandedSections(allIds);
+              }
+            }}
+          />
+          {searchQuery && (
+            <button
+              className={styles.searchClear}
+              onClick={() => setSearchQuery("")}
+              aria-label="Clear search"
+              type="button"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="currentColor"
+              >
+                <path d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" fill="currentColor" />
+              </svg>
+            </button>
+          )}
+        </div>
+        {searchQuery && (
+          <div className={styles.searchResults}>
+            {filteredSections.length > 0 ? (
+              <span>{filteredSections.length} section{filteredSections.length !== 1 ? 's' : ''} found</span>
+            ) : (
+              <span>No results found</span>
+            )}
+          </div>
+        )}
+      </div>
+
       {!commandsInitialized && (
         <div className={styles.disabledMessage}>
           Command shortcuts limited while modules load.
         </div>
       )}
-      {sections.map((s) => {
-        const isOpen = expandedSections.includes(s.id);
-        return (
-          <div key={s.id} className={styles.section}>
-            <div
-              className={styles.sectionTitle}
-              onClick={() => handleSectionToggle(s.id)}
-            >
-              {getSectionIcon(s.id)}
-              <span>{s.title}</span>
-              <button className={styles.sectionToggle} aria-label="Toggle">
-                <svg
-                  className={styles.toggleIcon}
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="currentColor"
-                >
-                  <path d="M7 10l5 5 5-5z" fill="currentColor" />
-                </svg>
-              </button>
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragStart={handleDragStart}
+        onDragEnd={handleDragEnd}
+      >
+        <SortableContext
+          items={filteredSections.map((s) => s.id)}
+          strategy={verticalListSortingStrategy}
+        >
+          {filteredSections.map((s) => {
+            const isOpen = expandedSections.includes(s.id);
+            return (
+              <SortableSection
+                key={s.id}
+                section={s}
+                isOpen={isOpen}
+                onToggle={handleSectionToggle}
+                getSectionIcon={getSectionIcon}
+                styles={styles}
+              />
+            );
+          })}
+        </SortableContext>
+        <DragOverlay>
+          {activeId ? (
+            <div className={styles.dragOverlay}>
+              {filteredSections.find((s) => s.id === activeId)?.title || ""}
             </div>
-            {isOpen && s.content}
-          </div>
-        );
-      })}
+          ) : null}
+        </DragOverlay>
+      </DndContext>
 
       {/* PGT Portfolio Tracker Stats Panel - Shows when wallets are tracked */}
       {pgt.wallets.length > 0 && (

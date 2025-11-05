@@ -25,6 +25,95 @@
   color: var(--palette-text, #ffffff);
 }
 
+/* Search Container */
+.searchContainer {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: color-mix(in srgb, var(--palette-surface, rgba(21, 21, 32, 1)) 90%, transparent);
+  backdrop-filter: blur(10px);
+  padding-bottom: 12px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid var(--palette-border, rgba(0, 212, 255, 0.15));
+}
+
+.searchInputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 10px;
+  width: 16px;
+  height: 16px;
+  color: var(--palette-muted, rgba(153, 204, 255, 0.5));
+  pointer-events: none;
+  z-index: 1;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 8px 12px 8px 36px;
+  background: color-mix(in srgb, var(--palette-bg, rgba(15, 20, 35, 0.9)) 80%, transparent);
+  border: 1px solid var(--palette-border, rgba(0, 212, 255, 0.3));
+  border-radius: 6px;
+  color: var(--palette-text, #ffffff);
+  font-family: var(--theme-font-body, "Courier New", monospace);
+  font-size: 12px;
+  letter-spacing: 0.05em;
+  transition: all 0.3s ease;
+  outline: none;
+}
+
+.searchInput:focus {
+  border-color: var(--palette-primary, #00d4ff);
+  box-shadow: 0 0 8px var(--palette-primary-glow, rgba(0, 212, 255, 0.3));
+  background: color-mix(in srgb, var(--palette-bg, rgba(15, 20, 35, 0.95)) 90%, transparent);
+}
+
+.searchInput::placeholder {
+  color: var(--palette-muted, rgba(153, 204, 255, 0.4));
+}
+
+.searchClear {
+  position: absolute;
+  right: 8px;
+  background: none;
+  border: none;
+  color: var(--palette-muted, rgba(153, 204, 255, 0.6));
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  width: 20px;
+  height: 20px;
+}
+
+.searchClear:hover {
+  color: var(--palette-primary, #00d4ff);
+  background: color-mix(in srgb, var(--palette-primary, rgba(0, 212, 255, 0.1)) 20%, transparent);
+}
+
+.searchClear svg {
+  width: 14px;
+  height: 14px;
+}
+
+.searchResults {
+  margin-top: 8px;
+  font-size: 10px;
+  color: var(--palette-muted, rgba(153, 204, 255, 0.6));
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding-left: 4px;
+}
+
 /* Ensure all SVG icons inherit colors properly and have no background */
 .sidebar svg {
   background: transparent !important;
@@ -135,6 +224,13 @@
   flex-direction: column;
   gap: 10px;
   margin-bottom: 12px;
+  position: relative;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.sectionDragging {
+  opacity: 0.5;
+  cursor: grabbing;
 }
 
 .sectionDivider {
@@ -162,7 +258,7 @@
   border: 1px solid var(--palette-border, rgba(0, 212, 255, 0.15));
   border-radius: var(--theme-radius-md, 6px);
   display: grid;
-  grid-template-columns: auto 1fr auto;
+  grid-template-columns: auto auto 1fr auto;
   align-items: center;
   cursor: pointer;
   transition: all 0.15s ease, border-color 0.3s ease, background-color 0.3s ease, color 0.3s ease;
@@ -175,13 +271,13 @@
 .sectionTitle > span {
   text-align: center;
   justify-self: center;
-  grid-column: 2;
+  grid-column: 3;
 }
 
-.sectionTitle svg:not(.toggleIcon) {
+.sectionTitle svg:not(.toggleIcon):not(.dragHandleIcon) {
   display: block;
   flex-shrink: 0;
-  grid-column: 1;
+  grid-column: 2;
   justify-self: start;
 }
 
@@ -254,8 +350,59 @@
   justify-content: center;
   transition: transform 0.2s ease;
   flex-shrink: 0;
-  grid-column: 3;
+  grid-column: 4;
   justify-self: end;
+}
+
+/* Drag Handle */
+.dragHandle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: grab;
+  padding: 4px;
+  color: var(--palette-muted, rgba(153, 204, 255, 0.4));
+  transition: color 0.2s ease, transform 0.2s ease;
+  grid-column: 1;
+  justify-self: start;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+.dragHandle:active {
+  cursor: grabbing;
+}
+
+.dragHandle:hover {
+  color: var(--palette-primary, #00d4ff);
+  transform: scale(1.1);
+}
+
+.dragHandleIcon {
+  width: 14px;
+  height: 14px;
+  min-width: 14px;
+  min-height: 14px;
+  fill: currentColor;
+  display: block;
+}
+
+/* Drag Overlay */
+.dragOverlay {
+  background: color-mix(in srgb, var(--palette-surface, rgba(21, 21, 32, 1)) 95%, transparent);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--palette-primary, #00d4ff);
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 9px;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: var(--palette-primary, #00d4ff);
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgba(0, 212, 255, 0.3);
+  transform: rotate(2deg);
 }
 
 .toggleIcon {

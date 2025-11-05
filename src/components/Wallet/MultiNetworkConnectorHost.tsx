@@ -28,7 +28,7 @@ interface NetworkDefinition {
   };
   icon: string;
   logo?: string;
-  walletType: "metamask" | "phantom";
+  walletType: "metamask" | "phantom" | "near";
 }
 
 type NetworkMap = Record<string, NetworkDefinition>;
@@ -129,6 +129,54 @@ const NETWORKS: NetworkMap = {
     logo: "https://assets.coingecko.com/coins/images/4128/small/solana.png",
     walletType: "phantom",
   },
+  near: {
+    key: "near",
+    name: "NEAR Protocol",
+    chainId: "near-mainnet",
+    chainIdDecimal: 0,
+    rpcUrl: "https://rpc.mainnet.near.org",
+    explorerUrl: "https://nearblocks.io",
+    currency: { name: "NEAR", symbol: "NEAR", decimals: 24 },
+    icon: "🔷",
+    logo: "https://assets.coingecko.com/coins/images/10365/small/near_icon.png",
+    walletType: "near",
+  },
+  rome: {
+    key: "rome",
+    name: "Rome Protocol",
+    chainId: "0x1d97c", // 121212 in hex
+    chainIdDecimal: 121212,
+    rpcUrl: "https://esquiline-i.devnet.romeprotocol.xyz",
+    explorerUrl: "https://romescout-esquiline-i.devnet.romeprotocol.xyz",
+    currency: { name: "RSOL", symbol: "RSOL", decimals: 18 },
+    icon: "🏛️",
+    logo: undefined, // Rome doesn't have a CoinGecko entry yet
+    walletType: "metamask",
+  },
+  fair: {
+    key: "fair",
+    name: "FAIR Testnet",
+    chainId: "0x3a7", // 935 in hex
+    chainIdDecimal: 935,
+    rpcUrl: "https://testnet-rpc.fair.cloud",
+    explorerUrl: "https://testnet-explorer.fair.cloud",
+    currency: { name: "FAIR", symbol: "FAIR", decimals: 18 },
+    icon: "⚖️",
+    logo: undefined, // Fair doesn't have a CoinGecko entry yet
+    walletType: "metamask",
+  },
+  monad: {
+    key: "monad",
+    name: "Monad",
+    chainId: "0x1d4c0", // 120000 in hex (Monad testnet)
+    chainIdDecimal: 120000,
+    rpcUrl: "https://testnet-rpc.monad.xyz",
+    explorerUrl: "https://testnet-explorer.monad.xyz",
+    currency: { name: "MON", symbol: "MON", decimals: 18 },
+    icon: "🔷",
+    logo: undefined, // Monad doesn't have a CoinGecko entry yet
+    walletType: "metamask",
+  },
 };
 
 const EVM_NETWORK_KEYS = [
@@ -139,6 +187,9 @@ const EVM_NETWORK_KEYS = [
   "optimism",
   "base",
   "omega",
+  "rome",
+  "fair",
+  "monad",
 ];
 
 interface SelectorState {
@@ -455,6 +506,48 @@ export function MultiNetworkConnectorHost(): JSX.Element | null {
     [closeModal, log]
   );
 
+  const handleConnectNear = useCallback(
+    async (network: NetworkDefinition) => {
+      const detail = requestRef.current;
+      if (!detail) return;
+
+      setState((prev) => ({ ...prev, isProcessing: true, error: null }));
+
+      try {
+        log("🔌 Connecting to NEAR Protocol...", "info");
+        log("", "info");
+        log("⚠️  NEAR wallet authentication requires a redirect", "warning");
+        log("You will be redirected to NEAR wallet for authentication", "info");
+        log("After signing in, you'll be redirected back to the terminal", "info");
+        log("", "info");
+
+        // Close modal first
+        closeModal();
+
+        // Execute the near connect command through the terminal
+        // The terminal's executeCommand will handle the multichain context properly
+        if (detail && typeof window !== "undefined") {
+          // Use a small delay to ensure the modal closes first
+          setTimeout(async () => {
+            // Try to access the terminal's executeCommand through window
+            // This is the standard way to trigger commands from UI components
+            if ((window as any).__omegaExecuteCommand) {
+              await (window as any).__omegaExecuteCommand("near connect");
+            } else if (detail.log) {
+              // Fallback: log a message and let user know to use the command
+              detail.log("💡 Use 'near connect' command to connect to NEAR wallet", "info");
+              detail.log("NEAR wallet requires a redirect for authentication", "warning");
+            }
+          }, 100);
+        }
+      } catch (error: any) {
+        log(`❌ NEAR connection failed: ${error.message}`, "error");
+        setState((prev) => ({ ...prev, isProcessing: false }));
+      }
+    },
+    [closeModal, log]
+  );
+
   const handleConnectNetwork = useCallback(
     async (networkKey: string) => {
       const network = NETWORKS[networkKey];
@@ -468,13 +561,18 @@ export function MultiNetworkConnectorHost(): JSX.Element | null {
         return;
       }
 
+      if (network.walletType === "near") {
+        await handleConnectNear(network);
+        return;
+      }
+
       log(
         "Phantom wallet support is not yet available in this build.",
         "error"
       );
       setState((prev) => ({ ...prev, isProcessing: false }));
     },
-    [handleConnectEvm, log]
+    [handleConnectEvm, handleConnectNear, log]
   );
 
   const modalContent = useMemo(() => {
@@ -858,6 +956,137 @@ export function MultiNetworkConnectorHost(): JSX.Element | null {
                 </button>
               </div>
             </div>
+
+            <div 
+              className="network-section"
+              style={{
+                marginBottom: '20px',
+              }}
+            >
+              <div 
+                className="network-section-title"
+                style={{
+                  fontSize: '14px',
+                  fontWeight: 600,
+                  color: 'var(--palette-primary, #00d4ff)',
+                  marginBottom: '12px',
+                  textTransform: 'uppercase',
+                  letterSpacing: '1px',
+                  transition: 'color 0.3s ease',
+                }}
+              >🔷 NEAR PROTOCOL</div>
+              <div 
+                className="network-grid"
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
+                  gap: '12px',
+                }}
+              >
+                <button
+                  className="network-button"
+                  onClick={() => handleConnectNetwork("near")}
+                  disabled={state.isProcessing}
+                  type="button"
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: '16px',
+                    background: 'var(--palette-bg-overlay, rgba(0, 212, 255, 0.05))',
+                    border: `1px solid var(--palette-border, rgba(0, 212, 255, 0.3))`,
+                    borderRadius: '8px',
+                    cursor: state.isProcessing ? 'not-allowed' : 'pointer',
+                    transition: 'all 0.2s ease',
+                    minHeight: '120px',
+                    opacity: state.isProcessing ? 0.5 : 1,
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!state.isProcessing) {
+                      e.currentTarget.style.background = 'var(--palette-primary-glow, rgba(0, 212, 255, 0.15))';
+                      e.currentTarget.style.borderColor = 'var(--palette-primary, #00d4ff)';
+                      e.currentTarget.style.transform = 'translateY(-2px)';
+                      e.currentTarget.style.boxShadow = `0 4px 12px var(--palette-primary-glow, rgba(0, 212, 255, 0.3))`;
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = 'var(--palette-bg-overlay, rgba(0, 212, 255, 0.05))';
+                    e.currentTarget.style.borderColor = 'var(--palette-border, rgba(0, 212, 255, 0.3))';
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.boxShadow = 'none';
+                  }}
+                >
+                  <div 
+                    className="network-logo-wrapper"
+                    style={{
+                      marginBottom: '12px',
+                      width: '48px',
+                      height: '48px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    {NETWORKS.near?.logo && (
+                      <img
+                        src={NETWORKS.near.logo}
+                        alt="NEAR Protocol"
+                        className="network-logo"
+                        style={{
+                          width: '48px',
+                          height: '48px',
+                          objectFit: 'contain',
+                        }}
+                        onError={(e) => {
+                          const target = e.currentTarget;
+                          target.style.display = 'none';
+                          const fallback = target.nextElementSibling as HTMLElement;
+                          if (fallback) {
+                            fallback.style.display = 'flex';
+                          }
+                        }}
+                      />
+                    )}
+                    {!NETWORKS.near?.logo && (
+                      <div 
+                        className="network-icon"
+                        style={{
+                          display: 'flex',
+                          fontSize: '32px',
+                        }}
+                      >
+                        {NETWORKS.near?.icon || '🔷'}
+                      </div>
+                    )}
+                  </div>
+                  <div 
+                    className="network-name"
+                    style={{
+                      fontSize: '14px',
+                      fontWeight: 600,
+                      color: 'var(--palette-primary, #00d4ff)',
+                      marginBottom: '4px',
+                      textAlign: 'center',
+                      transition: 'color 0.3s ease',
+                    }}
+                  >
+                    {NETWORKS.near?.name || 'NEAR Protocol'}
+                  </div>
+                  <div 
+                    className="network-symbol"
+                    style={{
+                      fontSize: '12px',
+                      color: 'var(--palette-muted, #99ccff)',
+                      textAlign: 'center',
+                      transition: 'color 0.3s ease',
+                    }}
+                  >
+                    {NETWORKS.near?.currency.symbol || 'NEAR'}
+                  </div>
+                </button>
+              </div>
+            </div>
           </div>
           <div 
             className="network-modal-footer"
@@ -876,7 +1105,7 @@ export function MultiNetworkConnectorHost(): JSX.Element | null {
                 transition: 'color 0.3s ease',
               }}
             >
-              💡 Make sure you have MetaMask (EVM) or Phantom (Solana) installed
+              💡 Make sure you have MetaMask (EVM), Phantom (Solana), or NEAR Wallet installed
             </p>
           </div>
         </div>

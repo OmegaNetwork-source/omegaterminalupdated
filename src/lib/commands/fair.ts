@@ -18,7 +18,7 @@ const FAIR_CONFIG = {
   },
   rpcUrls: ["https://testnet-rpc.fair.cloud"],
   blockExplorerUrls: ["https://testnet-explorer.fair.cloud"],
-  faucetUrl: "https://testnet-faucet.fair.cloud",
+  faucetUrl: "https://faucet.fairchain.ai",
 };
 
 /**
@@ -66,7 +66,7 @@ async function generateFairWallet(context: CommandContext): Promise<void> {
     );
     context.log("", "output");
     context.logHtml(
-      '<a href="https://testnet-faucet.fair.cloud" target="_blank" style="color:#00ff80">💡 Get testnet FAIR from the FAIR Faucet</a>'
+      '<a href="https://faucet.fairchain.ai" target="_blank" style="color:#00ff80">💡 Get testnet FAIR from the FAIR Faucet</a>'
     );
     context.log('💡 Use "fair balance" to check your balance', "info");
   } catch (error: any) {
@@ -226,7 +226,7 @@ export const fairCommand: Command = {
       context.log("Chain ID: 935", "output");
       context.log("RPC: https://testnet-rpc.fair.cloud", "output");
       context.log("Explorer: https://testnet-explorer.fair.cloud", "output");
-      context.log("Faucet: https://testnet-faucet.fair.cloud", "output");
+      context.log("Faucet: https://faucet.fairchain.ai", "output");
       context.log("", "output");
       context.log('💡 Use "fair generate" to create a new wallet', "info");
       context.log('💡 Use "fair connect" to connect MetaMask', "info");
@@ -298,7 +298,7 @@ export const fairCommand: Command = {
 
           context.log("", "output");
           context.logHtml(
-            '<a href="https://testnet-faucet.fair.cloud" target="_blank" style="color:#00ff80">🌐 Open FAIR Faucet (in new tab)</a>'
+            '<a href="https://faucet.fairchain.ai" target="_blank" style="color:#00ff80">🌐 Open FAIR Faucet (in new tab)</a>'
           );
           context.log("", "output");
           context.log("📝 Instructions:", "info");

@@ -10,6 +10,7 @@ import { WalletProvider } from "@/providers/WalletProvider";
 import { MultiChainProvider } from "@/providers/MultiChainProvider";
 import { ProviderShell } from "@/providers/ProviderShell";
 import { MultiNetworkConnectorHost } from "@/components/Wallet/MultiNetworkConnectorHost";
+import { AptosWalletProvider } from "@/providers/AptosWalletProvider";
 import WebVitals from "./_components/WebVitals";
 
 /**
@@ -79,7 +80,9 @@ export default function RootLayout({
                   <WalletProvider>
                     <MultiNetworkConnectorHost />
                     <MultiChainProvider>
-                      <ProviderShell>{children}</ProviderShell>
+                      <AptosWalletProvider>
+                        <ProviderShell>{children}</ProviderShell>
+                      </AptosWalletProvider>
                     </MultiChainProvider>
                   </WalletProvider>
                 </GUIThemeProvider>

@@ -52,6 +52,25 @@ import {
 } from "@/lib/wallet";
 import { getEthereumProvider } from "@/lib/wallet/detection";
 
+/**
+ * Get network name from chainId
+ */
+function getNetworkNameFromChainId(chainId: number): string | null {
+  const chainIdMap: Record<number, string> = {
+    1: "Ethereum",
+    56: "BNB Smart Chain",
+    137: "Polygon",
+    42161: "Arbitrum One",
+    10: "Optimism",
+    8453: "Base",
+    1313161256: "Omega Network",
+    121212: "Rome Protocol",
+    935: "FAIR Testnet",
+    120000: "Monad",
+  };
+  return chainIdMap[chainId] || null;
+}
+
 // Create wallet context
 export const WalletContext = createContext<WalletContextValue | undefined>(
   undefined
@@ -71,6 +90,7 @@ export function WalletProvider({ children }: WalletProviderProps) {
     isConnecting: false,
     balance: null,
     chainId: null,
+    networkName: null,
     error: null,
   });
 
@@ -207,6 +227,9 @@ export function WalletProvider({ children }: WalletProviderProps) {
           // Get network info
           const network = await result.provider.getNetwork();
 
+          // Get network name from chainId
+          const networkName = getNetworkNameFromChainId(Number(network.chainId));
+
           // Update state
           setWalletState({
             type: "metamask",
@@ -215,6 +238,7 @@ export function WalletProvider({ children }: WalletProviderProps) {
             isConnecting: false,
             balance: null,
             chainId: Number(network.chainId),
+            networkName,
             error: null,
           });
 
@@ -271,6 +295,9 @@ export function WalletProvider({ children }: WalletProviderProps) {
       const newSigner = await externalProvider.getSigner();
       setSigner(newSigner);
 
+      // Use provided networkName or get from chainId
+      const finalNetworkName = networkName || getNetworkNameFromChainId(chainId);
+
       setWalletState({
         type: walletType,
         address,
@@ -278,6 +305,7 @@ export function WalletProvider({ children }: WalletProviderProps) {
         isConnecting: false,
         balance: null,
         chainId,
+        networkName: finalNetworkName,
         error: null,
       });
 
@@ -346,6 +374,7 @@ export function WalletProvider({ children }: WalletProviderProps) {
         isConnecting: false,
         balance: null,
         chainId: null,
+        networkName: "Omega Network", // Session wallets default to Omega
         error: null,
       });
 
@@ -419,6 +448,7 @@ export function WalletProvider({ children }: WalletProviderProps) {
           isConnecting: false,
           balance: null,
           chainId: null,
+          networkName: "Omega Network", // Imported wallets default to Omega
           error: null,
         });
 
@@ -464,6 +494,7 @@ export function WalletProvider({ children }: WalletProviderProps) {
         isConnecting: false,
         balance: null,
         chainId: null,
+        networkName: null,
         error: null,
       });
 
