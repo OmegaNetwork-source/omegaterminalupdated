@@ -57,6 +57,8 @@ import { contextCommands } from "./context";
 import { formatCommands } from "./format";
 import { exportCommands } from "./export";
 import { whoamiCommands } from "./whoami";
+import { gameArenaCommands } from "./game-arena";
+import { factionCommands } from "./faction";
 
 export interface CommandRegistrationResult {
   registeredGroups: string[];
@@ -126,6 +128,8 @@ const COMMAND_GROUPS: Array<{ label: string; commands: Command[] }> = [
   { label: "format", commands: formatCommands },
   { label: "export", commands: exportCommands },
   { label: "whoami", commands: whoamiCommands },
+  { label: "game-arena", commands: gameArenaCommands },
+  { label: "faction", commands: factionCommands },
 ];
 
 let registrationAttempted = false;
@@ -272,5 +276,7 @@ export {
   formatCommands,
   exportCommands,
   whoamiCommands,
+  gameArenaCommands,
+  factionCommands,
 };
 export default commandRegistry;

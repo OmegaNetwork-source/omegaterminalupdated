@@ -1,0 +1,742 @@
+/**
+ * Forecast Arena Game Styles
+ * Retro-futuristic terminal styling with CRT effects
+ */
+
+.menu {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem;
+  color: var(--palette-text, #e0e0e0);
+  font-family: 'Courier New', monospace;
+  min-height: 100%;
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.menu::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 212, 255, 0.03) 0px,
+    transparent 1px,
+    transparent 2px,
+    rgba(0, 212, 255, 0.03) 3px
+  );
+  pointer-events: none;
+  animation: scanline 8s linear infinite;
+}
+
+@keyframes scanline {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(100%); }
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 3rem;
+  position: relative;
+  z-index: 1;
+}
+
+.header h1 {
+  font-size: 2.5rem;
+  margin: 0 0 1rem 0;
+  color: var(--palette-primary, #00d4ff);
+  text-shadow: 
+    0 0 10px rgba(0, 212, 255, 0.5),
+    0 0 20px rgba(0, 212, 255, 0.3),
+    0 0 30px rgba(0, 212, 255, 0.2);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.stats {
+  display: flex;
+  gap: 2rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+  font-size: 0.9rem;
+  color: var(--palette-text-secondary, #888);
+}
+
+.stats > div {
+  padding: 0.5rem 1rem;
+  background: rgba(0, 212, 255, 0.1);
+  border: 1px solid rgba(0, 212, 255, 0.3);
+  border-radius: 4px;
+}
+
+.modeGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 800px;
+  position: relative;
+  z-index: 1;
+}
+
+.modeCard {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.modeButton {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem 1.5rem;
+  background: rgba(0, 212, 255, 0.05);
+  border: 2px solid rgba(0, 212, 255, 0.3);
+  border-radius: 8px;
+  color: var(--palette-text, #e0e0e0);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Courier New', monospace;
+  text-align: center;
+}
+
+.modeButton:hover {
+  background: rgba(0, 212, 255, 0.15);
+  border-color: var(--palette-primary, #00d4ff);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 212, 255, 0.3);
+}
+
+.modeIcon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.modeTitle {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  color: var(--palette-primary, #00d4ff);
+}
+
+.modeDesc {
+  font-size: 0.9rem;
+  color: var(--palette-text-secondary, #888);
+}
+
+.howToPlayButton {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(0, 212, 255, 0.2);
+  border: 1px solid var(--palette-primary, #00d4ff);
+  color: var(--palette-primary, #00d4ff);
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  z-index: 2;
+  font-family: 'Courier New', monospace;
+}
+
+.howToPlayButton:hover {
+  background: rgba(0, 212, 255, 0.4);
+  transform: scale(1.1);
+  box-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+}
+
+.battle,
+.gauntlet {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem;
+  color: var(--palette-text, #e0e0e0);
+  font-family: 'Courier New', monospace;
+  min-height: 100%;
+}
+
+.battleHeader,
+.gauntletHeader {
+  text-align: center;
+  margin-bottom: 2rem;
+  width: 100%;
+}
+
+.battleHeader h2,
+.gauntletHeader h2 {
+  font-size: 2rem;
+  color: var(--palette-primary, #00d4ff);
+  margin: 0 0 1rem 0;
+  text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+}
+
+.marketQuestion {
+  background: rgba(0, 212, 255, 0.1);
+  border: 1px solid rgba(0, 212, 255, 0.3);
+  border-radius: 8px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  max-width: 600px;
+  width: 100%;
+  text-align: center;
+}
+
+.marketQuestion h3 {
+  font-size: 1.3rem;
+  margin: 0 0 1rem 0;
+  color: var(--palette-text, #e0e0e0);
+  line-height: 1.6;
+}
+
+.sector {
+  display: inline-block;
+  padding: 0.3rem 0.8rem;
+  background: rgba(0, 212, 255, 0.2);
+  border-radius: 4px;
+  font-size: 0.85rem;
+  color: var(--palette-primary, #00d4ff);
+  text-transform: uppercase;
+  margin-top: 1rem;
+}
+
+.forecastInput {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  width: 100%;
+  max-width: 500px;
+}
+
+.forecastInput label {
+  font-size: 1.1rem;
+  color: var(--palette-primary, #00d4ff);
+  font-weight: bold;
+}
+
+.forecastInput input[type="range"] {
+  width: 100%;
+  height: 8px;
+  background: rgba(0, 212, 255, 0.2);
+  border-radius: 4px;
+  outline: none;
+  -webkit-appearance: none;
+}
+
+.forecastInput input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  background: var(--palette-primary, #00d4ff);
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+}
+
+.forecastInput input[type="range"]::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  background: var(--palette-primary, #00d4ff);
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+}
+
+.aiForecast {
+  font-size: 0.9rem;
+  color: var(--palette-text-secondary, #888);
+  font-style: italic;
+}
+
+.battle button,
+.gauntlet button {
+  padding: 1rem 2rem;
+  background: rgba(0, 212, 255, 0.2);
+  border: 2px solid var(--palette-primary, #00d4ff);
+  border-radius: 4px;
+  color: var(--palette-primary, #00d4ff);
+  font-family: 'Courier New', monospace;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.battle button:hover,
+.gauntlet button:hover {
+  background: rgba(0, 212, 255, 0.3);
+  box-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+  transform: translateY(-2px);
+}
+
+.battleResult {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem;
+  color: var(--palette-text, #e0e0e0);
+  font-family: 'Courier New', monospace;
+}
+
+.battleResult h2 {
+  font-size: 2rem;
+  color: var(--palette-primary, #00d4ff);
+  margin-bottom: 2rem;
+}
+
+.resultStats {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  background: rgba(0, 212, 255, 0.1);
+  border: 1px solid rgba(0, 212, 255, 0.3);
+  border-radius: 8px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  min-width: 300px;
+}
+
+.resultStats > div {
+  font-size: 1.1rem;
+  padding: 0.5rem;
+  border-bottom: 1px solid rgba(0, 212, 255, 0.2);
+}
+
+.resultStats > div:last-child {
+  border-bottom: none;
+}
+
+.lootBoxes {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem;
+  color: var(--palette-text, #e0e0e0);
+  font-family: 'Courier New', monospace;
+}
+
+.lootBoxes h2 {
+  font-size: 2rem;
+  color: var(--palette-primary, #00d4ff);
+  margin-bottom: 2rem;
+}
+
+.lootGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 600px;
+  margin-bottom: 2rem;
+}
+
+.lootButton {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem 1rem;
+  background: rgba(0, 212, 255, 0.05);
+  border: 2px solid rgba(0, 212, 255, 0.3);
+  border-radius: 8px;
+  color: var(--palette-text, #e0e0e0);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Courier New', monospace;
+}
+
+.lootButton:hover:not(:disabled) {
+  background: rgba(0, 212, 255, 0.15);
+  border-color: var(--palette-primary, #00d4ff);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 212, 255, 0.3);
+}
+
+.lootButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.lootTier {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: var(--palette-primary, #00d4ff);
+  margin-bottom: 0.5rem;
+}
+
+.lootCost {
+  font-size: 0.9rem;
+  color: var(--palette-text-secondary, #888);
+}
+
+.lootReward {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem;
+  color: var(--palette-text, #e0e0e0);
+  font-family: 'Courier New', monospace;
+}
+
+.lootReward h2 {
+  font-size: 2rem;
+  color: var(--palette-primary, #00d4ff);
+  margin-bottom: 2rem;
+}
+
+.rewardDetails {
+  background: rgba(0, 212, 255, 0.1);
+  border: 1px solid rgba(0, 212, 255, 0.3);
+  border-radius: 8px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  text-align: center;
+  min-width: 300px;
+}
+
+.rewardDetails > div {
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+}
+
+.rewardDetails > div:first-child {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--palette-primary, #00d4ff);
+}
+
+.faction {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem;
+  color: var(--palette-text, #e0e0e0);
+  font-family: 'Courier New', monospace;
+  text-align: center;
+}
+
+.faction h2 {
+  font-size: 2rem;
+  color: var(--palette-primary, #00d4ff);
+  margin-bottom: 2rem;
+}
+
+.faction p {
+  margin-bottom: 1rem;
+  line-height: 1.6;
+}
+
+.faction button {
+  padding: 1rem 2rem;
+  background: rgba(0, 212, 255, 0.2);
+  border: 2px solid var(--palette-primary, #00d4ff);
+  border-radius: 4px;
+  color: var(--palette-primary, #00d4ff);
+  font-family: 'Courier New', monospace;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 2rem;
+}
+
+.faction button:hover {
+  background: rgba(0, 212, 255, 0.3);
+  box-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+}
+
+.howToPlay {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem;
+  color: var(--palette-text, #e0e0e0);
+  font-family: 'Courier New', monospace;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.howToPlay h2 {
+  font-size: 2rem;
+  color: var(--palette-primary, #00d4ff);
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.howToPlayContent {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.stepsSection,
+.tipsSection {
+  background: rgba(0, 212, 255, 0.1);
+  border: 1px solid rgba(0, 212, 255, 0.3);
+  border-radius: 8px;
+  padding: 1.5rem;
+}
+
+.stepsSection h3,
+.tipsSection h3 {
+  font-size: 1.2rem;
+  color: var(--palette-primary, #00d4ff);
+  margin-bottom: 1rem;
+}
+
+.stepsSection ol,
+.tipsSection ul {
+  margin: 0;
+  padding-left: 1.5rem;
+  line-height: 1.8;
+}
+
+.stepsSection li,
+.tipsSection li {
+  margin-bottom: 0.8rem;
+  color: var(--palette-text, #e0e0e0);
+}
+
+.howToPlay button {
+  padding: 0.8rem 2rem;
+  background: rgba(0, 212, 255, 0.2);
+  border: 2px solid var(--palette-primary, #00d4ff);
+  border-radius: 4px;
+  color: var(--palette-primary, #00d4ff);
+  font-family: 'Courier New', monospace;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin: 0.5rem;
+}
+
+.howToPlay button:hover {
+  background: rgba(0, 212, 255, 0.3);
+  box-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+}
+
+.factionHeader {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.factionHeader h2 {
+  margin-bottom: 1rem;
+}
+
+.currentFaction {
+  font-size: 1.1rem;
+  color: var(--palette-primary, #00d4ff);
+  padding: 0.5rem 1rem;
+  background: rgba(0, 212, 255, 0.1);
+  border: 1px solid rgba(0, 212, 255, 0.3);
+  border-radius: 4px;
+  display: inline-block;
+}
+
+.factionJoin,
+.factionPlay {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.factionJoin h3,
+.factionPlay h3 {
+  color: var(--palette-primary, #00d4ff);
+  margin-bottom: 1rem;
+}
+
+.factionGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+
+.factionButton {
+  padding: 1.5rem 1rem;
+  background: rgba(0, 212, 255, 0.05);
+  border: 2px solid rgba(0, 212, 255, 0.3);
+  border-radius: 8px;
+  color: var(--palette-text, #e0e0e0);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Courier New', monospace;
+  text-align: center;
+}
+
+.factionButton:hover {
+  background: rgba(0, 212, 255, 0.15);
+  border-color: var(--palette-primary, #00d4ff);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 212, 255, 0.3);
+}
+
+.factionButton .factionName {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: var(--palette-primary, #00d4ff);
+  margin-bottom: 0.8rem;
+}
+
+.factionButton .factionStats {
+  font-size: 0.9rem;
+  color: var(--palette-text-secondary, #888);
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.factionInfo {
+  background: rgba(0, 212, 255, 0.1);
+  border: 1px solid rgba(0, 212, 255, 0.3);
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.factionStatsDisplay {
+  display: flex;
+  gap: 2rem;
+  margin-top: 1rem;
+  font-size: 1.1rem;
+}
+
+.territoryControl {
+  margin-bottom: 2rem;
+}
+
+.territoryControl h3 {
+  margin-bottom: 1rem;
+}
+
+.sectorGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+
+.sectorButton {
+  padding: 1.5rem 1rem;
+  background: rgba(0, 212, 255, 0.05);
+  border: 2px solid rgba(0, 212, 255, 0.3);
+  border-radius: 8px;
+  color: var(--palette-text, #e0e0e0);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Courier New', monospace;
+  text-align: center;
+}
+
+.sectorButton:hover {
+  background: rgba(0, 212, 255, 0.15);
+  border-color: var(--palette-primary, #00d4ff);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 212, 255, 0.3);
+}
+
+.sectorName {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: var(--palette-primary, #00d4ff);
+  margin-bottom: 0.5rem;
+}
+
+.sectorPoints {
+  font-size: 0.9rem;
+  color: var(--palette-success, #16c782);
+}
+
+.factionLeaderboard {
+  margin-bottom: 2rem;
+}
+
+.factionLeaderboard h3 {
+  margin-bottom: 1rem;
+}
+
+.leaderboardList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.leaderboardItem {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: rgba(0, 212, 255, 0.05);
+  border: 1px solid rgba(0, 212, 255, 0.3);
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+.leaderboardItem.currentFactionItem {
+  background: rgba(0, 212, 255, 0.15);
+  border-color: var(--palette-primary, #00d4ff);
+  border-width: 2px;
+}
+
+.leaderboardItem .rank {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: var(--palette-primary, #00d4ff);
+  min-width: 40px;
+}
+
+.leaderboardItem .factionName {
+  flex: 1;
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: var(--palette-text, #e0e0e0);
+}
+
+.leaderboardStats {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.9rem;
+  color: var(--palette-text-secondary, #888);
+}
+
+.leaveFactionButton {
+  padding: 0.8rem 1.5rem;
+  background: rgba(255, 77, 79, 0.1);
+  border: 2px solid var(--palette-error, #ff4d4f);
+  border-radius: 4px;
+  color: var(--palette-error, #ff4d4f);
+  font-family: 'Courier New', monospace;
+  font-size: 0.9rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-bottom: 1rem;
+}
+
+.leaveFactionButton:hover {
+  background: rgba(255, 77, 79, 0.2);
+  box-shadow: 0 0 15px rgba(255, 77, 79, 0.3);
+}
+

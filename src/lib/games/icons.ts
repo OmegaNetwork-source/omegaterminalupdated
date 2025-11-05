@@ -78,6 +78,15 @@ export function getGameIcon(gameId: string, size: number = 48): string {
       <rect x="11" y="6" width="2" height="4" rx="1" fill="currentColor"/>
     </svg>`,
     
+    "forecast-arena": `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="12" cy="10" r="7" stroke="currentColor" stroke-width="2" fill="none" opacity="0.9"/>
+      <circle cx="12" cy="10" r="4" fill="currentColor" opacity="0.3"/>
+      <path d="M8 8L6 6M16 8L18 6M8 14L6 16M16 14L18 16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity="0.6"/>
+      <circle cx="12" cy="10" r="1.5" fill="currentColor"/>
+      <path d="M12 2L12 6M12 14L12 18M2 10L6 10M18 10L22 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
+      <path d="M10 18L12 20L14 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>`,
+    
     "flappy-omega": `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path d="M12 4C8 4 4 8 4 12C4 16 8 20 12 20C16 20 20 16 20 12C20 8 16 4 12 4Z" fill="currentColor" opacity="0.8"/>
       <circle cx="10" cy="10" r="1.5" fill="var(--palette-bg, #000)"/>

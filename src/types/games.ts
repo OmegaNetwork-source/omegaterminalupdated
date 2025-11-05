@@ -28,6 +28,7 @@ export enum GameType {
   BRICK_BREAKER = 12,
   BASHIDO = 13,
   PG_TANKS = 14,
+  OMEGA_FORECAST_ARENA = 15,
 }
 
 /**

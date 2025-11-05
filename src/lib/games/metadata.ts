@@ -44,6 +44,18 @@ export const GAMES_METADATA: GameMetadata[] = [
     difficulty: "hard",
     hasOnChainLeaderboard: false,
   },
+  {
+    id: "forecast-arena",
+    name: "Omega Forecast Arena",
+    type: GameType.OMEGA_FORECAST_ARENA,
+    category: "action",
+    description: "Battle AI agents in prediction duels, join factions, and compete in forecasting challenges",
+    command: "play forecast-arena",
+    aliases: ["forecast", "arena", "omega-forecast", "forecast-arena"],
+    icon: "🔮",
+    difficulty: "medium",
+    hasOnChainLeaderboard: false,
+  },
   
   // Casual Games - Easy, relaxed gameplay
   {

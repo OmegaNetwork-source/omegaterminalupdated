@@ -161,19 +161,28 @@
   background: color-mix(in srgb, var(--palette-primary, #00bcf2) 5%, transparent);
   border: 1px solid var(--palette-border, rgba(0, 212, 255, 0.15));
   border-radius: var(--theme-radius-md, 6px);
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
   align-items: center;
   cursor: pointer;
   transition: all 0.15s ease, border-color 0.3s ease, background-color 0.3s ease, color 0.3s ease;
   font-family: var(--theme-font-body, "Courier New", monospace);
   font-weight: var(--theme-font-weight-bold, 700);
   gap: 6px;
+  position: relative;
 }
 
-.sectionTitle svg {
+.sectionTitle > span {
+  text-align: center;
+  justify-self: center;
+  grid-column: 2;
+}
+
+.sectionTitle svg:not(.toggleIcon) {
   display: block;
   flex-shrink: 0;
+  grid-column: 1;
+  justify-self: start;
 }
 
 .sectionTitleIcon {
@@ -200,6 +209,8 @@
   align-self: center;
   overflow: visible !important;
   shape-rendering: geometricPrecision;
+  grid-column: 1;
+  justify-self: start;
 }
 
 .sectionTitleIcon path {
@@ -242,6 +253,9 @@
   align-items: center;
   justify-content: center;
   transition: transform 0.2s ease;
+  flex-shrink: 0;
+  grid-column: 3;
+  justify-self: end;
 }
 
 .toggleIcon {

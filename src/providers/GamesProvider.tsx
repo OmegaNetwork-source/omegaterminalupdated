@@ -223,6 +223,10 @@ const baseGameEntries = GAMES_METADATA.reduce<Record<string, GameEntry>>(
       acc[game.id] = createGameEntry(async () => ({
         default: (await import("@/components/Games/PGTanksGame")).PGTanksGame,
       }));
+    } else if (game.id === "forecast-arena") {
+      acc[game.id] = createGameEntry(async () => ({
+        default: (await import("@/components/Games/ForecastArenaGame")).ForecastArenaGame,
+      }));
     } else {
       acc[game.id] = createPlaceholderEntry(
         game.name,

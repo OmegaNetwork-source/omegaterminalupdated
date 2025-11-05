@@ -36,6 +36,7 @@ async function handleList(context: CommandContext): Promise<void> {
     "pacman",
     "brick-breaker",
     "perfect-circle",
+    "forecast-arena",
   ]);
 
   // Separate games into working and coming soon
@@ -94,7 +95,15 @@ async function handleList(context: CommandContext): Promise<void> {
   ];
 
   for (const category of categories) {
-    const games = workingGames.filter((g) => g.category === category);
+    // Filter games by category while preserving original order from metadata
+    const games = workingGames
+      .filter((g) => g.category === category)
+      .sort((a, b) => {
+        // Maintain order from GAMES_METADATA array
+        const indexA = GAMES_METADATA.findIndex((g) => g.id === a.id);
+        const indexB = GAMES_METADATA.findIndex((g) => g.id === b.id);
+        return indexA - indexB;
+      });
     if (games.length === 0) continue;
 
     gamesHtml += `
