@@ -1,7 +1,7 @@
 /**
  * Magic Eden Trending API Route
  *
- * Proxies Magic Eden trending collections through relayer.
+ * Proxies Magic Eden trending collections from their API.
  * Provides Next.js caching for better performance.
  *
  * GET /api/magiceden/trending?timeRange={1h|1d|7d|30d}
@@ -9,7 +9,8 @@
 
 import type { NextRequest } from "next/server";
 import { createSecureResponse } from "@/lib/middleware";
-import { RELAYER_URL } from "@/lib/config";
+
+const MAGICEDEN_API_BASE = "https://api-mainnet.magiceden.dev/v2";
 
 /**
  * GET handler - fetch trending collections
@@ -30,16 +31,16 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Fetch from relayer
+    // Fetch from Magic Eden API directly
     const response = await fetch(
-      `${RELAYER_URL}/magiceden/trending?timeRange=${timeRange}`,
+      `${MAGICEDEN_API_BASE}/marketplace/popular_collections?timeRange=${timeRange}`,
       {
         next: { revalidate: 300 }, // Cache for 5 minutes
       }
     );
 
     if (!response.ok) {
-      throw new Error(`Relayer API error: ${response.status}`);
+      throw new Error(`Magic Eden API error: ${response.status}`);
     }
 
     const data = await response.json();
