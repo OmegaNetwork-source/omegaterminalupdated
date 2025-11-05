@@ -1,7 +1,7 @@
 /**
  * Magic Eden Stats API Route
  *
- * Proxies Magic Eden collection stats through relayer.
+ * Proxies Magic Eden collection stats from their API.
  * Provides Next.js caching for better performance.
  *
  * GET /api/magiceden/stats?symbol={collectionSymbol}
@@ -9,7 +9,8 @@
 
 import type { NextRequest } from "next/server";
 import { createSecureResponse } from "@/lib/middleware";
-import { RELAYER_URL } from "@/lib/config";
+
+const MAGICEDEN_API_BASE = "https://api-mainnet.magiceden.dev/v2";
 
 /**
  * GET handler - fetch collection statistics
@@ -29,16 +30,16 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Fetch from relayer
+    // Fetch from Magic Eden API directly
     const response = await fetch(
-      `${RELAYER_URL}/magiceden/stats?symbol=${symbol}`,
+      `${MAGICEDEN_API_BASE}/collections/${symbol}/stats`,
       {
         next: { revalidate: 120 }, // Cache for 2 minutes
       }
     );
 
     if (!response.ok) {
-      throw new Error(`Relayer API error: ${response.status}`);
+      throw new Error(`Magic Eden API error: ${response.status}`);
     }
 
     const data = await response.json();
