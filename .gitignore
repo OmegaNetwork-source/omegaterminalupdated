@@ -74,16 +74,4 @@ omegaterminalupdated/
 # docs files 
 docs/
 
-# ravaged node
-ravaged-planet/node_modules/
-ravaged-planet/dist/
-ravaged-planet/build/
-ravaged-planet/out/
-ravaged-planet/.next/
-ravaged-planet/.npm-cache/
-ravaged-planet/.vscode/
-ravaged-planet/.idea/
-ravaged-planet/.settings/
-ravaged-planet/.loadpath/
-ravaged-planet/.project/
-ravaged-planet/.classpath/
+
