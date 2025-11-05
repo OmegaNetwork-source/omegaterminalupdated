@@ -15,6 +15,12 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  background: color-mix(in srgb, var(--palette-bg, rgba(10, 10, 15, 1)) 95%, transparent);
+  border-bottom: 1px solid var(--palette-border, rgba(0, 188, 242, 0.25));
+  flex-shrink: 0;
+  position: relative;
+  z-index: 10;
+  transition: border-color 0.3s ease, background 0.3s ease;
 }
 
 .headerLeft,
@@ -199,6 +205,39 @@
   outline: none;
   border-color: color-mix(in srgb, var(--palette-primary, #00bcf2) 60%, transparent);
   box-shadow: 0 0 8px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #00bcf2) 30%, transparent));
+}
+
+/* AI Select State Indicators - Red when OFF, Green when ON */
+.aiSelectOff {
+  border-color: #ff4757 !important;
+  color: #ff4757 !important;
+  background-image: linear-gradient(45deg, transparent 50%, #ff4757 50%),
+    linear-gradient(135deg, #ff4757 50%, transparent 50%) !important;
+}
+
+.aiSelectOff:hover {
+  border-color: #ff4757 !important;
+  background-color: color-mix(in srgb, #ff4757 15%, transparent) !important;
+}
+
+.aiSelectOn {
+  border-color: #00ff88 !important;
+  color: #00ff88 !important;
+  background-image: linear-gradient(45deg, transparent 50%, #00ff88 50%),
+    linear-gradient(135deg, #00ff88 50%, transparent 50%) !important;
+}
+
+.aiSelectOn:hover {
+  border-color: #00ff88 !important;
+  background-color: color-mix(in srgb, #00ff88 15%, transparent) !important;
+}
+
+.aiLabelOff {
+  color: #ff4757 !important;
+}
+
+.aiLabelOn {
+  color: #00ff88 !important;
 }
 
 .connectionStatus {
@@ -392,10 +431,80 @@
 
 @media (max-width: 768px) {
   .header {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 14px;
-    padding-bottom: 14px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    height: 56px;
+    min-height: 56px;
+    max-height: 56px;
+    position: relative;
+    background: var(--palette-bg, #0a0a0f);
+    border-bottom: 1px solid var(--palette-border, rgba(0, 188, 242, 0.25));
+    flex-shrink: 0;
+    box-sizing: border-box;
+    width: 100%;
+    margin: 0;
+    left: 0;
+    right: 0;
+  }
+
+  /* Hide all header sections on mobile */
+  .headerCenter,
+  .headerRight {
+    display: none;
+  }
+
+  /* Show only title and hamburger on mobile */
+  .headerLeft {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .title {
+    font-size: 16px;
+    margin: 0;
+    font-weight: 600;
+  }
+
+  .routeNav {
+    display: none;
+  }
+
+  .mobileMenuButton {
+    position: relative;
+    min-width: 44px;
+    min-height: 44px;
+    background: color-mix(in srgb, var(--palette-primary, #00bcf2) 10%, transparent);
+    border: 1px solid var(--palette-border, rgba(0, 188, 242, 0.25));
+    border-radius: 8px;
+    color: var(--palette-text, #ffffff);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 150ms ease;
+    touch-action: manipulation;
+    flex-shrink: 0;
+  }
+
+  .mobileMenuButton:hover,
+  .mobileMenuButton:active {
+    background: color-mix(in srgb, var(--palette-primary, #00bcf2) 20%, transparent);
+    border-color: var(--palette-primary, #00bcf2);
+  }
+
+  .mobileMenuButton:focus {
+    outline: 2px solid var(--palette-primary, #00bcf2);
+    outline-offset: 2px;
+  }
+
+  .mobileMenuButton svg {
+    width: 24px;
+    height: 24px;
   }
 
   .headerLeft,

@@ -334,6 +334,10 @@ export function SoundEffectsProvider({ children }: PropsWithChildren<{}>) {
     (options?: SoundPlayOptions) => playSound("help-command", options),
     [playSound]
   );
+  const playFaucetSound = useCallback(
+    (options?: SoundPlayOptions) => playSound("faucet", options),
+    [playSound]
+  );
 
   const loadDefaultSounds = useCallback(async () => {
     await registerSound("interface-select", {
@@ -391,6 +395,12 @@ export function SoundEffectsProvider({ children }: PropsWithChildren<{}>) {
       volume: 0.8,
       duration: null,
       description: "Help command",
+    });
+    await registerSound("faucet", {
+      src: "/sounds/wookie.mp4.mp3",
+      volume: 0.8,
+      duration: null,
+      description: "Faucet claim",
     });
     // NOTE: Removed command-execute sound registration
     // The wookie.mp4.mp3 sound should ONLY play for interface selection (WelcomeScreen)
@@ -475,6 +485,7 @@ export function SoundEffectsProvider({ children }: PropsWithChildren<{}>) {
       playClearTerminalSound,
       playModernUIThemeSound,
       playHelpCommandSound,
+      playFaucetSound,
     }),
     [
       state,
@@ -493,6 +504,7 @@ export function SoundEffectsProvider({ children }: PropsWithChildren<{}>) {
       playClearTerminalSound,
       playModernUIThemeSound,
       playHelpCommandSound,
+      playFaucetSound,
     ]
   );
 

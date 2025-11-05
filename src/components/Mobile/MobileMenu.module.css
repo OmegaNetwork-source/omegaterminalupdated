@@ -1,0 +1,298 @@
+/**
+ * MobileMenu Component Styles
+ * Slide-in drawer menu for mobile devices
+ */
+
+/* -----------------------------------------------------------------------------
+   Backdrop
+   ----------------------------------------------------------------------------- */
+
+.backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.85);
+  z-index: 9998;
+  animation: fadeIn 300ms ease-out;
+  backdrop-filter: blur(4px);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* -----------------------------------------------------------------------------
+   Menu Drawer
+   ----------------------------------------------------------------------------- */
+
+.menu {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: min(280px, 80vw);
+  max-width: 280px;
+  background: var(--palette-bg, #0a0a0f);
+  border-right: 1px solid var(--palette-border, rgba(0, 188, 242, 0.25));
+  z-index: 9999;
+  transform: translateX(-100%);
+  transition: transform 300ms ease-out;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.5);
+}
+
+.menu.open {
+  transform: translateX(0);
+}
+
+/* Safe area insets for notched devices */
+@supports (padding: max(0px)) {
+  .menu {
+    padding-top: max(0px, env(safe-area-inset-top));
+    padding-bottom: max(0px, env(safe-area-inset-bottom));
+  }
+}
+
+/* -----------------------------------------------------------------------------
+   Menu Header
+   ----------------------------------------------------------------------------- */
+
+.menuHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--palette-border, rgba(0, 188, 242, 0.25));
+  background: color-mix(in srgb, var(--palette-bg, #0a0a0f) 95%, transparent);
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  flex-shrink: 0;
+}
+
+.menuTitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--palette-text, #ffffff);
+  margin: 0;
+  font-family: "Courier New", monospace;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.closeButton {
+  min-width: 36px;
+  min-height: 36px;
+  background: color-mix(in srgb, var(--palette-primary, #00bcf2) 10%, transparent);
+  border: 1px solid var(--palette-border, rgba(0, 188, 242, 0.25));
+  border-radius: 6px;
+  color: var(--palette-text, #ffffff);
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 150ms ease;
+  touch-action: manipulation;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.closeButton:hover,
+.closeButton:active {
+  background: color-mix(in srgb, var(--palette-primary, #00bcf2) 15%, transparent);
+  border-color: var(--palette-primary, #00bcf2);
+}
+
+.closeButton:focus {
+  outline: 2px solid var(--palette-primary, #00bcf2);
+  outline-offset: 2px;
+}
+
+/* -----------------------------------------------------------------------------
+   Menu Content
+   ----------------------------------------------------------------------------- */
+
+.menuContent {
+  padding: 12px 0;
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.menuSection {
+  margin-bottom: 16px;
+}
+
+.sectionTitle {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--palette-text-secondary, rgba(255, 255, 255, 0.6));
+  padding: 0 16px;
+  margin-bottom: 6px;
+  font-family: "Courier New", monospace;
+}
+
+.menuItems {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.menuItem {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  background: none;
+  border: none;
+  color: var(--palette-text, #ffffff);
+  font-size: 14px;
+  text-align: left;
+  cursor: pointer;
+  min-height: 44px; /* Touch target */
+  transition: all 150ms ease;
+  font-family: "Courier New", monospace;
+  touch-action: manipulation;
+  border-left: 3px solid transparent;
+}
+
+.menuItem:hover,
+.menuItem:focus {
+  background: color-mix(in srgb, var(--palette-primary, #00bcf2) 10%, transparent);
+  border-left-color: var(--palette-primary, #00bcf2);
+  outline: none;
+}
+
+.menuItem:active {
+  background: color-mix(in srgb, var(--palette-primary, #00bcf2) 20%, transparent);
+  border-left-color: var(--palette-primary, #00bcf2);
+}
+
+.menuIcon {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.menuIconSvg {
+  width: 20px;
+  height: 20px;
+  color: var(--palette-primary, #00bcf2);
+  transition: color 0.2s ease;
+}
+
+.menuLabel {
+  flex: 1;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.menuBadge {
+  background: var(--palette-primary, #00bcf2);
+  color: var(--palette-bg, #000000);
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 10px;
+  font-weight: 600;
+  flex-shrink: 0;
+  min-width: 20px;
+  text-align: center;
+  line-height: 1.4;
+}
+
+/* -----------------------------------------------------------------------------
+   Theme Variants
+   ----------------------------------------------------------------------------- */
+
+:global(body.light-mode) .menu {
+  background: var(--palette-bg, rgba(250, 252, 255, 0.98));
+  border-right-color: var(--palette-border, rgba(0, 81, 213, 0.2));
+  color: var(--palette-text, rgba(18, 22, 38, 0.92));
+}
+
+:global(body.light-mode) .menuTitle {
+  color: var(--palette-text, rgba(18, 22, 38, 0.92));
+}
+
+:global(body.light-mode) .menuItem {
+  color: var(--palette-text, rgba(18, 22, 38, 0.92));
+}
+
+:global(body.light-mode) .sectionTitle {
+  color: var(--palette-text-secondary, rgba(18, 22, 38, 0.6));
+}
+
+/* -----------------------------------------------------------------------------
+   Responsive Adjustments
+   ----------------------------------------------------------------------------- */
+
+@media (max-width: 480px) {
+  .menu {
+    width: 80vw;
+    max-width: 80vw;
+  }
+
+  .menuHeader {
+    padding: 12px 14px;
+  }
+
+  .menuTitle {
+    font-size: 14px;
+  }
+
+  .menuItem {
+    padding: 10px 14px;
+    font-size: 13px;
+    min-height: 44px;
+  }
+
+  .menuLabel {
+    font-size: 13px;
+  }
+
+  .menuIcon {
+    width: 18px;
+    height: 18px;
+  }
+
+  .menuIconSvg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .sectionTitle {
+    padding: 0 14px;
+    font-size: 10px;
+  }
+}
+
+/* Reduce motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .menu {
+    transition: none;
+  }
+
+  .backdrop {
+    animation: none;
+  }
+}
+

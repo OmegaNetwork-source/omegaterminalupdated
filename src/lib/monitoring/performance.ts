@@ -13,9 +13,10 @@ export interface PerformanceMetric {
  * Report Core Web Vitals to local storage, dev console, and optionally an analytics endpoint.
  */
 export function reportWebVitals(metric: NextWebVitalsMetric): void {
-  if (process.env.NODE_ENV !== "production") {
+  // Only log in development if explicitly enabled
+  if (process.env.NODE_ENV !== "production" && process.env.NEXT_PUBLIC_DEBUG_PERFORMANCE === "true") {
     // eslint-disable-next-line no-console
-    console.log("[Performance]", metric);
+    console.log(`[Performance] ${metric.name}: ${metric.value.toFixed(2)}ms (${metric.rating})`);
   }
 
   if (typeof window === "undefined") {

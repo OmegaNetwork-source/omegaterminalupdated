@@ -55,6 +55,7 @@ const COLOR_PALETTES: ColorPalette[] = [
   "lilac",
   "toxic",
   "radioactive",
+  "light",
 ];
 
 /**
@@ -197,7 +198,10 @@ export function CustomizerProvider({
     const current = colorPalette ? COLOR_PALETTES.indexOf(colorPalette) : -1;
     const nextIndex =
       (current + 1 + COLOR_PALETTES.length) % COLOR_PALETTES.length;
-    setColorPalette(COLOR_PALETTES[nextIndex]);
+    const nextPalette = COLOR_PALETTES[nextIndex];
+    if (nextPalette) {
+      setColorPalette(nextPalette);
+    }
   }, [colorPalette, setColorPalette]);
 
   const updateSettings = useCallback(

@@ -10,7 +10,7 @@
 
 .statsPanel {
   grid-area: stats;
-  background: rgba(21, 21, 32, 0.7);
+  background: color-mix(in srgb, var(--palette-surface, rgba(21, 21, 32, 1)) 70%, transparent);
   backdrop-filter: blur(20px);
   border: 1px solid var(--palette-border, rgba(0, 212, 255, 0.15));
   border-radius: 12px;
@@ -22,9 +22,10 @@
   overflow-x: hidden;
   max-height: 100vh;
   scrollbar-width: thin;
-  scrollbar-color: var(--palette-primary, #00d4ff) rgba(0, 0, 0, 0.2);
+  scrollbar-color: var(--palette-primary, #00d4ff) var(--palette-surface, rgba(0, 0, 0, 0.2));
   font-family: "Courier New", monospace;
   transition: border-color 0.3s ease;
+  color: var(--palette-text, #ffffff);
 }
 
 .statsPanel::-webkit-scrollbar {
@@ -85,13 +86,14 @@
 }
 
 .section {
-  background: rgba(21, 21, 32, 0.7);
+  background: color-mix(in srgb, var(--palette-surface, rgba(21, 21, 32, 1)) 70%, transparent);
   backdrop-filter: blur(20px);
   border: 1px solid var(--palette-border, rgba(0, 212, 255, 0.15));
   border-radius: 12px;
   padding: 24px;
   flex-shrink: 0;
   transition: border-color 0.3s ease;
+  color: var(--palette-text, #ffffff);
 }
 
 .sectionCollapsible .sectionContent {
@@ -156,7 +158,7 @@
 
 .statLabel {
   font-size: 11px;
-  color: rgba(255, 255, 255, 0.55);
+  color: color-mix(in srgb, var(--palette-text, #ffffff) 55%, transparent);
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -164,7 +166,7 @@
 .statValue {
   font-size: 12px;
   font-weight: 700;
-  color: rgba(255, 255, 255, 0.92);
+  color: color-mix(in srgb, var(--palette-text, #ffffff) 92%, transparent);
   text-align: right;
 }
 
@@ -174,7 +176,7 @@
 }
 
 .statValueMuted {
-  color: rgba(255, 255, 255, 0.45);
+  color: color-mix(in srgb, var(--palette-text, #ffffff) 45%, transparent);
 }
 
 /* -----------------------------------------------------------------------------
@@ -212,7 +214,7 @@
   width: 100%;
   height: 10px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.1);
+  background: color-mix(in srgb, var(--palette-text, #ffffff) 10%, transparent);
   overflow: hidden;
 }
 
@@ -220,7 +222,7 @@
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  background: rgba(0, 188, 242, 0.08);
+  background: color-mix(in srgb, var(--palette-primary, rgba(0, 188, 242, 1)) 8%, transparent);
 }
 
 .progressFill {
@@ -252,7 +254,7 @@
   font-size: 10px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.55);
+  color: color-mix(in srgb, var(--palette-text, #ffffff) 55%, transparent);
 }
 
 /* -----------------------------------------------------------------------------
@@ -263,12 +265,18 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
-  background: rgba(0, 8, 18, 0.8);
-  border: 1px solid var(--palette-border, rgba(0, 188, 242, 0.2));
-  border-radius: 16px;
+  background: linear-gradient(
+    165deg,
+    color-mix(in srgb, var(--palette-primary, #00bcf2) 8%, rgba(6, 26, 38, 0.92)) 0%,
+    rgba(0, 0, 0, 0.94) 100%
+  );
+  border: 1px solid var(--palette-border, color-mix(in srgb, var(--palette-primary, #00bcf2) 28%, transparent));
+  border-radius: var(--theme-radius-lg, 16px);
   padding: 16px;
   position: relative;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
 }
 
 .chartPanelActive {
@@ -290,7 +298,7 @@
   font-weight: 700;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--palette-primary, rgba(0, 188, 242, 0.95));
+  color: var(--palette-primary, #00bcf2);
   transition: color 0.3s ease;
 }
 
@@ -298,31 +306,45 @@
   display: flex;
   gap: 10px;
   font-size: 11px;
-  color: rgba(255, 255, 255, 0.55);
+  color: color-mix(in srgb, var(--palette-text, #ffffff) 55%, transparent);
 }
 
 .closeButton {
-  background: transparent;
-  border: none;
-  color: rgba(255, 255, 255, 0.45);
+  background: color-mix(in srgb, var(--palette-text, #ffffff) 4%, transparent);
+  border: 1px solid var(--palette-border, color-mix(in srgb, var(--palette-text, #ffffff) 20%, transparent));
+  color: color-mix(in srgb, var(--palette-text, #ffffff) 78%, transparent);
   cursor: pointer;
-  padding: 6px;
-  border-radius: 8px;
-  transition: background 0.2s ease;
+  padding: 6px 10px;
+  border-radius: var(--theme-radius-md, 8px);
+  transition: all 0.2s ease;
+  min-width: 32px;
+  min-height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .closeButton:hover {
-  background: rgba(255, 255, 255, 0.08);
+  background: color-mix(in srgb, var(--palette-primary, #00bcf2) 12%, transparent);
+  border-color: var(--palette-border, color-mix(in srgb, var(--palette-primary, #00bcf2) 35%, transparent));
+  color: var(--palette-text, #ffffff);
 }
 
 .chartContainer {
   width: 100%;
-  min-height: 400px;
-  height: 500px;
+  aspect-ratio: 1 / 1;
+  min-height: 320px;
+  max-height: 500px;
   border-radius: 12px;
-  background: rgba(0, 0, 0, 0.35);
+  background: color-mix(in srgb, var(--palette-bg, #0a0a0f) 95%, transparent);
   overflow: hidden;
   position: relative;
+  border: 1px solid var(--palette-border, color-mix(in srgb, var(--palette-primary, #00bcf2) 20%, transparent));
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.chartContainer:hover {
+  box-shadow: 0 8px 24px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #00bcf2) 18%, transparent));
 }
 
 /* Media Panel Wrapper - contains Spotify, YouTube, News panels */
@@ -346,22 +368,24 @@
 .panelLoading {
   padding: 20px;
   text-align: center;
-  color: rgba(255, 255, 255, 0.6);
+  color: color-mix(in srgb, var(--palette-text, #ffffff) 60%, transparent);
   font-size: 12px;
   letter-spacing: 0.1em;
 }
 
 @media (max-width: 1024px) {
   .chartContainer {
-    min-height: 300px;
-    height: 350px;
+    aspect-ratio: 1 / 1;
+    min-height: 280px;
+    max-height: 350px;
   }
 }
 
 @media (max-height: 800px) {
   .chartContainer {
-    min-height: 250px;
-    height: 300px;
+    aspect-ratio: 1 / 1;
+    min-height: 240px;
+    max-height: 300px;
   }
 }
 
@@ -371,13 +395,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 0, 0, 0.55);
+  background: color-mix(in srgb, var(--palette-bg, #000000) 55%, transparent);
 }
 
 .loadingSpinner {
   width: 32px;
   height: 32px;
-  border: 3px solid rgba(255, 255, 255, 0.25);
+  border: 3px solid color-mix(in srgb, var(--palette-text, #ffffff) 25%, transparent);
   border-top-color: var(--palette-primary, rgba(0, 188, 242, 0.85));
   border-radius: 50%;
   animation: spin 1s linear infinite;
@@ -396,7 +420,7 @@
 .activityEntry {
   font-size: 11px;
   padding: 6px 0;
-  color: rgba(255, 255, 255, 0.55);
+  color: color-mix(in srgb, var(--palette-text, #ffffff) 55%, transparent);
   border-bottom: 1px solid var(--palette-border, rgba(0, 188, 242, 0.12));
   transition: border-color 0.3s ease;
 }
@@ -407,7 +431,7 @@
 }
 
 .activityEntryOld {
-  color: rgba(255, 255, 255, 0.35);
+  color: color-mix(in srgb, var(--palette-text, #ffffff) 35%, transparent);
 }
 
 /* -----------------------------------------------------------------------------
@@ -451,6 +475,101 @@
 }
 
 /* -----------------------------------------------------------------------------
+   Light Palette Overrides - Ensure stats panel works with light background
+   ----------------------------------------------------------------------------- */
+
+:global(body[data-color-palette="light"]) .statsPanel {
+  background: color-mix(in srgb, var(--palette-surface, #f8fafc) 95%, transparent) !important;
+  border: 1px solid var(--palette-border, #e2e8f0) !important;
+  color: var(--palette-text, #1e293b) !important;
+}
+
+:global(body[data-color-palette="light"]) .section {
+  background: color-mix(in srgb, var(--palette-surface, #f8fafc) 95%, transparent) !important;
+  border: 1px solid var(--palette-border, #e2e8f0) !important;
+  color: var(--palette-text, #1e293b) !important;
+}
+
+:global(body[data-color-palette="light"]) .header {
+  color: var(--palette-primary, #1e40af) !important;
+  border-bottom-color: var(--palette-border, #e2e8f0) !important;
+}
+
+:global(body[data-color-palette="light"]) .statLabel {
+  color: color-mix(in srgb, var(--palette-text, #1e293b) 70%, transparent) !important;
+}
+
+:global(body[data-color-palette="light"]) .statValue {
+  color: var(--palette-text, #1e293b) !important;
+}
+
+:global(body[data-color-palette="light"]) .statValueMuted {
+  color: color-mix(in srgb, var(--palette-text, #1e293b) 60%, transparent) !important;
+}
+
+:global(body[data-color-palette="light"]) .progressBar {
+  background: color-mix(in srgb, var(--palette-text, #1e293b) 15%, transparent) !important;
+}
+
+:global(body[data-color-palette="light"]) .progressTrack {
+  background: color-mix(in srgb, var(--palette-primary, #1e40af) 12%, transparent) !important;
+}
+
+:global(body[data-color-palette="light"]) .progressText {
+  color: color-mix(in srgb, var(--palette-text, #1e293b) 70%, transparent) !important;
+}
+
+:global(body[data-color-palette="light"]) .infoBar {
+  color: color-mix(in srgb, var(--palette-text, #1e293b) 70%, transparent) !important;
+}
+
+:global(body[data-color-palette="light"]) .activityEntry {
+  color: color-mix(in srgb, var(--palette-text, #1e293b) 70%, transparent) !important;
+  border-bottom-color: var(--palette-border, #e2e8f0) !important;
+}
+
+:global(body[data-color-palette="light"]) .activityEntryOld {
+  color: color-mix(in srgb, var(--palette-text, #1e293b) 50%, transparent) !important;
+}
+
+:global(body[data-color-palette="light"]) .panelLoading {
+  color: color-mix(in srgb, var(--palette-text, #1e293b) 70%, transparent) !important;
+}
+
+:global(body[data-color-palette="light"]) .loadingOverlay {
+  background: color-mix(in srgb, var(--palette-bg, #ffffff) 85%, transparent) !important;
+}
+
+:global(body[data-color-palette="light"]) .loadingSpinner {
+  border-color: color-mix(in srgb, var(--palette-text, #1e293b) 30%, transparent) !important;
+  border-top-color: var(--palette-primary, #1e40af) !important;
+}
+
+:global(body[data-color-palette="light"]) .statsPanel::-webkit-scrollbar-thumb {
+  background: linear-gradient(
+    180deg,
+    var(--palette-primary, rgba(30, 64, 175, 0.6)),
+    var(--palette-secondary, rgba(5, 150, 105, 0.6))
+  ) !important;
+}
+
+:global(body[data-color-palette="light"]) .statsPanel::-webkit-scrollbar-track {
+  background: color-mix(in srgb, var(--palette-surface, #f8fafc) 50%, transparent) !important;
+}
+
+/* Light palette with theme combinations */
+:global(body[data-color-palette="light"].theme-executive) .statsPanel,
+:global(body[data-color-palette="light"].theme-modern) .statsPanel,
+:global(body[data-color-palette="light"].theme-matrix) .statsPanel,
+:global(body[data-color-palette="light"].theme-retro) .statsPanel,
+:global(body[data-color-palette="light"].theme-powershell) .statsPanel,
+:global(body[data-color-palette="light"].theme-dark) .statsPanel {
+  background: color-mix(in srgb, var(--palette-surface, #f8fafc) 95%, transparent) !important;
+  border: 1px solid var(--palette-border, #e2e8f0) !important;
+  color: var(--palette-text, #1e293b) !important;
+}
+
+/* -----------------------------------------------------------------------------
    Responsive Breakpoints
    ----------------------------------------------------------------------------- */
 
@@ -491,7 +610,9 @@
   }
 
   .chartContainer {
-    height: 200px;
+    aspect-ratio: 1 / 1;
+    min-height: 200px;
+    max-height: 280px;
   }
 }
 

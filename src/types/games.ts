@@ -26,6 +26,8 @@ export enum GameType {
   PERFECT_CIRCLE = 10,
   PACMAN = 11,
   BRICK_BREAKER = 12,
+  BASHIDO = 13,
+  PG_TANKS = 14,
 }
 
 /**

@@ -180,18 +180,23 @@ export interface DeFiLlamaTokenPrice {
 /**
  * PGT wallet data
  * Used for individual wallet tracking
+ * Matches vanilla pgt-terminal-integration.js structure
  */
 export interface PGTWallet {
   address: string;
   network: string;
-  label?: string;
+  label: string;
   totalValue: number;
-  change24hPercent?: number;
+  change24h: number;
+  change24hPercent: number;
   tokens: Array<{
     symbol: string;
     balance: number;
     value: number;
+    price: number;
   }>;
+  addedAt: string;
+  lastUpdated: string;
 }
 
 /**
@@ -200,7 +205,17 @@ export interface PGTWallet {
  */
 export interface PGTPortfolio {
   totalValue: number;
+  totalChange24h: number;
+  totalChange24hPercent: number;
   walletCount: number;
-  totalChange24hPercent?: number;
-  wallets: PGTWallet[];
+  networks: string[];
+  wallets: Array<{
+    address: string;
+    network: string;
+    label: string;
+    totalValue: number;
+    change24h: number;
+    change24hPercent: number;
+    lastUpdated: string;
+  }>;
 }

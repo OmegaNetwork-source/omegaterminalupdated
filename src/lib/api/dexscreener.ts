@@ -25,12 +25,13 @@ export async function searchTokens(
     const response = await fetch(
       `/api/dex/search?q=${encodeURIComponent(query)}`,
       {
-        next: { revalidate: 60 }, // Cache for 1 minute
+        cache: "no-store", // Don't use Next.js cache on client side
       }
     );
 
     if (!response.ok) {
-      throw new Error(`DexScreener API error: ${response.statusText}`);
+      const errorData = await response.json().catch(() => ({ error: response.statusText }));
+      throw new Error(errorData.error || `HTTP ${response.status}: ${response.statusText}`);
     }
 
     const data = await response.json();
@@ -44,6 +45,7 @@ export async function searchTokens(
       success: true,
     };
   } catch (error) {
+    console.error("DexScreener searchTokens error:", error);
     return {
       pairs: [],
       success: false,
@@ -65,11 +67,12 @@ export async function getTrendingTokens(): Promise<{
 }> {
   try {
     const response = await fetch(`/api/dex/trending`, {
-      next: { revalidate: 120 }, // Cache for 2 minutes
+      cache: "no-store", // Don't use Next.js cache on client side
     });
 
     if (!response.ok) {
-      throw new Error(`DexScreener API error: ${response.statusText}`);
+      const errorData = await response.json().catch(() => ({ error: response.statusText }));
+      throw new Error(errorData.error || `HTTP ${response.status}: ${response.statusText}`);
     }
 
     const data = await response.json();
@@ -80,6 +83,7 @@ export async function getTrendingTokens(): Promise<{
       success: true,
     };
   } catch (error) {
+    console.error("DexScreener getTrendingTokens error:", error);
     return {
       pairs: [],
       success: false,

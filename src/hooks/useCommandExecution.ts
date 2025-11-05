@@ -23,10 +23,12 @@ import { useState, useCallback, useRef, useEffect } from "react";
 import { useTheme } from "@/hooks/useTheme";
 import { useWallet } from "@/hooks/useWallet";
 import { useMultiChain } from "@/hooks/useMultiChain";
+import { usePerps } from "@/hooks/usePerps";
 import { useSpotify } from "@/hooks/useSpotify";
 import { useYouTube } from "@/hooks/useYouTube";
 import { useNewsReader } from "@/hooks/useNewsReader";
 import { useGames } from "@/hooks/useGames";
+import { usePGT } from "@/hooks/usePGT";
 import { useSoundEffects } from "@/hooks/useSoundEffects";
 import { commandRegistry } from "@/lib/commands";
 import { openNetworkSelector } from "@/lib/wallet/networkSelector";
@@ -100,10 +102,12 @@ export function useCommandExecution(): UseCommandExecutionReturn {
   const theme = useTheme();
   const wallet = useWallet();
   const multichain = useMultiChain();
+  const perps = usePerps();
   const spotify = useSpotify();
   const youtube = useYouTube();
   const newsReader = useNewsReader();
   const games = useGames();
+  const pgt = usePGT();
   const soundEffects = useSoundEffects();
   const viewModeCtx = useViewMode();
   const guiThemeCtx = useGUITheme();
@@ -728,6 +732,13 @@ export function useCommandExecution(): UseCommandExecutionReturn {
             },
           },
           media: {
+            perps: {
+              state: perps.playerState,
+              openPanel: perps.openPanel,
+              closePanel: perps.closePanel,
+              setPair: perps.setPair,
+              refresh: perps.refresh,
+            },
             spotify: {
               state: spotify.playerState,
               authState: spotify.authState,
@@ -763,6 +774,16 @@ export function useCommandExecution(): UseCommandExecutionReturn {
               openPanel: newsReader.openPanel,
               closePanel: newsReader.closePanel,
             },
+            pgt: {
+              wallets: pgt.wallets,
+              portfolio: pgt.portfolio,
+              isLoading: pgt.isLoading,
+              addWallet: pgt.addWallet,
+              removeWallet: pgt.removeWallet,
+              getWallet: pgt.getWallet,
+              refreshPortfolio: pgt.refreshPortfolio,
+              refreshWallet: pgt.refreshWallet,
+            },
           },
           games: {
             state: games.gamesState,
@@ -788,6 +809,7 @@ export function useCommandExecution(): UseCommandExecutionReturn {
             playClearTerminalSound: soundEffects.playClearTerminalSound,
             playModernUIThemeSound: soundEffects.playModernUIThemeSound,
             playHelpCommandSound: soundEffects.playHelpCommandSound,
+            playFaucetSound: soundEffects.playFaucetSound,
           },
           ui: {
             viewMode: viewModeCtx.viewMode,
@@ -837,6 +859,7 @@ export function useCommandExecution(): UseCommandExecutionReturn {
     theme,
     wallet,
     multichain,
+    perps,
     spotify,
     youtube,
     newsReader,

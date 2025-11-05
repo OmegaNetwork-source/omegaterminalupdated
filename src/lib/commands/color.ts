@@ -38,6 +38,7 @@ const COLOR_PALETTES: Record<string, string> = {
   lilac: "Lavender - Soft purple and lilac",
   toxic: "Toxic - Radioactive lime green",
   radioactive: "Toxic - Radioactive lime green",
+  light: "Light - White background with dark text and accents",
 };
 
 /**
@@ -139,6 +140,10 @@ function listPalettes(context: CommandContext): void {
   context.log("  color ice          Ice - Glacial frost", "output");
   context.log("  color mint         Mint - Fresh turquoise", "output");
   context.log("  color slate        Slate - Cool gray/silver", "output");
+  context.log("", "output");
+
+  context.log("LIGHT MODE:", "info");
+  context.log("  color light        Light - White background with dark text", "output");
   context.log("", "output");
 
   context.log("WARM TONES:", "info");

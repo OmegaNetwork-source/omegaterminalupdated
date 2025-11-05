@@ -453,6 +453,15 @@ const faucetCommand: Command = {
         return;
       }
 
+      // Play faucet sound effect
+      if (context.sound) {
+        try {
+          await context.sound.playFaucetSound();
+        } catch {
+          // Ignore sound errors
+        }
+      }
+
       context.log("🚰 Claiming from faucet...", "info");
       const tx = await faucetContract.claim({ gasLimit: 100000n });
       context.log(`📝 Transaction sent: ${tx.hash}`, "info");

@@ -1,0 +1,138 @@
+/**
+ * Ravaged Planet Game Styles
+ * Uniform with Omega Terminal UI
+ */
+
+.container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 600px;
+  background: color-mix(in srgb, var(--palette-surface, rgba(21, 21, 32, 1)) 95%, transparent);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: visible; /* Changed from hidden to allow VictoryScreen to show */
+  font-family: "Courier New", monospace;
+  z-index: 1; /* Ensure container has z-index context */
+}
+
+.gameWrapper {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 40px;
+  color: var(--palette-text, #ffffff);
+}
+
+.loadingSpinner {
+  font-size: 48px;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.1);
+  }
+}
+
+.scoreOverlay {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+  background: color-mix(
+    in srgb,
+    var(--palette-surface, rgba(21, 21, 32, 1)) 80%,
+    transparent
+  );
+  border: 1px solid color-mix(
+    in srgb,
+    var(--palette-primary, #00d4ff) 40%,
+    transparent
+  );
+  border-radius: 8px;
+  padding: 12px 16px;
+  backdrop-filter: blur(10px);
+}
+
+.scoreItem {
+  color: var(--palette-secondary, #00ff88);
+  font-weight: 700;
+  font-size: 14px;
+  text-shadow: 0 0 8px color-mix(
+    in srgb,
+    var(--palette-secondary, #00ff88) 40%,
+    transparent
+  );
+}
+
+/* Ensure ravaged-planet game fits within modal */
+/* Scope ravaged-planet styles to prevent global style leaks */
+.container :global(#ravaged-planet-root) {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.container :global(#ravaged-planet-root #root) {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.container :global(#ravaged-planet-root #game-container) {
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  position: relative;
+}
+
+/* Override ravaged-planet global body styles within game container */
+.container :global(#ravaged-planet-root) :global(body) {
+  background: transparent !important;
+  height: auto !important;
+  width: auto !important;
+  overflow: visible !important;
+  cursor: auto !important;
+}
+
+/* Ensure game canvas is properly sized */
+.container :global(#ravaged-planet-root) :global(canvas) {
+  max-width: 100%;
+  max-height: 100%;
+  display: block;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .container {
+    min-height: 500px;
+  }
+  
+  .scoreOverlay {
+    top: 10px;
+    right: 10px;
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+}
+

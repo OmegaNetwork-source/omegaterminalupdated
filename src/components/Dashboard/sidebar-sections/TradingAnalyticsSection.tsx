@@ -2,6 +2,7 @@
 
 import { useCallback } from "react";
 import { useTerminal } from "@/providers/TerminalProvider";
+import { usePerps } from "@/hooks/usePerps";
 import styles from "../DashboardSidebar.module.css";
 import { getSubActionIcon } from "../utils/subActionIcons";
 
@@ -11,6 +12,7 @@ import { getSubActionIcon } from "../utils/subActionIcons";
  */
 export function TradingAnalyticsSection(): JSX.Element {
   const { executeCommand } = useTerminal();
+  const perps = usePerps();
 
   const handleCommand = useCallback(
     (command: string) => {
@@ -22,7 +24,7 @@ export function TradingAnalyticsSection(): JSX.Element {
   return (
     <div className={styles.sectionContent}>
       {/* Omega Perps */}
-      <button className={styles.button} onClick={() => handleCommand("perps")}>
+      <button className={styles.button} onClick={() => perps.openPanel()}>
         <svg
           className={styles.buttonIcon}
           viewBox="0 0 24 24"
@@ -98,7 +100,7 @@ export function TradingAnalyticsSection(): JSX.Element {
         </div>
       </details>
 
-      {/* Market Analytics */}
+      {/* DexScreener */}
       <details className={styles.expandable}>
         <summary className={styles.expandableButton}>
           <svg
@@ -108,7 +110,7 @@ export function TradingAnalyticsSection(): JSX.Element {
           >
             <path d="M16,6L18.29,8.29L13.41,13.17L9.41,9.17L2,16.59L3.41,18L9.41,12L13.41,16L19.71,9.71L22,12V6H16Z" />
           </svg>
-          <span>Market Analytics</span>
+          <span>DexScreener</span>
           <svg
             className={styles.expandIcon}
             viewBox="0 0 24 24"
@@ -120,31 +122,45 @@ export function TradingAnalyticsSection(): JSX.Element {
         <div className={styles.subActions}>
           <button
             className={styles.subButton}
-            onClick={() => handleCommand("dexscreener search BTC")}
+            onClick={() => handleCommand("ds search WBTC")}
           >
             {getSubActionIcon("BTC Analytics")}
             <span>BTC Analytics</span>
           </button>
           <button
             className={styles.subButton}
-            onClick={() => handleCommand("dexscreener search ETH")}
+            onClick={() => handleCommand("ds search WETH")}
           >
             {getSubActionIcon("ETH Analytics")}
             <span>ETH Analytics</span>
           </button>
           <button
             className={styles.subButton}
-            onClick={() => handleCommand("dexscreener search SOL")}
+            onClick={() => handleCommand("ds search SOL")}
           >
             {getSubActionIcon("SOL Analytics")}
             <span>SOL Analytics</span>
           </button>
           <button
             className={styles.subButton}
-            onClick={() => handleCommand("dexscreener")}
+            onClick={() => handleCommand("ds trending")}
           >
-            {getSubActionIcon("Custom Token")}
-            <span>Custom Token</span>
+            {getSubActionIcon("Trending Tokens")}
+            <span>Trending Tokens</span>
+          </button>
+          <button
+            className={styles.subButton}
+            onClick={() => handleCommand("ds analytics")}
+          >
+            {getSubActionIcon("Analytics")}
+            <span>Token Analytics</span>
+          </button>
+          <button
+            className={styles.subButton}
+            onClick={() => handleCommand("ds")}
+          >
+            {getSubActionIcon("DexScreener Help")}
+            <span>DexScreener Help</span>
           </button>
         </div>
       </details>

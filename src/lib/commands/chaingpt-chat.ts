@@ -26,33 +26,55 @@ async function handleInit(
 ): Promise<void> {
   const apiKey = args[2]; // Optional API key from user
 
+  if (!apiKey) {
+    // No API key provided - just show status
+    context.log("📊 ChainGPT Status:", "info");
+    context.log("", "output");
+    
+    const capabilities = await chaingpt.getCapabilities();
+    const hasServerKey = capabilities.hasServerKey;
+    const hasUserKey = !!chaingpt.getApiKey();
+    
+    if (hasUserKey) {
+      const masked = chaingpt.getApiKey()?.length 
+        ? `${chaingpt.getApiKey()!.slice(0, 8)}...${chaingpt.getApiKey()!.slice(-4)}`
+        : "****";
+      context.log(`✅ Using custom API key: ${masked}`, "success");
+    } else if (hasServerKey) {
+      context.log("✅ Using server API key (auto-configured)", "success");
+    } else {
+      context.log("⚠️ No API key configured", "info");
+      context.log("", "output");
+      context.log("💡 ChainGPT commands work automatically with server keys", "info");
+      context.log("💡 To use your own key: chat init <api-key>", "info");
+    }
+    
+    context.log("", "output");
+    context.log("📖 Commands work immediately:", "info");
+    context.log("   chat ask What is DeFi?", "output");
+    context.log("   chat stream Explain blockchain", "output");
+    return;
+  }
+
   try {
     const result = await chaingpt.initialize(apiKey);
 
     if (result.success) {
-      context.log("✅ ChainGPT initialized successfully!", "success");
+      context.log("✅ ChainGPT initialized with custom API key!", "success");
       context.log("", "output");
-
-      if (result.message) {
-        context.log(result.message, "info");
-      }
-
+      context.log(result.message || "Custom API key saved", "info");
       context.log("", "output");
-      context.log("📖 NEXT STEPS:", "info");
-      context.log("", "output");
-      context.log("1. Try asking a question:", "output");
-      context.log("   chat ask What is DeFi?", "info");
-      context.log("", "output");
-      context.log("2. Try streaming mode:", "output");
-      context.log("   chat stream Explain blockchain technology", "info");
-      context.log("", "output");
-      context.log("3. Get help:", "output");
-      context.log("   chat help", "info");
+      context.log("📖 Try a command:", "info");
+      context.log("   chat ask What is DeFi?", "output");
     } else {
       context.log(`❌ Initialization failed: ${result.error}`, "error");
+      context.log("", "output");
+      context.log("💡 Commands will still work with server keys if available", "info");
     }
   } catch (error: any) {
     context.log(`❌ Error: ${error.message}`, "error");
+    context.log("", "output");
+    context.log("💡 Commands will still work with server keys if available", "info");
   }
 }
 
@@ -63,15 +85,8 @@ async function handleAsk(
   context: CommandContext,
   args: string[]
 ): Promise<void> {
-  // Check initialization
-  if (!chaingpt.isInitialized()) {
-    context.log("❌ ChainGPT not initialized", "error");
-    context.log("", "output");
-    context.log("💡 Initialize first:", "info");
-    context.log("   chat init              (use default key)", "output");
-    context.log("   chat init <api-key>    (use your own key)", "output");
-    return;
-  }
+  // Commands work immediately - no initialization check needed
+  // Server-side API will use server keys automatically if available
 
   // Get question - skip 'chat' and 'ask' if present
   let questionParts = args.slice(1);
@@ -162,12 +177,28 @@ async function handleAsk(
 
     context.logHtml(html);
   } catch (error: any) {
-    context.log(`❌ Error: ${error.message}`, "error");
-    context.log("", "output");
-    context.log("💡 Troubleshooting:", "info");
-    context.log("   • Check your API key: chat test", "output");
-    context.log("   • Try reinitializing: chat init", "output");
-    context.log("   • Get help: chat help", "output");
+    const errorMsg = error.message || String(error);
+    const errorStr = errorMsg.toLowerCase();
+    
+    // Check if it's an API key/configuration error
+    if (errorStr.includes("key") || errorStr.includes("api") || 
+        errorStr.includes("401") || errorStr.includes("403") ||
+        errorStr.includes("not configured") || errorStr.includes("503")) {
+      context.log(`❌ API Configuration Error`, "error");
+      context.log("", "output");
+      context.log("💡 ChainGPT requires an API key to work:", "info");
+      context.log("", "output");
+      context.log("Option 1: Use your own API key (recommended):", "output");
+      context.log("   chat init <your-api-key>", "info");
+      context.log("   Get one at: https://api.chaingpt.org", "output");
+      context.log("", "output");
+      context.log("Option 2: Server keys may be configured by admin", "output");
+      context.log("   Contact the administrator if server keys are expected", "info");
+    } else {
+      context.log(`❌ Error: ${errorMsg}`, "error");
+      context.log("", "output");
+      context.log("💡 Try again or check: chat test", "info");
+    }
   }
 }
 
@@ -178,15 +209,8 @@ async function handleStream(
   context: CommandContext,
   args: string[]
 ): Promise<void> {
-  // Check initialization
-  if (!chaingpt.isInitialized()) {
-    context.log("❌ ChainGPT not initialized", "error");
-    context.log("", "output");
-    context.log("💡 Initialize first:", "info");
-    context.log("   chat init              (use default key)", "output");
-    context.log("   chat init <api-key>    (use your own key)", "output");
-    return;
-  }
+  // Commands work immediately - no initialization check needed
+  // Server-side API will use server keys automatically if available
 
   // Get question - skip 'chat' and 'stream' if present
   let questionParts = args.slice(1);
@@ -275,13 +299,8 @@ async function handleContext(
   context: CommandContext,
   args: string[]
 ): Promise<void> {
-  // Check initialization
-  if (!chaingpt.isInitialized()) {
-    context.log("❌ ChainGPT not initialized", "error");
-    context.log("", "output");
-    context.log("💡 Initialize first: chat init", "info");
-    return;
-  }
+  // Commands work immediately - no initialization check needed
+  // Server-side API will use server keys automatically if available
 
   // Get question - skip 'chat' and 'context' if present
   let questionParts = args.slice(1);
@@ -387,13 +406,8 @@ async function handleHistory(
   context: CommandContext,
   args: string[]
 ): Promise<void> {
-  // Check initialization
-  if (!chaingpt.isInitialized()) {
-    context.log("❌ ChainGPT not initialized", "error");
-    context.log("", "output");
-    context.log("💡 Initialize first: chat init", "info");
-    return;
-  }
+  // Commands work immediately - no initialization check needed
+  // Server-side API will use server keys automatically if available
 
   // Get question - skip 'chat' and 'history' if present
   let questionParts = args.slice(1);
@@ -571,75 +585,149 @@ async function handleTest(
  * Handle chat help
  */
 function handleHelp(context: CommandContext, args: string[]): void {
-  context.log("", "output");
-  context.log("🤖 CHAINGPT WEB3 AI CHATBOT", "info");
-  context.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━", "output");
-  context.log("", "output");
+  const helpLines = [
+    "═ CHAINGPT WEB3 AI CHATBOT ═",
+    "",
+    "chat init",
+    "Initialize with default API key",
+    "",
+    "chat init <api-key>",
+    "Initialize with your API key",
+    "",
+    "chat ask <question>",
+    "Ask a question (blob response)",
+    "",
+    "chat stream <question>",
+    "Ask a question (streaming response)",
+    "",
+    "chat context <question>",
+    "Ask with Omega Terminal context",
+    "",
+    "chat history <question>",
+    "Ask with conversation history",
+    "",
+    "chat test",
+    "Test API connection",
+    "",
+    "chat help",
+    "Show this help message",
+    "",
+    "→ Examples:",
+    "",
+    "chat init",
+    "chat ask What is DeFi?",
+    "chat stream Explain blockchain",
+    "",
+    "→ Credits:",
+    "",
+    "Standard chat: ~0.5 credits",
+    "Chat with history: ~1.0 credits",
+  ];
 
-  context.log("📋 SETUP & CONFIGURATION", "info");
-  context.log("", "output");
-  context.log(
-    "  chat init                Initialize with default API key",
-    "output"
-  );
-  context.log(
-    "  chat init <api-key>      Initialize with your API key",
-    "output"
-  );
-  context.log("  chat test                Test API connection", "output");
-  context.log("", "output");
+  let helpHtml = `
+    <div style="
+      font-family: 'Courier New', monospace;
+      line-height: 1.8;
+      color: var(--palette-text, #e0e0e0);
+      padding: 10px;
+    ">
+      <div style="
+        font-size: 18px;
+        font-weight: bold;
+        color: var(--palette-primary, #00d4ff);
+        margin-bottom: 20px;
+        text-align: center;
+        padding: 12px;
+        background: linear-gradient(135deg, rgba(0, 212, 255, 0.15), rgba(0, 255, 136, 0.1));
+        border: 1px solid var(--palette-primary, #00d4ff);
+        border-radius: 6px;
+        text-shadow: 0 0 8px rgba(0, 212, 255, 0.5);
+      ">
+        ═ CHAINGPT WEB3 AI CHATBOT ═
+      </div>
+      <div style="padding: 10px;">
+  `;
 
-  context.log("💬 CHAT COMMANDS", "info");
-  context.log("", "output");
-  context.log(
-    "  chat ask <question>      Ask a question (blob response)",
-    "output"
-  );
-  context.log(
-    "  chat stream <question>   Ask a question (streaming response)",
-    "output"
-  );
-  context.log(
-    "  chat context <question>  Ask with Omega Terminal context",
-    "output"
-  );
-  context.log(
-    "  chat history <question>  Ask with conversation history",
-    "output"
-  );
-  context.log("  chat help                Show this help message", "output");
-  context.log("", "output");
+  helpLines.forEach((line) => {
+    const trimmed = line.trim();
+    const isCommand = trimmed && !trimmed.startsWith("→") && !trimmed.startsWith("═") && 
+                      trimmed.length > 0 && trimmed.length < 50 && 
+                      !trimmed.includes(":") && !trimmed.startsWith("•") &&
+                      (trimmed.includes("chat ") || trimmed.match(/^[a-z-]+$/));
 
-  context.log("📚 EXAMPLES", "info");
-  context.log("", "output");
-  context.log("  # Initialize with default key", "output");
-  context.log("  chat init", "info");
-  context.log("", "output");
-  context.log("  # Ask a question", "output");
-  context.log("  chat ask What is DeFi?", "info");
-  context.log("", "output");
-  context.log("  # Stream a response", "output");
-  context.log("  chat stream Explain blockchain technology", "info");
-  context.log("", "output");
-  context.log("  # Ask with custom context", "output");
-  context.log("  chat context How do I use Omega Terminal?", "info");
-  context.log("", "output");
-  context.log("  # Ask with conversation history", "output");
-  context.log("  chat history What did we discuss earlier?", "info");
-  context.log("", "output");
+    if (isCommand) {
+      const escapedCommand = line.replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+      helpHtml += `
+        <div style="margin: 8px 0; padding-left: 0;">
+          <div
+            class="omega-help-command"
+            data-command="${escapedCommand}"
+            style="
+              color: var(--palette-secondary, #00ff88);
+              font-weight: bold;
+              margin-left: 0;
+              margin-top: 8px;
+              font-family: 'Courier New', monospace;
+              cursor: pointer;
+              display: inline-block;
+              padding: 2px 4px;
+              border-radius: 3px;
+              transition: all 0.2s ease;
+              user-select: none;
+            "
+            title="Click to add '${escapedCommand}' to terminal input"
+          >
+            ${line}
+          </div>
+        </div>
+      `;
+    } else if (trimmed.startsWith("→")) {
+      helpHtml += `
+        <div style="
+          font-size: 14px;
+          font-weight: bold;
+          color: var(--palette-primary, #00d4ff);
+          margin: 15px 0 8px 0;
+          padding: 8px;
+          background: linear-gradient(90deg, rgba(0, 212, 255, 0.2), rgba(0, 212, 255, 0.05));
+          border-left: 4px solid var(--palette-primary, #00d4ff);
+          border-radius: 4px;
+        ">${line}</div>
+      `;
+    } else if (trimmed) {
+      helpHtml += `
+        <div style="
+          color: var(--palette-text, #ccd4e0);
+          margin: 6px 0;
+          padding-left: 0;
+          font-size: 0.95em;
+          line-height: 1.6;
+        ">${escapeHtml(line)}</div>
+      `;
+    } else {
+      helpHtml += `<div style="margin: 8px 0;"></div>`;
+    }
+  });
 
-  context.log("💳 CREDITS", "info");
-  context.log("", "output");
-  context.log("  • Standard chat: ~0.5 credits per request", "output");
-  context.log("  • Chat with history: ~1.0 credits per request", "output");
-  context.log("", "output");
+  helpHtml += `
+        </div>
+        <div style="
+          margin-top: 20px;
+          padding: 12px;
+          background: rgba(0, 212, 255, 0.1);
+          border: 1px solid var(--palette-border, rgba(0, 212, 255, 0.3));
+          border-radius: 6px;
+          font-size: 12px;
+          color: var(--palette-text, #ccd4e0);
+        ">
+          <span style="color: var(--palette-primary, #00d4ff);">🔗</span>
+          <span style="margin-left: 8px;">Get API key: https://api.chaingpt.org</span>
+        </div>
+      </div>
+    </div>
+  `;
 
-  context.log("🔗 RESOURCES", "info");
-  context.log("", "output");
-  context.log("  • Get API key: https://api.chaingpt.org", "output");
-  context.log("  • Documentation: https://docs.chaingpt.org", "output");
-  context.log("  • Support: https://chaingpt.org", "output");
-  context.log("", "output");
+  context.logHtml(helpHtml);
 }
 
 /**

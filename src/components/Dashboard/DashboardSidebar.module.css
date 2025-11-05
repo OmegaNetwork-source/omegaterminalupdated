@@ -10,7 +10,7 @@
 
 .sidebar {
   grid-area: sidebar;
-  background: rgba(21, 21, 32, 0.7);
+  background: color-mix(in srgb, var(--palette-surface, rgba(21, 21, 32, 1)) 70%, transparent);
   backdrop-filter: blur(20px);
   border: 1px solid var(--palette-border, rgba(0, 212, 255, 0.15));
   border-radius: 12px;
@@ -22,6 +22,66 @@
   font-family: var(--theme-font-body, "Courier New", monospace);
   letter-spacing: var(--theme-letter-spacing, 0.05em);
   transition: border-color 0.3s ease;
+  color: var(--palette-text, #ffffff);
+}
+
+/* Ensure all SVG icons inherit colors properly and have no background */
+.sidebar svg {
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  color: inherit;
+  display: block !important;
+  vertical-align: middle;
+  overflow: visible !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  /* Remove any visible bounding box */
+  shape-rendering: geometricPrecision;
+  text-rendering: geometricPrecision;
+}
+
+.sidebar svg path,
+.sidebar svg * {
+  fill: currentColor !important;
+  stroke: none !important;
+  vector-effect: non-scaling-stroke;
+  shape-rendering: geometricPrecision;
+}
+
+/* Fallback: if currentColor fails, use the palette primary color */
+.sidebar .button svg path,
+.sidebar .button svg *,
+.sidebar .expandableButton svg path,
+.sidebar .expandableButton svg *,
+.sidebar .subButton svg path,
+.sidebar .subButton svg * {
+  fill: var(--palette-primary, #00d4ff) !important;
+}
+
+/* Override with currentColor when it's available */
+.sidebar .button svg,
+.sidebar .expandableButton svg,
+.sidebar .subButton svg {
+  color: var(--palette-primary, #00d4ff);
+}
+
+.sidebar .button svg path,
+.sidebar .button svg *,
+.sidebar .expandableButton svg path,
+.sidebar .expandableButton svg *,
+.sidebar .subButton svg path,
+.sidebar .subButton svg * {
+  fill: currentColor !important;
+}
+
+/* Force SVG visibility - ensure paths are always visible */
+.sidebar .button svg,
+.sidebar .expandableButton svg,
+.sidebar .subButton svg {
+  opacity: 1 !important;
+  visibility: visible !important;
 }
 
 .sidebar::-webkit-scrollbar {
@@ -121,6 +181,8 @@
   height: 14px;
   min-width: 14px;
   min-height: 14px;
+  max-width: 14px;
+  max-height: 14px;
   fill: currentColor;
   display: block;
   flex-shrink: 0;
@@ -129,10 +191,29 @@
   transition: all 0.15s ease;
   filter: drop-shadow(0 0 2px currentColor);
   opacity: 0.85;
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  align-self: center;
+  overflow: visible !important;
+  shape-rendering: geometricPrecision;
 }
 
 .sectionTitleIcon path {
-  fill: currentColor;
+  fill: currentColor !important;
+  stroke: none !important;
+  vector-effect: non-scaling-stroke;
+  shape-rendering: geometricPrecision;
+}
+
+.sectionTitleIcon * {
+  fill: currentColor !important;
+  stroke: none !important;
+  vector-effect: non-scaling-stroke;
+  shape-rendering: geometricPrecision;
 }
 
 .sectionTitle:hover .sectionTitleIcon {
@@ -174,10 +255,17 @@
   flex-shrink: 0;
   transition: transform 0.2s ease;
   color: inherit;
+  background: transparent !important;
 }
 
 .toggleIcon path {
-  fill: currentColor;
+  fill: currentColor !important;
+  stroke: none;
+}
+
+.toggleIcon * {
+  fill: currentColor !important;
+  stroke: none;
 }
 
 .sectionCollapsed .toggleIcon {
@@ -249,6 +337,7 @@
   transition: all 0.15s ease, border-color 0.3s ease, background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
   display: flex;
   align-items: center;
+  justify-content: flex-start;
   gap: var(--theme-spacing-sm, 8px);
   min-height: 36px;
   margin-bottom: 4px;
@@ -256,9 +345,16 @@
   overflow: visible;
 }
 
+/* Ensure button SVG icons inherit button color */
+.button svg,
+.button svg * {
+  color: inherit !important;
+}
+
 .button svg {
   display: block;
   flex-shrink: 0;
+  align-self: center;
 }
 
 .button:hover {
@@ -314,16 +410,41 @@
   height: 16px;
   min-width: 16px;
   min-height: 16px;
+  max-width: 16px;
+  max-height: 16px;
   fill: currentColor;
   flex-shrink: 0;
-  display: block;
-  vertical-align: middle;
+  display: block !important;
   filter: drop-shadow(0 0 2px currentColor);
   color: inherit;
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  overflow: visible !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  align-self: center;
+  /* Center the SVG content within its viewBox */
+  vertical-align: middle;
 }
 
 .buttonIcon path {
-  fill: currentColor;
+  fill: currentColor !important;
+  stroke: none !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  vector-effect: non-scaling-stroke;
+}
+
+.buttonIcon * {
+  fill: currentColor !important;
+  stroke: none !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  vector-effect: non-scaling-stroke;
 }
 
 /* Ensure SVG icons are visible and styled correctly */
@@ -331,11 +452,29 @@
 .expandableButton svg.buttonIcon {
   fill: currentColor !important;
   color: inherit;
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  display: block !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  overflow: visible !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  align-self: center;
 }
 
 .button svg.buttonIcon path,
-.expandableButton svg.buttonIcon path {
+.expandableButton svg.buttonIcon path,
+.button svg.buttonIcon *,
+.expandableButton svg.buttonIcon * {
   fill: currentColor !important;
+  stroke: none !important;
+  background: transparent !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  vector-effect: non-scaling-stroke;
 }
 
 .buttonText {
@@ -369,9 +508,16 @@
   list-style: none;
 }
 
+/* Ensure expandable button SVG icons inherit button color */
+.expandableButton svg,
+.expandableButton svg * {
+  color: inherit !important;
+}
+
 .expandableButton svg {
   display: block;
   flex-shrink: 0;
+  align-self: center;
 }
 
 .expandableButton:hover {
@@ -399,10 +545,17 @@
   flex-shrink: 0;
   transition: transform 0.2s ease;
   color: inherit;
+  background: transparent !important;
 }
 
 .expandIcon path {
-  fill: currentColor;
+  fill: currentColor !important;
+  stroke: none;
+}
+
+.expandIcon * {
+  fill: currentColor !important;
+  stroke: none;
 }
 
 details[open] .expandIcon {
@@ -421,7 +574,7 @@ details[open] .expandIcon {
 .subButton {
   background: transparent;
   border: none;
-  color: rgba(255, 255, 255, 0.65);
+  color: color-mix(in srgb, var(--palette-text, #ffffff) 65%, transparent);
   font-family: "Courier New", monospace;
   font-size: 11px;
   font-weight: 400;
@@ -432,7 +585,14 @@ details[open] .expandIcon {
   border-radius: 4px;
   display: flex;
   align-items: center;
+  justify-content: flex-start;
   gap: 6px;
+}
+
+/* Ensure sub-button SVG icons inherit button color */
+.subButton svg,
+.subButton svg * {
+  color: inherit !important;
 }
 
 .subButtonIcon {
@@ -440,17 +600,41 @@ details[open] .expandIcon {
   height: 12px;
   min-width: 12px;
   min-height: 12px;
+  max-width: 12px;
+  max-height: 12px;
   fill: currentColor;
-  display: block;
+  display: block !important;
   flex-shrink: 0;
-  vertical-align: middle;
   color: inherit;
   transition: all 0.15s ease;
   opacity: 0.75;
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  overflow: visible !important;
+  visibility: visible !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  align-self: center;
+  /* Center the SVG content within its viewBox */
+  vertical-align: middle;
 }
 
 .subButtonIcon path {
-  fill: currentColor;
+  fill: currentColor !important;
+  stroke: none !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  vector-effect: non-scaling-stroke;
+}
+
+.subButtonIcon * {
+  fill: currentColor !important;
+  stroke: none !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  vector-effect: non-scaling-stroke;
 }
 
 .subButton:hover .subButtonIcon {
@@ -463,6 +647,39 @@ details[open] .expandIcon {
   background: color-mix(in srgb, var(--palette-primary, #00bcf2) 8%, transparent);
   transform: translateX(4px);
   transition: all 0.15s ease, color 0.3s ease, background-color 0.3s ease;
+}
+
+/* AI Toggle State Indicators - Red when OFF, Green when ON */
+.aiToggleOff {
+  color: #ff4757 !important;
+  border-left: 3px solid #ff4757 !important;
+  padding-left: 5px !important; /* Adjust for left border */
+}
+
+.aiToggleOff:hover {
+  color: #ff4757 !important;
+  background: color-mix(in srgb, #ff4757 12%, transparent) !important;
+  border-left-color: #ff4757 !important;
+}
+
+.aiToggleOn {
+  color: #00ff88 !important;
+  border-left: 3px solid #00ff88 !important;
+  padding-left: 5px !important; /* Adjust for left border */
+}
+
+.aiToggleOn:hover {
+  color: #00ff88 !important;
+  background: color-mix(in srgb, #00ff88 12%, transparent) !important;
+  border-left-color: #00ff88 !important;
+}
+
+.aiToggleOff svg,
+.aiToggleOff svg *,
+.aiToggleOn svg,
+.aiToggleOn svg * {
+  color: inherit !important;
+  fill: currentColor !important;
 }
 
 .subSectionHeader {
@@ -529,6 +746,19 @@ details[open] .expandIcon {
   color: rgba(245, 238, 220, 0.92);
 }
 
+:global(body.theme-executive) .buttonIcon,
+:global(body.theme-executive) .subButtonIcon {
+  fill: currentColor !important;
+  color: inherit;
+}
+
+:global(body.theme-executive) .buttonIcon path,
+:global(body.theme-executive) .subButtonIcon path,
+:global(body.theme-executive) .buttonIcon *,
+:global(body.theme-executive) .subButtonIcon * {
+  fill: currentColor !important;
+}
+
 :global(body.theme-modern) .sidebar {
   background: linear-gradient(
     170deg,
@@ -545,6 +775,19 @@ details[open] .expandIcon {
   color: rgba(220, 220, 245, 0.88);
 }
 
+:global(body.theme-modern) .buttonIcon,
+:global(body.theme-modern) .subButtonIcon {
+  fill: currentColor !important;
+  color: inherit;
+}
+
+:global(body.theme-modern) .buttonIcon path,
+:global(body.theme-modern) .subButtonIcon path,
+:global(body.theme-modern) .buttonIcon *,
+:global(body.theme-modern) .subButtonIcon * {
+  fill: currentColor !important;
+}
+
 :global(body.theme-matrix) .sidebar {
   background: rgba(0, 6, 0, 0.95);
   border: 1px solid var(--palette-border, rgba(57, 255, 20, 0.28));
@@ -554,6 +797,116 @@ details[open] .expandIcon {
 
 :global(body.theme-matrix) .button {
   border-color: rgba(57, 255, 20, 0.25);
+}
+
+:global(body.theme-matrix) .buttonIcon,
+:global(body.theme-matrix) .subButtonIcon {
+  fill: currentColor !important;
+  color: inherit;
+}
+
+:global(body.theme-matrix) .buttonIcon path,
+:global(body.theme-matrix) .subButtonIcon path,
+:global(body.theme-matrix) .buttonIcon *,
+:global(body.theme-matrix) .subButtonIcon * {
+  fill: currentColor !important;
+}
+
+/* -----------------------------------------------------------------------------
+   Light Palette Overrides - Ensure sidebar works with light background
+   ----------------------------------------------------------------------------- */
+
+:global(body[data-color-palette="light"]) .sidebar {
+  background: color-mix(in srgb, var(--palette-surface, #f8fafc) 95%, transparent) !important;
+  border: 1px solid var(--palette-border, #e2e8f0) !important;
+  color: var(--palette-text, #1e293b) !important;
+  backdrop-filter: blur(20px);
+}
+
+:global(body[data-color-palette="light"]) .sectionTitle {
+  color: color-mix(in srgb, var(--palette-primary, #1e40af) 80%, transparent) !important;
+  background: color-mix(in srgb, var(--palette-primary, #1e40af) 8%, transparent) !important;
+  border: 1px solid var(--palette-border, #e2e8f0) !important;
+}
+
+:global(body[data-color-palette="light"]) .sectionTitle:hover {
+  background: color-mix(in srgb, var(--palette-primary, #1e40af) 12%, transparent) !important;
+  color: var(--palette-primary, #1e40af) !important;
+}
+
+:global(body[data-color-palette="light"]) .button {
+  background: color-mix(in srgb, var(--palette-primary, #1e40af) 10%, transparent) !important;
+  border: 1px solid var(--palette-border, #e2e8f0) !important;
+  color: var(--palette-primary, #1e40af) !important;
+}
+
+:global(body[data-color-palette="light"]) .button:hover {
+  background: color-mix(in srgb, var(--palette-primary, #1e40af) 20%, transparent) !important;
+  border-color: var(--palette-primary, #1e40af) !important;
+  color: var(--palette-secondary, #059669) !important;
+  box-shadow: 0 0 15px var(--palette-primary-glow, rgba(30, 64, 175, 0.2)),
+    inset 0 0 8px var(--palette-primary-glow, rgba(30, 64, 175, 0.1)) !important;
+}
+
+:global(body[data-color-palette="light"]) .expandableButton {
+  background: color-mix(in srgb, var(--palette-primary, #1e40af) 10%, transparent) !important;
+  border: 1px solid var(--palette-border, #e2e8f0) !important;
+  color: var(--palette-primary, #1e40af) !important;
+}
+
+:global(body[data-color-palette="light"]) .expandableButton:hover {
+  background: color-mix(in srgb, var(--palette-primary, #1e40af) 20%, transparent) !important;
+  border-color: var(--palette-primary, #1e40af) !important;
+  color: var(--palette-secondary, #059669) !important;
+  box-shadow: 0 0 15px var(--palette-primary-glow, rgba(30, 64, 175, 0.2)),
+    inset 0 0 8px var(--palette-primary-glow, rgba(30, 64, 175, 0.1)) !important;
+}
+
+:global(body[data-color-palette="light"]) .subButton {
+  color: color-mix(in srgb, var(--palette-text, #1e293b) 70%, transparent) !important;
+}
+
+:global(body[data-color-palette="light"]) .subButton:hover {
+  color: var(--palette-primary, #1e40af) !important;
+  background: color-mix(in srgb, var(--palette-primary, #1e40af) 12%, transparent) !important;
+}
+
+:global(body[data-color-palette="light"]) .sectionDivider {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--palette-primary-glow, rgba(30, 64, 175, 0.3)) 50%,
+    transparent 100%
+  ) !important;
+}
+
+:global(body[data-color-palette="light"]) .subSectionHeader {
+  color: color-mix(in srgb, var(--palette-primary, #1e40af) 60%, transparent) !important;
+  border-top-color: var(--palette-border, #e2e8f0) !important;
+}
+
+:global(body[data-color-palette="light"]) .sidebar::-webkit-scrollbar-thumb {
+  background: linear-gradient(
+    180deg,
+    var(--palette-primary, rgba(30, 64, 175, 0.6)),
+    var(--palette-secondary, rgba(5, 150, 105, 0.6))
+  ) !important;
+}
+
+:global(body[data-color-palette="light"]) .sidebar::-webkit-scrollbar-track {
+  background: color-mix(in srgb, var(--palette-surface, #f8fafc) 50%, transparent) !important;
+}
+
+/* Light palette with theme combinations */
+:global(body[data-color-palette="light"].theme-executive) .sidebar,
+:global(body[data-color-palette="light"].theme-modern) .sidebar,
+:global(body[data-color-palette="light"].theme-matrix) .sidebar,
+:global(body[data-color-palette="light"].theme-retro) .sidebar,
+:global(body[data-color-palette="light"].theme-powershell) .sidebar,
+:global(body[data-color-palette="light"].theme-dark) .sidebar {
+  background: color-mix(in srgb, var(--palette-surface, #f8fafc) 95%, transparent) !important;
+  border: 1px solid var(--palette-border, #e2e8f0) !important;
+  color: var(--palette-text, #1e293b) !important;
 }
 
 /* -----------------------------------------------------------------------------

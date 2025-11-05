@@ -52,39 +52,51 @@ function displayNewsArticles(
     const sentiment = cryptonews.analyzeSentiment(article.votes);
     const timeAgo = cryptonews.formatTimeAgo(article.published_at);
 
-    // Article card HTML
+    // Determine sentiment badge colors based on sentiment
+    const sentimentColorVar = 
+      sentiment.label === "Bullish" 
+        ? "var(--palette-success, #16c782)"
+        : sentiment.label === "Bearish"
+        ? "var(--palette-error, #ff4d4f)"
+        : "var(--palette-text, #ffffff)";
+    
+    const sentimentBadgeStyle = `
+      background: color-mix(in srgb, ${sentimentColorVar} 15%, transparent);
+      color: ${sentimentColorVar};
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-size: 10px;
+      font-weight: 600;
+      border: 1px solid color-mix(in srgb, ${sentimentColorVar} 30%, transparent);
+    `;
+
+    // Article card HTML with theme-aware colors
     const cardHtml = `
       <div style="
-        background: linear-gradient(135deg, rgba(0, 255, 136, 0.05) 0%, rgba(0, 200, 100, 0.02) 100%);
-        border: 1px solid rgba(0, 255, 136, 0.2);
+        background: linear-gradient(135deg, color-mix(in srgb, var(--palette-primary, #00bcf2) 5%, transparent) 0%, color-mix(in srgb, var(--palette-primary, #00bcf2) 2%, transparent) 100%);
+        border: 1px solid var(--palette-border, color-mix(in srgb, var(--palette-primary, #00bcf2) 20%, transparent));
         border-radius: 8px;
         padding: 12px;
         margin-bottom: 12px;
+        transition: all 0.2s ease;
       ">
         <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
           <span style="font-size: 20px;">${sentiment.emoji}</span>
           <div style="flex: 1;">
-            <div style="color: #00ff88; font-size: 11px; font-weight: 600; text-transform: uppercase;">
+            <div style="color: var(--palette-primary, #00bcf2); font-size: 11px; font-weight: 600; text-transform: uppercase;">
               ${article.source.title}
             </div>
-            <div style="color: rgba(255, 255, 255, 0.4); font-size: 10px;">
+            <div style="color: color-mix(in srgb, var(--palette-text, #ffffff) 40%, transparent); font-size: 10px;">
               ${timeAgo}
             </div>
           </div>
-          <div style="
-            background: rgba(0, 255, 136, 0.15);
-            color: #00ff88;
-            padding: 2px 8px;
-            border-radius: 10px;
-            font-size: 10px;
-            font-weight: 600;
-          ">
+          <div style="${sentimentBadgeStyle}">
             ${sentiment.label.toUpperCase()}
           </div>
         </div>
         
         <h3 style="
-          color: rgba(255, 255, 255, 0.9);
+          color: var(--palette-text, rgba(255, 255, 255, 0.9));
           font-size: 13px;
           font-weight: 500;
           line-height: 1.4;
@@ -101,13 +113,13 @@ function displayNewsArticles(
               .map(
                 (currency) => `
               <span style="
-                background: rgba(0, 255, 136, 0.15);
-                color: #00ff88;
+                background: color-mix(in srgb, var(--palette-primary, #00bcf2) 15%, transparent);
+                color: var(--palette-primary, #00bcf2);
                 padding: 2px 8px;
                 border-radius: 10px;
                 font-size: 10px;
                 font-weight: 600;
-                border: 1px solid rgba(0, 255, 136, 0.3);
+                border: 1px solid color-mix(in srgb, var(--palette-primary, #00bcf2) 30%, transparent);
               ">
                 ${currency.code}
               </span>
@@ -123,10 +135,10 @@ function displayNewsArticles(
           <button onclick="window.open('${article.url}', '_blank')" style="
             flex: 1;
             padding: 6px 12px;
-            background: linear-gradient(135deg, rgba(0, 255, 136, 0.15) 0%, rgba(0, 200, 100, 0.15) 100%);
-            border: 1px solid rgba(0, 255, 136, 0.3);
+            background: linear-gradient(135deg, color-mix(in srgb, var(--palette-primary, #00bcf2) 15%, transparent) 0%, color-mix(in srgb, var(--palette-primary, #00bcf2) 15%, transparent) 100%);
+            border: 1px solid color-mix(in srgb, var(--palette-primary, #00bcf2) 30%, transparent);
             border-radius: 6px;
-            color: #00ff88;
+            color: var(--palette-primary, #00bcf2);
             font-size: 11px;
             font-weight: 600;
             cursor: pointer;
@@ -138,8 +150,8 @@ function displayNewsArticles(
             article.votes
               ? `
             <div style="display: flex; gap: 6px; font-size: 11px; margin-left: 8px;">
-              <span style="color: #00ff88;">👍 ${article.votes.positive}</span>
-              <span style="color: #ff4444;">👎 ${article.votes.negative}</span>
+              <span style="color: var(--palette-success, #16c782);">👍 ${article.votes.positive}</span>
+              <span style="color: var(--palette-error, #ff4d4f);">👎 ${article.votes.negative}</span>
             </div>
           `
               : ""

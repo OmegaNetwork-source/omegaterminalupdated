@@ -11,7 +11,11 @@ import React, { useState, useEffect, useRef } from "react";
 import { useYouTube } from "@/hooks/useYouTube";
 import styles from "./YouTubePanel.module.css";
 
-export function YouTubePanel() {
+interface YouTubePanelProps {
+  mobile?: boolean;
+}
+
+export function YouTubePanel({ mobile = false }: YouTubePanelProps) {
   const {
     playerState,
     searchResults,
@@ -30,29 +34,68 @@ export function YouTubePanel() {
   const [searchQuery, setSearchQuery] = useState("");
   const playerContainerRef = useRef<HTMLDivElement>(null);
   const [playerReady, setPlayerReady] = useState(false);
+  const [isMinimized, setIsMinimized] = useState(false);
+
+  // Load minimized state from localStorage on mount (mobile only)
+  useEffect(() => {
+    if (mobile && typeof window !== "undefined") {
+      const saved = localStorage.getItem("youtube-minimized");
+      if (saved === "true") {
+        setIsMinimized(true);
+      }
+    }
+  }, [mobile]);
+
+  // Save minimized state to localStorage
+  useEffect(() => {
+    if (mobile && typeof window !== "undefined") {
+      localStorage.setItem("youtube-minimized", isMinimized.toString());
+    }
+  }, [isMinimized, mobile]);
+
+  const handleMinimize = () => {
+    setIsMinimized(true);
+  };
+
+  const handleMaximize = () => {
+    setIsMinimized(false);
+  };
 
   useEffect(() => {
     if (playerState.isPanelOpen && !playerReady) {
       initializeAPI().then(() => {
         // Wait a bit for API to be fully ready
         setTimeout(() => {
-          if (playerContainerRef.current && typeof window !== "undefined" && window.YT) {
+          if (playerContainerRef.current && typeof window !== "undefined" && window.YT && window.YT.Player) {
             try {
+              // Ensure container is empty before creating player
+              const container = document.getElementById("youtube-player-iframe");
+              if (container) {
+                container.innerHTML = "";
+              }
+              
               createPlayer("youtube-player-iframe");
               // Wait for player to be created before marking as ready
               setTimeout(() => {
                 setPlayerReady(true);
                 // Load default channel videos
                 getDefaultChannelVideos();
-              }, 1000);
+              }, 1500);
             } catch (error) {
               console.error("[YouTube] Failed to create player:", error);
             }
+          } else {
+            console.warn("[YouTube] API or container not ready");
           }
         }, 500);
       }).catch((error) => {
         console.error("[YouTube] Failed to initialize API:", error);
       });
+    }
+    
+    // Reset player ready when panel closes
+    if (!playerState.isPanelOpen) {
+      setPlayerReady(false);
     }
   }, [
     playerState.isPanelOpen,
@@ -79,20 +122,54 @@ export function YouTubePanel() {
   //   return null;
   // }
 
+  // If minimized on mobile, render minimized view
+  if (mobile && isMinimized) {
+    return (
+      <div className={styles.minimizedContainer}>
+        <button
+          className={styles.minimizedButton}
+          onClick={handleMaximize}
+          aria-label="Restore YouTube panel"
+          type="button"
+        >
+          <span className={styles.minimizedIcon}>🎥</span>
+          {playerState.currentVideoId && playerState.playlist.length > 0 && (
+            <span className={styles.minimizedTrack}>
+              {playerState.playlist[playerState.currentIndex]?.title || "YouTube"}
+            </span>
+          )}
+        </button>
+      </div>
+    );
+  }
+
   return (
-    <div className={styles.panel}>
+    <div className={`${styles.panel} ${mobile ? styles.mobile : ""} ${isMinimized ? styles.minimized : ""}`}>
       <div className={styles.header}>
         <div className={styles.headerLeft}>
           <span className={styles.logo}>🎥</span>
           <h2 className={styles.title}>YouTube</h2>
         </div>
-        <button
-          className={styles.closeButton}
-          onClick={closePanel}
-          aria-label="Close YouTube panel"
-        >
-          ✕
-        </button>
+        <div className={styles.headerRight}>
+          {mobile && (
+            <button
+              className={styles.minimizeButton}
+              onClick={handleMinimize}
+              aria-label="Minimize YouTube panel"
+              type="button"
+            >
+              _
+            </button>
+          )}
+          <button
+            className={styles.closeButton}
+            onClick={closePanel}
+            aria-label="Close YouTube panel"
+            type="button"
+          >
+            ✕
+          </button>
+        </div>
       </div>
 
       <div className={styles.content}>
@@ -191,25 +268,32 @@ export function YouTubePanel() {
           </div>
 
           <div className={styles.videoList}>
-            {searchResults.map((video, index) => (
-              <div
-                key={video.id.videoId}
-                className={`${styles.videoItem} ${
-                  playerState.currentVideoId === video.id.videoId
-                    ? styles.videoItemActive
-                    : ""
-                }`}
-                onClick={() => handlePlayVideo(video.id.videoId, index)}
-                role="button"
-                tabIndex={0}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    e.preventDefault();
-                    handlePlayVideo(video.id.videoId, index);
-                  }
-                }}
-                title={`Play ${video.snippet.title}`}
-              >
+            {searchResults
+              .filter((video) => {
+                const videoId = video?.id?.videoId;
+                return videoId && typeof videoId === "string" && videoId.trim() !== "" && /^[a-zA-Z0-9_-]{11}$/.test(videoId);
+              })
+              .map((video, index) => {
+                const videoId = video.id.videoId;
+                return (
+                  <div
+                    key={videoId}
+                    className={`${styles.videoItem} ${
+                      playerState.currentVideoId === videoId
+                        ? styles.videoItemActive
+                        : ""
+                    }`}
+                    onClick={() => handlePlayVideo(videoId, index)}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        handlePlayVideo(videoId, index);
+                      }
+                    }}
+                    title={`Play ${video.snippet.title}`}
+                  >
                 <div className={styles.videoThumbnail}>
                   {video.snippet.thumbnails.medium?.url ? (
                     <img
@@ -219,7 +303,7 @@ export function YouTubePanel() {
                   ) : (
                     <div className={styles.videoPlaceholder}>🎥</div>
                   )}
-                  {playerState.currentVideoId === video.id.videoId && (
+                  {playerState.currentVideoId === videoId && (
                     <div className={styles.playingIndicator}>
                       {playerState.isPlaying ? "▶️" : "⏸️"}
                     </div>
@@ -231,11 +315,14 @@ export function YouTubePanel() {
                     {video.snippet.channelTitle}
                   </div>
                   <div className={styles.videoDate}>
-                    {new Date(video.snippet.publishedAt).toLocaleDateString()}
+                    {video.snippet.publishedAt
+                      ? new Date(video.snippet.publishedAt).toLocaleDateString()
+                      : ""}
                   </div>
                 </div>
               </div>
-            ))}
+                );
+              })}
           </div>
 
           {searchResults.length === 0 && (

@@ -1,0 +1,198 @@
+/**
+ * MobileStatsPanel Component Styles
+ * Full-screen overlay for media players on mobile devices
+ */
+
+/* -----------------------------------------------------------------------------
+   Backdrop
+   ----------------------------------------------------------------------------- */
+
+.backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.9);
+  z-index: 9998;
+  animation: fadeIn 300ms ease-out;
+  backdrop-filter: blur(4px);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* -----------------------------------------------------------------------------
+   Panel Container
+   ----------------------------------------------------------------------------- */
+
+.panel {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--palette-bg, #0a0a0f);
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  animation: slideUp 350ms ease-out;
+  overflow: hidden;
+}
+
+.panel.open {
+  animation: slideUp 350ms ease-out;
+}
+
+/* Safe area insets for notched devices */
+@supports (padding: max(0px)) {
+  .panel {
+    padding-top: max(0px, env(safe-area-inset-top));
+    padding-bottom: max(0px, env(safe-area-inset-bottom));
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+/* -----------------------------------------------------------------------------
+   Panel Header
+   ----------------------------------------------------------------------------- */
+
+.panelHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--palette-border, rgba(0, 188, 242, 0.25));
+  min-height: 56px;
+  background: color-mix(in srgb, var(--palette-bg, #0a0a0f) 95%, transparent);
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.panelTitle {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--palette-text, #ffffff);
+  margin: 0;
+  font-family: "Courier New", monospace;
+  letter-spacing: 0.5px;
+}
+
+.closeButton {
+  min-width: 44px;
+  min-height: 44px;
+  background: none;
+  border: 1px solid var(--palette-border, rgba(0, 188, 242, 0.25));
+  border-radius: 8px;
+  color: var(--palette-text, #ffffff);
+  font-size: 24px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 150ms ease;
+  touch-action: manipulation;
+}
+
+.closeButton:hover,
+.closeButton:active {
+  background: color-mix(in srgb, var(--palette-primary, #00bcf2) 15%, transparent);
+  border-color: var(--palette-primary, #00bcf2);
+}
+
+.closeButton:focus {
+  outline: 2px solid var(--palette-primary, #00bcf2);
+  outline-offset: 2px;
+}
+
+/* -----------------------------------------------------------------------------
+   Panel Content
+   ----------------------------------------------------------------------------- */
+
+.panelContent {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  padding: 16px;
+  position: relative;
+}
+
+.panelLoading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  color: var(--palette-text-secondary, rgba(255, 255, 255, 0.6));
+  font-family: "Courier New", monospace;
+  font-size: 14px;
+}
+
+/* -----------------------------------------------------------------------------
+   Theme Variants
+   ----------------------------------------------------------------------------- */
+
+:global(body.light-mode) .panel {
+  background: var(--palette-bg, rgba(250, 252, 255, 0.98));
+  border-bottom-color: var(--palette-border, rgba(0, 81, 213, 0.2));
+}
+
+:global(body.light-mode) .panelHeader {
+  background: color-mix(in srgb, var(--palette-bg, rgba(250, 252, 255, 0.98)) 95%, transparent);
+  border-bottom-color: var(--palette-border, rgba(0, 81, 213, 0.2));
+}
+
+:global(body.light-mode) .panelTitle {
+  color: var(--palette-text, rgba(18, 22, 38, 0.92));
+}
+
+:global(body.light-mode) .closeButton {
+  color: var(--palette-text, rgba(18, 22, 38, 0.92));
+  border-color: var(--palette-border, rgba(0, 81, 213, 0.2));
+}
+
+/* -----------------------------------------------------------------------------
+   Responsive Adjustments
+   ----------------------------------------------------------------------------- */
+
+@media (max-width: 480px) {
+  .panelHeader {
+    padding: 14px 16px;
+    min-height: 52px;
+  }
+
+  .panelTitle {
+    font-size: 18px;
+  }
+
+  .panelContent {
+    padding: 12px;
+  }
+}
+
+/* Reduce motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .panel {
+    animation: none;
+  }
+
+  .backdrop {
+    animation: none;
+  }
+}
+

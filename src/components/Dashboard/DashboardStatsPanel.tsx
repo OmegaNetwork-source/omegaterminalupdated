@@ -3,6 +3,7 @@
 import React, { useEffect, useMemo, useRef, useState, Suspense } from "react";
 import Script from "next/script";
 import dynamic from "next/dynamic";
+import { usePerps } from "@/hooks/usePerps";
 import { useSpotify } from "@/hooks/useSpotify";
 import { useYouTube } from "@/hooks/useYouTube";
 import { useNewsReader } from "@/hooks/useNewsReader";
@@ -10,9 +11,18 @@ import { useBluesPlayer } from "@/hooks/useBluesPlayer";
 import { useLoFiPlayer } from "@/hooks/useLoFiPlayer";
 import { useTechPlayer } from "@/hooks/useTechPlayer";
 import { useFunkyPlayer } from "@/hooks/useFunkyPlayer";
+import { useOmegaTrancePlayer } from "@/hooks/useOmegaTrancePlayer";
+import { useOmegaMelodiesPlayer } from "@/hooks/useOmegaMelodiesPlayer";
+import { useMobileDetection } from "@/hooks/useMobileDetection";
+import { MobileStatsPanel } from "@/components/Mobile/MobileStatsPanel";
 import styles from "./DashboardStatsPanel.module.css";
 
 // Dynamically import media panels (heavy external SDKs)
+const PerpsPanel = dynamic(
+  () => import("@/components/Media/PerpsPanel").then((mod) => ({ default: mod.PerpsPanel })),
+  { ssr: false, loading: () => <div className={styles.panelLoading}>Loading Perps...</div> }
+);
+
 const SpotifyPanel = dynamic(
   () => import("@/components/Media/SpotifyPanel").then((mod) => ({ default: mod.SpotifyPanel })),
   { ssr: false, loading: () => <div className={styles.panelLoading}>Loading Spotify...</div> }
@@ -48,6 +58,16 @@ const FunkyPlayerPanel = dynamic(
   { ssr: false, loading: () => <div className={styles.panelLoading}>Loading Funky Player...</div> }
 );
 
+const OmegaTrancePlayerPanel = dynamic(
+  () => import("@/components/Media/OmegaTrancePlayerPanel").then((mod) => ({ default: mod.OmegaTrancePlayerPanel })),
+  { ssr: false, loading: () => <div className={styles.panelLoading}>Loading Trance Player...</div> }
+);
+
+const OmegaMelodiesPlayerPanel = dynamic(
+  () => import("@/components/Media/OmegaMelodiesPlayerPanel").then((mod) => ({ default: mod.OmegaMelodiesPlayerPanel })),
+  { ssr: false, loading: () => <div className={styles.panelLoading}>Loading Melodies Player...</div> }
+);
+
 type TradingViewWidget = {
   remove?: () => void;
 };
@@ -57,6 +77,13 @@ type TradingViewWidget = {
  * Side panel for charts and media players.
  */
 export function DashboardStatsPanel(): JSX.Element {
+  const mobile = useMobileDetection();
+  
+  // On mobile, don't render the sidebar - panels will show inline in terminal
+  if (mobile.isMobile) {
+    return null;
+  }
+  const perps = usePerps();
   const spotify = useSpotify();
   const youtube = useYouTube();
   const newsReader = useNewsReader();
@@ -64,6 +91,13 @@ export function DashboardStatsPanel(): JSX.Element {
   const lofiPlayer = useLoFiPlayer();
   const techPlayer = useTechPlayer();
   const funkyPlayer = useFunkyPlayer();
+  const trancePlayer = useOmegaTrancePlayer();
+  const melodiesPlayer = useOmegaMelodiesPlayer();
+
+  // On mobile, render the mobile overlay instead of sidebar
+  if (mobile.isMobile) {
+    return <MobileStatsPanel />;
+  }
 
   const [isChartOpen, setIsChartOpen] = useState<boolean>(false);
   const [chartSymbol, setChartSymbol] = useState<string>("—");
@@ -148,16 +182,20 @@ export function DashboardStatsPanel(): JSX.Element {
         console.log(`[Chart] Container dimensions: ${containerElement.offsetWidth}x${containerElement.offsetHeight}`);
         
         // Use 'new' keyword to instantiate TradingView widget
+        // Calculate height based on container width for square aspect ratio
+        const containerWidth = containerElement.offsetWidth || 320;
+        const widgetHeight = Math.min(containerWidth, 500); // Square aspect ratio, max 500px
+        
         tradingViewWidgetRef.current = new tv.widget({
           symbol: chartSymbol,
           container_id: chartContainerId,
           autosize: true,
           theme: "dark",
-          height: 500,
+          height: widgetHeight,
           width: "100%",
           interval: "D",
           locale: "en",
-          toolbar_bg: "#1a1a2e",
+          toolbar_bg: "#1a1a2e", // Dark theme background
           enable_publishing: false,
           hide_top_toolbar: false,
           hide_legend: false,
@@ -285,6 +323,17 @@ export function DashboardStatsPanel(): JSX.Element {
         </section>
       )}
 
+      {/* Perps Panel - inside stats panel like chart viewer */}
+      {perps.playerState.isPanelOpen && (
+        <section className={`${styles.section} ${styles.mediaSection}`}>
+          <div className={styles.mediaPanelWrapper}>
+            <Suspense fallback={<div className={styles.panelLoading}>Loading Perps...</div>}>
+              <PerpsPanel />
+            </Suspense>
+          </div>
+        </section>
+      )}
+
       {/* Spotify Panel - inside stats panel like chart viewer */}
       {spotify.playerState.isPanelOpen && (
         <section className={`${styles.section} ${styles.mediaSection}`}>
@@ -357,6 +406,28 @@ export function DashboardStatsPanel(): JSX.Element {
           <div className={styles.mediaPanelWrapper}>
             <Suspense fallback={<div className={styles.panelLoading}>Loading Funky Player...</div>}>
               <FunkyPlayerPanel />
+            </Suspense>
+          </div>
+        </section>
+      )}
+
+      {/* Omega Trance Player Panel - inside stats panel like chart viewer */}
+      {trancePlayer.playerState.isPanelOpen && (
+        <section className={`${styles.section} ${styles.mediaSection}`}>
+          <div className={styles.mediaPanelWrapper}>
+            <Suspense fallback={<div className={styles.panelLoading}>Loading Trance Player...</div>}>
+              <OmegaTrancePlayerPanel />
+            </Suspense>
+          </div>
+        </section>
+      )}
+
+      {/* Omega Melodies Player Panel - inside stats panel like chart viewer */}
+      {melodiesPlayer.playerState.isPanelOpen && (
+        <section className={`${styles.section} ${styles.mediaSection}`}>
+          <div className={styles.mediaPanelWrapper}>
+            <Suspense fallback={<div className={styles.panelLoading}>Loading Melodies Player...</div>}>
+              <OmegaMelodiesPlayerPanel />
             </Suspense>
           </div>
         </section>

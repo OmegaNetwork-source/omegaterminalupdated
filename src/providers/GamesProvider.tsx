@@ -191,6 +191,38 @@ const baseGameEntries = GAMES_METADATA.reduce<Record<string, GameEntry>>(
       acc[game.id] = createGameEntry(async () => ({
         default: (await import("@/components/Games/SnakeGame")).SnakeGame,
       }));
+    } else if (game.id === "number-guess") {
+      acc[game.id] = createGameEntry(async () => ({
+        default: (await import("@/components/Games/NumberGuessingGame")).NumberGuessingGame,
+      }));
+    } else if (game.id === "cookie-clicker") {
+      acc[game.id] = createGameEntry(async () => ({
+        default: (await import("@/components/Games/CookieClickerGame")).CookieClickerGame,
+      }));
+    } else if (game.id === "speed-clicker") {
+      acc[game.id] = createGameEntry(async () => ({
+        default: (await import("@/components/Games/SpeedClickerGame")).SpeedClickerGame,
+      }));
+    } else if (game.id === "pacman") {
+      acc[game.id] = createGameEntry(async () => ({
+        default: (await import("@/components/Games/PacmanGame")).PacmanGame,
+      }));
+    } else if (game.id === "brick-breaker") {
+      acc[game.id] = createGameEntry(async () => ({
+        default: (await import("@/components/Games/BrickBreakerGame")).BrickBreakerGame,
+      }));
+    } else if (game.id === "perfect-circle") {
+      acc[game.id] = createGameEntry(async () => ({
+        default: (await import("@/components/Games/PerfectCircleGame")).PerfectCircleGame,
+      }));
+    } else if (game.id === "bashido") {
+      acc[game.id] = createGameEntry(async () => ({
+        default: (await import("@/components/Games/BashidoGame")).BashidoGame,
+      }));
+    } else if (game.id === "pg-tanks") {
+      acc[game.id] = createGameEntry(async () => ({
+        default: (await import("@/components/Games/PGTanksGame")).PGTanksGame,
+      }));
     } else {
       acc[game.id] = createPlaceholderEntry(
         game.name,

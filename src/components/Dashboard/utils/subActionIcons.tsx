@@ -178,6 +178,27 @@ export function getSubActionIcon(label: string): JSX.Element {
   if (lowerLabel.includes("reset")) return iconMap["reset"];
   if (lowerLabel.includes("videos")) return iconMap["videos"];
   if (lowerLabel.includes("tutorials")) return iconMap["tutorials"];
+  // Markets/Analytics
+  if (lowerLabel.includes("list markets") || lowerLabel.includes("markets")) return iconMap["list"];
+  if (lowerLabel.includes("view market")) return iconMap["portfolio"];
+  if (lowerLabel.includes("heatmap")) return iconMap["search"];
+  if (lowerLabel.includes("similar markets")) return iconMap["search"];
+  // AI Forecast
+  if (lowerLabel.includes("get forecast") || lowerLabel.includes("forecast")) return iconMap["ai toggle"];
+  if (lowerLabel.includes("daily picks") || lowerLabel.includes("drops")) return iconMap["list"];
+  if (lowerLabel.includes("submit forecast")) return iconMap["portfolio"];
+  if (lowerLabel.includes("my score") || lowerLabel.includes("score")) return iconMap["portfolio"];
+  // Portfolio
+  if (lowerLabel.includes("sync portfolio")) return iconMap["refresh"];
+  if (lowerLabel.includes("portfolio view")) return iconMap["portfolio"];
+  if (lowerLabel.includes("list bundles") || lowerLabel.includes("bundles")) return iconMap["list"];
+  if (lowerLabel.includes("view bundle")) return iconMap["portfolio"];
+  if (lowerLabel.includes("backtest")) return iconMap["search"];
+  // Social
+  if (lowerLabel.includes("activity feed") || lowerLabel.includes("feed")) return iconMap["news"];
+  if (lowerLabel.includes("follow user")) return iconMap["track"];
+  if (lowerLabel.includes("view profile") || lowerLabel.includes("profile")) return iconMap["portfolio"];
+  if (lowerLabel.includes("leaderboards") || lowerLabel.includes("leagues")) return iconMap["list"];
 
   // Default arrow icon
   return (

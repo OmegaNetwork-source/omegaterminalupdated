@@ -82,6 +82,7 @@ export function YouTubeProvider({ children }: { children: ReactNode }) {
   const [searchResults, setSearchResults] = useState<YouTubeVideo[]>([]);
   const ytPlayerRef = useRef<any>(null);
   const apiReadyRef = useRef<boolean>(false);
+  const playerReadyRef = useRef<boolean>(false);
 
   // ==========================================================================
   // API Initialization
@@ -102,7 +103,11 @@ export function YouTubeProvider({ children }: { children: ReactNode }) {
         tag.id = "youtube-iframe-api";
         tag.src = "https://www.youtube.com/iframe_api";
         const firstScriptTag = document.getElementsByTagName("script")[0];
-        firstScriptTag.parentNode?.insertBefore(tag, firstScriptTag);
+        if (firstScriptTag && firstScriptTag.parentNode) {
+          firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+        } else {
+          document.head.appendChild(tag);
+        }
       }
 
       // Set callback for when API is ready
@@ -124,23 +129,107 @@ export function YouTubeProvider({ children }: { children: ReactNode }) {
       return;
     }
 
+    // Clear existing player if it exists
+    if (ytPlayerRef.current) {
+      try {
+        ytPlayerRef.current.destroy();
+      } catch (e) {
+        // Ignore cleanup errors
+      }
+      ytPlayerRef.current = null;
+    }
+    playerReadyRef.current = false;
+
     try {
+      // Get container element to determine responsive size
+      const container = document.getElementById(elementId);
+      const containerWidth = container?.clientWidth || 640;
+      const containerHeight = container?.clientHeight || 390;
+      
+      // Calculate responsive dimensions (16:9 aspect ratio)
+      const width = containerWidth > 0 ? containerWidth : 640;
+      const height = Math.round(width * 9 / 16); // 16:9 aspect ratio
+      
       const player = new window.YT.Player(elementId, {
-        height: "100%",
-        width: "100%",
+        height: height,
+        width: width,
         playerVars: {
           playsinline: 1,
           controls: 1,
           rel: 0,
           modestbranding: 1,
+          enablejsapi: 1,
+          origin: typeof window !== "undefined" ? window.location.origin : "",
+          autoplay: 0, // Don't autoplay - let user control
         },
         events: {
           onReady: (event: any) => {
             console.log("[YouTube] Player ready");
+            playerReadyRef.current = true;
+            setPlayerState((prev) => ({ ...prev, isPlaying: false }));
           },
           onStateChange: (event: any) => {
-            const isPlaying = event.data === window.YT.PlayerState.PLAYING;
-            setPlayerState((prev) => ({ ...prev, isPlaying }));
+            const state = event.data;
+            const isPlaying = window.YT ? state === window.YT.PlayerState.PLAYING : false;
+            
+            setPlayerState((prev) => {
+              const newState = { ...prev, isPlaying };
+              
+              // Auto-play next video if current ended
+              if (window.YT && state === window.YT.PlayerState.ENDED) {
+                const { playlist, currentIndex } = prev;
+                if (currentIndex < playlist.length - 1) {
+                  setTimeout(() => {
+                    const nextVideo = playlist[currentIndex + 1];
+                    if (nextVideo && ytPlayerRef.current && playerReadyRef.current) {
+                      try {
+                        ytPlayerRef.current.loadVideoById(nextVideo.id);
+                        setPlayerState((p) => ({
+                          ...p,
+                          currentVideoId: nextVideo.id,
+                          currentIndex: currentIndex + 1,
+                          isPlaying: true,
+                        }));
+                      } catch (err) {
+                        console.error("[YouTube] Failed to auto-play next:", err);
+                      }
+                    }
+                  }, 1000);
+                }
+              }
+              
+              return newState;
+            });
+          },
+          onError: (event: any) => {
+            console.error("[YouTube] Player error:", event.data);
+            const errorCode = event.data;
+            let errorMessage = "Unknown error";
+            
+            switch (errorCode) {
+              case 2:
+                errorMessage = "Invalid video ID";
+                break;
+              case 5:
+                errorMessage = "HTML5 player error";
+                break;
+              case 100:
+                errorMessage = "Video not found or removed";
+                break;
+              case 101:
+              case 150:
+                errorMessage = "Video not allowed to be played in embedded players";
+                break;
+              default:
+                errorMessage = `Error code: ${errorCode}`;
+            }
+            
+            console.error(`[YouTube] Playback error: ${errorMessage}`);
+            setPlayerState((prev) => ({
+              ...prev,
+              isPlaying: false,
+              currentVideoId: null,
+            }));
           },
         },
       });
@@ -148,6 +237,7 @@ export function YouTubeProvider({ children }: { children: ReactNode }) {
       ytPlayerRef.current = player;
     } catch (error) {
       console.error("[YouTube] Failed to create player:", error);
+      playerReadyRef.current = false;
     }
   }, []);
 
@@ -184,12 +274,26 @@ export function YouTubeProvider({ children }: { children: ReactNode }) {
 
       setSearchResults(videos);
 
-      // Create playlist from search results
-      const playlist = videos.map((video, index) => ({
-        id: video.id.videoId,
-        title: video.snippet.title,
-        channel: video.snippet.channelTitle,
-      }));
+      // Create playlist from search results - filter out invalid video IDs
+      const playlist = videos
+        .filter((video) => {
+          const videoId = video?.id?.videoId;
+          if (!videoId || typeof videoId !== "string" || videoId.trim() === "") {
+            console.warn("[YouTube] Skipping video with invalid ID:", video);
+            return false;
+          }
+          // Validate YouTube video ID format (11 characters, alphanumeric and hyphens/underscores)
+          if (!/^[a-zA-Z0-9_-]{11}$/.test(videoId)) {
+            console.warn("[YouTube] Skipping video with invalid ID format:", videoId);
+            return false;
+          }
+          return true;
+        })
+        .map((video) => ({
+          id: video.id.videoId,
+          title: video.snippet.title,
+          channel: video.snippet.channelTitle,
+        }));
 
       setPlayerState((prev) => ({
         ...prev,
@@ -237,12 +341,26 @@ export function YouTubeProvider({ children }: { children: ReactNode }) {
 
       setSearchResults(videos);
 
-      // Create playlist from channel videos
-      const playlist = videos.map((video, index) => ({
-        id: video.id.videoId,
-        title: video.snippet.title,
-        channel: video.snippet.channelTitle,
-      }));
+      // Create playlist from channel videos - filter out invalid video IDs
+      const playlist = videos
+        .filter((video) => {
+          const videoId = video?.id?.videoId;
+          if (!videoId || typeof videoId !== "string" || videoId.trim() === "") {
+            console.warn("[YouTube] Skipping video with invalid ID:", video);
+            return false;
+          }
+          // Validate YouTube video ID format (11 characters, alphanumeric and hyphens/underscores)
+          if (!/^[a-zA-Z0-9_-]{11}$/.test(videoId)) {
+            console.warn("[YouTube] Skipping video with invalid ID format:", videoId);
+            return false;
+          }
+          return true;
+        })
+        .map((video) => ({
+          id: video.id.videoId,
+          title: video.snippet.title,
+          channel: video.snippet.channelTitle,
+        }));
 
       setPlayerState((prev) => ({
         ...prev,
@@ -264,6 +382,20 @@ export function YouTubeProvider({ children }: { children: ReactNode }) {
   // ==========================================================================
 
   const playVideo = useCallback((videoId: string, index: number) => {
+    // Validate video ID format
+    if (!videoId || typeof videoId !== "string" || videoId.trim() === "") {
+      console.error("[YouTube] Invalid video ID:", videoId);
+      return;
+    }
+    
+    // Clean and validate YouTube video ID format (11 characters, alphanumeric and hyphens/underscores)
+    const cleanVideoId = videoId.trim();
+    if (!/^[a-zA-Z0-9_-]{11}$/.test(cleanVideoId)) {
+      console.error("[YouTube] Invalid video ID format:", cleanVideoId);
+      console.error("[YouTube] Video ID must be exactly 11 characters (alphanumeric, hyphens, underscores)");
+      return;
+    }
+
     // Check if player exists and is ready
     if (!ytPlayerRef.current) {
       console.warn("[YouTube] Player not initialized - initializing now...");
@@ -275,27 +407,69 @@ export function YouTubeProvider({ children }: { children: ReactNode }) {
         if (container) {
           try {
             createPlayer(containerId);
-            // Wait a bit for player to initialize, then try again
-            setTimeout(() => {
-              if (ytPlayerRef.current) {
-                try {
-                  ytPlayerRef.current.loadVideoById(videoId);
-                  setPlayerState((prev) => ({
-                    ...prev,
-                    currentVideoId: videoId,
-                    currentIndex: index,
-                    isPlaying: true,
-                  }));
-                } catch (err) {
-                  console.error("[YouTube] Failed to play video after init:", err);
+      // Wait for player to be ready, then try again
+      const checkReady = setInterval(() => {
+        if (playerReadyRef.current && ytPlayerRef.current) {
+          clearInterval(checkReady);
+          try {
+            if (typeof ytPlayerRef.current.loadVideoById === "function") {
+              ytPlayerRef.current.cueVideoById({
+                videoId: cleanVideoId,
+                startSeconds: 0,
+              });
+              setPlayerState((prev) => ({
+                ...prev,
+                currentVideoId: cleanVideoId,
+                currentIndex: index,
+                isPlaying: false,
+              }));
+              // Play after a short delay
+              setTimeout(() => {
+                if (ytPlayerRef.current && playerReadyRef.current) {
+                  try {
+                    ytPlayerRef.current.playVideo();
+                  } catch (err) {
+                    console.error("[YouTube] Failed to start playback:", err);
+                  }
                 }
-              }
-            }, 500);
+              }, 300);
+            }
+          } catch (err) {
+            console.error("[YouTube] Failed to play video after init:", err);
+          }
+        }
+      }, 100);
+            
+            // Timeout after 5 seconds
+            setTimeout(() => {
+              clearInterval(checkReady);
+            }, 5000);
           } catch (err) {
             console.error("[YouTube] Failed to create player:", err);
           }
+        } else {
+          console.error("[YouTube] Player container not found:", containerId);
         }
+      } else {
+        console.error("[YouTube] API not ready - cannot create player");
       }
+      return;
+    }
+
+    // Check if player is ready
+    if (!playerReadyRef.current) {
+      console.warn("[YouTube] Player not ready yet - waiting...");
+      // Wait for player to be ready
+      const checkReady = setInterval(() => {
+        if (playerReadyRef.current) {
+          clearInterval(checkReady);
+          playVideo(videoId, index); // Retry
+        }
+      }, 100);
+      
+      setTimeout(() => {
+        clearInterval(checkReady);
+      }, 3000);
       return;
     }
 
@@ -306,38 +480,71 @@ export function YouTubeProvider({ children }: { children: ReactNode }) {
     }
 
     try {
-      ytPlayerRef.current.loadVideoById(videoId);
+      // Use cueVideoById first to load without autoplay, then play
+      ytPlayerRef.current.cueVideoById({
+        videoId: cleanVideoId,
+        startSeconds: 0,
+      });
+      
+      // Update state immediately
       setPlayerState((prev) => ({
         ...prev,
-        currentVideoId: videoId,
+        currentVideoId: cleanVideoId,
         currentIndex: index,
-        isPlaying: true,
+        isPlaying: false, // Will be set to true when state changes
       }));
-    } catch (error) {
+      
+      // Play after a short delay to ensure video is loaded
+      setTimeout(() => {
+        if (ytPlayerRef.current && playerReadyRef.current) {
+          try {
+            ytPlayerRef.current.playVideo();
+          } catch (err) {
+            console.error("[YouTube] Failed to start playback:", err);
+          }
+        }
+      }, 300);
+    } catch (error: any) {
       console.error("[YouTube] Failed to play video:", error);
+      setPlayerState((prev) => ({
+        ...prev,
+        currentVideoId: null,
+        isPlaying: false,
+      }));
     }
   }, [createPlayer]);
 
   const togglePlayPause = useCallback(() => {
-    if (!ytPlayerRef.current) return;
+    if (!ytPlayerRef.current || !playerReadyRef.current || !window.YT) {
+      console.warn("[YouTube] Player not ready");
+      return;
+    }
 
     try {
-      const playerState = ytPlayerRef.current.getPlayerState();
-      if (playerState === window.YT.PlayerState.PLAYING) {
+      const currentState = ytPlayerRef.current.getPlayerState();
+      if (currentState === window.YT.PlayerState.PLAYING) {
         ytPlayerRef.current.pauseVideo();
-      } else {
+      } else if (currentState === window.YT.PlayerState.PAUSED || currentState === window.YT.PlayerState.CUED) {
         ytPlayerRef.current.playVideo();
+      } else {
+        // If video is ended or not loaded, try to play current video
+        const { currentVideoId } = playerState;
+        if (currentVideoId) {
+          ytPlayerRef.current.loadVideoById(currentVideoId);
+        }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("[YouTube] Toggle play/pause failed:", error);
     }
-  }, []);
+  }, [playerState]);
 
   const next = useCallback(() => {
     const { playlist, currentIndex } = playerState;
     if (currentIndex < playlist.length - 1) {
       const nextVideo = playlist[currentIndex + 1];
-      playVideo(nextVideo.id, currentIndex + 1);
+      if (nextVideo) {
+        playVideo(nextVideo.id, currentIndex + 1);
+      }
     }
   }, [playerState, playVideo]);
 
@@ -345,7 +552,9 @@ export function YouTubeProvider({ children }: { children: ReactNode }) {
     const { playlist, currentIndex } = playerState;
     if (currentIndex > 0) {
       const prevVideo = playlist[currentIndex - 1];
-      playVideo(prevVideo.id, currentIndex - 1);
+      if (prevVideo) {
+        playVideo(prevVideo.id, currentIndex - 1);
+      }
     }
   }, [playerState, playVideo]);
 

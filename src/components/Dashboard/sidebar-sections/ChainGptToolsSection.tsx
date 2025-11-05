@@ -107,43 +107,43 @@ export function ChainGptToolsSection(): JSX.Element {
         <div className={styles.subActions}>
           <button
             className={styles.subButton}
-            onClick={() => handleCommand("nft init")}
+            onClick={() => handleCommand("nftgen init")}
           >
             <span>→ 🔑 Custom API Key</span>
           </button>
           <button
             className={styles.subButton}
-            onClick={() => handleCommand("nft generate")}
+            onClick={() => handleCommand("nftgen generate")}
           >
             <span>→ 🎨 Generate AI NFT</span>
           </button>
           <button
             className={styles.subButton}
-            onClick={() => handleCommand("nft models")}
+            onClick={() => handleCommand("nftgen models")}
           >
             <span>→ 🤖 AI Models</span>
           </button>
           <button
             className={styles.subButton}
-            onClick={() => handleCommand("nft styles")}
+            onClick={() => handleCommand("nftgen styles")}
           >
             <span>→ 🎭 Art Styles</span>
           </button>
           <button
             className={styles.subButton}
-            onClick={() => handleCommand("nft enhance")}
+            onClick={() => handleCommand("nftgen enhance")}
           >
             <span>→ ✨ Enhance Prompt</span>
           </button>
           <button
             className={styles.subButton}
-            onClick={() => handleCommand("nft gallery")}
+            onClick={() => handleCommand("nftgen gallery")}
           >
             <span>→ 🖼️ View Gallery</span>
           </button>
           <button
             className={styles.subButton}
-            onClick={() => handleCommand("nft test")}
+            onClick={() => handleCommand("nftgen test")}
           >
             <span>→ 🧪 Test API</span>
           </button>
@@ -155,7 +155,7 @@ export function ChainGptToolsSection(): JSX.Element {
           </button>
           <button
             className={styles.subButton}
-            onClick={() => handleCommand("nft help")}
+            onClick={() => handleCommand("nftgen help")}
           >
             <span>→ ❓ NFT Help</span>
           </button>
@@ -208,9 +208,9 @@ export function ChainGptToolsSection(): JSX.Element {
           </button>
           <button
             className={styles.subButton}
-            onClick={() => handleCommand("contract types")}
+            onClick={() => handleCommand("contract templates")}
           >
-            <span>→ 🏗️ Contract Types</span>
+            <span>→ 🏗️ Contract Templates</span>
           </button>
           <button
             className={styles.subButton}
@@ -270,12 +270,6 @@ export function ChainGptToolsSection(): JSX.Element {
             onClick={() => handleCommand("auditor categories")}
           >
             <span>→ 🛡️ Security Categories</span>
-          </button>
-          <button
-            className={styles.subButton}
-            onClick={() => handleCommand("auditor levels")}
-          >
-            <span>→ 📊 Audit Levels</span>
           </button>
           <button
             className={styles.subButton}

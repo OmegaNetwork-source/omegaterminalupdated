@@ -1,0 +1,139 @@
+/**
+ * Cookie Clicker Game Styles
+ */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  gap: 20px;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.scoreSection {
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.cookieCount {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--palette-primary, #00bcf2);
+  margin-bottom: 5px;
+  font-family: "Courier New", monospace;
+}
+
+.cps {
+  font-size: 14px;
+  color: color-mix(in srgb, var(--palette-text, #ffffff) 70%, transparent);
+  font-family: "Courier New", monospace;
+}
+
+.cookieSection {
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.cookieButton {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: none;
+  background: linear-gradient(
+    135deg,
+    var(--palette-warning, #ffaa00),
+    var(--palette-primary, #00bcf2)
+  );
+  font-size: 60px;
+  cursor: pointer;
+  transition: all 0.1s ease;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+.cookieButton:hover {
+  transform: scale(1.05);
+  box-shadow: 0 12px 30px rgba(0, 212, 255, 0.4);
+}
+
+.cookieButton:active {
+  transform: scale(0.95);
+}
+
+.shopSection {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.shopTitle {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 15px;
+  text-align: center;
+  color: var(--palette-primary, #00bcf2);
+  font-family: "Courier New", monospace;
+}
+
+.upgradesList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.upgradeItem {
+  background: color-mix(
+    in srgb,
+    var(--palette-primary, #00bcf2) 10%,
+    transparent
+  );
+  border-radius: 10px;
+  padding: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid var(--palette-border, rgba(0, 212, 255, 0.2));
+}
+
+.upgradeItem:hover {
+  background: color-mix(
+    in srgb,
+    var(--palette-primary, #00bcf2) 20%,
+    transparent
+  );
+  transform: translateX(4px);
+}
+
+.upgradeItem.canAfford {
+  border-color: var(--palette-success, #16c782);
+}
+
+.upgradeName {
+  font-weight: 600;
+  color: var(--palette-text, #ffffff);
+  margin-bottom: 4px;
+  font-family: "Courier New", monospace;
+}
+
+.upgradeDesc {
+  font-size: 12px;
+  color: color-mix(in srgb, var(--palette-text, #ffffff) 70%, transparent);
+  font-family: "Courier New", monospace;
+}
+
+.upgradeCost {
+  font-weight: 600;
+  color: var(--palette-secondary, #00ff88);
+  font-family: "Courier New", monospace;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .cookieButton {
+    width: 100px;
+    height: 100px;
+    font-size: 50px;
+  }
+}
+

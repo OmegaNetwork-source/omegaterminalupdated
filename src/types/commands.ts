@@ -293,9 +293,26 @@ export interface CommandContext {
 
   /**
    * Media player management context
-   * Enables commands to control Spotify, YouTube, and News reader panels
+   * Enables commands to control Perps, Spotify, YouTube, and News reader panels
    */
   media?: {
+    /** Omega Perps trading interface operations */
+    perps: {
+      /** Current panel state */
+      state: {
+        isPanelOpen: boolean;
+        currentPair: string;
+        currentUrl: string;
+      };
+      /** Open panel with optional pair */
+      openPanel: (pair?: string) => void;
+      /** Close panel */
+      closePanel: () => void;
+      /** Change trading pair */
+      setPair: (pair: string) => void;
+      /** Refresh iframe */
+      refresh: () => void;
+    };
     /** Spotify music player operations */
     spotify: {
       /** Current player state */
@@ -362,6 +379,25 @@ export interface CommandContext {
       openPanel: () => Promise<void>;
       /** Hide news reader panel */
       closePanel: () => void;
+    };
+    /** Portfolio Global Tracker (PGT) operations */
+    pgt: {
+      /** List of tracked wallets */
+      wallets: import("@/types/api").PGTWallet[];
+      /** Portfolio summary */
+      portfolio: import("@/types/api").PGTPortfolio | null;
+      /** Whether portfolio is loading */
+      isLoading: boolean;
+      /** Add a wallet to tracking */
+      addWallet: (address: string, network: string, label?: string) => Promise<{ success: boolean; error?: string }>;
+      /** Remove a wallet from tracking */
+      removeWallet: (address: string, network: string) => Promise<{ success: boolean; error?: string }>;
+      /** Get wallet details */
+      getWallet: (address: string, network: string) => import("@/types/api").PGTWallet | null;
+      /** Refresh entire portfolio */
+      refreshPortfolio: () => Promise<void>;
+      /** Refresh a specific wallet */
+      refreshWallet: (address: string, network: string) => Promise<void>;
     };
   };
 
@@ -451,6 +487,7 @@ export interface CommandContext {
     playClearTerminalSound: (options?: SoundPlayOptions) => Promise<void>;
     playModernUIThemeSound: (options?: SoundPlayOptions) => Promise<void>;
     playHelpCommandSound: (options?: SoundPlayOptions) => Promise<void>;
+    playFaucetSound: (options?: SoundPlayOptions) => Promise<void>;
   };
 }
 

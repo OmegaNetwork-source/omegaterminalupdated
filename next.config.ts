@@ -8,6 +8,9 @@ const withBundleAnalyzer = bundleAnalyzer({
 const nextConfig: NextConfig = {
   reactStrictMode: true,
 
+  // Output file tracing root to silence workspace warning
+  outputFileTracingRoot: require("path").join(__dirname),
+
   // Optimize package imports for large packages
   experimental: {
     optimizePackageImports: ["@solana/web3.js", "ethers"],

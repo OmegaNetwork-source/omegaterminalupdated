@@ -13,7 +13,11 @@ import { useSpotify } from "@/hooks/useSpotify";
 import config from "@/lib/config";
 import styles from "./SpotifyPanel.module.css";
 
-export function SpotifyPanel() {
+interface SpotifyPanelProps {
+  mobile?: boolean;
+}
+
+export function SpotifyPanel({ mobile = false }: SpotifyPanelProps) {
   const {
     authState,
     playerState,
@@ -36,6 +40,32 @@ export function SpotifyPanel() {
 
   const [searchQuery, setSearchQuery] = useState("");
   const [showPlaylists, setShowPlaylists] = useState(false);
+  const [isMinimized, setIsMinimized] = useState(false);
+
+  // Load minimized state from localStorage on mount (mobile only)
+  useEffect(() => {
+    if (mobile && typeof window !== "undefined") {
+      const saved = localStorage.getItem("spotify-minimized");
+      if (saved === "true") {
+        setIsMinimized(true);
+      }
+    }
+  }, [mobile]);
+
+  // Save minimized state to localStorage
+  useEffect(() => {
+    if (mobile && typeof window !== "undefined") {
+      localStorage.setItem("spotify-minimized", isMinimized.toString());
+    }
+  }, [isMinimized, mobile]);
+
+  const handleMinimize = () => {
+    setIsMinimized(true);
+  };
+
+  const handleMaximize = () => {
+    setIsMinimized(false);
+  };
 
   useEffect(() => {
     if (authState.isAuthenticated && showPlaylists) {
@@ -72,7 +102,7 @@ export function SpotifyPanel() {
   // If not authenticated, show authentication UI
   if (!authState.isAuthenticated) {
     return (
-      <div className={styles.panel}>
+      <div className={`${styles.panel} ${mobile ? styles.mobile : ""}`}>
         <div className={styles.header}>
           <div className={styles.headerLeft}>
             <span className={styles.logo}>🎵</span>
@@ -126,20 +156,54 @@ export function SpotifyPanel() {
     );
   }
 
+  // If minimized on mobile, render minimized view
+  if (mobile && isMinimized) {
+    return (
+      <div className={styles.minimizedContainer}>
+        <button
+          className={styles.minimizedButton}
+          onClick={handleMaximize}
+          aria-label="Restore Spotify panel"
+          type="button"
+        >
+          <span className={styles.minimizedIcon}>🎵</span>
+          {playerState.currentTrack && (
+            <span className={styles.minimizedTrack}>
+              {playerState.currentTrack.name}
+            </span>
+          )}
+        </button>
+      </div>
+    );
+  }
+
   return (
-    <div className={styles.panel}>
+    <div className={`${styles.panel} ${mobile ? styles.mobile : ""} ${isMinimized ? styles.minimized : ""}`}>
       <div className={styles.header}>
         <div className={styles.headerLeft}>
           <span className={styles.logo}>🎵</span>
           <h2 className={styles.title}>Spotify</h2>
         </div>
-        <button
-          className={styles.closeButton}
-          onClick={closePanel}
-          aria-label="Close Spotify panel"
-        >
-          ✕
-        </button>
+        <div className={styles.headerRight}>
+          {mobile && (
+            <button
+              className={styles.minimizeButton}
+              onClick={handleMinimize}
+              aria-label="Minimize Spotify panel"
+              type="button"
+            >
+              _
+            </button>
+          )}
+          <button
+            className={styles.closeButton}
+            onClick={closePanel}
+            aria-label="Close Spotify panel"
+            type="button"
+          >
+            ✕
+          </button>
+        </div>
       </div>
 
       <div className={styles.content}>

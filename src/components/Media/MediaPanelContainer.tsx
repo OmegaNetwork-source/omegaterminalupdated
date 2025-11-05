@@ -7,34 +7,40 @@
  * provider state. Only one panel can be open at a time.
  *
  * Manages:
+ * - PerpsPanel (trading interface)
  * - SpotifyPanel (music player)
  * - YouTubePanel (video player)
  * - NewsReaderPanel (crypto news)
  */
 
 import type { ComponentType } from "react";
+import { usePerps } from "@/hooks/usePerps";
 import { useSpotify } from "@/hooks/useSpotify";
 import { useYouTube } from "@/hooks/useYouTube";
 import { useNewsReader } from "@/hooks/useNewsReader";
 import styles from "./MediaPanelContainer.module.css";
 
 export interface MediaPanelContainerProps {
+  PerpsPanel: ComponentType;
   SpotifyPanel: ComponentType;
   YouTubePanel: ComponentType;
   NewsReaderPanel: ComponentType;
 }
 
 export function MediaPanelContainer({
+  PerpsPanel,
   SpotifyPanel,
   YouTubePanel,
   NewsReaderPanel,
 }: MediaPanelContainerProps) {
+  const perps = usePerps();
   const spotify = useSpotify();
   const youtube = useYouTube();
   const newsReader = useNewsReader();
 
   // Determine which panel is open
   const isPanelOpen =
+    perps.playerState.isPanelOpen ||
     spotify.playerState.isPanelOpen ||
     youtube.playerState.isPanelOpen ||
     newsReader.readerState.isPanelOpen;
@@ -50,7 +56,9 @@ export function MediaPanelContainer({
       <div
         className={styles.backdrop}
         onClick={() => {
-          if (spotify.playerState.isPanelOpen) {
+          if (perps.playerState.isPanelOpen) {
+            perps.closePanel();
+          } else if (spotify.playerState.isPanelOpen) {
             spotify.closePanel();
           } else if (youtube.playerState.isPanelOpen) {
             youtube.closePanel();
@@ -60,6 +68,9 @@ export function MediaPanelContainer({
         }}
         aria-label="Close panel"
       />
+
+      {/* Perps Panel */}
+      {perps.playerState.isPanelOpen && <PerpsPanel />}
 
       {/* Spotify Panel */}
       {spotify.playerState.isPanelOpen && <SpotifyPanel />}

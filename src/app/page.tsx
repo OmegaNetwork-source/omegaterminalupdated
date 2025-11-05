@@ -7,6 +7,7 @@ import { TerminalContainer } from "@/components/Terminal";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { DashboardLoadingSkeleton } from "@/components/LoadingSkeletons";
 import { useViewMode } from "@/hooks/useViewMode";
+import { useScreensaver } from "@/hooks/useScreensaver";
 
 const DashboardLayout = dynamic(
   () =>
@@ -19,9 +20,18 @@ const DashboardLayout = dynamic(
   }
 );
 
+const ScreensaverOverlay = dynamic(
+  () =>
+    import("@/components/Entertainment/ScreensaverOverlay").then((mod) => ({
+      default: mod.ScreensaverOverlay,
+    })),
+  { ssr: false }
+);
+
 // Render dashboard or basic terminal based on view mode
 function HomePageContent() {
   const { isBasicMode } = useViewMode();
+  const screensaver = useScreensaver();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -42,6 +52,8 @@ function HomePageContent() {
           <DashboardLayout />
         </Suspense>
       )}
+      {/* Screensaver Overlay - Works in both basic and dashboard modes */}
+      {screensaver.screensaverState.isActive && <ScreensaverOverlay />}
     </>
   );
 }

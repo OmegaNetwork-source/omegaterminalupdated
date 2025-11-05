@@ -143,15 +143,7 @@ async function handleGenerate(
   context: CommandContext,
   args: string[]
 ): Promise<void> {
-  // Check initialization
-  if (!chaingpt.isInitialized()) {
-    context.log("❌ ChainGPT not initialized", "error");
-    context.log("", "output");
-    context.log("💡 Initialize first:", "info");
-    context.log("   nftgen init              (use default key)", "output");
-    context.log("   nftgen init <api-key>    (use your own key)", "output");
-    return;
-  }
+  // No init required - API will use server keys automatically if available
 
   // Get prompt - skip 'nftgen' and 'generate' if present
   let promptParts = args.slice(1);
@@ -220,7 +212,7 @@ async function handleGenerate(
       ? "Enhance this prompt for NFT generation"
       : undefined;
 
-    // Generate NFT
+    // Generate NFT (no init required - uses server keys automatically)
     const response = await chaingpt.generateNFT({
       prompt: prompt,
       model: model,
@@ -232,34 +224,170 @@ async function handleGenerate(
       enhance: enhanceStr,
     });
 
-    if (
-      !response.success ||
-      !response.data ||
-      !response.data.images ||
-      response.data.images.length === 0
-    ) {
-      throw new Error(response.message || "Failed to generate NFT");
+    // Handle different response formats
+    if (!response) {
+      throw new Error("No response from NFT generation API");
     }
 
-    const nft = response.data.images[0]!;
+    // Always log response for debugging (critical for troubleshooting)
+    console.log("[NFT] Full API Response:", JSON.stringify(response, null, 2));
+    console.log("[NFT] Response keys:", Object.keys(response));
+    if (response.data) {
+      console.log("[NFT] Response.data keys:", Object.keys(response.data));
+    }
 
-    // Save to gallery
-    saveToGallery({
-      url: nft.url,
-      prompt: prompt,
-      model: model,
-      timestamp: nft.timestamp || new Date().toISOString(),
-    });
+    // Check if response indicates explicit failure
+    if (response.success === false) {
+      throw new Error(response.message || "NFT generation failed");
+    }
 
-    // Display NFT with styled HTML card
-    const html = `
+    // Handle case where response.message is "Request Successful" but data structure differs
+    // ChainGPT API might return success message with data in different locations
+    let nftUrl: string | null = null;
+    let nftData: any = null;
+    const responseAny = response as any;
+
+    // Check standard format: response.data.images[0].url
+    if (response.data && response.data.images && response.data.images.length > 0) {
+      nftData = response.data.images[0];
+      nftUrl = nftData?.url || nftData?.imageUrl || null;
+      console.log("[NFT] Found image in response.data.images[0]");
+    }
+    // Check imagesUrl array (ChainGPT variant) - need to cast to any since it's not in type
+    else if (response.data && (response.data as any).imagesUrl && Array.isArray((response.data as any).imagesUrl) && (response.data as any).imagesUrl.length > 0) {
+      const url = (response.data as any).imagesUrl[0];
+      nftUrl = typeof url === "string" ? url : url?.url || null;
+      nftData = { url: nftUrl, prompt: prompt, model: model };
+      console.log("[NFT] Found image in response.data.imagesUrl[0]");
+    }
+    // Check alternative formats in response.data
+    else if (response.data) {
+      const data = response.data as any;
+      
+      // Check for direct URL field
+      if (data.url && typeof data.url === "string") {
+        nftUrl = data.url;
+        nftData = { url: data.url, prompt: prompt, model: model };
+        console.log("[NFT] Found image in response.data.url");
+      }
+      // Check for image array in different location
+      else if (Array.isArray(data.images) && data.images.length > 0) {
+        nftData = typeof data.images[0] === "string" 
+          ? { url: data.images[0], prompt: prompt, model: model }
+          : data.images[0];
+        nftUrl = typeof nftData === "string" ? nftData : nftData.url || nftData.imageUrl || null;
+        console.log("[NFT] Found image in response.data.images array");
+      }
+      // Check for single image object
+      else if (data.image && typeof data.image === "string") {
+        nftUrl = data.image;
+        nftData = { url: data.image, prompt: prompt, model: model };
+        console.log("[NFT] Found image in response.data.image");
+      }
+      // Check for results array
+      else if (Array.isArray(data.results) && data.results.length > 0) {
+        nftData = typeof data.results[0] === "string"
+          ? { url: data.results[0], prompt: prompt, model: model }
+          : data.results[0];
+        nftUrl = typeof nftData === "string" ? nftData : nftData.url || nftData.imageUrl || null;
+        console.log("[NFT] Found image in response.data.results array");
+      }
+      // Check for imageUrl field
+      else if (data.imageUrl && typeof data.imageUrl === "string") {
+        nftUrl = data.imageUrl;
+        nftData = { url: data.imageUrl, prompt: prompt, model: model };
+        console.log("[NFT] Found image in response.data.imageUrl");
+      }
+    }
+    // Check root level fields
+    else if (responseAny.url && typeof responseAny.url === "string") {
+      nftUrl = responseAny.url;
+      nftData = { url: nftUrl, prompt: prompt, model: model };
+      console.log("[NFT] Found image in response.url");
+    }
+    else if (responseAny.image && typeof responseAny.image === "string") {
+      nftUrl = responseAny.image;
+      nftData = { url: nftUrl, prompt: prompt, model: model };
+      console.log("[NFT] Found image in response.image");
+    }
+    else if (responseAny.images && Array.isArray(responseAny.images) && responseAny.images.length > 0) {
+      const img = responseAny.images[0];
+      nftUrl = typeof img === "string" ? img : img?.url || null;
+      nftData = { url: nftUrl, prompt: prompt, model: model };
+      console.log("[NFT] Found image in response.images array");
+    }
+    // Deep search in response if message is "Request Successful"
+    else if (response.message && response.message.toLowerCase().includes("successful")) {
+      console.warn("[NFT] Response says 'successful' but no image found in standard locations. Searching deeper...");
+      
+      // Deep search function
+      const findImageUrl = (obj: any, depth = 0): string | null => {
+        if (depth > 5) return null; // Prevent infinite recursion
+        if (!obj || typeof obj !== "object") return null;
+        
+        // Check common image URL patterns
+        const urlPatterns = ['url', 'imageUrl', 'image', 'image_url', 'imageURL', 'src', 'source'];
+        for (const pattern of urlPatterns) {
+          if (obj[pattern] && typeof obj[pattern] === "string" && obj[pattern].startsWith("http")) {
+            return obj[pattern];
+          }
+        }
+        
+        // Check arrays
+        if (Array.isArray(obj)) {
+          for (const item of obj) {
+            const url = findImageUrl(item, depth + 1);
+            if (url) return url;
+          }
+        }
+        
+        // Recursively search nested objects
+        for (const key in obj) {
+          if (obj.hasOwnProperty(key)) {
+            const url = findImageUrl(obj[key], depth + 1);
+            if (url) return url;
+          }
+        }
+        
+        return null;
+      };
+      
+      const foundUrl = findImageUrl(response);
+      if (foundUrl) {
+        nftUrl = foundUrl;
+        nftData = { url: foundUrl, prompt: prompt, model: model };
+        console.log("[NFT] Found image URL via deep search:", foundUrl);
+      } else {
+        // API might return success but image is still generating (async)
+        throw new Error("NFT generation request was successful, but no image URL was found in the response. The image may still be processing. Please check the ChainGPT dashboard or try again in a few moments.");
+      }
+    }
+
+    // If we found a URL, use it
+    if (nftUrl) {
+      const finalNft = {
+        url: nftUrl,
+        prompt: nftData?.prompt || prompt,
+        model: nftData?.model || model,
+        timestamp: nftData?.timestamp || new Date().toISOString(),
+      };
+      
+      // Save to gallery (only once)
+      saveToGallery(finalNft);
+      
+      // Use the final NFT for display
+      const nft = finalNft;
+
+      // Display NFT with styled HTML card (theme-compatible)
+      const html = `
       <div style="
-        background: linear-gradient(135deg, rgba(175, 82, 222, 0.1), rgba(255, 45, 85, 0.1));
-        border: 1px solid rgba(175, 82, 222, 0.3);
+        background: linear-gradient(135deg, color-mix(in srgb, var(--palette-primary, #00d4ff) 15%, transparent), color-mix(in srgb, var(--palette-secondary, #00ff88) 10%, transparent));
+        border: 1px solid color-mix(in srgb, var(--palette-primary, #00d4ff) 30%, transparent);
         border-radius: 12px;
         padding: 20px;
         margin: 10px 0;
         max-width: 100%;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
       ">
         <div style="
           display: flex;
@@ -279,7 +407,8 @@ async function handleGenerate(
             <div style="
               font-size: 18px;
               font-weight: 600;
-              color: #AF52DE;
+              color: var(--palette-primary, #00d4ff);
+              text-shadow: 0 0 8px color-mix(in srgb, var(--palette-primary, #00d4ff) 40%, transparent);
             ">Generated NFT Artwork</div>
           </div>
         </div>
@@ -293,26 +422,44 @@ async function handleGenerate(
             width: 100%;
             height: auto;
             border-radius: 8px;
-            border: 2px solid rgba(175, 82, 222, 0.3);
+            border: 2px solid color-mix(in srgb, var(--palette-primary, #00d4ff) 30%, transparent);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+            background: color-mix(in srgb, var(--palette-surface, rgba(21, 21, 32, 1)) 50%, transparent);
           " />
         </div>
         <div style="
-          color: #ffffff;
-          font-size: 13px;
+          color: var(--palette-text, #e0e0e0);
+          font-size: 14px;
           line-height: 1.6;
           margin-bottom: 12px;
+          padding: 12px;
+          background: color-mix(in srgb, var(--palette-surface, rgba(21, 21, 32, 1)) 40%, transparent);
+          border-radius: 6px;
+          border-left: 3px solid var(--palette-primary, #00d4ff);
         ">
-          <strong style="color: #AF52DE;">Prompt:</strong> ${escapeHtml(prompt)}
+          <strong style="color: var(--palette-primary, #00d4ff); margin-right: 8px;">Prompt:</strong>
+          <span style="color: var(--palette-text, #e0e0e0);">${escapeHtml(prompt)}</span>
         </div>
         <div style="
-          color: #888888;
+          color: color-mix(in srgb, var(--palette-text, #ffffff) 70%, transparent);
           font-size: 12px;
           margin-bottom: 16px;
+          display: flex;
+          gap: 16px;
+          flex-wrap: wrap;
         ">
-          <strong style="color: #AF52DE;">Model:</strong> ${escapeHtml(
-            model
-          )} • 
-          <strong style="color: #AF52DE;">Size:</strong> ${width}x${height}
+          <span>
+            <strong style="color: var(--palette-primary, #00d4ff);">Model:</strong> 
+            <span style="color: var(--palette-text, #e0e0e0);">${escapeHtml(model)}</span>
+          </span>
+          <span>
+            <strong style="color: var(--palette-primary, #00d4ff);">Size:</strong> 
+            <span style="color: var(--palette-text, #e0e0e0);">${width}x${height}</span>
+          </span>
+          ${style ? `<span>
+            <strong style="color: var(--palette-primary, #00d4ff);">Style:</strong> 
+            <span style="color: var(--palette-text, #e0e0e0);">${escapeHtml(style)}</span>
+          </span>` : ""}
         </div>
         <div style="
           display: flex;
@@ -321,43 +468,104 @@ async function handleGenerate(
         ">
           <a href="${escapeHtml(nft.url)}" target="_blank" download style="
             flex: 1;
-            background: rgba(175, 82, 222, 0.2);
-            border: 1px solid rgba(175, 82, 222, 0.4);
+            background: color-mix(in srgb, var(--palette-primary, #00d4ff) 20%, transparent);
+            border: 1px solid color-mix(in srgb, var(--palette-primary, #00d4ff) 40%, transparent);
             border-radius: 6px;
             padding: 10px 16px;
-            color: #AF52DE;
+            color: var(--palette-primary, #00d4ff);
             text-decoration: none;
             text-align: center;
             cursor: pointer;
             font-size: 12px;
             font-weight: 600;
-          ">📥 Download</a>
+            transition: all 0.2s ease;
+          " 
+          onmouseover="this.style.background='color-mix(in srgb, var(--palette-primary, #00d4ff) 30%, transparent)'; this.style.borderColor='var(--palette-primary, #00d4ff)';"
+          onmouseout="this.style.background='color-mix(in srgb, var(--palette-primary, #00d4ff) 20%, transparent)'; this.style.borderColor='color-mix(in srgb, var(--palette-primary, #00d4ff) 40%, transparent)';"
+          >📥 Download</a>
+          <a href="${escapeHtml(nft.url)}" target="_blank" style="
+            flex: 1;
+            background: color-mix(in srgb, var(--palette-secondary, #00ff88) 20%, transparent);
+            border: 1px solid color-mix(in srgb, var(--palette-secondary, #00ff88) 40%, transparent);
+            border-radius: 6px;
+            padding: 10px 16px;
+            color: var(--palette-secondary, #00ff88);
+            text-decoration: none;
+            text-align: center;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+          "
+          onmouseover="this.style.background='color-mix(in srgb, var(--palette-secondary, #00ff88) 30%, transparent)'; this.style.borderColor='var(--palette-secondary, #00ff88)';"
+          onmouseout="this.style.background='color-mix(in srgb, var(--palette-secondary, #00ff88) 20%, transparent)'; this.style.borderColor='color-mix(in srgb, var(--palette-secondary, #00ff88) 40%, transparent)';"
+          >🔗 Open</a>
         </div>
         <div style="
           padding-top: 16px;
-          border-top: 1px solid rgba(175, 82, 222, 0.2);
+          border-top: 1px solid color-mix(in srgb, var(--palette-border, rgba(0, 212, 255, 0.3)) 50%, transparent);
           font-size: 12px;
-          color: #888888;
+          color: color-mix(in srgb, var(--palette-text, #ffffff) 65%, transparent);
+          display: flex;
+          align-items: center;
+          gap: 8px;
         ">
-          <span style="color: #AF52DE;">💳</span> Credits used: ${
+          <span style="color: var(--palette-primary, #00d4ff);">💳</span>
+          <span>Credits used: <strong style="color: var(--palette-secondary, #00ff88);">${
             model === "Dale3" ? "4.75" : "1.0"
-          }
+          }</strong></span>
+          <span style="margin-left: auto; color: color-mix(in srgb, var(--palette-text, #ffffff) 50%, transparent);">
+            💾 Saved to gallery
+          </span>
         </div>
       </div>
     `;
 
-    context.logHtml(html);
+      context.logHtml(html);
 
-    context.log("", "output");
-    context.log("✅ NFT generated successfully!", "success");
-    context.log("💾 Saved to gallery", "info");
+      context.log("", "output");
+      context.log("✅ NFT generated successfully!", "success");
+      context.log("💾 Saved to gallery", "info");
+    } else {
+      // No URL found anywhere - provide detailed error with response structure
+      const responseStr = JSON.stringify(response, null, 2).substring(0, 500); // Limit length
+      throw new Error(
+        `NFT generation request completed, but no image URL was found in the response.\n\n` +
+        `Response message: ${response.message || "None"}\n` +
+        `Response structure (first 500 chars):\n${responseStr}\n\n` +
+        `Possible reasons:\n` +
+        `• Image is still processing (async generation)\n` +
+        `• API returned unexpected response format\n` +
+        `• Check browser console for full response details\n\n` +
+        `Please check the ChainGPT dashboard or try again in a few moments.`
+      );
+    }
   } catch (error: any) {
-    context.log(`❌ Error: ${error.message}`, "error");
-    context.log("", "output");
-    context.log("💡 Troubleshooting:", "info");
-    context.log("   • Try different model: nftgen models", "output");
-    context.log("   • Simplify prompt", "output");
-    context.log("   • Check API key: nftgen test", "output");
+    const errorMsg = error.message || String(error);
+    const errorStr = errorMsg.toLowerCase();
+    
+    // Check if it's an API key/configuration error
+    if (errorStr.includes("key") || errorStr.includes("api") || 
+        errorStr.includes("401") || errorStr.includes("403") ||
+        errorStr.includes("not configured") || errorStr.includes("503")) {
+      context.log(`❌ API Configuration Error`, "error");
+      context.log("", "output");
+      context.log("💡 ChainGPT NFT Generator requires an API key:", "info");
+      context.log("", "output");
+      context.log("Option 1: Use your own API key (recommended):", "output");
+      context.log("   nftgen init <your-api-key>", "info");
+      context.log("   Get one at: https://api.chaingpt.org", "output");
+      context.log("", "output");
+      context.log("Option 2: Server keys may be configured by admin", "output");
+      context.log("   Contact the administrator if server keys are expected", "info");
+    } else {
+      context.log(`❌ Error: ${errorMsg}`, "error");
+      context.log("", "output");
+      context.log("💡 Troubleshooting:", "info");
+      context.log("   • Try different model: nftgen models", "output");
+      context.log("   • Simplify your prompt", "output");
+      context.log("   • Check API connection: nftgen test", "output");
+    }
   }
 }
 
@@ -433,19 +641,77 @@ function handleGallery(context: CommandContext, args: string[]): void {
   const gallery = getGallery();
 
   if (gallery.length === 0) {
-    context.log("", "output");
-    context.log("📁 NFT GALLERY", "info");
-    context.log("", "output");
-    context.log("Your gallery is empty. Generate your first NFT!", "output");
-    context.log("", "output");
-    context.log("💡 Example:", "info");
-    context.log("   nftgen generate cyberpunk cat with neon lights", "output");
-    context.log("", "output");
+    const emptyHtml = `
+      <div style="
+        background: linear-gradient(135deg, color-mix(in srgb, var(--palette-primary, #00d4ff) 15%, transparent), color-mix(in srgb, var(--palette-secondary, #00ff88) 10%, transparent));
+        border: 1px solid color-mix(in srgb, var(--palette-primary, #00d4ff) 30%, transparent);
+        border-radius: 12px;
+        padding: 24px;
+        margin: 10px 0;
+        text-align: center;
+      ">
+        <div style="font-size: 48px; line-height: 1; margin-bottom: 16px;">🎨</div>
+        <div style="
+          font-size: 18px;
+          font-weight: 600;
+          color: var(--palette-primary, #00d4ff);
+          margin-bottom: 12px;
+          text-shadow: 0 0 8px color-mix(in srgb, var(--palette-primary, #00d4ff) 40%, transparent);
+        ">NFT Gallery</div>
+        <div style="
+          color: color-mix(in srgb, var(--palette-text, #ffffff) 70%, transparent);
+          font-size: 14px;
+          margin-bottom: 20px;
+        ">Your gallery is empty. Generate your first NFT!</div>
+        <div style="
+          color: color-mix(in srgb, var(--palette-text, #ffffff) 60%, transparent);
+          font-size: 12px;
+          margin-top: 16px;
+        ">
+          💡 Example: <span style="color: var(--palette-secondary, #00ff88); font-family: 'Courier New', monospace;">nftgen generate cyberpunk cat with neon lights</span>
+        </div>
+      </div>
+    `;
+    context.logHtml(emptyHtml);
     return;
   }
 
-  context.log("", "output");
-  context.log(`📁 NFT GALLERY (${gallery.length} items)`, "info");
+  // Display gallery header with styled HTML
+  const headerHtml = `
+    <div style="
+      background: linear-gradient(135deg, color-mix(in srgb, var(--palette-primary, #00d4ff) 15%, transparent), color-mix(in srgb, var(--palette-secondary, #00ff88) 10%, transparent));
+      border: 1px solid color-mix(in srgb, var(--palette-primary, #00d4ff) 30%, transparent);
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin: 10px 0 20px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    ">
+      <div style="
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      ">
+        <div style="font-size: 28px; line-height: 1;">🎨</div>
+        <div>
+          <div style="
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--palette-primary, #00d4ff);
+            text-shadow: 0 0 8px color-mix(in srgb, var(--palette-primary, #00d4ff) 40%, transparent);
+          ">NFT Gallery</div>
+          <div style="
+            font-size: 12px;
+            color: color-mix(in srgb, var(--palette-text, #ffffff) 70%, transparent);
+            margin-top: 4px;
+          ">Showing ${Math.min(gallery.length, 20)} of ${gallery.length} NFTs</div>
+        </div>
+      </div>
+    </div>
+  `;
+  
+  context.logHtml(headerHtml);
   context.log("", "output");
 
   // Show last 20 NFTs
@@ -457,15 +723,19 @@ function handleGallery(context: CommandContext, args: string[]): void {
 
     const html = `
       <div style="
-        background: rgba(175, 82, 222, 0.05);
-        border: 1px solid rgba(175, 82, 222, 0.2);
+        background: color-mix(in srgb, var(--palette-surface, rgba(21, 21, 32, 1)) 60%, transparent);
+        border: 1px solid color-mix(in srgb, var(--palette-primary, #00d4ff) 20%, transparent);
         border-radius: 8px;
         padding: 12px;
         margin: 8px 0;
         display: flex;
         gap: 12px;
         align-items: center;
-      ">
+        transition: all 0.2s ease;
+      "
+      onmouseover="this.style.borderColor='color-mix(in srgb, var(--palette-primary, #00d4ff) 40%, transparent)'; this.style.background='color-mix(in srgb, var(--palette-surface, rgba(21, 21, 32, 1)) 80%, transparent)';"
+      onmouseout="this.style.borderColor='color-mix(in srgb, var(--palette-primary, #00d4ff) 20%, transparent)'; this.style.background='color-mix(in srgb, var(--palette-surface, rgba(21, 21, 32, 1)) 60%, transparent)';"
+      >
         <img src="${escapeHtml(nft.url)}" alt="${escapeHtml(
       nft.prompt
     )}" style="
@@ -473,34 +743,48 @@ function handleGallery(context: CommandContext, args: string[]): void {
           height: 80px;
           object-fit: cover;
           border-radius: 6px;
-          border: 1px solid rgba(175, 82, 222, 0.3);
+          border: 2px solid color-mix(in srgb, var(--palette-primary, #00d4ff) 30%, transparent);
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
         " />
-        <div style="flex: 1;">
+        <div style="flex: 1; min-width: 0;">
           <div style="
-            color: #ffffff;
+            color: var(--palette-text, #e0e0e0);
             font-size: 13px;
             margin-bottom: 4px;
             font-weight: 600;
-          ">${escapeHtml(nft.prompt.substring(0, 60))}${
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          " title="${escapeHtml(nft.prompt)}">${escapeHtml(nft.prompt.substring(0, 60))}${
       nft.prompt.length > 60 ? "..." : ""
     }</div>
           <div style="
-            color: #888888;
+            color: color-mix(in srgb, var(--palette-text, #ffffff) 65%, transparent);
             font-size: 11px;
+            display: flex;
+            gap: 8px;
+            align-items: center;
           ">
-            ${escapeHtml(nft.model)} • ${date}
+            <span style="color: var(--palette-primary, #00d4ff);">${escapeHtml(nft.model)}</span>
+            <span style="color: color-mix(in srgb, var(--palette-text, #ffffff) 50%, transparent);">•</span>
+            <span>${date}</span>
           </div>
         </div>
         <a href="${escapeHtml(nft.url)}" target="_blank" style="
-          background: rgba(175, 82, 222, 0.2);
-          border: 1px solid rgba(175, 82, 222, 0.4);
+          background: color-mix(in srgb, var(--palette-primary, #00d4ff) 20%, transparent);
+          border: 1px solid color-mix(in srgb, var(--palette-primary, #00d4ff) 40%, transparent);
           border-radius: 6px;
           padding: 6px 12px;
-          color: #AF52DE;
+          color: var(--palette-primary, #00d4ff);
           text-decoration: none;
           font-size: 11px;
           font-weight: 600;
-        ">👁️ View</a>
+          white-space: nowrap;
+          transition: all 0.2s ease;
+        "
+        onmouseover="this.style.background='color-mix(in srgb, var(--palette-primary, #00d4ff) 30%, transparent)'; this.style.borderColor='var(--palette-primary, #00d4ff)';"
+        onmouseout="this.style.background='color-mix(in srgb, var(--palette-primary, #00d4ff) 20%, transparent)'; this.style.borderColor='color-mix(in srgb, var(--palette-primary, #00d4ff) 40%, transparent)';"
+        >👁️ View</a>
       </div>
     `;
 
@@ -563,100 +847,173 @@ async function handleTest(
  * Handle NFT generator help
  */
 function handleHelp(context: CommandContext, args: string[]): void {
-  context.log("", "output");
-  context.log("🎨 CHAINGPT AI NFT GENERATOR", "info");
-  context.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━", "output");
-  context.log("", "output");
+  const helpLines = [
+    "═ CHAINGPT AI NFT GENERATOR ═",
+    "",
+    "nftgen init",
+    "Initialize with default API key",
+    "",
+    "nftgen init <api-key>",
+    "Initialize with your API key",
+    "",
+    "nftgen generate <prompt>",
+    "Generate NFT artwork",
+    "",
+    "nftgen enhance <prompt>",
+    "Enhance prompt (coming soon)",
+    "",
+    "nftgen models",
+    "Show available models",
+    "",
+    "nftgen styles",
+    "Show available styles",
+    "",
+    "nftgen gallery",
+    "View generated NFTs",
+    "",
+    "nftgen test",
+    "Test API connection",
+    "",
+    "nftgen help",
+    "Show this help message",
+    "",
+    "→ Options:",
+    "",
+    "--model <model>",
+    "AI model (velogen, Dale3, etc.)",
+    "",
+    "--style <style>",
+    "Art style (anime, cinematic, etc.)",
+    "",
+    "--size <width>x<height>",
+    "Image size (e.g., 512x512, 1024x1024)",
+    "",
+    "--enhance",
+    "Enhance prompt automatically",
+    "",
+    "→ Examples:",
+    "",
+    "nftgen generate cyberpunk cat with neon lights",
+    "nftgen generate --model Dale3 futuristic cityscape",
+    "nftgen generate --style anime warrior princess",
+    "nftgen generate --size 1024x1024 dragon in space",
+    "",
+    "→ Credits:",
+    "",
+    "Standard models: 1.0 credit per image",
+    "Dale3 (DALL-E 3): 4.75 credits per image",
+    "",
+    "→ Gallery:",
+    "",
+    "Generated NFTs are automatically saved",
+    "View your collection: nftgen gallery",
+    "Last 50 NFTs are stored locally",
+  ];
 
-  context.log("📋 SETUP & CONFIGURATION", "info");
-  context.log("", "output");
-  context.log(
-    "  nftgen init                  Initialize with default API key",
-    "output"
-  );
-  context.log(
-    "  nftgen init <api-key>        Initialize with your API key",
-    "output"
-  );
-  context.log("  nftgen test                  Test API connection", "output");
-  context.log("", "output");
+  let helpHtml = `
+    <div style="
+      font-family: 'Courier New', monospace;
+      line-height: 1.8;
+      color: var(--palette-text, #e0e0e0);
+      padding: 10px;
+    ">
+      <div style="
+        font-size: 18px;
+        font-weight: bold;
+        color: var(--palette-primary, #00d4ff);
+        margin-bottom: 20px;
+        text-align: center;
+        padding: 12px;
+        background: linear-gradient(135deg, rgba(0, 212, 255, 0.15), rgba(0, 255, 136, 0.1));
+        border: 1px solid var(--palette-primary, #00d4ff);
+        border-radius: 6px;
+        text-shadow: 0 0 8px rgba(0, 212, 255, 0.5);
+      ">
+        ═ CHAINGPT AI NFT GENERATOR ═
+      </div>
+      <div style="padding: 10px;">
+  `;
 
-  context.log("🎨 GENERATION COMMANDS", "info");
-  context.log("", "output");
-  context.log("  nftgen generate <prompt>     Generate NFT artwork", "output");
-  context.log(
-    "  nftgen enhance <prompt>      Enhance prompt (coming soon)",
-    "output"
-  );
-  context.log("  nftgen models                Show available models", "output");
-  context.log("  nftgen styles                Show available styles", "output");
-  context.log("  nftgen gallery               View generated NFTs", "output");
-  context.log(
-    "  nftgen help                  Show this help message",
-    "output"
-  );
-  context.log("", "output");
+  helpLines.forEach((line) => {
+    const trimmed = line.trim();
+    const isCommand = trimmed && !trimmed.startsWith("→") && !trimmed.startsWith("═") && 
+                      !trimmed.startsWith("--") && trimmed.length > 0 && trimmed.length < 60 && 
+                      !trimmed.includes(":") && !trimmed.startsWith("•") &&
+                      (trimmed.includes("nftgen ") || trimmed.match(/^[a-z-]+$/));
 
-  context.log("⚙️  OPTIONS", "info");
-  context.log("", "output");
-  context.log(
-    "  --model <model>              AI model (velogen, Dale3, etc.)",
-    "output"
-  );
-  context.log(
-    "  --style <style>              Art style (anime, cinematic, etc.)",
-    "output"
-  );
-  context.log(
-    "  --size <width>x<height>      Image size (e.g., 512x512, 1024x1024)",
-    "output"
-  );
-  context.log(
-    "  --enhance                    Enhance prompt automatically",
-    "output"
-  );
-  context.log("", "output");
+    if (isCommand) {
+      const escapedCommand = line.replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+      helpHtml += `
+        <div style="margin: 8px 0; padding-left: 0;">
+          <div
+            class="omega-help-command"
+            data-command="${escapedCommand}"
+            style="
+              color: var(--palette-secondary, #00ff88);
+              font-weight: bold;
+              margin-left: 0;
+              margin-top: 8px;
+              font-family: 'Courier New', monospace;
+              cursor: pointer;
+              display: inline-block;
+              padding: 2px 4px;
+              border-radius: 3px;
+              transition: all 0.2s ease;
+              user-select: none;
+            "
+            title="Click to add '${escapedCommand}' to terminal input"
+          >
+            ${line}
+          </div>
+        </div>
+      `;
+    } else if (trimmed.startsWith("→")) {
+      helpHtml += `
+        <div style="
+          font-size: 14px;
+          font-weight: bold;
+          color: var(--palette-primary, #00d4ff);
+          margin: 15px 0 8px 0;
+          padding: 8px;
+          background: linear-gradient(90deg, rgba(0, 212, 255, 0.2), rgba(0, 212, 255, 0.05));
+          border-left: 4px solid var(--palette-primary, #00d4ff);
+          border-radius: 4px;
+        ">${line}</div>
+      `;
+    } else if (trimmed) {
+      helpHtml += `
+        <div style="
+          color: var(--palette-text, #ccd4e0);
+          margin: 6px 0;
+          padding-left: 0;
+          font-size: 0.95em;
+          line-height: 1.6;
+        ">${escapeHtml(line)}</div>
+      `;
+    } else {
+      helpHtml += `<div style="margin: 8px 0;"></div>`;
+    }
+  });
 
-  context.log("📚 EXAMPLES", "info");
-  context.log("", "output");
-  context.log("  # Simple generation", "output");
-  context.log("  nftgen generate cyberpunk cat with neon lights", "info");
-  context.log("", "output");
-  context.log("  # With specific model", "output");
-  context.log("  nftgen generate --model Dale3 futuristic cityscape", "info");
-  context.log("", "output");
-  context.log("  # With style", "output");
-  context.log("  nftgen generate --style anime warrior princess", "info");
-  context.log("", "output");
-  context.log("  # Custom size", "output");
-  context.log("  nftgen generate --size 1024x1024 dragon in space", "info");
-  context.log("", "output");
-  context.log("  # Multiple options", "output");
-  context.log(
-    "  nftgen generate --model nebula_forge_xl --style cinematic sunset over ocean",
-    "info"
-  );
-  context.log("", "output");
+  helpHtml += `
+        </div>
+        <div style="
+          margin-top: 20px;
+          padding: 12px;
+          background: rgba(0, 212, 255, 0.1);
+          border: 1px solid var(--palette-border, rgba(0, 212, 255, 0.3));
+          border-radius: 6px;
+          font-size: 12px;
+          color: var(--palette-text, #ccd4e0);
+        ">
+          <span style="color: var(--palette-primary, #00d4ff);">🔗</span>
+          <span style="margin-left: 8px;">Get API key: https://api.chaingpt.org</span>
+        </div>
+      </div>
+    </div>
+  `;
 
-  context.log("💳 CREDITS", "info");
-  context.log("", "output");
-  context.log("  • Standard models: 1.0 credit per image", "output");
-  context.log("  • Dale3 (DALL-E 3): 4.75 credits per image", "output");
-  context.log("", "output");
-
-  context.log("📁 GALLERY", "info");
-  context.log("", "output");
-  context.log("  • Generated NFTs are automatically saved", "output");
-  context.log("  • View your collection: nftgen gallery", "output");
-  context.log("  • Last 50 NFTs are stored locally", "output");
-  context.log("", "output");
-
-  context.log("🔗 RESOURCES", "info");
-  context.log("", "output");
-  context.log("  • Get API key: https://api.chaingpt.org", "output");
-  context.log("  • Documentation: https://docs.chaingpt.org", "output");
-  context.log("  • Support: https://chaingpt.org", "output");
-  context.log("", "output");
+  context.logHtml(helpHtml);
 }
 
 /**
@@ -664,7 +1021,7 @@ function handleHelp(context: CommandContext, args: string[]): void {
  */
 export const nftgenCommand: Command = {
   name: "nftgen",
-  aliases: ["chaingpt-nft"],
+  aliases: ["nft", "chaingpt-nft"],
   description: "ChainGPT AI NFT Generator",
   usage:
     "nftgen <init|generate|enhance|models|styles|gallery|test|help> [params]",

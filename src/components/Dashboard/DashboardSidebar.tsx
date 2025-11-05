@@ -1,11 +1,12 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState, Suspense } from "react";
 import { useTerminal } from "@/providers/TerminalProvider";
 import { useSpotify } from "@/hooks/useSpotify";
 import { useYouTube } from "@/hooks/useYouTube";
 import { useNewsReader } from "@/hooks/useNewsReader";
+import { usePGT } from "@/hooks/usePGT";
 import { useWallet } from "@/hooks/useWallet";
 import { useViewMode } from "@/hooks/useViewMode";
 import { useTheme } from "@/hooks/useTheme";
@@ -66,6 +67,16 @@ const NetworkSection = dynamic(
   }
 );
 
+const PGTStatsPanel = dynamic(
+  () =>
+    import("./PGTStatsPanel").then((mod) => ({
+      default: mod.PGTStatsPanel,
+    })),
+  {
+    ssr: false,
+  }
+);
+
 const YouTubePlayerSection = dynamic(
   () =>
     import("./sidebar-sections/YouTubePlayerSection").then((mod) => ({
@@ -92,6 +103,7 @@ export function DashboardSidebar(): JSX.Element {
   const spotify = useSpotify();
   const youtube = useYouTube();
   const news = useNewsReader();
+  const pgt = usePGT();
   const wallet = useWallet();
   const viewMode = useViewMode();
   const theme = useTheme();
@@ -186,10 +198,11 @@ export function DashboardSidebar(): JSX.Element {
   const handleToggleAI = useCallback(() => {
     // Cycle through AI providers: off -> near -> openai -> off
     // Matches vanilla js/futuristic/futuristic-dashboard-transform.js toggleAI function
-    const providers = ["off", "near", "openai"] as const;
-    const currentIndex = providers.indexOf(aiProvider as any);
-    const nextIndex = (currentIndex + 1) % providers.length;
-    const nextProvider = providers[nextIndex];
+    const providers: ("off" | "near" | "openai")[] = ["off", "near", "openai"];
+    const currentProvider = aiProvider || "off";
+    const currentIndex = providers.indexOf(currentProvider);
+    const nextIndex = currentIndex === -1 ? 0 : (currentIndex + 1) % providers.length;
+    const nextProvider = providers[nextIndex] || "off";
     setAiProvider(nextProvider);
   }, [aiProvider, setAiProvider]);
 
@@ -323,6 +336,16 @@ export function DashboardSidebar(): JSX.Element {
           <path d="M12,2A2,2 0 0,1 14,4C14,4.74 13.6,5.39 13,5.73V7H14A7,7 0 0,1 21,14H22A1,1 0 0,1 23,15V18A1,1 0 0,1 22,19H21V20A2,2 0 0,1 19,22H5A2,2 0 0,1 3,20V19H2A1,1 0 0,1 1,18V15A1,1 0 0,1 2,14H3A7,7 0 0,1 10,7H11V5.73C10.4,5.39 10,4.74 10,4A2,2 0 0,1 12,2M7.5,13A2.5,2.5 0 0,0 5,15.5A2.5,2.5 0 0,0 7.5,18A2.5,2.5 0 0,0 10,15.5A2.5,2.5 0 0,0 7.5,13M16.5,13A2.5,2.5 0 0,0 14,15.5A2.5,2.5 0 0,0 16.5,18A2.5,2.5 0 0,0 19,15.5A2.5,2.5 0 0,0 16.5,13Z" fill="currentColor" />
         </svg>
       ),
+      "advanced-trading": (
+        <svg
+          className={styles.sectionTitleIcon}
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="currentColor"
+        >
+          <path d="M16,6L18.29,8.29L13.41,13.17L9.41,9.17L2,16.59L3.41,18L9.41,12L13.41,16L19.71,9.71L22,12V6H16Z" fill="currentColor" />
+        </svg>
+      ),
     };
     return icons[sectionId] || null;
   }, []);
@@ -396,7 +419,14 @@ export function DashboardSidebar(): JSX.Element {
                 </svg>
               </summary>
               <div className={styles.subActions}>
-                <button className={styles.subButton} onClick={handleToggleAI}>
+                <button
+                  className={`${styles.subButton} ${
+                    aiProvider === "off"
+                      ? styles.aiToggleOff
+                      : styles.aiToggleOn
+                  }`}
+                  onClick={handleToggleAI}
+                >
                   {getSubActionIcon(
                     `AI: ${aiProvider === "off" ? "OFF" : aiProvider === "near" ? "NEAR" : "OPENAI"}`
                   )}
@@ -796,14 +826,14 @@ export function DashboardSidebar(): JSX.Element {
               className={styles.button}
               onClick={() => handleCommandClick("tech")}
             >
-              <svg
-                className={styles.buttonIcon}
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="currentColor"
-              >
+                <svg
+                  className={styles.buttonIcon}
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="currentColor"
+                >
                 <path d="M12,3V13.55C11.41,13.21 10.73,13 10,13C7.79,13 6,14.79 6,17C6,19.21 7.79,21 10,21C12.21,21 14,19.21 14,17V7H18V3H12Z" fill="currentColor" />
-              </svg>
+                </svg>
               <span>Omega Tech</span>
             </button>
 
@@ -811,6 +841,21 @@ export function DashboardSidebar(): JSX.Element {
               className={styles.button}
               onClick={() => handleCommandClick("funky")}
             >
+                <svg
+                className={styles.buttonIcon}
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="currentColor"
+                >
+                <path d="M12,3V13.55C11.41,13.21 10.73,13 10,13C7.79,13 6,14.79 6,17C6,19.21 7.79,21 10,21C12.21,21 14,19.21 14,17V7H18V3H12Z" fill="currentColor" />
+                </svg>
+              <span>Omega Funky</span>
+            </button>
+
+                <button
+              className={styles.button}
+              onClick={() => handleCommandClick("trance")}
+                >
               <svg
                 className={styles.buttonIcon}
                 viewBox="0 0 24 24"
@@ -819,8 +864,23 @@ export function DashboardSidebar(): JSX.Element {
               >
                 <path d="M12,3V13.55C11.41,13.21 10.73,13 10,13C7.79,13 6,14.79 6,17C6,19.21 7.79,21 10,21C12.21,21 14,19.21 14,17V7H18V3H12Z" fill="currentColor" />
               </svg>
-              <span>Omega Funky</span>
-            </button>
+              <span>Omega Trance</span>
+                </button>
+
+                <button
+              className={styles.button}
+              onClick={() => handleCommandClick("melodies")}
+                >
+              <svg
+                className={styles.buttonIcon}
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="currentColor"
+              >
+                <path d="M12,3V13.55C11.41,13.21 10.73,13 10,13C7.79,13 6,14.79 6,17C6,19.21 7.79,21 10,21C12.21,21 14,19.21 14,17V7H18V3H12Z" fill="currentColor" />
+              </svg>
+              <span>Omega Melodies</span>
+                </button>
           </div>
         ),
       },
@@ -834,10 +894,10 @@ export function DashboardSidebar(): JSX.Element {
         title: "Mining & Rewards",
         content: (
           <div className={styles.sectionContent}>
-            <button
+                <button
               className={styles.button}
               onClick={() => handleCommandClick("mine")}
-            >
+                >
               <svg
                 className={styles.buttonIcon}
                 viewBox="0 0 24 24"
@@ -847,12 +907,12 @@ export function DashboardSidebar(): JSX.Element {
                 <path d="M9.5,3A6.5,6.5 0 0,1 16,9.5C16,11.11 15.41,12.59 14.44,13.73L14.71,14H15.5L20.5,19L19,20.5L14,15.5V14.71L13.73,14.44C12.59,15.41 11.11,16 9.5,16A6.5,6.5 0 0,1 3,9.5A6.5,6.5 0 0,1 9.5,3M9.5,5C7,5 5,7 5,9.5C5,12 7,14 9.5,14C12,14 14,12 14,9.5C14,7 12,5 9.5,5Z" fill="currentColor" />
               </svg>
               <span>Start Mining</span>
-            </button>
+                </button>
 
-            <button
+                <button
               className={styles.button}
               onClick={() => handleCommandClick("claim")}
-            >
+                >
               <svg
                 className={styles.buttonIcon}
                 viewBox="0 0 24 24"
@@ -862,12 +922,12 @@ export function DashboardSidebar(): JSX.Element {
                 <path d="M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4M12,5.5A6.5,6.5 0 0,1 18.5,12A6.5,6.5 0 0,1 12,18.5A6.5,6.5 0 0,1 5.5,12A6.5,6.5 0 0,1 12,5.5M11,8V10H9V12H11V14H13V12H15V10H13V8H11Z" fill="currentColor" />
               </svg>
               <span>Claim Rewards</span>
-            </button>
+                </button>
 
-            <button
+                <button
               className={styles.button}
               onClick={() => handleCommandClick("stats")}
-            >
+                >
               <svg
                 className={styles.buttonIcon}
                 viewBox="0 0 24 24"
@@ -892,8 +952,8 @@ export function DashboardSidebar(): JSX.Element {
                 <path d="M22,21H2V3H4V19H6V10H10V19H12V6H16V19H18V14H22V21Z" fill="currentColor" />
               </svg>
               <span>Mining Stats</span>
-            </button>
-          </div>
+                </button>
+              </div>
         ),
       },
       {
@@ -901,21 +961,233 @@ export function DashboardSidebar(): JSX.Element {
         title: "Advanced Trading",
         content: (
           <div className={styles.sectionContent}>
-            <button
-              className={styles.button}
-              onClick={() => handleCommandClick("hyperliquid")}
-            >
-              <svg
-                className={styles.buttonIcon}
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="currentColor"
-              >
-                <path d="M7,15H9C9,16.08 10.37,17 12,17C13.63,17 15,16.08 15,15C15,13.9 13.96,13.5 11.76,12.97C9.64,12.44 7,11.78 7,9C7,7.21 8.47,5.69 10.5,5.18V3H13.5V5.18C15.53,5.69 17,7.21 17,9H15C15,7.92 13.63,7 12,7C10.37,7 9,7.92 9,9C9,10.1 10.04,10.5 12.24,11.03C14.36,11.56 17,12.22 17,15C17,16.79 15.53,18.31 13.5,18.82V21H10.5V18.82C8.47,18.31 7,16.79 7,15Z" fill="currentColor" />
-              </svg>
-              <span>Hyperliquid</span>
-            </button>
+            {/* Markets Commands */}
+            <details className={styles.expandable}>
+              <summary className={styles.expandableButton}>
+                <svg
+                  className={styles.buttonIcon}
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="currentColor"
+                >
+                  <path d="M16,6L18.29,8.29L13.41,13.17L9.41,9.17L2,16.59L3.41,18L9.41,12L13.41,16L19.71,9.71L22,12V6H16Z" fill="currentColor" />
+                </svg>
+                <span>Markets</span>
+                <svg
+                  className={styles.expandIcon}
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="currentColor"
+                >
+                  <path d="M7.41,8.58L12,13.17L16.59,8.58L18,10L12,16L6,10L7.41,8.58Z" fill="currentColor" />
+                </svg>
+              </summary>
+              <div className={styles.subActions}>
+                <button
+                  className={styles.subButton}
+                  onClick={() => handleCommandClick("markets:list")}
+                >
+                  {getSubActionIcon("List Markets")}
+                  <span>List Markets</span>
+                </button>
+                <button
+                  className={styles.subButton}
+                  onClick={() => handleCommandClick("markets:view")}
+                >
+                  {getSubActionIcon("View Market")}
+                  <span>View Market</span>
+                </button>
+                <button
+                  className={styles.subButton}
+                  onClick={() => handleCommandClick("markets:heatmap")}
+                >
+                  {getSubActionIcon("Heatmap")}
+                  <span>Heatmap</span>
+                </button>
+                <button
+                  className={styles.subButton}
+                  onClick={() => handleCommandClick("markets:similar")}
+                >
+                  {getSubActionIcon("Similar Markets")}
+                  <span>Similar Markets</span>
+                </button>
+                <button
+                  className={styles.subButton}
+                  onClick={() => handleCommandClick("markets:list help")}
+                >
+                  {getSubActionIcon("Markets Help")}
+                  <span>Markets Help</span>
+                </button>
+              </div>
+            </details>
 
+            {/* Alpha Forecast Commands */}
+            <details className={styles.expandable}>
+              <summary className={styles.expandableButton}>
+                <svg
+                  className={styles.buttonIcon}
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="currentColor"
+                >
+                  <path d="M12,2A2,2 0 0,1 14,4C14,4.74 13.6,5.39 13,5.73V7H14A7,7 0 0,1 21,14H22A1,1 0 0,1 23,15V18A1,1 0 0,1 22,19H21V20A2,2 0 0,1 19,22H5A2,2 0 0,1 3,20V19H2A1,1 0 0,1 1,18V15A1,1 0 0,1 2,14H3A7,7 0 0,1 10,7H11V5.73C10.4,5.39 10,4.74 10,4A2,2 0 0,1 12,2M7.5,13A2.5,2.5 0 0,0 5,15.5A2.5,2.5 0 0,0 7.5,18A2.5,2.5 0 0,0 10,15.5A2.5,2.5 0 0,0 7.5,13M16.5,13A2.5,2.5 0 0,0 14,15.5A2.5,2.5 0 0,0 16.5,18A2.5,2.5 0 0,0 19,15.5A2.5,2.5 0 0,0 16.5,13Z" fill="currentColor" />
+                </svg>
+                <span>AI Forecast</span>
+                <svg
+                  className={styles.expandIcon}
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="currentColor"
+                >
+                  <path d="M7.41,8.58L12,13.17L16.59,8.58L18,10L12,16L6,10L7.41,8.58Z" fill="currentColor" />
+                </svg>
+              </summary>
+              <div className={styles.subActions}>
+                <button
+                  className={styles.subButton}
+                  onClick={() => handleCommandClick("alpha:infer")}
+                >
+                  {getSubActionIcon("Get Forecast")}
+                  <span>Get Forecast</span>
+                </button>
+                <button
+                  className={styles.subButton}
+                  onClick={() => handleCommandClick("alpha:drops")}
+                >
+                  {getSubActionIcon("Daily Picks")}
+                  <span>Daily Picks</span>
+                </button>
+                <button
+                  className={styles.subButton}
+                  onClick={() => handleCommandClick("alpha:submit")}
+                >
+                  {getSubActionIcon("Submit Forecast")}
+                  <span>Submit Forecast</span>
+                </button>
+                <button
+                  className={styles.subButton}
+                  onClick={() => handleCommandClick("alpha:score")}
+                >
+                  {getSubActionIcon("My Score")}
+                  <span>My Score</span>
+                </button>
+              </div>
+            </details>
+
+            {/* Portfolio Commands */}
+            <details className={styles.expandable}>
+              <summary className={styles.expandableButton}>
+                <svg
+                  className={styles.buttonIcon}
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="currentColor"
+                >
+                  <path d="M21,18V19A2,2 0 0,1 19,21H5C3.89,21 3,20.1 3,19V5A2,2 0 0,1 5,3H19A2,2 0 0,1 21,5V6H12C10.89,6 10,6.9 10,8V16A2,2 0 0,0 12,18M12,16V8H21V16H12Z" fill="currentColor" />
+                </svg>
+                <span>Portfolio</span>
+                <svg
+                  className={styles.expandIcon}
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="currentColor"
+                >
+                  <path d="M7.41,8.58L12,13.17L16.59,8.58L18,10L12,16L6,10L7.41,8.58Z" fill="currentColor" />
+                </svg>
+              </summary>
+              <div className={styles.subActions}>
+                <button
+                  className={styles.subButton}
+                  onClick={() => handleCommandClick("pf:sync")}
+                >
+                  {getSubActionIcon("Sync Portfolio")}
+                  <span>Sync Portfolio</span>
+                </button>
+                <button
+                  className={styles.subButton}
+                  onClick={() => handleCommandClick("pf:show")}
+                >
+                  {getSubActionIcon("Portfolio View")}
+                  <span>Portfolio View</span>
+                </button>
+                <button
+                  className={styles.subButton}
+                  onClick={() => handleCommandClick("bundle:list")}
+                >
+                  {getSubActionIcon("List Bundles")}
+                  <span>List Bundles</span>
+                </button>
+                <button
+                  className={styles.subButton}
+                  onClick={() => handleCommandClick("bundle:view")}
+                >
+                  {getSubActionIcon("View Bundle")}
+                  <span>View Bundle</span>
+                </button>
+                <button
+                  className={styles.subButton}
+                  onClick={() => handleCommandClick("bundle:backtest")}
+                >
+                  {getSubActionIcon("Backtest")}
+                  <span>Backtest</span>
+                </button>
+              </div>
+            </details>
+
+            {/* Social Commands */}
+            <details className={styles.expandable}>
+              <summary className={styles.expandableButton}>
+                <svg
+                  className={styles.buttonIcon}
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="currentColor"
+                >
+                  <path d="M16,4C18.11,4 20,5.89 20,8C20,10.11 18.11,12 16,12C15.71,12 15.44,11.97 15.18,11.92L12,16L8.82,11.92C8.56,11.97 8.29,12 8,12C5.89,12 4,10.11 4,8C4,5.89 5.89,4 8,4C8.29,4 8.56,4.03 8.82,4.08L12,0L15.18,4.08C15.44,4.03 15.71,4 16,4M16,6C14.9,6 14,6.9 14,8C14,9.1 14.9,10 16,10C17.1,10 18,9.1 18,8C18,6.9 17.1,6 16,6M8,6C6.9,6 6,6.9 6,8C6,9.1 6.9,10 8,10C9.1,10 10,9.1 10,8C10,6.9 9.1,6 8,6M12,18.5L13.18,16.41C13.55,16.47 13.96,16.5 14.38,16.5C16.5,16.5 18.13,14.88 18.13,12.75C18.13,10.63 16.5,9 14.38,9C13.96,9 13.55,9.03 13.18,9.09L12,7L10.82,9.09C10.45,9.03 10.04,9 9.63,9C7.5,9 5.88,10.63 5.88,12.75C5.88,14.88 7.5,16.5 9.63,16.5C10.04,16.5 10.45,16.47 10.82,16.41L12,18.5Z" fill="currentColor" />
+                </svg>
+                <span>Social</span>
+                <svg
+                  className={styles.expandIcon}
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="currentColor"
+                >
+                  <path d="M7.41,8.58L12,13.17L16.59,8.58L18,10L12,16L6,10L7.41,8.58Z" fill="currentColor" />
+                </svg>
+              </summary>
+              <div className={styles.subActions}>
+                <button
+                  className={styles.subButton}
+                  onClick={() => handleCommandClick("social:feed")}
+                >
+                  {getSubActionIcon("Activity Feed")}
+                  <span>Activity Feed</span>
+                </button>
+                <button
+                  className={styles.subButton}
+                  onClick={() => handleCommandClick("social:follow")}
+                >
+                  {getSubActionIcon("Follow User")}
+                  <span>Follow User</span>
+                </button>
+                <button
+                  className={styles.subButton}
+                  onClick={() => handleCommandClick("social:profile")}
+                >
+                  {getSubActionIcon("View Profile")}
+                  <span>View Profile</span>
+                </button>
+                <button
+                  className={styles.subButton}
+                  onClick={() => handleCommandClick("social:leagues")}
+                >
+                  {getSubActionIcon("Leaderboards")}
+                  <span>Leaderboards</span>
+                </button>
+              </div>
+            </details>
+
+            {/* Venues */}
             <button
               className={styles.button}
               onClick={() => handleCommandClick("polymarket")}
@@ -945,6 +1217,21 @@ export function DashboardSidebar(): JSX.Element {
               </svg>
               <span>Kalshi</span>
             </button>
+
+            <button
+              className={styles.button}
+              onClick={() => handleCommandClick("hyperliquid")}
+            >
+              <svg
+                className={styles.buttonIcon}
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="currentColor"
+              >
+                <path d="M7,15H9C9,16.08 10.37,17 12,17C13.63,17 15,16.08 15,15C15,13.9 13.96,13.5 11.76,12.97C9.64,12.44 7,11.78 7,9C7,7.21 8.47,5.69 10.5,5.18V3H13.5V5.18C15.53,5.69 17,7.21 17,9H15C15,7.92 13.63,7 12,7C10.37,7 9,7.92 9,9C9,10.1 10.04,10.5 12.24,11.03C14.36,11.56 17,12.22 17,15C17,16.79 15.53,18.31 13.5,18.82V21H10.5V18.82C8.47,18.31 7,16.79 7,15Z" fill="currentColor" />
+              </svg>
+              <span>Hyperliquid</span>
+            </button>
           </div>
         ),
       },
@@ -966,6 +1253,21 @@ export function DashboardSidebar(): JSX.Element {
                 <path d="M15.5,12C15.5,10.34 14.16,9 12.5,9C10.84,9 9.5,10.34 9.5,12C9.5,13.66 10.84,15 12.5,15C14.16,15 15.5,13.66 15.5,12M6.5,9C8.16,9 9.5,10.34 9.5,12C9.5,13.66 8.16,15 6.5,15C4.84,15 3.5,13.66 3.5,12C3.5,10.34 4.84,9 6.5,9M17.5,9C19.16,9 20.5,10.34 20.5,12C20.5,13.66 19.16,15 17.5,15C15.84,15 14.5,13.66 14.5,12C14.5,10.34 15.84,9 17.5,9M6.5,11C5.67,11 5,11.67 5,12.5C5,13.33 5.67,14 6.5,14C7.33,14 8,13.33 8,12.5C8,11.67 7.33,11 6.5,11M17.5,11C16.67,11 16,11.67 16,12.5C16,13.33 16.67,14 17.5,14C18.33,14 19,13.33 19,12.5C19,11.67 18.33,11 17.5,11M12.5,11C11.67,11 11,11.67 11,12.5C11,13.33 11.67,14 12.5,14C13.33,14 14,13.33 14,12.5C14,11.67 13.33,11 12.5,11Z" fill="currentColor" />
               </svg>
               <span>Games</span>
+            </button>
+
+            <button
+              className={styles.button}
+              onClick={() => handleCommandClick("screensaver")}
+            >
+              <svg
+                className={styles.buttonIcon}
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="currentColor"
+              >
+                <path d="M21,3H3C1.89,3 1,3.89 1,5V19A2,2 0 0,0 3,21H21A2,2 0 0,0 23,19V5C23,3.89 22.1,3 21,3M21,19H3V5H21V19Z" fill="currentColor" />
+              </svg>
+              <span>Screensaver</span>
             </button>
           </div>
         ),
@@ -1049,6 +1351,14 @@ export function DashboardSidebar(): JSX.Element {
                 >
                   {getSubActionIcon("Refresh Data")}
                   <span>Refresh Data</span>
+                </button>
+                <button
+                  className={styles.subButton}
+                  onClick={() => handleCommandClick("pgt wallets")}
+                  title="View tracked wallets to remove them"
+                >
+                  {getSubActionIcon("Remove Wallet")}
+                  <span>Remove Wallet</span>
                 </button>
               </div>
             </details>
@@ -1155,6 +1465,32 @@ export function DashboardSidebar(): JSX.Element {
           </div>
         );
       })}
+
+      {/* PGT Portfolio Tracker Stats Panel - Shows when wallets are tracked */}
+      {pgt.wallets.length > 0 && (
+        <div
+          id="pgt-stats-panel"
+          className={styles.section}
+          data-section="portfolio-tracker"
+        >
+          <div className={styles.sectionTitle}>
+            <svg
+              className={styles.sectionTitleIcon}
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="currentColor"
+            >
+              <path d="M21,18V19A2,2 0 0,1 19,21H5C3.89,21 3,20.1 3,19V5A2,2 0 0,1 5,3H19A2,2 0 0,1 21,5V6H12C10.89,6 10,6.9 10,8V16A2,2 0 0,0 12,18M12,16H21V8H12M16,13.5A1.5,1.5 0 0,1 14.5,12A1.5,1.5 0 0,1 16,10.5A1.5,1.5 0 0,1 17.5,12A1.5,1.5 0 0,1 16,13.5Z" fill="currentColor" />
+            </svg>
+            <span>PORTFOLIO TRACKER</span>
+          </div>
+          <div className={styles.sectionContent}>
+            <Suspense fallback={null}>
+              <PGTStatsPanel />
+            </Suspense>
+          </div>
+        </div>
+      )}
     </aside>
   );
 }

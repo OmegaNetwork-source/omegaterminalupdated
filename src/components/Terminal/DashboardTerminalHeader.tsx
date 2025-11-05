@@ -63,37 +63,35 @@ export function DashboardTerminalHeader({
           </span>
         </div>
 
-        <div className={styles.statusIndicator}>
-          <span>
-            {wallet.state.isConnected && wallet.state.address
-              ? `${wallet.state.address.slice(
-                  0,
-                  6
-                )}...${wallet.state.address.slice(-4)}`
-              : "NO WALLET"}
-          </span>
-        </div>
+        {/* Wallet address display - only show when connected */}
+        {wallet.state.isConnected && wallet.state.address && (
+          <div className={styles.statusIndicator}>
+            <span>
+              {wallet.state.address.slice(0, 6)}...
+              {wallet.state.address.slice(-4)}
+            </span>
+          </div>
+        )}
 
         {/* Network status display - if connected */}
-        {wallet.state.isConnected && wallet.state.network && (
+        {wallet.state.isConnected && (
           <div className={styles.statusIndicator}>
             <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
               <div className={styles.networkLogo}>Ω</div>
-              <span>{wallet.state.network}</span>
+              <span>Omega Network</span>
             </div>
-            {wallet.state.address && (
-              <span>
-                {wallet.state.address.slice(0, 6)}...
-                {wallet.state.address.slice(-4)}
-              </span>
-            )}
           </div>
         )}
 
         <div className={styles.terminalDivider}></div>
 
         {/* AI Provider Select */}
-        <label htmlFor="wrapperAiProviderSelect" className={styles.aiLabel}>
+        <label
+          htmlFor="wrapperAiProviderSelect"
+          className={`${styles.aiLabel} ${
+            aiProvider === "off" ? styles.aiLabelOff : styles.aiLabelOn
+          }`}
+        >
           AI:
         </label>
         <select
@@ -106,7 +104,9 @@ export function DashboardTerminalHeader({
               await soundEffects.playAIToggleSound();
             } catch {}
           }}
-          className={styles.aiSelect}
+          className={`${styles.aiSelect} ${
+            aiProvider === "off" ? styles.aiSelectOff : styles.aiSelectOn
+          }`}
         >
           <option value="off">Off</option>
           <option value="near">NEAR AI</option>

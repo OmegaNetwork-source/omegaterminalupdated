@@ -1,0 +1,83 @@
+/**
+ * @file PGTStatsPanel.module.css
+ * @description PGT Portfolio Tracker stats panel styling
+ * Matches vanilla pgt-tracker-styles.css
+ */
+
+/* PGT Stats Panel - Matches vanilla sidebar-section-content structure */
+.pgtStatsPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 0;
+  width: 100%;
+}
+
+.statItem {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  font-size: 12px;
+  width: 100%;
+}
+
+.statLabel {
+  display: inline-block;
+  flex: 0 0 auto;
+  font-size: 11px;
+  color: color-mix(in srgb, var(--palette-text, #ffffff) 65%, transparent);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+.statValue {
+  display: inline-block;
+  flex: 0 0 auto;
+  text-align: right;
+  font-size: 12px;
+  font-weight: 700;
+  color: color-mix(in srgb, var(--palette-text, #ffffff) 92%, transparent);
+  font-family: "Courier New", monospace;
+  transition: color 0.3s ease;
+}
+
+/* PGT-specific value styling */
+#pgt-total-value {
+  color: var(--palette-secondary, #00ff88) !important;
+  text-shadow: 0 0 8px var(--palette-secondary-glow, rgba(0, 255, 136, 0.3)) !important;
+}
+
+.statValue.positive {
+  color: var(--palette-secondary, #00ff88) !important;
+  text-shadow: 0 0 6px var(--palette-secondary-glow, rgba(0, 255, 136, 0.3)) !important;
+}
+
+.statValue.negative {
+  color: var(--palette-error, #ff4757) !important;
+  text-shadow: 0 0 6px rgba(255, 71, 87, 0.3) !important;
+}
+
+/* Light palette overrides */
+:global(body[data-color-palette="light"]) .statLabel {
+  color: color-mix(in srgb, var(--palette-text, #1e293b) 70%, transparent) !important;
+}
+
+:global(body[data-color-palette="light"]) .statValue {
+  color: var(--palette-text, #1e293b) !important;
+}
+
+:global(body[data-color-palette="light"]) #pgt-total-value {
+  color: var(--palette-secondary, #059669) !important;
+}
+
+:global(body[data-color-palette="light"]) .statValue.positive {
+  color: var(--palette-secondary, #059669) !important;
+}
+
+:global(body[data-color-palette="light"]) .statValue.negative {
+  color: var(--palette-error, #dc2626) !important;
+}
+

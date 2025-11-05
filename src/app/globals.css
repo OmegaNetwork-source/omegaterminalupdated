@@ -17,15 +17,26 @@ html,
 body {
   width: 100%;
   height: 100%;
+  margin: 0;
+  padding: 0;
   overflow: hidden;
+  position: relative;
+}
+
+html {
+  overflow-x: hidden;
 }
 
 body {
+  overflow-x: hidden;
+  overflow-y: auto;
   font-family: "Courier New", Monaco, monospace;
   font-size: 14px;
   line-height: 1.4;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  margin: 0;
+  padding: 0;
 }
 
 /* =============================================================================
@@ -121,6 +132,19 @@ pre {
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--color-secondary);
+}
+
+/* Light palette scrollbar overrides (already defined above but ensuring it works) */
+body[data-color-palette="light"] ::-webkit-scrollbar-track {
+  background: var(--palette-surface, #f8fafc) !important;
+}
+
+body[data-color-palette="light"] ::-webkit-scrollbar-thumb {
+  background: var(--palette-border, #e2e8f0) !important;
+}
+
+body[data-color-palette="light"] ::-webkit-scrollbar-thumb:hover {
+  background: var(--palette-primary, #1e40af) !important;
 }
 
 /* =============================================================================
@@ -1334,16 +1358,84 @@ body[data-color-palette="radioactive"] {
   --palette-error: #ff4d6d;
 }
 
+body[data-color-palette="light"] {
+  --palette-primary: #1e40af;
+  --palette-secondary: #059669;
+  --palette-accent: #7c3aed;
+  --palette-bg: #ffffff;
+  --palette-surface: #f8fafc;
+  --palette-text: #1e293b;
+  --palette-muted: #64748b;
+  --palette-border: #e2e8f0;
+  --palette-success: #059669;
+  --palette-warning: #d97706;
+  --palette-error: #dc2626;
+  /* Glow effects for light mode - subtle shadows instead */
+  --palette-primary-glow: rgba(30, 64, 175, 0.15);
+  --palette-secondary-glow: rgba(5, 150, 105, 0.15);
+  --palette-accent-glow: rgba(124, 58, 237, 0.15);
+  --palette-success-glow: rgba(5, 150, 105, 0.15);
+  --palette-warning-glow: rgba(217, 119, 6, 0.15);
+  --palette-error-glow: rgba(220, 38, 38, 0.15);
+}
+
+/* Light palette theme overrides - ensures light background works with all themes */
+body[data-color-palette="light"].theme-dark,
+body[data-color-palette="light"].theme-matrix,
+body[data-color-palette="light"].theme-retro,
+body[data-color-palette="light"].theme-powershell,
+body[data-color-palette="light"].theme-executive,
+body[data-color-palette="light"].theme-modern,
+body[data-color-palette="light"].modern-ui-futuristic,
+body[data-color-palette="light"].modern-terminal-ui {
+  background: var(--palette-bg, #ffffff) !important;
+  color: var(--palette-text, #1e293b) !important;
+}
+
+/* Light palette global text color overrides for all UI elements */
+body[data-color-palette="light"] {
+  color: var(--palette-text, #1e293b) !important;
+}
+
+/* Ensure readable text colors in light mode */
+body[data-color-palette="light"] p,
+body[data-color-palette="light"] span,
+body[data-color-palette="light"] div:not([class*="button"]):not([class*="Button"]),
+body[data-color-palette="light"] label {
+  color: var(--palette-text, #1e293b);
+}
+
+/* Light palette links and interactive elements */
+body[data-color-palette="light"] a {
+  color: var(--palette-primary, #1e40af);
+}
+
+body[data-color-palette="light"] a:hover {
+  color: var(--palette-secondary, #059669);
+}
+
 body.futuristic-mode {
   /* Futuristic dashboard background */
   background: var(--void-black, #0a0a0f);
   color: var(--color-text-primary, #ffffff);
 }
 
+/* Light palette overrides for futuristic mode */
+body[data-color-palette="light"].futuristic-mode {
+  background: var(--palette-bg, #ffffff) !important;
+  color: var(--palette-text, #1e293b) !important;
+}
+
 body.basic-terminal-mode {
   /* Basic mode uses the terminal full-screen */
   background: var(--color-terminal-bg, #000000);
   color: var(--color-terminal-text, #ffffff);
+}
+
+/* Light palette overrides for basic terminal mode */
+body[data-color-palette="light"].basic-terminal-mode {
+  background: var(--palette-bg, #ffffff) !important;
+  color: var(--palette-text, #1e293b) !important;
 }
 
 /* =============================================================================
@@ -1811,3 +1903,24 @@ body[data-color-palette] [class*="controlButton"] svg path,
 body[data-color-palette] [class*="ControlButton"] svg path {
   fill: currentColor !important;
 }
+/* Help command clickable elements */
+.omega-help-command {
+  color: var(--palette-secondary, #00ff88) !important;
+  font-weight: bold !important;
+  cursor: pointer !important;
+  display: inline-block !important;
+  padding: 2px 4px !important;
+  border-radius: 3px !important;
+  transition: all 0.2s ease !important;
+  user-select: none !important;
+}
+
+.omega-help-command:hover {
+  background: color-mix(in srgb, var(--palette-secondary, #00ff88) 15%, transparent) !important;
+  text-shadow: 0 0 8px var(--palette-secondary-glow, rgba(0, 255, 136, 0.5)) !important;
+}
+
+.omega-help-command:active {
+  transform: scale(0.95) !important;
+}
+

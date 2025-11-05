@@ -92,44 +92,280 @@ export const polymarketCommand: Command = {
 };
 
 function showPolymarketHelp(context: CommandContext): void {
-  context.log("🎯 POLYMARKET PREDICTION MARKETS", "info");
-  context.log("════════════════════════════════════", "output");
-  context.log("📋 MAIN COMMANDS:", "info");
-  context.log("polymarket help        Show this help", "output");
-  context.log("polymarket markets     Get current active markets", "output");
-  context.log("polymarket trending    Get top volume markets", "output");
-  context.log(
-    "polymarket events      Get recent events (last 6 months)",
-    "output"
-  );
-  context.log(
-    "polymarket recent      Get very recent events (last month)",
-    "output"
-  );
-  context.log("polymarket search <q>  Search markets", "output");
-  context.log("", "output");
-  context.log("🔥 CATEGORY COMMANDS:", "info");
-  context.log("polymarket breaking    Breaking news markets", "output");
-  context.log("polymarket new         Newest markets", "output");
-  context.log("polymarket politics    Political markets", "output");
-  context.log("polymarket sports      Sports markets", "output");
-  context.log("polymarket crypto      Crypto markets", "output");
-  context.log("polymarket earnings    Earnings markets", "output");
-  context.log("polymarket geopolitics Geopolitical markets", "output");
-  context.log("polymarket tech        Technology markets", "output");
-  context.log("polymarket culture     Culture markets", "output");
-  context.log("polymarket world       World events", "output");
-  context.log("polymarket economy     Economic markets", "output");
-  context.log("polymarket trump       Trump-related markets", "output");
-  context.log("polymarket elections   Election markets", "output");
-  context.log("", "output");
-  context.log("🎯 EXAMPLES:", "info");
-  context.log("polymarket markets     # Current active markets", "output");
-  context.log("polymarket trending    # Highest volume markets", "output");
-  context.log("polymarket politics    # Political predictions", "output");
-  context.log("polymarket crypto      # Crypto predictions", "output");
-  context.log("polymarket breaking    # Breaking news markets", "output");
-  context.log('polymarket search "AI" # Search for AI markets', "output");
+  const helpLines: string[] = [
+    "polymarket",
+    "",
+    "Polymarket prediction markets",
+    "",
+    "→ Usage: polymarket <markets|trending|events|politics|sports|crypto|search|help>",
+    "",
+    "═ Main Commands ═",
+    "",
+    "polymarket markets",
+    "",
+    "Get current active markets",
+    "",
+    "→ Usage: polymarket markets",
+    "",
+    "polymarket trending",
+    "",
+    "Get top volume markets",
+    "",
+    "→ Usage: polymarket trending",
+    "",
+    "polymarket events",
+    "",
+    "Get recent events (last 6 months)",
+    "",
+    "→ Usage: polymarket events",
+    "",
+    "polymarket recent",
+    "",
+    "Get very recent events (last month)",
+    "",
+    "→ Usage: polymarket recent",
+    "",
+    "polymarket search",
+    "",
+    "Search markets",
+    "",
+    "→ Usage: polymarket search <query>",
+    "",
+    "═ Category Commands ═",
+    "",
+    "polymarket breaking",
+    "",
+    "Breaking news markets",
+    "",
+    "→ Usage: polymarket breaking",
+    "",
+    "polymarket new",
+    "",
+    "Newest markets",
+    "",
+    "→ Usage: polymarket new",
+    "",
+    "polymarket politics",
+    "",
+    "Political markets",
+    "",
+    "→ Usage: polymarket politics",
+    "",
+    "polymarket sports",
+    "",
+    "Sports markets",
+    "",
+    "→ Usage: polymarket sports",
+    "",
+    "polymarket crypto",
+    "",
+    "Crypto markets",
+    "",
+    "→ Usage: polymarket crypto",
+    "",
+    "polymarket earnings",
+    "",
+    "Earnings markets",
+    "",
+    "→ Usage: polymarket earnings",
+    "",
+    "polymarket geopolitics",
+    "",
+    "Geopolitical markets",
+    "",
+    "→ Usage: polymarket geopolitics",
+    "",
+    "polymarket tech",
+    "",
+    "Technology markets",
+    "",
+    "→ Usage: polymarket tech",
+    "",
+    "polymarket culture",
+    "",
+    "Culture markets",
+    "",
+    "→ Usage: polymarket culture",
+    "",
+    "polymarket world",
+    "",
+    "World events",
+    "",
+    "→ Usage: polymarket world",
+    "",
+    "polymarket economy",
+    "",
+    "Economic markets",
+    "",
+    "→ Usage: polymarket economy",
+    "",
+    "polymarket trump",
+    "",
+    "Trump-related markets",
+    "",
+    "→ Usage: polymarket trump",
+    "",
+    "polymarket elections",
+    "",
+    "Election markets",
+    "",
+    "→ Usage: polymarket elections",
+    "",
+    "💡 Tip",
+    "",
+  ];
+
+  // Generate HTML output with uniform styling
+  let helpHtml = `
+    <div style="
+      font-family: 'Courier New', monospace;
+      line-height: 1.6;
+      color: var(--palette-text, #e0e0e0);
+      padding: 12px;
+    ">
+      <div style="
+        font-size: 18px;
+        font-weight: bold;
+        color: var(--palette-primary, #00d4ff);
+        margin-bottom: 20px;
+        text-align: center;
+        padding: 8px;
+        border: 1px solid var(--palette-border, rgba(0, 212, 255, 0.3));
+        border-radius: 4px;
+      ">
+        ═══ POLYMARKET PREDICTION MARKETS ═══
+      </div>
+  `;
+
+  helpLines.forEach((line) => {
+    if (line.trim() === "") {
+      helpHtml += `<div style="margin: 4px 0;"></div>`;
+    } else if (line.startsWith("═ ")) {
+      helpHtml += `
+        <div style="
+          font-size: 14px;
+          font-weight: bold;
+          color: var(--palette-primary, #00d4ff);
+          margin: 16px 0 8px 0;
+          padding: 4px 0;
+        ">
+          ${line}
+        </div>
+      `;
+    } else if (line.startsWith("→ Usage:")) {
+      helpHtml += `
+        <div style="
+          color: var(--palette-secondary, #00ff88);
+          margin-left: 20px;
+          margin-top: 2px;
+          font-size: 0.9em;
+        ">
+          ${line}
+        </div>
+      `;
+    } else if (line === "💡 Tip") {
+      helpHtml += `
+        <div style="
+          margin-top: 24px;
+          padding: 12px;
+          border: 1px solid var(--palette-border, rgba(0, 212, 255, 0.3));
+          border-radius: 4px;
+          text-align: center;
+        ">
+          <div style="
+            color: var(--palette-primary, #00d4ff);
+            font-weight: bold;
+            margin-bottom: 8px;
+          ">
+            ${line}
+          </div>
+          <div style="
+            color: var(--palette-text, #e0e0e0);
+            font-size: 0.9em;
+          ">
+            Use category commands to filter markets by topic. Example: polymarket crypto
+          </div>
+        </div>
+      `;
+    } else {
+      // Check if line is a command (handles both "markets" and "polymarket markets" formats)
+      const isFullCommand = line.startsWith("polymarket ") && line.length < 50;
+      const isSubcommand = line.length > 0 && 
+        line.trim().length < 50 &&
+        !line.includes(" ") && 
+        line === line.toLowerCase() &&
+        !line.startsWith("Get") &&
+        !line.startsWith("Search") &&
+        !line.startsWith("Political") &&
+        !line.startsWith("Sports") &&
+        !line.startsWith("Crypto") &&
+        !line.startsWith("Breaking") &&
+        !line.startsWith("Newest") &&
+        !line.startsWith("Earnings") &&
+        !line.startsWith("Geopolitical") &&
+        !line.startsWith("Technology") &&
+        !line.startsWith("Culture") &&
+        !line.startsWith("World") &&
+        !line.startsWith("Economic") &&
+        !line.startsWith("Trump") &&
+        !line.startsWith("Election") &&
+        line.match(/^[a-z0-9-]+$/);
+
+      if (isFullCommand || isSubcommand) {
+        // Extract command part (remove <query> or other parameters)
+        let commandText = line;
+        if (isFullCommand) {
+          // Already has "polymarket " prefix, remove parameter placeholders
+          commandText = line.replace(/ <[^>]+>/g, "").trim();
+        } else if (isSubcommand) {
+          // Add "polymarket " prefix
+          commandText = `polymarket ${line}`;
+        }
+        
+        const escapedCommand = commandText.replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+        const displayText = isFullCommand ? line.replace(/ <[^>]+>/g, "") : line;
+        
+        helpHtml += `
+          <div 
+            class="omega-help-command" 
+            data-command="${escapedCommand}"
+            style="
+              color: var(--palette-secondary, #00ff88);
+              font-weight: bold;
+              margin-left: 0;
+              margin-top: 8px;
+              font-family: 'Courier New', monospace;
+              cursor: pointer;
+              display: inline-block;
+              padding: 2px 4px;
+              border-radius: 3px;
+              transition: all 0.2s ease;
+              user-select: none;
+            "
+            onmouseover="this.style.background = 'color-mix(in srgb, var(--palette-secondary, #00ff88) 15%, transparent)'; this.style.textShadow = '0 0 8px var(--palette-secondary-glow, rgba(0, 255, 136, 0.5))';"
+            onmouseout="this.style.background = 'transparent'; this.style.textShadow = 'none';"
+            title="Click to add '${escapedCommand}' to terminal input"
+          >
+            ${displayText}
+          </div>
+        `;
+      } else {
+        helpHtml += `
+          <div style="
+            color: var(--palette-text, #e0e0e0);
+            margin-left: 0;
+            margin-top: 2px;
+            line-height: 1.4;
+          ">
+            ${line}
+          </div>
+        `;
+      }
+    }
+  });
+
+  helpHtml += `</div>`;
+  context.logHtml(helpHtml);
 }
 
 async function makePolymarketRequest(
@@ -488,15 +724,28 @@ function displayPolymarketMarkets(
   console.log(`🔧 DEBUG: Processing ${markets.length} markets`);
   console.log("🔧 DEBUG: First market structure:", markets[0]);
 
-  context.log(`📊 ${title}`, "info");
-  context.log(
-    "════════════════════════════════════════════════════════════════════════════════",
-    "output"
-  );
-  context.log("", "output");
+  // Generate HTML output with theme-aware styling
+  let marketsHtml = `
+    <div style="
+      font-family: 'Courier New', monospace;
+      line-height: 1.6;
+      color: var(--palette-text, #e0e0e0);
+      padding: 12px;
+    ">
+      <div style="
+        font-size: 16px;
+        font-weight: bold;
+        color: var(--palette-primary, #00d4ff);
+        margin-bottom: 16px;
+        padding: 8px;
+        border-bottom: 2px solid var(--palette-border, rgba(0, 212, 255, 0.3));
+      ">
+        📊 ${title} (${markets.length} markets)
+      </div>
+  `;
 
   markets.slice(0, 20).forEach((market: any, index: number) => {
-    const num = (index + 1).toString().padStart(2, " ");
+    const num = (index + 1).toString().padStart(2, "0");
 
     // Try different field names for question/title
     const question =
@@ -536,16 +785,64 @@ function displayPolymarketMarkets(
 
     const status =
       market.closed || market.active === false ? "🔒 Closed" : "🟢 Active";
+    const statusColor = market.closed || market.active === false 
+      ? "var(--palette-error, #ff4d4f)" 
+      : "var(--palette-success, #16c782)";
 
-    context.log(`${num}. ${question}`, "output");
-    context.log(
-      `    💰 Volume: ${volume} | 📅 End: ${endDate} | ${status}`,
-      "info"
-    );
+    marketsHtml += `
+      <div style="
+        background: linear-gradient(135deg, color-mix(in srgb, var(--palette-primary, #00bcf2) 5%, transparent) 0%, color-mix(in srgb, var(--palette-primary, #00bcf2) 2%, transparent) 100%);
+        border: 1px solid var(--palette-border, color-mix(in srgb, var(--palette-primary, #00bcf2) 20%, transparent));
+        border-radius: 8px;
+        padding: 12px;
+        margin-bottom: 12px;
+        transition: all 0.2s ease;
+      ">
+        <div style="
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          margin-bottom: 8px;
+        ">
+          <span style="
+            color: var(--palette-primary, #00bcf2);
+            font-weight: bold;
+            font-size: 12px;
+            min-width: 24px;
+          ">${num}.</span>
+          <div style="
+            color: var(--palette-text, #e0e0e0);
+            font-weight: 600;
+            flex: 1;
+            line-height: 1.4;
+          ">${question}</div>
+        </div>
+        <div style="
+          display: flex;
+          flex-wrap: wrap;
+          gap: 12px;
+          font-size: 11px;
+          color: color-mix(in srgb, var(--palette-text, #ffffff) 65%, transparent);
+          margin-left: 32px;
+        ">
+          <span>💰 Volume: <strong style="color: var(--palette-primary, #00bcf2);">${volume}</strong></span>
+          <span>📅 End: ${endDate}</span>
+          <span style="color: ${statusColor};">${status}</span>
+        </div>
+    `;
 
     // Try different field names for outcomes
     const outcomes = market.outcomes || market.markets || market.options || [];
     if (outcomes && outcomes.length > 0) {
+      marketsHtml += `
+        <div style="
+          margin-top: 8px;
+          margin-left: 32px;
+          display: flex;
+          flex-wrap: wrap;
+          gap: 8px;
+        ">
+      `;
       outcomes.forEach((outcome: any) => {
         const price =
           outcome.price || outcome.lastTradePrice || outcome.last_price
@@ -555,18 +852,56 @@ function displayPolymarketMarkets(
             : "N/A";
         const name =
           outcome.name || outcome.title || outcome.outcome || "Unknown";
-        context.log(`    📊 ${name}: ${price}`, "output");
+        marketsHtml += `
+          <span style="
+            background: color-mix(in srgb, var(--palette-primary, #00bcf2) 15%, transparent);
+            border: 1px solid color-mix(in srgb, var(--palette-primary, #00bcf2) 30%, transparent);
+            color: var(--palette-primary, #00bcf2);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: 600;
+          ">${name}: ${price}</span>
+        `;
       });
+      marketsHtml += `</div>`;
     }
 
-    context.log("", "output");
+    marketsHtml += `</div>`;
   });
 
   if (markets.length > 20) {
-    context.log(`... and ${markets.length - 20} more markets`, "info");
+    marketsHtml += `
+      <div style="
+        text-align: center;
+        color: var(--palette-primary, #00bcf2);
+        margin-top: 16px;
+        font-size: 12px;
+      ">
+        ... and ${markets.length - 20} more markets
+      </div>
+    `;
   }
 
-  context.log('💡 Use "polymarket help" for more commands', "info");
+  marketsHtml += `
+      <div style="
+        margin-top: 20px;
+        padding: 12px;
+        border: 1px solid var(--palette-border, rgba(0, 212, 255, 0.3));
+        border-radius: 4px;
+        text-align: center;
+      ">
+        <div style="
+          color: var(--palette-primary, #00d4ff);
+          font-size: 11px;
+        ">
+          💡 Use "polymarket help" for more commands
+        </div>
+      </div>
+    </div>
+  `;
+
+  context.logHtml(marketsHtml);
 }
 
 /**

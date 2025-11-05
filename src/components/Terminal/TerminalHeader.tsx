@@ -5,12 +5,15 @@
  * Displays terminal header with title, social links, theme controls, AI selector, and connection status
  */
 
+import { useState } from "react";
 import Link from "next/link";
 import type { TerminalHeaderProps } from "@/types/terminal";
 import type { AIProvider } from "@/types";
 import { APP_VERSION, SOCIAL_LINKS } from "@/lib/constants";
 import styles from "./TerminalHeader.module.css";
 import { useSoundEffects } from "@/hooks/useSoundEffects";
+import { useMobileDetection } from "@/hooks/useMobileDetection";
+import { MobileMenu } from "@/components/Mobile/MobileMenu";
 
 export function TerminalHeader({
   onThemeCycle,
@@ -23,12 +26,42 @@ export function TerminalHeader({
   walletAddress,
 }: TerminalHeaderProps) {
   const soundEffects = useSoundEffects();
+  const mobile = useMobileDetection();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
   return (
-    <header className={styles.header}>
-      {/* Left Section: Title */}
-      <div className={styles.headerLeft}>
-        <h1 className={styles.title}>Ω Terminal v{APP_VERSION}</h1>
-        <nav className={styles.routeNav} aria-label="Primary navigation">
+    <>
+      <header className={styles.header}>
+        {/* Mobile: Minimal Header with Hamburger and Title */}
+        {mobile.isMobile ? (
+          <>
+            <button
+              className={styles.mobileMenuButton}
+              onClick={() => setIsMenuOpen(true)}
+              aria-label="Open menu"
+              type="button"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                width="24"
+                height="24"
+              >
+                <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z" />
+              </svg>
+            </button>
+            <div className={styles.headerLeft}>
+              <h1 className={styles.title}>Ω Terminal</h1>
+            </div>
+            <div className={styles.headerRight}></div>
+          </>
+        ) : (
+          <>
+            {/* Desktop: Full Header */}
+            <div className={styles.headerLeft}>
+              <h1 className={styles.title}>Ω Terminal v{APP_VERSION}</h1>
+              <nav className={styles.routeNav} aria-label="Primary navigation">
           <Link href="/" className={styles.routeLink}>
             Terminal
           </Link>
@@ -169,7 +202,13 @@ export function TerminalHeader({
         </div>
 
         {/* AI Provider Selector */}
-        <span className={styles.aiLabel}>AI:</span>
+        <span
+          className={`${styles.aiLabel} ${
+            aiProvider === "off" ? styles.aiLabelOff : styles.aiLabelOn
+          }`}
+        >
+          AI:
+        </span>
         <select
           value={aiProvider}
           onChange={async (e) => {
@@ -178,7 +217,9 @@ export function TerminalHeader({
               await soundEffects.playAIToggleSound();
             } catch {}
           }}
-          className={styles.aiSelect}
+          className={`${styles.aiSelect} ${
+            aiProvider === "off" ? styles.aiSelectOff : styles.aiSelectOn
+          }`}
         >
           <option value="off">Off</option>
           <option value="near">NEAR AI</option>
@@ -200,6 +241,24 @@ export function TerminalHeader({
             : connectionStatus.toUpperCase()}
         </div>
       </div>
+          </>
+        )}
     </header>
+
+    {/* Mobile Menu */}
+    {mobile.isMobile && (
+      <MobileMenu
+        isOpen={isMenuOpen}
+        onClose={() => setIsMenuOpen(false)}
+        onThemeCycle={onThemeCycle}
+        onPaletteCycle={onPaletteCycle}
+        onDashboardToggle={onDashboardToggle}
+        onAiProviderChange={onAiProviderChange}
+        aiProvider={aiProvider}
+        connectionStatus={connectionStatus}
+        walletAddress={walletAddress}
+      />
+    )}
+    </>
   );
 }

@@ -20,6 +20,8 @@ const TerminalContext = createContext<UseCommandExecutionReturn | undefined>(
  * This ensures sidebar, terminal, and all other components share the same command execution instance
  */
 export function TerminalProvider({ children }: { children: ReactNode }) {
+  // Hooks must be called unconditionally at the top level
+  // If any provider is missing, React will throw and error boundary will catch it
   const terminal = useCommandExecution();
 
   return (

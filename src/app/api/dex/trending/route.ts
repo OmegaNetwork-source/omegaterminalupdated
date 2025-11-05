@@ -1,37 +1,72 @@
 /**
  * DexScreener Trending API Route
- * Server-side proxy for DexScreener trending tokens with caching
+ * Direct integration with DexScreener API for trending tokens
+ * Uses search with empty query to get popular tokens, or searches for common trending tokens
  * TTL: 120 seconds (2 minutes)
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { config } from "@/lib/config";
 
-const RELAYER_URL = config.RELAYER_URL;
+const DEXSCREENER_API_URL = "https://api.dexscreener.com/latest/dex";
 
 export async function GET(request: NextRequest) {
   try {
-    const response = await fetch(`${RELAYER_URL}/dex/trending`, {
-      next: { revalidate: 120 }, // Cache for 2 minutes
-    });
+    // DexScreener doesn't have a direct "trending" endpoint
+    // We'll search for popular tokens that are typically trending
+    // Or use the pairs endpoint with popular token addresses
+    // For now, let's search for a mix of popular tokens
+    const popularTokens = ["WETH", "USDC", "USDT", "WBTC", "DAI", "UNI", "LINK", "AAVE"];
+    
+    // Fetch multiple popular tokens and combine results
+    const allPairs: any[] = [];
+    
+    for (const token of popularTokens.slice(0, 3)) {
+      try {
+        const response = await fetch(
+          `${DEXSCREENER_API_URL}/search?q=${encodeURIComponent(token)}`,
+          {
+            next: { revalidate: 120 },
+            headers: {
+              "Accept": "application/json",
+            },
+          }
+        );
 
-    if (!response.ok) {
-      return NextResponse.json(
-        { error: `DexScreener API error: ${response.statusText}` },
-        { status: response.status }
-      );
+        if (response.ok) {
+          const data = await response.json();
+          if (data.pairs && Array.isArray(data.pairs)) {
+            // Take top 2 pairs per token (highest volume)
+            const topPairs = data.pairs
+              .sort((a: any, b: any) => {
+                const volumeA = a.volume?.h24 || 0;
+                const volumeB = b.volume?.h24 || 0;
+                return volumeB - volumeA;
+              })
+              .slice(0, 2);
+            allPairs.push(...topPairs);
+          }
+        }
+      } catch (err) {
+        // Continue with other tokens if one fails
+        console.error(`Failed to fetch ${token}:`, err);
+      }
     }
 
-    const data = await response.json();
-
-    // Normalize response format
-    const pairs = Array.isArray(data) ? data : data.pairs || [];
+    // Sort by 24h volume and return top results
+    const sortedPairs = allPairs
+      .sort((a: any, b: any) => {
+        const volumeA = a.volume?.h24 || 0;
+        const volumeB = b.volume?.h24 || 0;
+        return volumeB - volumeA;
+      })
+      .slice(0, 10);
 
     return NextResponse.json({
-      pairs,
+      pairs: sortedPairs,
       success: true,
     });
   } catch (error) {
+    console.error("DexScreener trending error:", error);
     return NextResponse.json(
       {
         pairs: [],

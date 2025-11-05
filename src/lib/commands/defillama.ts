@@ -49,27 +49,147 @@ export const defillamaCommand: Command = {
     const subcommand = args[1]?.toLowerCase();
 
     if (!subcommand) {
-      context.log("🦙 DeFi Llama - DeFi Analytics");
-      context.log("");
-      context.log("TVL Commands:");
-      context.log("  defillama tvl                  - Total DeFi TVL");
-      context.log("  defillama tvl <protocol>       - Protocol TVL");
-      context.log("  defillama protocols [limit]    - Top protocols");
-      context.log("  defillama chains [limit]       - Top chains");
-      context.log("  defillama trending             - Trending protocols");
-      context.log("");
-      context.log("Price Commands:");
-      context.log("  defillama price <token>        - Token price");
-      context.log("  defillama tokens <token,token> - Multiple prices");
-      context.log("  defillama debug <token>        - Debug token lookup");
-      context.log("");
-      context.log("Examples:");
-      context.log("  defillama tvl");
-      context.log("  defillama tvl uniswap");
-      context.log("  defillama protocols 10");
-      context.log("  defillama chains 15");
-      context.log("  defillama price eth");
-      context.log("  defillama tokens eth,btc,sol");
+      const helpLines: string[] = [];
+      
+      helpLines.push("═══ DeFi Llama Analytics ═══");
+      helpLines.push("");
+      helpLines.push("═ TVL Commands ═");
+      helpLines.push("");
+      helpLines.push("tvl");
+      helpLines.push("");
+      helpLines.push("Total DeFi TVL across all chains or specific protocol TVL");
+      helpLines.push("");
+      helpLines.push("→ Usage: defillama tvl | defillama tvl <protocol>");
+      helpLines.push("");
+      helpLines.push("protocols");
+      helpLines.push("");
+      helpLines.push("Top protocols by TVL");
+      helpLines.push("");
+      helpLines.push("→ Usage: defillama protocols [limit]");
+      helpLines.push("");
+      helpLines.push("chains");
+      helpLines.push("");
+      helpLines.push("TVL by blockchain");
+      helpLines.push("");
+      helpLines.push("→ Usage: defillama chains [limit]");
+      helpLines.push("");
+      helpLines.push("trending");
+      helpLines.push("");
+      helpLines.push("Trending protocols by 24h change");
+      helpLines.push("");
+      helpLines.push("→ Usage: defillama trending");
+      helpLines.push("");
+      helpLines.push("═ Price Commands ═");
+      helpLines.push("");
+      helpLines.push("price");
+      helpLines.push("");
+      helpLines.push("Current token price");
+      helpLines.push("");
+      helpLines.push("→ Usage: defillama price <token>");
+      helpLines.push("");
+      helpLines.push("tokens");
+      helpLines.push("");
+      helpLines.push("Multiple token prices");
+      helpLines.push("");
+      helpLines.push("→ Usage: defillama tokens <token,token>");
+      helpLines.push("");
+      helpLines.push("debug");
+      helpLines.push("");
+      helpLines.push("Debug token price lookup");
+      helpLines.push("");
+      helpLines.push("→ Usage: defillama debug <token>");
+      helpLines.push("");
+
+      // Generate HTML output with uniform styling
+      let helpHtml = `
+        <div style="
+          font-family: 'Courier New', monospace;
+          line-height: 1.6;
+          color: var(--palette-text, #e0e0e0);
+          padding: 12px;
+        ">
+          <div style="
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--palette-primary, #00d4ff);
+            margin-bottom: 20px;
+            text-align: center;
+            padding: 8px;
+            border: 1px solid var(--palette-border, rgba(0, 212, 255, 0.3));
+            border-radius: 4px;
+          ">
+            ═══ DeFi Llama Analytics ═══
+          </div>
+      `;
+
+      helpLines.forEach((line) => {
+        if (line.trim() === "") {
+          helpHtml += `<div style="margin: 4px 0;"></div>`;
+        } else if (line.startsWith("═ ")) {
+          helpHtml += `
+            <div style="
+              font-size: 14px;
+              font-weight: bold;
+              color: var(--palette-primary, #00d4ff);
+              margin: 16px 0 8px 0;
+              padding: 4px 0;
+            ">
+              ${line}
+            </div>
+          `;
+        } else if (line.startsWith("→ Usage:")) {
+          helpHtml += `
+            <div style="
+              color: var(--palette-secondary, #00ff88);
+              margin-left: 20px;
+              margin-top: 2px;
+              font-size: 0.9em;
+            ">
+              ${line}
+            </div>
+          `;
+        } else {
+          const isCommand = line.length > 0 && 
+            line.trim().length < 30 &&
+            !line.includes(" ") &&
+            line === line.toLowerCase() &&
+            line.match(/^[a-z0-9-]+$/);
+
+          if (isCommand) {
+            const escapedCommand = line.replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+            helpHtml += `
+              <div 
+                class="omega-help-command" 
+                data-command="defillama ${escapedCommand}"
+                style="
+                  color: var(--palette-secondary, #00ff88);
+                  font-weight: bold;
+                  margin-left: 0;
+                  margin-top: 8px;
+                  font-family: 'Courier New', monospace;
+                "
+                title="Click to add 'defillama ${escapedCommand}' to terminal input"
+              >
+                ${line}
+              </div>
+            `;
+          } else {
+            helpHtml += `
+              <div style="
+                color: var(--palette-text, #e0e0e0);
+                margin-left: 0;
+                margin-top: 2px;
+                line-height: 1.4;
+              ">
+                ${line}
+              </div>
+            `;
+          }
+        }
+      });
+
+      helpHtml += `</div>`;
+      context.logHtml(helpHtml);
       return;
     }
 
@@ -96,8 +216,8 @@ export const defillamaCommand: Command = {
         await handleDebug(context, args);
         break;
       default:
-        context.log(`Unknown subcommand: ${subcommand}`);
-        context.log('Use "defillama" to see available commands');
+        context.log(`Unknown subcommand: ${subcommand}`, "error");
+        context.log('Use "defillama" to see available commands', "info");
     }
   },
 };
@@ -113,53 +233,53 @@ async function handleTvl(
 
   if (protocol) {
     // Protocol-specific TVL
-    context.log(`Fetching TVL for ${protocol}...`);
-    context.log("");
+    context.log(`Fetching TVL for ${protocol}...`, "info");
+    context.log("", "output");
 
     const result = await defillama.getProtocolTVL(protocol);
 
     if (!result.success || !result.protocol) {
-      context.log(result.error || "Protocol not found");
-      context.log("");
-      context.log("Try searching with the protocol slug:");
-      context.log('  e.g., "uniswap", "aave", "curve"');
+      context.log(result.error || "Protocol not found", "error");
+      context.log("", "output");
+      context.log("Try searching with the protocol slug:", "info");
+      context.log('  e.g., "uniswap", "aave", "curve"', "output");
       return;
     }
 
     const p = result.protocol;
 
     const html = `
-      <div style="background: linear-gradient(135deg, rgba(52, 199, 89, 0.1), rgba(255, 255, 255, 0.05)); border: 1px solid rgba(52, 199, 89, 0.3); border-radius: 16px; padding: 20px; margin: 10px 0; backdrop-filter: blur(20px); box-shadow: 0 4px 16px rgba(52, 199, 89, 0.1);">
+      <div style="background: rgba(255, 255, 255, 0.05); border: 1px solid var(--palette-border, rgba(0, 212, 255, 0.3)); border-radius: 8px; padding: 15px; margin: 10px 0;">
         <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
           ${
             p.logo
               ? `<img src="${p.logo}" alt="${escapeHtml(
                   p.name
-                )}" style="width: 48px; height: 48px; border-radius: 8px; border: 2px solid #34C759;" />`
-              : `<div style="width: 48px; height: 48px; border-radius: 8px; background: #34C759; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 24px;">${escapeHtml(
-                  p.name[0]
+                )}" style="width: 48px; height: 48px; border-radius: 8px; border: 2px solid var(--palette-primary, #00d4ff);" />`
+              : `<div style="width: 48px; height: 48px; border-radius: 8px; background: var(--palette-primary, #00d4ff); color: var(--palette-text, #e0e0e0); display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 24px;">${escapeHtml(
+                  p.name?.[0] || "?"
                 )}</div>`
           }
           <div>
-            <div style="font-size: 24px; font-weight: bold; color: #1B5E20;">${escapeHtml(
+            <div style="font-size: 24px; font-weight: bold; color: var(--palette-primary, #00d4ff);">${escapeHtml(
               p.name
             )}</div>
             ${
               p.category
-                ? `<div style="color: #666; font-size: 14px;">${escapeHtml(
+                ? `<div style="color: var(--palette-text, #e0e0e0); opacity: 0.7; font-size: 14px;">${escapeHtml(
                     p.category
                   )}</div>`
                 : ""
             }
           </div>
         </div>
-        <div style="font-size: 32px; color: #2E7D32; font-weight: bold; margin-bottom: 8px;">${formatLlamaCurrency(
+        <div style="font-size: 32px; color: var(--palette-secondary, #00ff88); font-weight: bold; margin-bottom: 8px;">${formatLlamaCurrency(
           p.tvl
         )}</div>
         ${
           p.change_1d
             ? `<div style="font-size: 16px; color: ${
-                p.change_1d >= 0 ? "#34C759" : "#FF3B30"
+                p.change_1d >= 0 ? "var(--palette-success, #00ff88)" : "var(--palette-error, #ff3333)"
               }; font-weight: bold; margin-bottom: 12px;">${
                 p.change_1d >= 0 ? "+" : ""
               }${p.change_1d.toFixed(2)}% (24h)</div>`
@@ -167,14 +287,14 @@ async function handleTvl(
         }
         ${
           p.chains && p.chains.length > 0
-            ? `<div style="color: #888; font-size: 12px; margin-top: 8px;">Chains: ${p.chains.join(
+            ? `<div style="color: var(--palette-text, #e0e0e0); opacity: 0.7; font-size: 12px; margin-top: 8px;">Chains: ${p.chains.join(
                 ", "
               )}</div>`
             : ""
         }
         ${
           p.url
-            ? `<div style="margin-top: 12px;"><a href="${p.url}" target="_blank" style="background: #34C759; color: #fff; text-decoration: none; padding: 8px 16px; border-radius: 8px; font-size: 14px; font-weight: bold; display: inline-block;">Visit Protocol</a></div>`
+            ? `<div style="margin-top: 12px;"><a href="${p.url}" target="_blank" style="background: var(--palette-primary, #00d4ff); color: var(--palette-text, #e0e0e0); text-decoration: none; padding: 8px 16px; border-radius: 4px; font-size: 14px; font-weight: bold; display: inline-block; transition: opacity 0.2s;">Visit Protocol</a></div>`
             : ""
         }
       </div>
@@ -183,23 +303,23 @@ async function handleTvl(
     context.logHtml(html);
   } else {
     // Total DeFi TVL
-    context.log("Fetching total DeFi TVL...");
-    context.log("");
+    context.log("Fetching total DeFi TVL...", "info");
+    context.log("", "output");
 
     const result = await defillama.getTotalTVL();
 
     if (!result.success) {
-      context.log(result.error || "Failed to fetch TVL");
+      context.log(result.error || "Failed to fetch TVL", "error");
       return;
     }
 
     const html = `
-      <div style="background: linear-gradient(135deg, rgba(52, 199, 89, 0.2), rgba(255, 255, 255, 0.05)); border: 2px solid rgba(52, 199, 89, 0.4); border-radius: 16px; padding: 24px; margin: 10px 0; backdrop-filter: blur(20px); box-shadow: 0 4px 24px rgba(52, 199, 89, 0.2); text-align: center;">
-        <div style="font-size: 20px; color: #34C759; font-weight: bold; margin-bottom: 16px;">🦙 Total DeFi TVL</div>
-        <div style="font-size: 48px; color: #2E7D32; font-weight: bold; margin-bottom: 8px;">${formatLlamaCurrency(
+      <div style="background: rgba(255, 255, 255, 0.05); border: 1px solid var(--palette-border, rgba(0, 212, 255, 0.3)); border-radius: 8px; padding: 24px; margin: 10px 0; text-align: center;">
+        <div style="font-size: 20px; color: var(--palette-primary, #00d4ff); font-weight: bold; margin-bottom: 16px;">🦙 Total DeFi TVL</div>
+        <div style="font-size: 48px; color: var(--palette-secondary, #00ff88); font-weight: bold; margin-bottom: 8px;">${formatLlamaCurrency(
           result.tvl
         )}</div>
-        <div style="font-size: 16px; color: #888;">Across ${
+        <div style="font-size: 16px; color: var(--palette-text, #e0e0e0); opacity: 0.7;">Across ${
           result.chainCount
         } chains</div>
       </div>
@@ -216,80 +336,71 @@ async function handleProtocols(
   context: CommandContext,
   args: string[]
 ): Promise<void> {
-  const limit = parseInt(args[2]) || 10;
+  const limit = parseInt(args[2] || "10") || 10;
 
-  context.log(`Fetching top ${limit} protocols...`);
-  context.log("");
+  context.log(`Fetching top ${limit} protocols...`, "info");
+  context.log("", "output");
 
   const result = await defillama.getTopProtocols(limit);
 
   if (!result.success || result.protocols.length === 0) {
-    context.log(result.error || "No protocols found");
+    context.log(result.error || "No protocols found", "error");
     return;
   }
 
   result.protocols.forEach((p, index) => {
     const html = `
-      <div style="background: linear-gradient(135deg, rgba(52, 199, 89, 0.1), rgba(255, 255, 255, 0.05)); border: 1px solid rgba(52, 199, 89, 0.3); border-radius: 16px; padding: 16px; margin: 8px 0; backdrop-filter: blur(20px); box-shadow: 0 4px 16px rgba(52, 199, 89, 0.1);">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-          <div style="display: flex; align-items: center; gap: 12px; flex: 1;">
-            <div style="background: #34C759; color: #fff; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px;">${
+      <div style="background: rgba(255, 255, 255, 0.05); border: 1px solid var(--palette-border, rgba(0, 212, 255, 0.3)); border-radius: 8px; padding: 15px; margin: 10px 0;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <div style="background: var(--palette-primary, #00d4ff); color: var(--palette-text, #e0e0e0); border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px;">${
               index + 1
             }</div>
             ${
               p.logo
                 ? `<img src="${p.logo}" alt="${escapeHtml(
                     p.name
-                  )}" style="width: 36px; height: 36px; border-radius: 8px; border: 2px solid #34C759;" />`
-                : `<div style="width: 36px; height: 36px; border-radius: 8px; background: #34C759; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px;">${escapeHtml(
-                    p.name[0]
+                  )}" style="width: 36px; height: 36px; border-radius: 8px; border: 2px solid var(--palette-primary, #00d4ff);" />`
+                : `<div style="width: 36px; height: 36px; border-radius: 8px; background: var(--palette-primary, #00d4ff); color: var(--palette-text, #e0e0e0); display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px;">${escapeHtml(
+                    p.name?.[0] || "?"
                   )}</div>`
             }
-            <div style="flex: 1;">
-              <div style="font-size: 18px; font-weight: bold; color: #1B5E20;">${escapeHtml(
-                p.name
-              )}</div>
-              ${
-                p.category
-                  ? `<div style="color: #666; font-size: 14px;">${escapeHtml(
-                      p.category
-                    )}</div>`
-                  : ""
-              }
-            </div>
-          </div>
-          <div style="text-align: right;">
-            <div style="font-size: 20px; color: #2E7D32; font-weight: bold;">${formatLlamaCurrency(
-              p.tvl
-            )}</div>
+            <span style="font-size: 18px; font-weight: bold; color: var(--palette-primary, #00d4ff);">${escapeHtml(
+              p.name
+            )}</span>
             ${
-              p.change_1d !== undefined
-                ? `<div style="font-size: 14px; color: ${
-                    p.change_1d >= 0 ? "#34C759" : "#FF3B30"
-                  }; font-weight: bold;">${
-                    p.change_1d >= 0 ? "+" : ""
-                  }${p.change_1d.toFixed(2)}%</div>`
+              p.category
+                ? `<span style="font-size: 12px; color: var(--palette-text, #e0e0e0); opacity: 0.7;">${escapeHtml(
+                    p.category
+                  )}</span>`
                 : ""
             }
           </div>
         </div>
+        <div style="font-size: 16px; color: var(--palette-secondary, #00ff88); font-weight: bold; margin-bottom: 8px;">${formatLlamaCurrency(
+          p.tvl
+        )}</div>
+        ${
+          p.change_1d !== undefined
+            ? `<div style="font-size: 13px; color: ${
+                p.change_1d >= 0 ? "var(--palette-success, #00ff88)" : "var(--palette-error, #ff3333)"
+              }; font-weight: bold;">${
+                p.change_1d >= 0 ? "+" : ""
+              }${p.change_1d.toFixed(2)}%</div>`
+            : ""
+        }
         ${
           p.chains && p.chains.length > 0
-            ? `<div style="color: #888; font-size: 12px; margin-top: 8px;">Chains: ${p.chains
+            ? `<div style="color: var(--palette-text, #e0e0e0); opacity: 0.7; font-size: 12px; margin-top: 8px;">Chains: ${p.chains
                 .slice(0, 5)
                 .join(", ")}${p.chains.length > 5 ? "..." : ""}</div>`
             : ""
         }
-        <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px;">
-          ${
-            p.url
-              ? `<a href="${p.url}" target="_blank" style="background: #34C759; color: #fff; text-decoration: none; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: bold;">Visit Protocol</a>`
-              : ""
-          }
-          <button onclick="window.dispatchEvent(new CustomEvent('terminal-command', {detail: 'defillama tvl ${
-            p.slug || toSlug(p.name)
-          }'}))" style="background: #007AFF; color: #fff; text-decoration: none; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: bold; border: none; cursor: pointer;">Detailed TVL</button>
-        </div>
+        ${
+          p.url
+            ? `<div style="margin-top: 8px;"><a href="${p.url}" target="_blank" style="color: var(--palette-primary, #00d4ff); text-decoration: underline; font-size: 13px;">View on DeFi Llama</a></div>`
+            : ""
+        }
       </div>
     `;
 
@@ -304,54 +415,50 @@ async function handleChains(
   context: CommandContext,
   args: string[]
 ): Promise<void> {
-  const limit = parseInt(args[2]) || 15;
+  const limit = parseInt(args[2] || "15") || 15;
 
-  context.log(`Fetching top ${limit} chains...`);
-  context.log("");
+  context.log(`Fetching top ${limit} chains...`, "info");
+  context.log("", "output");
 
   const result = await defillama.getChainTVLs(limit);
 
   if (!result.success || result.chains.length === 0) {
-    context.log(result.error || "No chains found");
+    context.log(result.error || "No chains found", "error");
     return;
   }
 
   result.chains.forEach((c, index) => {
     const html = `
-      <div style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(0, 122, 255, 0.2); border-radius: 16px; padding: 16px; margin: 8px 0; backdrop-filter: blur(20px); box-shadow: 0 4px 16px rgba(0, 122, 255, 0.1);">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-          <div style="display: flex; align-items: center; gap: 12px; flex: 1;">
-            <div style="background: #007AFF; color: #fff; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px;">${
+      <div style="background: rgba(255, 255, 255, 0.05); border: 1px solid var(--palette-border, rgba(0, 212, 255, 0.3)); border-radius: 8px; padding: 15px; margin: 10px 0;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <div style="background: var(--palette-primary, #00d4ff); color: var(--palette-text, #e0e0e0); border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px;">${
               index + 1
             }</div>
-            <div style="flex: 1;">
-              <div style="font-size: 18px; font-weight: bold; color: #1565C0;">${escapeHtml(
-                c.name
-              )}</div>
-              ${
-                c.tokenSymbol
-                  ? `<div style="color: #666; font-size: 14px;">${escapeHtml(
-                      c.tokenSymbol
-                    )}</div>`
-                  : ""
-              }
-            </div>
-          </div>
-          <div style="text-align: right;">
-            <div style="color: #1565C0; font-weight: bold; font-size: 18px;">${formatLlamaCurrency(
-              c.tvl
-            )}</div>
+            <span style="font-size: 18px; font-weight: bold; color: var(--palette-primary, #00d4ff);">${escapeHtml(
+              c.name
+            )}</span>
             ${
-              c.change_1d !== undefined
-                ? `<div style="font-size: 14px; color: ${
-                    c.change_1d >= 0 ? "#34C759" : "#FF3B30"
-                  };">${c.change_1d >= 0 ? "+" : ""}${c.change_1d.toFixed(
-                    2
-                  )}%</div>`
+              c.tokenSymbol
+                ? `<span style="font-size: 12px; color: var(--palette-text, #e0e0e0); opacity: 0.7;">${escapeHtml(
+                    c.tokenSymbol
+                  )}</span>`
                 : ""
             }
           </div>
         </div>
+        <div style="font-size: 16px; color: var(--palette-secondary, #00ff88); font-weight: bold; margin-bottom: 8px;">${formatLlamaCurrency(
+          c.tvl
+        )}</div>
+        ${
+          c.change_1d !== undefined
+            ? `<div style="font-size: 13px; color: ${
+                c.change_1d >= 0 ? "var(--palette-success, #00ff88)" : "var(--palette-error, #ff3333)"
+              }; font-weight: bold;">${c.change_1d >= 0 ? "+" : ""}${c.change_1d.toFixed(
+                2
+              )}%</div>`
+            : ""
+        }
       </div>
     `;
 
@@ -369,21 +476,21 @@ async function handlePrice(
   const token = args[2]?.toLowerCase();
 
   if (!token) {
-    context.log("Usage: defillama price <token>");
-    context.log("Example: defillama price eth");
+    context.log("Usage: defillama price <token>", "error");
+    context.log("Example: defillama price eth", "info");
     return;
   }
 
-  context.log(`Fetching price for ${token}...`);
-  context.log("");
+  context.log(`Fetching price for ${token}...`, "info");
+  context.log("", "output");
 
   const result = await defillama.getTokenPrice(token);
 
   if (!result.success || !result.price) {
-    context.log(result.error || "Token not found");
-    context.log("");
-    context.log("Try common tokens: eth, btc, sol, usdc, usdt");
-    context.log("Or use: defillama debug <token>");
+    context.log(result.error || "Token not found", "error");
+    context.log("", "output");
+    context.log("Try common tokens: eth, btc, sol, usdc, usdt", "info");
+    context.log("Or use: defillama debug <token>", "info");
     return;
   }
 
@@ -391,17 +498,17 @@ async function handlePrice(
   const lastUpdate = new Date(price.timestamp).toLocaleString();
 
   const html = `
-    <div style="background: linear-gradient(135deg, rgba(0, 122, 255, 0.2), rgba(255, 255, 255, 0.05)); border: 2px solid rgba(0, 122, 255, 0.4); border-radius: 16px; padding: 20px; margin: 10px 0; backdrop-filter: blur(20px); box-shadow: 0 4px 24px rgba(0, 122, 255, 0.2);">
-      <div style="font-size: 24px; font-weight: bold; color: #007AFF; margin-bottom: 8px; text-transform: uppercase;">${escapeHtml(
+    <div style="background: rgba(255, 255, 255, 0.05); border: 1px solid var(--palette-border, rgba(0, 212, 255, 0.3)); border-radius: 8px; padding: 20px; margin: 10px 0; text-align: center;">
+      <div style="font-size: 24px; font-weight: bold; color: var(--palette-primary, #00d4ff); margin-bottom: 8px; text-transform: uppercase;">${escapeHtml(
         price.symbol
       )}</div>
-      <div style="font-size: 36px; color: #00ff88; font-weight: bold; margin-bottom: 8px;">$${price.price.toFixed(
+      <div style="font-size: 36px; color: var(--palette-secondary, #00ff88); font-weight: bold; margin-bottom: 8px;">$${price.price.toFixed(
         6
       )}</div>
-      <div style="font-size: 12px; color: #888;">Last updated: ${lastUpdate}</div>
+      <div style="font-size: 12px; color: var(--palette-text, #e0e0e0); opacity: 0.7;">Last updated: ${lastUpdate}</div>
       ${
         price.confidence
-          ? `<div style="font-size: 12px; color: #888; margin-top: 4px;">Confidence: ${(
+          ? `<div style="font-size: 12px; color: var(--palette-text, #e0e0e0); opacity: 0.7; margin-top: 4px;">Confidence: ${(
               price.confidence * 100
             ).toFixed(1)}%</div>`
           : ""
@@ -422,8 +529,8 @@ async function handleTokens(
   const tokensArg = args[2];
 
   if (!tokensArg) {
-    context.log("Usage: defillama tokens <token,token,...>");
-    context.log("Example: defillama tokens eth,btc,sol");
+    context.log("Usage: defillama tokens <token,token,...>", "error");
+    context.log("Example: defillama tokens eth,btc,sol", "info");
     return;
   }
 
@@ -432,93 +539,89 @@ async function handleTokens(
     .split(",")
     .map((t) => t.trim());
 
-  context.log(`Fetching prices for ${tokens.length} tokens...`);
-  context.log("");
+  context.log(`Fetching prices for ${tokens.length} tokens...`, "info");
+  context.log("", "output");
 
   const result = await defillama.getMultipleTokenPrices(tokens);
 
   if (!result.success || Object.keys(result.prices).length === 0) {
-    context.log(result.error || "No prices found");
+    context.log(result.error || "No prices found", "error");
     return;
   }
 
-  context.log("Token Prices:");
-  context.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+  context.log("Token Prices:", "info");
+  context.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━", "output");
 
   tokens.forEach((token) => {
     const price = result.prices[token];
     if (price) {
       context.logHtml(
-        `<div style="margin: 8px 0;"><span style="color: #007AFF; font-weight: bold; text-transform: uppercase; width: 80px; display: inline-block;">${escapeHtml(
+        `<div style="margin: 8px 0; padding: 8px; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--palette-border, rgba(0, 212, 255, 0.3)); border-radius: 4px;"><span style="color: var(--palette-primary, #00d4ff); font-weight: bold; text-transform: uppercase; width: 80px; display: inline-block;">${escapeHtml(
           token
-        )}</span> <span style="color: #00ff88; font-weight: bold;">$${price.price.toFixed(
+        )}</span> <span style="color: var(--palette-secondary, #00ff88); font-weight: bold;">$${price.price.toFixed(
           6
         )}</span></div>`
       );
     } else {
-      context.log(`${token.toUpperCase()}: Not found`);
+      context.log(`${token.toUpperCase()}: Not found`, "error");
     }
   });
 
-  context.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+  context.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━", "output");
 }
 
 /**
  * Handle trending command
  */
 async function handleTrending(context: CommandContext): Promise<void> {
-  context.log("Fetching trending protocols...");
-  context.log("");
+  context.log("Fetching trending protocols...", "info");
+  context.log("", "output");
 
   const result = await defillama.getTrendingProtocols();
 
   if (!result.success || result.protocols.length === 0) {
-    context.log(result.error || "No trending protocols found");
+    context.log(result.error || "No trending protocols found", "error");
     return;
   }
 
-  context.log("🔥 Trending Protocols (24h Gainers)");
-  context.log("");
+  context.log("🔥 Trending Protocols (24h Gainers)", "info");
+  context.log("", "output");
 
   result.protocols.forEach((p, index) => {
     const html = `
-      <div style="background: linear-gradient(135deg, rgba(52, 199, 89, 0.15), rgba(255, 255, 255, 0.05)); border: 1px solid rgba(52, 199, 89, 0.4); border-radius: 16px; padding: 16px; margin: 8px 0; backdrop-filter: blur(20px); box-shadow: 0 4px 16px rgba(52, 199, 89, 0.15);">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-          <div style="display: flex; align-items: center; gap: 12px; flex: 1;">
-            <div style="background: #34C759; color: #fff; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px;">${
+      <div style="background: rgba(255, 255, 255, 0.05); border: 1px solid var(--palette-border, rgba(0, 212, 255, 0.3)); border-radius: 8px; padding: 15px; margin: 10px 0;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <div style="background: var(--palette-primary, #00d4ff); color: var(--palette-text, #e0e0e0); border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px;">${
               index + 1
             }</div>
             ${
               p.logo
                 ? `<img src="${p.logo}" alt="${escapeHtml(
                     p.name
-                  )}" style="width: 36px; height: 36px; border-radius: 8px; border: 2px solid #34C759;" />`
-                : `<div style="width: 36px; height: 36px; border-radius: 8px; background: #34C759; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px;">${escapeHtml(
-                    p.name[0]
+                  )}" style="width: 36px; height: 36px; border-radius: 8px; border: 2px solid var(--palette-primary, #00d4ff);" />`
+                : `<div style="width: 36px; height: 36px; border-radius: 8px; background: var(--palette-primary, #00d4ff); color: var(--palette-text, #e0e0e0); display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px;">${escapeHtml(
+                    p.name?.[0] || "?"
                   )}</div>`
             }
-            <div style="flex: 1;">
-              <div style="font-size: 18px; font-weight: bold; color: #1B5E20;">${escapeHtml(
-                p.name
-              )}</div>
-              ${
-                p.category
-                  ? `<div style="color: #666; font-size: 14px;">${escapeHtml(
-                      p.category
-                    )}</div>`
-                  : ""
-              }
-            </div>
-          </div>
-          <div style="text-align: right;">
-            <div style="font-size: 20px; color: #2E7D32; font-weight: bold;">${formatLlamaCurrency(
-              p.tvl
-            )}</div>
-            <div style="font-size: 16px; color: #34C759; font-weight: bold;">+${p.change_1d?.toFixed(
-              2
-            )}%</div>
+            <span style="font-size: 18px; font-weight: bold; color: var(--palette-primary, #00d4ff);">${escapeHtml(
+              p.name
+            )}</span>
+            ${
+              p.category
+                ? `<span style="font-size: 12px; color: var(--palette-text, #e0e0e0); opacity: 0.7;">${escapeHtml(
+                    p.category
+                  )}</span>`
+                : ""
+            }
           </div>
         </div>
+        <div style="font-size: 16px; color: var(--palette-secondary, #00ff88); font-weight: bold; margin-bottom: 8px;">${formatLlamaCurrency(
+          p.tvl
+        )}</div>
+        <div style="font-size: 13px; color: var(--palette-success, #00ff88); font-weight: bold;">+${p.change_1d?.toFixed(
+          2
+        )}%</div>
       </div>
     `;
 
@@ -536,13 +639,13 @@ async function handleDebug(
   const token = args[2]?.toLowerCase();
 
   if (!token) {
-    context.log("Usage: defillama debug <token>");
-    context.log("Example: defillama debug eth");
+    context.log("Usage: defillama debug <token>", "error");
+    context.log("Example: defillama debug eth", "info");
     return;
   }
 
-  context.log(`🔍 Debugging token lookup for: ${token}`);
-  context.log("");
+  context.log(`🔍 Debugging token lookup for: ${token}`, "info");
+  context.log("", "output");
 
   // Show token mapping
   const normalizedSymbol = token.toLowerCase();
@@ -569,31 +672,32 @@ async function handleDebug(
   const mappedToken =
     TOKEN_MAPPINGS[normalizedSymbol] || `coingecko:${normalizedSymbol}`;
 
-  context.log(`Token Mapping:`);
-  context.log(`  Input: ${token}`);
-  context.log(`  Mapped: ${mappedToken}`);
-  context.log("");
+  context.log(`Token Mapping:`, "info");
+  context.log(`  Input: ${token}`, "output");
+  context.log(`  Mapped: ${mappedToken}`, "output");
+  context.log("", "output");
 
   const result = await defillama.getTokenPrice(token);
 
-  context.log(`API Request:`);
-  context.log(`  URL: https://coins.llama.fi/prices/current/${mappedToken}`);
-  context.log("");
+  context.log(`API Request:`, "info");
+  context.log(`  URL: https://coins.llama.fi/prices/current/${mappedToken}`, "output");
+  context.log("", "output");
 
   if (result.success && result.price) {
-    context.log(`✅ Success!`);
-    context.log(`  Symbol: ${result.price.symbol}`);
-    context.log(`  Price: $${result.price.price}`);
+    context.log(`✅ Success!`, "success");
+    context.log(`  Symbol: ${result.price.symbol}`, "output");
+    context.log(`  Price: $${result.price.price}`, "output");
     context.log(
-      `  Timestamp: ${new Date(result.price.timestamp).toLocaleString()}`
+      `  Timestamp: ${new Date(result.price.timestamp).toLocaleString()}`,
+      "output"
     );
-    context.log(`  Confidence: ${result.price.confidence}`);
+    context.log(`  Confidence: ${result.price.confidence}`, "output");
   } else {
-    context.log(`❌ Failed`);
-    context.log(`  Error: ${result.error}`);
-    context.log("");
-    context.log("Try these common tokens:");
-    context.log("  eth, btc, sol, usdc, usdt, bnb, ada, dot");
+    context.log(`❌ Failed`, "error");
+    context.log(`  Error: ${result.error || "Unknown error"}`, "error");
+    context.log("", "output");
+    context.log("Try these common tokens:", "info");
+    context.log("  eth, btc, sol, usdc, usdt, bnb, ada, dot", "output");
   }
 }
 

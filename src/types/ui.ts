@@ -63,7 +63,8 @@ export type ColorPalette =
   | "lavender"
   | "lilac"
   | "toxic"
-  | "radioactive";
+  | "radioactive"
+  | "light";
 
 /**
  * Visibility toggles for major dashboard panels.

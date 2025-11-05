@@ -3,6 +3,16 @@
 import dynamic from "next/dynamic";
 import { Suspense, type ReactNode } from "react";
 
+const PerpsProvider = dynamic(
+  () =>
+    import("./PerpsProvider").then((mod) => ({
+      default: mod.PerpsProvider,
+    })),
+  {
+    ssr: false,
+  }
+);
+
 const SpotifyProvider = dynamic(
   () =>
     import("./SpotifyProvider").then((mod) => ({
@@ -43,6 +53,16 @@ const GamesProvider = dynamic(
   }
 );
 
+const PGTProvider = dynamic(
+  () =>
+    import("./PGTProvider").then((mod) => ({
+      default: mod.PGTProvider,
+    })),
+  {
+    ssr: false,
+  }
+);
+
 function ProvidersFallback() {
   return (
     <div
@@ -62,10 +82,12 @@ function ProvidersFallback() {
   );
 }
 
-const TerminalProvider = dynamic(
+import { TerminalProvider } from "./TerminalProvider";
+
+const GlobalGameModal = dynamic(
   () =>
-    import("./TerminalProvider").then((mod) => ({
-      default: mod.TerminalProvider,
+    import("@/components/Games/GlobalGameModal").then((mod) => ({
+      default: mod.GlobalGameModal,
     })),
   {
     ssr: false,
@@ -75,15 +97,22 @@ const TerminalProvider = dynamic(
 export function ProviderShell({ children }: { children: ReactNode }) {
   return (
     <Suspense fallback={<ProvidersFallback />}>
-      <SpotifyProvider>
-        <YouTubeProvider>
-          <NewsReaderProvider>
-            <GamesProvider>
-              <TerminalProvider>{children}</TerminalProvider>
-            </GamesProvider>
-          </NewsReaderProvider>
-        </YouTubeProvider>
-      </SpotifyProvider>
+      <PGTProvider>
+        <PerpsProvider>
+          <SpotifyProvider>
+            <YouTubeProvider>
+              <NewsReaderProvider>
+                <GamesProvider>
+                  <TerminalProvider>
+                    {children}
+                    <GlobalGameModal />
+                  </TerminalProvider>
+                </GamesProvider>
+              </NewsReaderProvider>
+            </YouTubeProvider>
+          </SpotifyProvider>
+        </PerpsProvider>
+      </PGTProvider>
     </Suspense>
   );
 }

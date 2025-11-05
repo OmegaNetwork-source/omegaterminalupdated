@@ -9,6 +9,7 @@ import React, {
 } from "react";
 import type { ViewMode, ViewModeContextValue } from "@/types/ui";
 import { useSoundEffects } from "@/hooks/useSoundEffects";
+import { useMobileDetection } from "@/hooks/useMobileDetection";
 
 const VIEW_MODE_STORAGE_KEY = "omega-view-mode";
 
@@ -27,14 +28,7 @@ export const ViewModeContext = createContext<ViewModeContextValue | undefined>(
 export function ViewModeProvider({ children }: { children: React.ReactNode }) {
   const [viewMode, setViewModeState] = useState<ViewMode>("futuristic");
   const soundEffects = useSoundEffects();
-
-  const isMobile = useCallback((): boolean => {
-    if (typeof window === "undefined") return false;
-    const ua = navigator.userAgent.toLowerCase();
-    const mobileUA =
-      /iphone|ipad|ipod|android|blackberry|mini|windows\sce|palm/i;
-    return window.innerWidth <= 768 || mobileUA.test(ua);
-  }, []);
+  const mobileDetection = useMobileDetection();
 
   const applyBodyClasses = useCallback((mode: ViewMode): void => {
     if (typeof document === "undefined") return;
@@ -54,7 +48,7 @@ export function ViewModeProvider({ children }: { children: React.ReactNode }) {
 
     try {
       // On first mount: detect device and load saved mode
-      const forcedBasic = isMobile();
+      const forcedBasic = mobileDetection.isMobile;
       if (forcedBasic) {
         setViewModeState("basic");
         try {
@@ -89,7 +83,7 @@ export function ViewModeProvider({ children }: { children: React.ReactNode }) {
         // Even body class application failed - this is bad but we continue
       }
     }
-  }, [applyBodyClasses, isMobile]);
+  }, [applyBodyClasses, mobileDetection.isMobile]);
 
   const setViewMode = useCallback(
     (mode: ViewMode): void => {
@@ -113,14 +107,14 @@ export function ViewModeProvider({ children }: { children: React.ReactNode }) {
   );
 
   const toggleViewMode = useCallback((): void => {
-    if (isMobile()) {
+    if (mobileDetection.isMobile) {
       // eslint-disable-next-line no-console
       console.log("[Omega] Toggle prevented on mobile devices");
       return;
     }
     const next: ViewMode = viewMode === "basic" ? "futuristic" : "basic";
     setViewMode(next);
-  }, [isMobile, setViewMode, viewMode]);
+  }, [mobileDetection.isMobile, setViewMode, viewMode]);
 
   const isBasicMode = viewMode === "basic";
   const isFuturisticMode = viewMode === "futuristic";

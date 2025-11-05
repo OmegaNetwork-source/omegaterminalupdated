@@ -23,17 +23,113 @@ export const dexscreenerCommand: Command = {
     const subcommand = args[1]?.toLowerCase();
 
     if (!subcommand) {
-      context.log("DexScreener - Token Analytics");
-      context.log("");
-      context.log("Available Commands:");
-      context.log("  ds search <query>     - Search for tokens");
-      context.log("  ds trending           - Show trending tokens");
-      context.log("  ds analytics          - Detailed analytics (Phase 15)");
-      context.log("  ds portfolio          - Portfolio tracking (Phase 15)");
-      context.log("");
-      context.log("Examples:");
-      context.log("  ds search WETH");
-      context.log("  ds trending");
+      const helpLines: string[] = [];
+      
+      helpLines.push("═══ DexScreener Token Analytics ═══");
+      helpLines.push("");
+      helpLines.push("search");
+      helpLines.push("");
+      helpLines.push("Search for tokens across multiple DEXes");
+      helpLines.push("");
+      helpLines.push("→ Usage: ds search <query>");
+      helpLines.push("");
+      helpLines.push("trending");
+      helpLines.push("");
+      helpLines.push("Show trending tokens");
+      helpLines.push("");
+      helpLines.push("→ Usage: ds trending");
+      helpLines.push("");
+      helpLines.push("analytics");
+      helpLines.push("");
+      helpLines.push("Detailed token analytics");
+      helpLines.push("");
+      helpLines.push("→ Usage: ds analytics <token>");
+      helpLines.push("");
+      helpLines.push("portfolio");
+      helpLines.push("");
+      helpLines.push("Portfolio tracking interface");
+      helpLines.push("");
+      helpLines.push("→ Usage: ds portfolio");
+      helpLines.push("");
+
+      // Generate HTML output with uniform styling
+      let helpHtml = `
+        <div style="
+          font-family: 'Courier New', monospace;
+          line-height: 1.6;
+          color: var(--palette-text, #e0e0e0);
+          padding: 12px;
+        ">
+          <div style="
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--palette-primary, #00d4ff);
+            margin-bottom: 20px;
+            text-align: center;
+            padding: 8px;
+            border: 1px solid var(--palette-border, rgba(0, 212, 255, 0.3));
+            border-radius: 4px;
+          ">
+            ═══ DexScreener Token Analytics ═══
+          </div>
+      `;
+
+      helpLines.forEach((line) => {
+        if (line.trim() === "") {
+          helpHtml += `<div style="margin: 4px 0;"></div>`;
+        } else if (line.startsWith("→ Usage:")) {
+          helpHtml += `
+            <div style="
+              color: var(--palette-secondary, #00ff88);
+              margin-left: 20px;
+              margin-top: 2px;
+              font-size: 0.9em;
+            ">
+              ${line}
+            </div>
+          `;
+        } else {
+          const isCommand = line.length > 0 && 
+            line.trim().length < 30 &&
+            !line.includes(" ") &&
+            line === line.toLowerCase() &&
+            line.match(/^[a-z0-9-]+$/);
+
+          if (isCommand) {
+            const escapedCommand = line.replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+            helpHtml += `
+              <div 
+                class="omega-help-command" 
+                data-command="ds ${escapedCommand}"
+                style="
+                  color: var(--palette-secondary, #00ff88);
+                  font-weight: bold;
+                  margin-left: 0;
+                  margin-top: 8px;
+                  font-family: 'Courier New', monospace;
+                "
+                title="Click to add 'ds ${escapedCommand}' to terminal input"
+              >
+                ${line}
+              </div>
+            `;
+          } else {
+            helpHtml += `
+              <div style="
+                color: var(--palette-text, #e0e0e0);
+                margin-left: 0;
+                margin-top: 2px;
+                line-height: 1.4;
+              ">
+                ${line}
+              </div>
+            `;
+          }
+        }
+      });
+
+      helpHtml += `</div>`;
+      context.logHtml(helpHtml);
       return;
     }
 
@@ -51,8 +147,8 @@ export const dexscreenerCommand: Command = {
         await showPortfolio(context);
         break;
       default:
-        context.log(`Unknown subcommand: ${subcommand}`);
-        context.log('Use "ds" to see available commands');
+        context.log(`Unknown subcommand: ${subcommand}`, "error");
+        context.log('Use "ds" to see available commands', "info");
     }
   },
 };
@@ -70,18 +166,25 @@ async function searchTokens(
   const query = args.slice(2).join(" ");
 
   if (!query) {
-    context.log("Usage: ds search <query>");
-    context.log("Example: ds search WETH");
+    context.log("Usage: ds search <query>", "error");
+    context.log("Example: ds search WETH", "info");
     return;
   }
 
-  context.log(`Searching DexScreener for: ${query}`);
-  context.log("");
+  context.log(`Searching DexScreener for: ${query}`, "info");
+  context.log("", "output");
 
   const result = await dexscreener.searchTokens(query);
 
   if (!result.success || result.pairs.length === 0) {
-    context.log(result.error || "No tokens found");
+    if (result.error) {
+      context.log(`❌ Error: ${result.error}`, "error");
+      context.log("💡 Trying alternative search methods...", "info");
+    } else {
+      context.log("❌ No tokens found", "error");
+      context.log("💡 Try searching with full token name or contract address", "info");
+      context.log("💡 Examples: ds search bitcoin, ds search 0x...", "info");
+    }
     return;
   }
 
@@ -90,53 +193,55 @@ async function searchTokens(
 
   pairs.forEach((pair, index) => {
     const priceChange24h = pair.priceChange?.h24 || 0;
-    const changeColor = priceChange24h >= 0 ? "#00ff88" : "#ff3333";
+    const changeColorVar = priceChange24h >= 0 
+      ? "var(--palette-success, #00ff88)" 
+      : "var(--palette-error, #ff3333)";
     const changePrefix = priceChange24h >= 0 ? "+" : "";
 
     const html = `
-      <div style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(0, 188, 242, 0.3); border-radius: 8px; padding: 15px; margin: 10px 0;">
+      <div style="background: rgba(255, 255, 255, 0.05); border: 1px solid var(--palette-border, rgba(0, 212, 255, 0.3)); border-radius: 8px; padding: 15px; margin: 10px 0;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
           <div style="display: flex; align-items: center; gap: 10px;">
-            <div style="background: #00bcf2; color: #000; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px;">${
+            <div style="background: var(--palette-primary, #00d4ff); color: var(--palette-text, #e0e0e0); border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px;">${
               index + 1
             }</div>
-            <span style="font-size: 18px; font-weight: bold; color: #00bcf2;">${escapeHtml(
+            <span style="font-size: 18px; font-weight: bold; color: var(--palette-primary, #00d4ff);">${escapeHtml(
               pair.baseToken.symbol
             )}</span>
-            <span style="font-size: 12px; color: #cccccc;">${escapeHtml(
+            <span style="font-size: 12px; color: var(--palette-text, #e0e0e0); opacity: 0.7;">${escapeHtml(
               pair.chainId
             )}</span>
           </div>
         </div>
-        <div style="font-size: 14px; color: #ffffff; margin-bottom: 8px;">${escapeHtml(
+        <div style="font-size: 14px; color: var(--palette-text, #e0e0e0); margin-bottom: 8px;">${escapeHtml(
           pair.baseToken.name
         )}</div>
-        <div style="font-size: 16px; color: #00ff88; font-weight: bold; margin-bottom: 8px;">$${
+        <div style="font-size: 16px; color: var(--palette-secondary, #00ff88); font-weight: bold; margin-bottom: 8px;">$${
           pair.priceUsd
         }</div>
-        <div style="font-size: 12px; color: #cccccc; margin-bottom: 8px; word-break: break-all;">
+        <div style="font-size: 12px; color: var(--palette-text, #e0e0e0); opacity: 0.7; margin-bottom: 8px; word-break: break-all;">
           ${escapeHtml(pair.baseToken.address)}
           <button onclick="navigator.clipboard.writeText('${escapeHtml(
             pair.baseToken.address
-          )}')" style="background: rgba(0, 188, 242, 0.2); border: 1px solid rgba(0, 188, 242, 0.5); color: #00bcf2; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 11px; margin-left: 8px;">Copy</button>
+          )}')" style="background: rgba(0, 212, 255, 0.2); border: 1px solid var(--palette-border, rgba(0, 212, 255, 0.5)); color: var(--palette-primary, #00d4ff); padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 11px; margin-left: 8px;">Copy</button>
         </div>
         ${
           pair.volume?.h24
-            ? `<div style="font-size: 13px; color: #ffffff; margin-bottom: 4px;">24h Volume: $${formatNumber(
+            ? `<div style="font-size: 13px; color: var(--palette-text, #e0e0e0); margin-bottom: 4px;">24h Volume: $${formatNumber(
                 pair.volume.h24
               )}</div>`
             : ""
         }
         ${
           priceChange24h !== 0
-            ? `<div style="font-size: 13px; color: ${changeColor}; font-weight: bold;">24h Change: ${changePrefix}${priceChange24h.toFixed(
+            ? `<div style="font-size: 13px; color: ${changeColorVar}; font-weight: bold;">24h Change: ${changePrefix}${priceChange24h.toFixed(
                 2
               )}%</div>`
             : ""
         }
         ${
           pair.url
-            ? `<div style="margin-top: 8px;"><a href="${pair.url}" target="_blank" style="color: #00bcf2; text-decoration: underline; font-size: 13px;">View on DexScreener</a></div>`
+            ? `<div style="margin-top: 8px;"><a href="${pair.url}" target="_blank" style="color: var(--palette-primary, #00d4ff); text-decoration: underline; font-size: 13px;">View on DexScreener</a></div>`
             : ""
         }
       </div>
@@ -146,8 +251,8 @@ async function searchTokens(
   });
 
   if (result.pairs.length > 5) {
-    context.log("");
-    context.log(`Showing 5 of ${result.pairs.length} results`);
+    context.log("", "output");
+    context.log(`Showing 5 of ${result.pairs.length} results`, "info");
   }
 }
 
@@ -155,13 +260,18 @@ async function searchTokens(
  * Get trending tokens
  */
 async function getTrending(context: CommandContext): Promise<void> {
-  context.log("Fetching trending tokens...");
-  context.log("");
+  context.log("Fetching trending tokens...", "info");
+  context.log("", "output");
 
   const result = await dexscreener.getTrendingTokens();
 
   if (!result.success || result.pairs.length === 0) {
-    context.log(result.error || "No trending tokens found");
+    if (result.error) {
+      context.log(`❌ Error: ${result.error}`, "error");
+    } else {
+      context.log("❌ No trending tokens found", "error");
+      context.log("💡 Try: ds search WETH or ds search USDC", "info");
+    }
     return;
   }
 
@@ -169,53 +279,55 @@ async function getTrending(context: CommandContext): Promise<void> {
 
   pairs.forEach((pair, index) => {
     const priceChange24h = pair.priceChange?.h24 || 0;
-    const changeColor = priceChange24h >= 0 ? "#00ff88" : "#ff3333";
+    const changeColorVar = priceChange24h >= 0 
+      ? "var(--palette-success, #00ff88)" 
+      : "var(--palette-error, #ff3333)";
     const changePrefix = priceChange24h >= 0 ? "+" : "";
 
     const html = `
-      <div style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(0, 188, 242, 0.3); border-radius: 8px; padding: 15px; margin: 10px 0;">
+      <div style="background: rgba(255, 255, 255, 0.05); border: 1px solid var(--palette-border, rgba(0, 212, 255, 0.3)); border-radius: 8px; padding: 15px; margin: 10px 0;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
           <div style="display: flex; align-items: center; gap: 10px;">
-            <div style="background: #00bcf2; color: #000; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px;">${
+            <div style="background: var(--palette-primary, #00d4ff); color: var(--palette-text, #e0e0e0); border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px;">${
               index + 1
             }</div>
-            <span style="font-size: 18px; font-weight: bold; color: #00bcf2;">${escapeHtml(
+            <span style="font-size: 18px; font-weight: bold; color: var(--palette-primary, #00d4ff);">${escapeHtml(
               pair.baseToken.symbol
             )}</span>
-            <span style="font-size: 12px; color: #cccccc;">${escapeHtml(
+            <span style="font-size: 12px; color: var(--palette-text, #e0e0e0); opacity: 0.7;">${escapeHtml(
               pair.chainId
             )}</span>
           </div>
         </div>
-        <div style="font-size: 14px; color: #ffffff; margin-bottom: 8px;">${escapeHtml(
+        <div style="font-size: 14px; color: var(--palette-text, #e0e0e0); margin-bottom: 8px;">${escapeHtml(
           pair.baseToken.name
         )}</div>
-        <div style="font-size: 16px; color: #00ff88; font-weight: bold; margin-bottom: 8px;">$${
+        <div style="font-size: 16px; color: var(--palette-secondary, #00ff88); font-weight: bold; margin-bottom: 8px;">$${
           pair.priceUsd
         }</div>
-        <div style="font-size: 12px; color: #cccccc; margin-bottom: 8px; word-break: break-all;">
+        <div style="font-size: 12px; color: var(--palette-text, #e0e0e0); opacity: 0.7; margin-bottom: 8px; word-break: break-all;">
           ${escapeHtml(pair.baseToken.address)}
           <button onclick="navigator.clipboard.writeText('${escapeHtml(
             pair.baseToken.address
-          )}')" style="background: rgba(0, 188, 242, 0.2); border: 1px solid rgba(0, 188, 242, 0.5); color: #00bcf2; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 11px; margin-left: 8px;">Copy</button>
+          )}')" style="background: rgba(0, 212, 255, 0.2); border: 1px solid var(--palette-border, rgba(0, 212, 255, 0.5)); color: var(--palette-primary, #00d4ff); padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 11px; margin-left: 8px;">Copy</button>
         </div>
         ${
           pair.volume?.h24
-            ? `<div style="font-size: 13px; color: #ffffff; margin-bottom: 4px;">24h Volume: $${formatNumber(
+            ? `<div style="font-size: 13px; color: var(--palette-text, #e0e0e0); margin-bottom: 4px;">24h Volume: $${formatNumber(
                 pair.volume.h24
               )}</div>`
             : ""
         }
         ${
           priceChange24h !== 0
-            ? `<div style="font-size: 13px; color: ${changeColor}; font-weight: bold;">24h Change: ${changePrefix}${priceChange24h.toFixed(
+            ? `<div style="font-size: 13px; color: ${changeColorVar}; font-weight: bold;">24h Change: ${changePrefix}${priceChange24h.toFixed(
                 2
               )}%</div>`
             : ""
         }
         ${
           pair.url
-            ? `<div style="margin-top: 8px;"><a href="${pair.url}" target="_blank" style="color: #00bcf2; text-decoration: underline; font-size: 13px;">View on DexScreener</a></div>`
+            ? `<div style="margin-top: 8px;"><a href="${pair.url}" target="_blank" style="color: var(--palette-primary, #00d4ff); text-decoration: underline; font-size: 13px;">View on DexScreener</a></div>`
             : ""
         }
       </div>
@@ -251,6 +363,10 @@ async function showAnalytics(
   }
 
   const pair = result.pairs[0];
+  if (!pair) {
+    context.log("No pair data found", "error");
+    return;
+  }
 
   const html = `
     <div style="background: linear-gradient(135deg, rgba(0, 188, 242, 0.15), rgba(255, 255, 255, 0.05)); border: 2px solid rgba(0, 188, 242, 0.4); border-radius: 16px; padding: 24px; margin: 10px 0; backdrop-filter: blur(20px); box-shadow: 0 4px 24px rgba(0, 188, 242, 0.2);">
@@ -369,17 +485,17 @@ export const geckoterminalCommand: Command = {
     const subcommand = args[1]?.toLowerCase();
 
     if (!subcommand) {
-      context.log("GeckoTerminal - DEX Analytics");
-      context.log("");
-      context.log("Available Commands:");
-      context.log("  cg search <query>     - Search for token pairs");
-      context.log("  cg networks           - List supported networks");
-      context.log("  cg dexes <network>    - List DEXes on a network");
-      context.log("");
-      context.log("Examples:");
-      context.log("  cg search USDC");
-      context.log("  cg networks");
-      context.log("  cg dexes eth");
+      context.log("GeckoTerminal - DEX Analytics", "info");
+      context.log("", "output");
+      context.log("Available Commands:", "info");
+      context.log("  cg search <query>     - Search for token pairs", "output");
+      context.log("  cg networks           - List supported networks", "output");
+      context.log("  cg dexes <network>    - List DEXes on a network", "output");
+      context.log("", "output");
+      context.log("Examples:", "info");
+      context.log("  cg search USDC", "output");
+      context.log("  cg networks", "output");
+      context.log("  cg dexes eth", "output");
       return;
     }
 
@@ -394,8 +510,8 @@ export const geckoterminalCommand: Command = {
         await cgDexes(context, args);
         break;
       default:
-        context.log(`Unknown subcommand: ${subcommand}`);
-        context.log('Use "cg" to see available commands');
+        context.log(`Unknown subcommand: ${subcommand}`, "error");
+        context.log('Use "cg" to see available commands', "info");
     }
   },
 };
@@ -410,18 +526,18 @@ async function cgSearch(
   const query = args.slice(2).join(" ");
 
   if (!query) {
-    context.log("Usage: cg search <query>");
-    context.log("Example: cg search USDC");
+    context.log("Usage: cg search <query>", "error");
+    context.log("Example: cg search USDC", "info");
     return;
   }
 
-  context.log(`Searching GeckoTerminal for: ${query}`);
-  context.log("");
+  context.log(`Searching GeckoTerminal for: ${query}`, "info");
+  context.log("", "output");
 
   const result = await geckoterminal.searchPairs(query);
 
   if (!result.success || result.pairs.length === 0) {
-    context.log(result.error || "No pairs found");
+    context.log(result.error || "No pairs found", "error");
     return;
   }
 
@@ -463,13 +579,13 @@ async function cgSearch(
  * List supported networks
  */
 async function cgNetworks(context: CommandContext): Promise<void> {
-  context.log("Fetching networks...");
-  context.log("");
+  context.log("Fetching networks...", "info");
+  context.log("", "output");
 
   const result = await geckoterminal.getNetworks();
 
   if (!result.success || result.networks.length === 0) {
-    context.log(result.error || "No networks found");
+    context.log(result.error || "No networks found", "error");
     return;
   }
 
@@ -511,18 +627,18 @@ async function cgDexes(context: CommandContext, args: string[]): Promise<void> {
   const network = args[2];
 
   if (!network) {
-    context.log("Usage: cg dexes <network>");
-    context.log("Example: cg dexes eth");
+    context.log("Usage: cg dexes <network>", "error");
+    context.log("Example: cg dexes eth", "info");
     return;
   }
 
-  context.log(`Fetching DEXes on ${network}...`);
-  context.log("");
+  context.log(`Fetching DEXes on ${network}...`, "info");
+  context.log("", "output");
 
   const result = await geckoterminal.getDexes(network);
 
   if (!result.success || result.dexes.length === 0) {
-    context.log(result.error || "No DEXes found");
+    context.log(result.error || "No DEXes found", "error");
     return;
   }
 

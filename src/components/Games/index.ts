@@ -22,10 +22,28 @@ export type { LeaderboardDisplayProps } from "./LeaderboardDisplay";
 export { SnakeGame } from "./SnakeGame";
 export type { SnakeGameProps } from "./SnakeGame";
 
-// Future game components can be exported here as they are implemented:
-// export { CookieClicker } from './CookieClicker';
-// export { PacManGame } from './PacManGame';
-// export { BrickBreaker } from './BrickBreaker';
-// export { PerfectCircle } from './PerfectCircle';
-// export { SpeedClicker } from './SpeedClicker';
-// export { NumberGuess } from './NumberGuess';
+export { NumberGuessingGame } from "./NumberGuessingGame";
+export type { NumberGuessingGameProps } from "./NumberGuessingGame";
+
+export { CookieClickerGame } from "./CookieClickerGame";
+export type { CookieClickerGameProps } from "./CookieClickerGame";
+
+export { SpeedClickerGame } from "./SpeedClickerGame";
+export type { SpeedClickerGameProps } from "./SpeedClickerGame";
+
+export { PacmanGame } from "./PacmanGame";
+export type { PacmanGameProps } from "./PacmanGame";
+
+export { BrickBreakerGame } from "./BrickBreakerGame";
+export type { BrickBreakerGameProps } from "./BrickBreakerGame";
+
+export { PerfectCircleGame } from "./PerfectCircleGame";
+export type { PerfectCircleGameProps } from "./PerfectCircleGame";
+
+export { BashidoGame } from "./BashidoGame";
+export type { BashidoGameProps } from "./BashidoGame";
+
+export { PGTanksGame } from "./PGTanksGame";
+export type { PGTanksGameProps } from "./PGTanksGame";
+
+export { GlobalGameModal } from "./GlobalGameModal";

@@ -24,6 +24,8 @@ export function useBluesPlayer() {
       window.dispatchEvent(new CustomEvent("omega:closeLoFiPlayer"));
       window.dispatchEvent(new CustomEvent("omega:closeTechPlayer"));
       window.dispatchEvent(new CustomEvent("omega:closeFunkyPlayer"));
+      window.dispatchEvent(new CustomEvent("omega:closeOmegaTrancePlayer"));
+      window.dispatchEvent(new CustomEvent("omega:closeOmegaMelodiesPlayer"));
       setPlayerState({ isPanelOpen: true });
     };
 
@@ -41,6 +43,8 @@ export function useBluesPlayer() {
     window.addEventListener("omega:openLoFiPlayer", handleOtherPlayerOpen);
     window.addEventListener("omega:openTechPlayer", handleOtherPlayerOpen);
     window.addEventListener("omega:openFunkyPlayer", handleOtherPlayerOpen);
+    window.addEventListener("omega:openOmegaTrancePlayer", handleOtherPlayerOpen);
+    window.addEventListener("omega:openOmegaMelodiesPlayer", handleOtherPlayerOpen);
 
     return () => {
       window.removeEventListener("omega:openBluesPlayer", handleOpen as EventListener);
@@ -48,6 +52,8 @@ export function useBluesPlayer() {
       window.removeEventListener("omega:openLoFiPlayer", handleOtherPlayerOpen);
       window.removeEventListener("omega:openTechPlayer", handleOtherPlayerOpen);
       window.removeEventListener("omega:openFunkyPlayer", handleOtherPlayerOpen);
+      window.removeEventListener("omega:openOmegaTrancePlayer", handleOtherPlayerOpen);
+      window.removeEventListener("omega:openOmegaMelodiesPlayer", handleOtherPlayerOpen);
     };
   }, []);
 

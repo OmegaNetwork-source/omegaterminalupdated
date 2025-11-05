@@ -1,0 +1,146 @@
+/**
+ * Speed Clicker Game Styles
+ */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding: 30px;
+  text-align: center;
+  min-height: 400px;
+  justify-content: center;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 500px;
+  margin-bottom: 20px;
+}
+
+.timeDisplay,
+.scoreDisplay,
+.bestScore {
+  font-size: 16px;
+  color: var(--palette-primary, #00bcf2);
+  font-weight: 600;
+  font-family: "Courier New", monospace;
+}
+
+.clickSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.clickButton {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  border: none;
+  background: linear-gradient(
+    135deg,
+    var(--palette-primary, #00bcf2),
+    var(--palette-secondary, #00ff88)
+  );
+  color: white;
+  font-size: 24px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.1s ease;
+  box-shadow: 0 8px 25px rgba(0, 212, 255, 0.3);
+  font-family: "Courier New", monospace;
+}
+
+.clickButton:hover:not(:disabled) {
+  transform: scale(1.05);
+  box-shadow: 0 12px 30px rgba(0, 212, 255, 0.5);
+}
+
+.clickButton:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+.clickButton.active {
+  animation: pulse 0.5s ease-in-out infinite;
+}
+
+.clickButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+.instructions {
+  color: var(--palette-text, #ffffff);
+  font-size: 14px;
+  font-family: "Courier New", monospace;
+}
+
+.gameOverSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.finalScore {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--palette-success, #16c782);
+  font-family: "Courier New", monospace;
+}
+
+.restartButton {
+  padding: 12px 24px;
+  background: color-mix(
+    in srgb,
+    var(--palette-primary, #00bcf2) 20%,
+    transparent
+  );
+  border: 1px solid var(--palette-border, rgba(0, 212, 255, 0.3));
+  border-radius: 8px;
+  color: var(--palette-text, #ffffff);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: "Courier New", monospace;
+  font-size: 14px;
+}
+
+.restartButton:hover {
+  background: color-mix(
+    in srgb,
+    var(--palette-primary, #00bcf2) 30%,
+    transparent
+  );
+  box-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .clickButton {
+    width: 150px;
+    height: 150px;
+    font-size: 18px;
+  }
+
+  .header {
+    flex-direction: column;
+    gap: 8px;
+  }
+}
+

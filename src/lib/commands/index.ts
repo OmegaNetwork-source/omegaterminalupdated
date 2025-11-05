@@ -15,6 +15,9 @@ import { bluesCommands } from "./blues";
 import { lofiCommands } from "./lofi";
 import { techCommands } from "./tech";
 import { funkyCommands } from "./funky";
+import { tranceCommands } from "./trance";
+import { melodiesCommands } from "./melodies";
+import { screensaverCommands } from "./screensaver";
 import { magicedenCommands } from "./magiceden";
 import { profileCommand } from "./profile";
 import { mixerCommands } from "./mixer";
@@ -46,6 +49,14 @@ import { fairCommands } from "./fair";
 import { airdropCommands } from "./airdrop";
 import { chatterCommands } from "./chatter";
 import { terminalBuilderCommands } from "./terminal-builder";
+import { marketsCommands } from "./markets";
+import { alphaForecastCommands } from "./alpha";
+import { portfolioCommands } from "./portfolio";
+import { socialCommands } from "./social";
+import { contextCommands } from "./context";
+import { formatCommands } from "./format";
+import { exportCommands } from "./export";
+import { whoamiCommands } from "./whoami";
 
 export interface CommandRegistrationResult {
   registeredGroups: string[];
@@ -74,6 +85,9 @@ const COMMAND_GROUPS: Array<{ label: string; commands: Command[] }> = [
   { label: "lofi", commands: lofiCommands },
   { label: "tech", commands: techCommands },
   { label: "funky", commands: funkyCommands },
+  { label: "trance", commands: tranceCommands },
+  { label: "melodies", commands: melodiesCommands },
+  { label: "screensaver", commands: screensaverCommands },
   { label: "magiceden", commands: magicedenCommands },
   { label: "profile", commands: [profileCommand] },
   { label: "mixer", commands: mixerCommands },
@@ -104,6 +118,14 @@ const COMMAND_GROUPS: Array<{ label: string; commands: Command[] }> = [
   { label: "airdrop", commands: airdropCommands },
   { label: "chatter", commands: chatterCommands },
   { label: "terminal-builder", commands: terminalBuilderCommands },
+  { label: "markets", commands: marketsCommands },
+  { label: "alpha-forecast", commands: alphaForecastCommands },
+  { label: "portfolio", commands: portfolioCommands },
+  { label: "social", commands: socialCommands },
+  { label: "context", commands: contextCommands },
+  { label: "format", commands: formatCommands },
+  { label: "export", commands: exportCommands },
+  { label: "whoami", commands: whoamiCommands },
 ];
 
 let registrationAttempted = false;
@@ -242,5 +264,13 @@ export {
   airdropCommands,
   chatterCommands,
   terminalBuilderCommands,
+  marketsCommands,
+  alphaForecastCommands,
+  portfolioCommands,
+  socialCommands,
+  contextCommands,
+  formatCommands,
+  exportCommands,
+  whoamiCommands,
 };
 export default commandRegistry;

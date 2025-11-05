@@ -106,16 +106,30 @@ export async function proxyChainGptJson(
   upstreamPath: string,
   transformText?: (text: string) => unknown
 ): Promise<NextResponse> {
-  const { key } = resolveApiKey(request);
+  const { key, source } = resolveApiKey(request);
 
   if (!key) {
+    // Log for debugging (only in development)
+    if (process.env.NODE_ENV !== "production") {
+      const serverKeys = collectServerKeys();
+      console.warn("[ChainGPT] No API key available:", {
+        serverKeysCount: serverKeys.length,
+        hasUserKey: !!request.headers.get("x-chaingpt-user-key"),
+      });
+    }
+    
     return NextResponse.json(
       {
         error:
-          "ChainGPT key is not configured. Provide your own key with 'chat init <api-key>'.",
+          "ChainGPT API key is required. Use 'chat init <api-key>' to configure your own key, or ensure server keys are configured in .env.local as CHAINGPT_API_KEY.",
+        code: "NO_API_KEY",
       },
       { status: 503 }
     );
+  }
+  
+  if (process.env.NODE_ENV !== "production") {
+    console.log(`[ChainGPT] Using API key from: ${source}`);
   }
 
   const requestPayload = await request.json();
@@ -158,7 +172,8 @@ export async function proxyChainGptStream(
     return NextResponse.json(
       {
         error:
-          "ChainGPT key is not configured. Provide your own key with 'chat init <api-key>'.",
+          "ChainGPT API key is required. Use 'chat init <api-key>' to configure your own key, or ensure server keys are configured.",
+        code: "NO_API_KEY",
       },
       { status: 503 }
     );

@@ -327,7 +327,7 @@ export function MultiNetworkConnectorHost(): JSX.Element | null {
       (window as typeof window & { ethereum?: any }).ethereum = ethereum;
 
       try {
-        log(`🌐 Connecting to ${network.name}...`, "info");
+        log(`Connecting to ${network.name}...`, "info");
 
         // Debug: Log the ethereum object before calling
         if (process.env.NODE_ENV !== "production") {
@@ -348,7 +348,7 @@ export function MultiNetworkConnectorHost(): JSX.Element | null {
         });
 
         if (!accounts || accounts.length === 0) {
-          log("❌ No accounts found. Please unlock MetaMask.", "error");
+          log("No accounts found. Please unlock MetaMask.", "error");
           setState((prev) => ({ ...prev, isProcessing: false }));
           return;
         }
@@ -358,7 +358,7 @@ export function MultiNetworkConnectorHost(): JSX.Element | null {
         });
 
         if (currentChainId.toLowerCase() !== network.chainId.toLowerCase()) {
-          log(`🔄 Switching to ${network.name}...`, "info");
+          log(`Switching to ${network.name}...`, "info");
           try {
             await ethereum.request({
               method: "wallet_switchEthereumChain",
@@ -366,7 +366,7 @@ export function MultiNetworkConnectorHost(): JSX.Element | null {
             });
           } catch (switchError: any) {
             if (switchError?.code === 4902) {
-              log(`➕ Adding ${network.name} to MetaMask...`, "info");
+              log(`Adding ${network.name} to MetaMask...`, "info");
               try {
                 await ethereum.request({
                   method: "wallet_addEthereumChain",
@@ -381,13 +381,13 @@ export function MultiNetworkConnectorHost(): JSX.Element | null {
                   ],
                 });
               } catch (addError: any) {
-                log(`❌ Failed to add network: ${addError.message}`, "error");
+                log(`Failed to add network: ${addError.message}`, "error");
                 setState((prev) => ({ ...prev, isProcessing: false }));
                 return;
               }
             } else {
               log(
-                `❌ Failed to switch network: ${
+                `Failed to switch network: ${
                   switchError?.message ?? switchError
                 }`,
                 "error"
@@ -411,10 +411,10 @@ export function MultiNetworkConnectorHost(): JSX.Element | null {
         });
 
         log("", "info");
-        log(`✅ Connected to ${network.name}!`, "success");
-        log(`📍 Network: ${network.name}`, "info");
-        log(`💰 Currency: ${network.currency.symbol}`, "info");
-        log(`👛 Address: ${formatAddress(address)}`, "info");
+        log(`Connected to ${network.name}!`, "success");
+        log(`Network: ${network.name}`, "info");
+        log(`Currency: ${network.currency.symbol}`, "info");
+        log(`Address: ${formatAddress(address)}`, "info");
         log("", "info");
 
         if (detail.sound?.playWalletConnectSound) {
@@ -425,14 +425,14 @@ export function MultiNetworkConnectorHost(): JSX.Element | null {
           const balance = await browserProvider.getBalance(address);
           const formatted = formatEther(balance);
           log(
-            `💰 ${network.name} Wallet Balance: ${Number(formatted).toFixed(
+            `${network.name} Wallet Balance: ${Number(formatted).toFixed(
               4
             )} ${network.currency.symbol}`,
             "success"
           );
         } catch (balanceError) {
           log(
-            `⚠️  Connected but could not fetch balance: ${String(
+            `Connected but could not fetch balance: ${String(
               balanceError
             )}`,
             "warning"
@@ -441,7 +441,7 @@ export function MultiNetworkConnectorHost(): JSX.Element | null {
 
         closeModal();
       } catch (error: any) {
-        log(`❌ Connection failed: ${error?.message ?? error}`, "error");
+        log(`Connection failed: ${error?.message ?? error}`, "error");
         setState((prev) => ({ ...prev, isProcessing: false }));
 
         // Close modal on error after a brief delay to show error message
@@ -469,7 +469,7 @@ export function MultiNetworkConnectorHost(): JSX.Element | null {
       }
 
       log(
-        "❌ Phantom wallet support is not yet available in this build.",
+        "Phantom wallet support is not yet available in this build.",
         "error"
       );
       setState((prev) => ({ ...prev, isProcessing: false }));

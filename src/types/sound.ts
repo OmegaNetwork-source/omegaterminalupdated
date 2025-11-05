@@ -17,7 +17,8 @@ export type SoundName =
   | "basic-view"
   | "clear-terminal"
   | "modern-ui-theme"
-  | "help-command";
+  | "help-command"
+  | "faucet";
 
 /**
  * Configuration for a single sound effect.
@@ -97,4 +98,5 @@ export interface SoundEffectsContextValue {
   playClearTerminalSound: (options?: SoundPlayOptions) => Promise<void>;
   playModernUIThemeSound: (options?: SoundPlayOptions) => Promise<void>;
   playHelpCommandSound: (options?: SoundPlayOptions) => Promise<void>;
+  playFaucetSound: (options?: SoundPlayOptions) => Promise<void>;
 }

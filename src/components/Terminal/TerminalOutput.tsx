@@ -13,6 +13,7 @@
 import { useRef, useEffect, useState } from "react";
 import { TERMINAL_PROMPT } from "@/lib/constants";
 import type { TerminalOutputProps } from "@/types/terminal";
+import { MobileInlinePanel } from "@/components/Mobile/MobileInlinePanel";
 import styles from "./TerminalOutput.module.css";
 
 export function TerminalOutput({ lines, isScrolling }: TerminalOutputProps) {
@@ -45,6 +46,21 @@ export function TerminalOutput({ lines, isScrolling }: TerminalOutputProps) {
   const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
     const target = e.target as HTMLElement;
 
+    // Handle help command clicks (click on command name to add to input)
+      const helpCommandElement = target.closest(".omega-help-command") as HTMLElement | null;
+      if (helpCommandElement) {
+        const command = helpCommandElement.getAttribute("data-command");
+        if (command && typeof window !== "undefined" && (window as any).__omegaSetTerminalInput) {
+          (window as any).__omegaSetTerminalInput(command);
+          // Add visual feedback
+          helpCommandElement.style.transform = "scale(0.95)";
+          setTimeout(() => {
+            helpCommandElement.style.transform = "";
+          }, 150);
+        }
+      return;
+    }
+
     // Handle copy button clicks
     if (target.tagName === "BUTTON" && target.hasAttribute("data-clipboard")) {
       const text = target.getAttribute("data-clipboard");
@@ -76,6 +92,9 @@ export function TerminalOutput({ lines, isScrolling }: TerminalOutputProps) {
       onScroll={handleScroll}
       onClick={handleClick}
     >
+      {/* Mobile Inline Panels - Render within terminal output */}
+      <MobileInlinePanel />
+      
       {lines.map((line) => {
         if (line.type === "command") {
           return (

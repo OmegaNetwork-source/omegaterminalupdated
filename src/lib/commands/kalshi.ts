@@ -17,33 +17,104 @@ async function handleMarkets(
     return;
   }
 
-  ctx.log(`📊 Found ${markets.length} markets:`, "info");
-  ctx.log("", "output");
+  // Generate HTML output with theme-aware styling
+  let marketsHtml = `
+    <div style="
+      font-family: 'Courier New', monospace;
+      line-height: 1.6;
+      color: var(--palette-text, #e0e0e0);
+      padding: 12px;
+    ">
+      <div style="
+        font-size: 16px;
+        font-weight: bold;
+        color: var(--palette-primary, #00d4ff);
+        margin-bottom: 16px;
+        padding: 8px;
+        border-bottom: 2px solid var(--palette-border, rgba(0, 212, 255, 0.3));
+      ">
+        📊 Found ${markets.length} markets
+      </div>
+  `;
 
   markets.forEach((market: any, index: number) => {
     const yesPrice = market.yes_bid_dollars || "0.00";
     const noPrice = market.no_bid_dollars || "0.00";
     const volume = market.volume_24h || 0;
-    const status = market.status || "unknown";
+    const marketStatus = market.status || "unknown";
+    const statusColor = marketStatus === "open" 
+      ? "var(--palette-success, #16c782)" 
+      : "var(--palette-error, #ff4d4f)";
 
-    ctx.log(`${index + 1}. ${market.subtitle || market.title}`, "output");
-    ctx.log(`   Ticker: ${market.ticker}`, "output");
-    ctx.log(
-      `   Yes: $${yesPrice} | No: $${noPrice} | Volume: ${volume}`,
-      "output"
-    );
-    ctx.log(
-      `   Status: ${status} | Close: ${new Date(
-        market.close_time
-      ).toLocaleString()}`,
-      "output"
-    );
-    ctx.log("", "output");
+    marketsHtml += `
+      <div style="
+        background: linear-gradient(135deg, color-mix(in srgb, var(--palette-primary, #00bcf2) 5%, transparent) 0%, color-mix(in srgb, var(--palette-primary, #00bcf2) 2%, transparent) 100%);
+        border: 1px solid var(--palette-border, color-mix(in srgb, var(--palette-primary, #00bcf2) 20%, transparent));
+        border-radius: 8px;
+        padding: 12px;
+        margin-bottom: 12px;
+      ">
+        <div style="
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          margin-bottom: 8px;
+        ">
+          <span style="
+            color: var(--palette-primary, #00bcf2);
+            font-weight: bold;
+            font-size: 12px;
+            min-width: 24px;
+          ">${index + 1}.</span>
+          <div style="
+            color: var(--palette-text, #e0e0e0);
+            font-weight: 600;
+            flex: 1;
+            line-height: 1.4;
+          ">${market.subtitle || market.title}</div>
+        </div>
+        <div style="
+          margin-left: 32px;
+          font-size: 11px;
+          color: color-mix(in srgb, var(--palette-text, #ffffff) 65%, transparent);
+        ">
+          <div style="margin-bottom: 4px;">
+            <strong style="color: var(--palette-primary, #00bcf2);">Ticker:</strong> ${market.ticker}
+          </div>
+          <div style="
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 6px;
+          ">
+            <span>🟢 Yes: <strong style="color: var(--palette-success, #16c782);">$${yesPrice}</strong></span>
+            <span>🔴 No: <strong style="color: var(--palette-error, #ff4d4f);">$${noPrice}</strong></span>
+            <span>💰 Volume: <strong style="color: var(--palette-primary, #00bcf2);">${volume}</strong></span>
+            <span style="color: ${statusColor};">Status: ${marketStatus}</span>
+          </div>
+          <div style="margin-top: 6px; color: color-mix(in srgb, var(--palette-text, #ffffff) 55%, transparent);">
+            📅 Close: ${new Date(market.close_time).toLocaleString()}
+          </div>
+        </div>
+      </div>
+    `;
   });
 
   if (res.cursor) {
-    ctx.log(`📄 More results available. Use cursor: ${res.cursor}`, "info");
+    marketsHtml += `
+      <div style="
+        text-align: center;
+        color: var(--palette-primary, #00bcf2);
+        margin-top: 16px;
+        font-size: 12px;
+      ">
+        📄 More results available. Use cursor: ${res.cursor}
+      </div>
+    `;
   }
+
+  marketsHtml += `</div>`;
+  ctx.logHtml(marketsHtml);
 }
 
 async function handleMarket(
@@ -70,53 +141,153 @@ async function handleMarket(
     return;
   }
 
-  ctx.log(`📊 Market Details: ${market.subtitle || market.title}`, "info");
-  ctx.log("", "output");
-  ctx.log(`Ticker: ${market.ticker}`, "output");
-  ctx.log(`Event: ${market.event_ticker}`, "output");
-  ctx.log(`Type: ${market.market_type}`, "output");
-  ctx.log(`Status: ${market.status}`, "output");
-  ctx.log("", "output");
+  // Generate HTML output with theme-aware styling
+  const statusColor = market.status === "open" 
+    ? "var(--palette-success, #16c782)" 
+    : "var(--palette-error, #ff4d4f)";
 
-  ctx.log("💰 Current Prices:", "info");
-  ctx.log(
-    `Yes Bid: $${market.yes_bid_dollars || "0.00"} | Yes Ask: $${
-      market.yes_ask_dollars || "0.00"
-    }`,
-    "output"
-  );
-  ctx.log(
-    `No Bid: $${market.no_bid_dollars || "0.00"} | No Ask: $${
-      market.no_ask_dollars || "0.00"
-    }`,
-    "output"
-  );
-  ctx.log(`Last Price: $${market.last_price_dollars || "0.00"}`, "output");
-  ctx.log("", "output");
+  let marketHtml = `
+    <div style="
+      font-family: 'Courier New', monospace;
+      line-height: 1.6;
+      color: var(--palette-text, #e0e0e0);
+      padding: 12px;
+    ">
+      <div style="
+        font-size: 16px;
+        font-weight: bold;
+        color: var(--palette-primary, #00d4ff);
+        margin-bottom: 16px;
+        padding: 8px;
+        border-bottom: 2px solid var(--palette-border, rgba(0, 212, 255, 0.3));
+      ">
+        📊 Market Details: ${market.subtitle || market.title}
+      </div>
+      <div style="
+        background: linear-gradient(135deg, color-mix(in srgb, var(--palette-primary, #00bcf2) 5%, transparent) 0%, color-mix(in srgb, var(--palette-primary, #00bcf2) 2%, transparent) 100%);
+        border: 1px solid var(--palette-border, color-mix(in srgb, var(--palette-primary, #00bcf2) 20%, transparent));
+        border-radius: 8px;
+        padding: 16px;
+        margin-bottom: 12px;
+      ">
+        <div style="margin-bottom: 12px;">
+          <div style="color: var(--palette-primary, #00bcf2); font-weight: 600; margin-bottom: 4px;">Ticker:</div>
+          <div style="color: var(--palette-text, #e0e0e0);">${market.ticker}</div>
+        </div>
+        <div style="margin-bottom: 12px;">
+          <div style="color: var(--palette-primary, #00bcf2); font-weight: 600; margin-bottom: 4px;">Event:</div>
+          <div style="color: var(--palette-text, #e0e0e0);">${market.event_ticker}</div>
+        </div>
+        <div style="margin-bottom: 12px;">
+          <div style="color: var(--palette-primary, #00bcf2); font-weight: 600; margin-bottom: 4px;">Type:</div>
+          <div style="color: var(--palette-text, #e0e0e0);">${market.market_type}</div>
+        </div>
+        <div>
+          <div style="color: var(--palette-primary, #00bcf2); font-weight: 600; margin-bottom: 4px;">Status:</div>
+          <div style="color: ${statusColor}; font-weight: 600;">${market.status}</div>
+        </div>
+      </div>
+      <div style="
+        background: linear-gradient(135deg, color-mix(in srgb, var(--palette-primary, #00bcf2) 5%, transparent) 0%, color-mix(in srgb, var(--palette-primary, #00bcf2) 2%, transparent) 100%);
+        border: 1px solid var(--palette-border, color-mix(in srgb, var(--palette-primary, #00bcf2) 20%, transparent));
+        border-radius: 8px;
+        padding: 16px;
+        margin-bottom: 12px;
+      ">
+        <div style="color: var(--palette-primary, #00bcf2); font-weight: 600; margin-bottom: 12px; font-size: 14px;">💰 Current Prices</div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; font-size: 12px;">
+          <div>
+            <div style="color: color-mix(in srgb, var(--palette-text, #ffffff) 70%, transparent); margin-bottom: 4px;">Yes Bid:</div>
+            <div style="color: var(--palette-success, #16c782); font-weight: 600;">$${market.yes_bid_dollars || "0.00"}</div>
+          </div>
+          <div>
+            <div style="color: color-mix(in srgb, var(--palette-text, #ffffff) 70%, transparent); margin-bottom: 4px;">Yes Ask:</div>
+            <div style="color: var(--palette-success, #16c782); font-weight: 600;">$${market.yes_ask_dollars || "0.00"}</div>
+          </div>
+          <div>
+            <div style="color: color-mix(in srgb, var(--palette-text, #ffffff) 70%, transparent); margin-bottom: 4px;">No Bid:</div>
+            <div style="color: var(--palette-error, #ff4d4f); font-weight: 600;">$${market.no_bid_dollars || "0.00"}</div>
+          </div>
+          <div>
+            <div style="color: color-mix(in srgb, var(--palette-text, #ffffff) 70%, transparent); margin-bottom: 4px;">No Ask:</div>
+            <div style="color: var(--palette-error, #ff4d4f); font-weight: 600;">$${market.no_ask_dollars || "0.00"}</div>
+          </div>
+        </div>
+        <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--palette-border, rgba(0, 212, 255, 0.2));">
+          <div style="color: color-mix(in srgb, var(--palette-text, #ffffff) 70%, transparent); margin-bottom: 4px; font-size: 12px;">Last Price:</div>
+          <div style="color: var(--palette-primary, #00bcf2); font-weight: 600;">$${market.last_price_dollars || "0.00"}</div>
+        </div>
+      </div>
+      <div style="
+        background: linear-gradient(135deg, color-mix(in srgb, var(--palette-primary, #00bcf2) 5%, transparent) 0%, color-mix(in srgb, var(--palette-primary, #00bcf2) 2%, transparent) 100%);
+        border: 1px solid var(--palette-border, color-mix(in srgb, var(--palette-primary, #00bcf2) 20%, transparent));
+        border-radius: 8px;
+        padding: 16px;
+        margin-bottom: 12px;
+      ">
+        <div style="color: var(--palette-primary, #00bcf2); font-weight: 600; margin-bottom: 12px; font-size: 14px;">📈 Market Stats</div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; font-size: 12px;">
+          <div>
+            <div style="color: color-mix(in srgb, var(--palette-text, #ffffff) 70%, transparent); margin-bottom: 4px;">Volume (24h):</div>
+            <div style="color: var(--palette-text, #e0e0e0); font-weight: 600;">${market.volume_24h || 0}</div>
+          </div>
+          <div>
+            <div style="color: color-mix(in srgb, var(--palette-text, #ffffff) 70%, transparent); margin-bottom: 4px;">Total Volume:</div>
+            <div style="color: var(--palette-text, #e0e0e0); font-weight: 600;">${market.volume || 0}</div>
+          </div>
+          <div>
+            <div style="color: color-mix(in srgb, var(--palette-text, #ffffff) 70%, transparent); margin-bottom: 4px;">Open Interest:</div>
+            <div style="color: var(--palette-text, #e0e0e0); font-weight: 600;">${market.open_interest || 0}</div>
+          </div>
+          <div>
+            <div style="color: color-mix(in srgb, var(--palette-text, #ffffff) 70%, transparent); margin-bottom: 4px;">Liquidity:</div>
+            <div style="color: var(--palette-primary, #00bcf2); font-weight: 600;">$${market.liquidity_dollars || "0.00"}</div>
+          </div>
+        </div>
+      </div>
+      <div style="
+        background: linear-gradient(135deg, color-mix(in srgb, var(--palette-primary, #00bcf2) 5%, transparent) 0%, color-mix(in srgb, var(--palette-primary, #00bcf2) 2%, transparent) 100%);
+        border: 1px solid var(--palette-border, color-mix(in srgb, var(--palette-primary, #00bcf2) 20%, transparent));
+        border-radius: 8px;
+        padding: 16px;
+        margin-bottom: 12px;
+      ">
+        <div style="color: var(--palette-primary, #00bcf2); font-weight: 600; margin-bottom: 12px; font-size: 14px;">⏰ Schedule</div>
+        <div style="font-size: 12px;">
+          <div style="margin-bottom: 8px;">
+            <div style="color: color-mix(in srgb, var(--palette-text, #ffffff) 70%, transparent); margin-bottom: 4px;">Open:</div>
+            <div style="color: var(--palette-text, #e0e0e0);">${new Date(market.open_time).toLocaleString()}</div>
+          </div>
+          <div style="margin-bottom: 8px;">
+            <div style="color: color-mix(in srgb, var(--palette-text, #ffffff) 70%, transparent); margin-bottom: 4px;">Close:</div>
+            <div style="color: var(--palette-text, #e0e0e0);">${new Date(market.close_time).toLocaleString()}</div>
+          </div>
+          ${market.expiration_time ? `
+          <div>
+            <div style="color: color-mix(in srgb, var(--palette-text, #ffffff) 70%, transparent); margin-bottom: 4px;">Expiration:</div>
+            <div style="color: var(--palette-text, #e0e0e0);">${new Date(market.expiration_time).toLocaleString()}</div>
+          </div>
+          ` : ''}
+        </div>
+      </div>
+      <div style="
+        margin-top: 20px;
+        padding: 12px;
+        border: 1px solid var(--palette-border, rgba(0, 212, 255, 0.3));
+        border-radius: 4px;
+        text-align: center;
+      ">
+        <div style="
+          color: var(--palette-primary, #00d4ff);
+          font-size: 11px;
+        ">
+          💡 Tip: Use "kalshi orderbook ${ticker}" to see the full orderbook
+        </div>
+      </div>
+    </div>
+  `;
 
-  ctx.log("📈 Market Stats:", "info");
-  ctx.log(`Volume (24h): ${market.volume_24h || 0}`, "output");
-  ctx.log(`Total Volume: ${market.volume || 0}`, "output");
-  ctx.log(`Open Interest: ${market.open_interest || 0}`, "output");
-  ctx.log(`Liquidity: $${market.liquidity_dollars || "0.00"}`, "output");
-  ctx.log("", "output");
-
-  ctx.log("⏰ Schedule:", "info");
-  ctx.log(`Open: ${new Date(market.open_time).toLocaleString()}`, "output");
-  ctx.log(`Close: ${new Date(market.close_time).toLocaleString()}`, "output");
-
-  if (market.expiration_time) {
-    ctx.log(
-      `Expiration: ${new Date(market.expiration_time).toLocaleString()}`,
-      "output"
-    );
-  }
-
-  ctx.log("", "output");
-  ctx.log(
-    '💡 Tip: Use "kalshi orderbook ' + ticker + '" to see the full orderbook',
-    "info"
-  );
+  ctx.logHtml(marketHtml);
 }
 
 async function handleOrderbook(
@@ -324,35 +495,207 @@ async function handleSeries(
 }
 
 function handleHelp(ctx: CommandContext): void {
-  ctx.log("🎯 KALSHI PREDICTION MARKETS", "info");
-  ctx.log("", "output");
-  ctx.log("📊 Market Commands:", "info");
-  ctx.log(
-    "  kalshi markets [limit] [status] - List markets (e.g., 'kalshi markets 10 open')",
-    "output"
-  );
-  ctx.log(
-    "  kalshi market <ticker>          - Get details (e.g., 'kalshi market KXNFL-25OCT28-BARB')",
-    "output"
-  );
-  ctx.log("  kalshi orderbook <ticker>       - View orderbook depth", "output");
-  ctx.log("  kalshi trades [ticker] [limit]  - Recent trades", "output");
-  ctx.log("", "output");
-  ctx.log("📅 Event Commands:", "info");
-  ctx.log("  kalshi events [status] [limit]  - List events", "output");
-  ctx.log("  kalshi event <ticker>           - Get event details", "output");
-  ctx.log("", "output");
-  ctx.log("📚 Series Commands:", "info");
-  ctx.log(
-    "  kalshi series <ticker>          - Get series information",
-    "output"
-  );
-  ctx.log("", "output");
-  ctx.log("💡 Examples:", "info");
-  ctx.log("  kalshi markets 20 open", "output");
-  ctx.log("  kalshi market KXNFLMENTION-25OCT28-BARB", "output");
-  ctx.log("  kalshi trades KXNFLMENTION-25OCT28-BARB 25", "output");
-  ctx.log("", "output");
+  const helpLines: string[] = [
+    "kalshi",
+    "",
+    "Kalshi prediction markets",
+    "",
+    "→ Usage: kalshi <markets|market|orderbook|trades|events|event|series|help> [params]",
+    "",
+    "═ Market Commands ═",
+    "",
+    "kalshi markets",
+    "",
+    "List markets with optional limit and status",
+    "",
+    "→ Usage: kalshi markets [limit] [status]",
+    "",
+    "kalshi market",
+    "",
+    "Get market details for specific ticker",
+    "",
+    "→ Usage: kalshi market <ticker>",
+    "",
+    "kalshi orderbook",
+    "",
+    "View orderbook depth for market",
+    "",
+    "→ Usage: kalshi orderbook <ticker> [depth]",
+    "",
+    "kalshi trades",
+    "",
+    "Recent trades for market",
+    "",
+    "→ Usage: kalshi trades [ticker] [limit]",
+    "",
+    "═ Event Commands ═",
+    "",
+    "kalshi events",
+    "",
+    "List events with optional status and limit",
+    "",
+    "→ Usage: kalshi events [status] [limit]",
+    "",
+    "kalshi event",
+    "",
+    "Get event details",
+    "",
+    "→ Usage: kalshi event <ticker>",
+    "",
+    "═ Series Commands ═",
+    "",
+    "kalshi series",
+    "",
+    "Get series information",
+    "",
+    "→ Usage: kalshi series <ticker>",
+    "",
+    "💡 Tip",
+    "",
+  ];
+
+  // Generate HTML output with uniform styling
+  let helpHtml = `
+    <div style="
+      font-family: 'Courier New', monospace;
+      line-height: 1.6;
+      color: var(--palette-text, #e0e0e0);
+      padding: 12px;
+    ">
+      <div style="
+        font-size: 18px;
+        font-weight: bold;
+        color: var(--palette-primary, #00d4ff);
+        margin-bottom: 20px;
+        text-align: center;
+        padding: 8px;
+        border: 1px solid var(--palette-border, rgba(0, 212, 255, 0.3));
+        border-radius: 4px;
+      ">
+        ═══ KALSHI PREDICTION MARKETS ═══
+      </div>
+  `;
+
+  helpLines.forEach((line) => {
+    if (line.trim() === "") {
+      helpHtml += `<div style="margin: 4px 0;"></div>`;
+    } else if (line.startsWith("═ ")) {
+      helpHtml += `
+        <div style="
+          font-size: 14px;
+          font-weight: bold;
+          color: var(--palette-primary, #00d4ff);
+          margin: 16px 0 8px 0;
+          padding: 4px 0;
+        ">
+          ${line}
+        </div>
+      `;
+    } else if (line.startsWith("→ Usage:")) {
+      helpHtml += `
+        <div style="
+          color: var(--palette-secondary, #00ff88);
+          margin-left: 20px;
+          margin-top: 2px;
+          font-size: 0.9em;
+        ">
+          ${line}
+        </div>
+      `;
+    } else if (line === "💡 Tip") {
+      helpHtml += `
+        <div style="
+          margin-top: 24px;
+          padding: 12px;
+          border: 1px solid var(--palette-border, rgba(0, 212, 255, 0.3));
+          border-radius: 4px;
+          text-align: center;
+        ">
+          <div style="
+            color: var(--palette-primary, #00d4ff);
+            font-weight: bold;
+            margin-bottom: 8px;
+          ">
+            ${line}
+          </div>
+          <div style="
+            color: var(--palette-text, #e0e0e0);
+            font-size: 0.9em;
+          ">
+            Examples: kalshi markets 20 open | kalshi market KXNFLMENTION-25OCT28-BARB
+          </div>
+        </div>
+      `;
+    } else {
+      // Check if line is a command (handles both "markets" and "kalshi markets" formats)
+      const isFullCommand = line.startsWith("kalshi ") && line.length < 50;
+      const isSubcommand = line.length > 0 && 
+        line.trim().length < 50 &&
+        !line.includes(" ") && 
+        line === line.toLowerCase() &&
+        !line.startsWith("List") &&
+        !line.startsWith("Get") &&
+        !line.startsWith("View") &&
+        !line.startsWith("Recent") &&
+        line.match(/^[a-z0-9-]+$/);
+
+      if (isFullCommand || isSubcommand) {
+        // Extract command part (remove <ticker> or other parameters)
+        let commandText = line;
+        if (isFullCommand) {
+          // Already has "kalshi " prefix, remove parameter placeholders
+          commandText = line.replace(/ <[^>]+>/g, "").replace(/ \[[^\]]+\]/g, "").trim();
+        } else if (isSubcommand) {
+          // Add "kalshi " prefix
+          commandText = `kalshi ${line}`;
+        }
+        
+        const escapedCommand = commandText.replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+        const displayText = isFullCommand 
+          ? line.replace(/ <[^>]+>/g, "").replace(/ \[[^\]]+\]/g, "") 
+          : line;
+        
+        helpHtml += `
+          <div 
+            class="omega-help-command" 
+            data-command="${escapedCommand}"
+            style="
+              color: var(--palette-secondary, #00ff88);
+              font-weight: bold;
+              margin-left: 0;
+              margin-top: 8px;
+              font-family: 'Courier New', monospace;
+              cursor: pointer;
+              display: inline-block;
+              padding: 2px 4px;
+              border-radius: 3px;
+              transition: all 0.2s ease;
+              user-select: none;
+            "
+            onmouseover="this.style.background = 'color-mix(in srgb, var(--palette-secondary, #00ff88) 15%, transparent)'; this.style.textShadow = '0 0 8px var(--palette-secondary-glow, rgba(0, 255, 136, 0.5))';"
+            onmouseout="this.style.background = 'transparent'; this.style.textShadow = 'none';"
+            title="Click to add '${escapedCommand}' to terminal input"
+          >
+            ${displayText}
+          </div>
+        `;
+      } else {
+        helpHtml += `
+          <div style="
+            color: var(--palette-text, #e0e0e0);
+            margin-left: 0;
+            margin-top: 2px;
+            line-height: 1.4;
+          ">
+            ${line}
+          </div>
+        `;
+      }
+    }
+  });
+
+  helpHtml += `</div>`;
+  ctx.logHtml(helpHtml);
 }
 
 async function handler(ctx: CommandContext, args: string[]): Promise<void> {

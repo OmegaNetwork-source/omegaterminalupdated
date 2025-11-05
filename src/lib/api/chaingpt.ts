@@ -29,8 +29,14 @@ const NFT_ENDPOINT = `${API_BASE}/nft`;
 let capabilitiesCache: ChainGPTCapabilities | null = null;
 let capabilitiesPromise: Promise<ChainGPTCapabilities> | null = null;
 
+// Auto-fetch capabilities on load to detect server keys
 if (typeof window !== "undefined" && config.CHAINGPT.AUTO_INITIALIZE) {
-  void fetchCapabilities().catch(() => {
+  void fetchCapabilities().then((caps) => {
+    // Auto-initialize if server has keys available (no user key needed)
+    if (caps.hasServerKey && !getUserApiKey()) {
+      setInitializedFlag();
+    }
+  }).catch(() => {
     // Silent failure – capabilities can be retried on demand.
   });
 }
@@ -124,19 +130,20 @@ function hasServerKey(): boolean {
 }
 
 export function isInitialized(): boolean {
+  // Check if user has a custom API key
   if (getUserApiKey()) {
     return true;
   }
-
-  if (capabilitiesCache) {
-    return hasServerKey();
+  
+  // Check if server has API keys available (auto-initialize)
+  if (capabilitiesCache?.hasServerKey) {
+    return true;
   }
-
-  if (typeof window !== "undefined") {
-    return window.localStorage.getItem(CHAINGPT_INIT_KEY) === "true";
-  }
-
-  return false;
+  
+  // Always return true - commands should work immediately
+  // Server-side API keys will be used automatically if available
+  // If no keys available, error will be shown on API call
+  return true;
 }
 
 interface InitializationResult {
@@ -213,13 +220,28 @@ async function throwApiError(response: Response): Promise<never> {
   try {
     if (contentType.includes("application/json")) {
       const data = await response.json();
+      // Check for error field first
       if (typeof data?.error === "string" && data.error.trim().length > 0) {
         message = data.error;
-      } else if (
+      } 
+      // Check for message field, but ignore generic success messages that might be errors
+      else if (
         typeof data?.message === "string" &&
         data.message.trim().length > 0
       ) {
-        message = data.message;
+        // If message is "Request Successful" but status is not 2xx, it's misleading
+        if (data.message.toLowerCase().includes("successful") && !response.ok) {
+          message = `API returned error status ${response.status} despite success message`;
+        } else {
+          message = data.message;
+        }
+      }
+      // Check for code field (e.g., NO_API_KEY)
+      else if (data?.code && typeof data.code === "string") {
+        message = data.code;
+        if (data.error) {
+          message = `${data.code}: ${data.error}`;
+        }
       }
     } else {
       const text = await response.text();

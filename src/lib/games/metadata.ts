@@ -17,6 +17,34 @@ import { GameMetadata, GameType } from "@/types/games";
  * Includes both local games (localStorage leaderboards) and arcade games (on-chain leaderboards)
  */
 export const GAMES_METADATA: GameMetadata[] = [
+  // Working Games - Available Now
+  
+  // Action Games - Fast-paced combat
+  {
+    id: "bashido",
+    name: "Bashido",
+    type: GameType.BASHIDO,
+    category: "action",
+    description: "Terminal command mastery game - Type commands with speed and precision",
+    command: "play bashido",
+    aliases: ["bashido", "bash", "typing", "terminal"],
+    icon: "⚔️",
+    difficulty: "medium",
+    hasOnChainLeaderboard: false,
+  },
+  {
+    id: "pg-tanks",
+    name: "PG Tanks (Ravaged Planet)",
+    type: GameType.PG_TANKS,
+    category: "action",
+    description: "Scorched Earth-style artillery game - Destroy enemy tanks with precision shots",
+    command: "play tanks",
+    aliases: ["tanks", "tank", "pg", "ravaged", "ravaged-planet"],
+    icon: "🎯",
+    difficulty: "hard",
+    hasOnChainLeaderboard: false,
+  },
+  
   // Casual Games - Easy, relaxed gameplay
   {
     id: "number-guess",

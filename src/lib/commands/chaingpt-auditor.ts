@@ -132,15 +132,7 @@ async function handleAudit(
   context: CommandContext,
   args: string[]
 ): Promise<void> {
-  // Check initialization
-  if (!chaingpt.isInitialized()) {
-    context.log("❌ ChainGPT not initialized", "error");
-    context.log("", "output");
-    context.log("💡 Initialize first:", "info");
-    context.log("   auditor init              (use default key)", "output");
-    context.log("   auditor init <api-key>    (use your own key)", "output");
-    return;
-  }
+  // No init required - API will use server keys automatically if available
 
   // Get contract code - skip 'auditor' and 'audit' if present
   let codeParts = args.slice(1);
@@ -268,15 +260,16 @@ async function handleAudit(
       }
     }
 
-    // Display audit report with styled HTML card
+    // Display audit report with styled HTML card (theme-compatible)
     const html = `
       <div style="
-        background: linear-gradient(135deg, rgba(255, 59, 48, 0.1), rgba(255, 149, 0, 0.1));
-        border: 1px solid rgba(255, 59, 48, 0.3);
+        background: linear-gradient(135deg, color-mix(in srgb, var(--palette-error, #ff4757) 15%, transparent), color-mix(in srgb, var(--palette-warning, #ffa502) 10%, transparent));
+        border: 1px solid color-mix(in srgb, var(--palette-error, #ff4757) 30%, transparent);
         border-radius: 12px;
         padding: 20px;
         margin: 10px 0;
         max-width: 100%;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
       ">
         <div style="
           display: flex;
@@ -296,34 +289,38 @@ async function handleAudit(
             <div style="
               font-size: 18px;
               font-weight: 600;
-              color: #ff3b30;
+              color: var(--palette-error, #ff4757);
+              text-shadow: 0 0 8px color-mix(in srgb, var(--palette-error, #ff4757) 40%, transparent);
             ">Security Audit Report</div>
           </div>
           <button
             onclick="navigator.clipboard.writeText(this.getAttribute('data-report')); this.textContent='✅ Copied!'; setTimeout(() => this.textContent='📋 Copy', 2000)"
             data-report="${escapeHtml(auditReport)}"
             style="
-              background: rgba(255, 59, 48, 0.2);
-              border: 1px solid rgba(255, 59, 48, 0.4);
+              background: color-mix(in srgb, var(--palette-error, #ff4757) 20%, transparent);
+              border: 1px solid color-mix(in srgb, var(--palette-error, #ff4757) 40%, transparent);
               border-radius: 6px;
               padding: 8px 16px;
-              color: #ff3b30;
+              color: var(--palette-error, #ff4757);
               cursor: pointer;
               font-size: 12px;
               font-weight: 600;
+              transition: all 0.2s ease;
             "
+            onmouseover="this.style.background='color-mix(in srgb, var(--palette-error, #ff4757) 30%, transparent)'; this.style.borderColor='var(--palette-error, #ff4757)';"
+            onmouseout="this.style.background='color-mix(in srgb, var(--palette-error, #ff4757) 20%, transparent)'; this.style.borderColor='color-mix(in srgb, var(--palette-error, #ff4757) 40%, transparent)';"
           >📋 Copy</button>
         </div>
         <div style="
-          background: rgba(0, 0, 0, 0.3);
-          border: 1px solid rgba(255, 59, 48, 0.2);
+          background: color-mix(in srgb, var(--palette-surface, rgba(21, 21, 32, 1)) 80%, transparent);
+          border: 1px solid color-mix(in srgb, var(--palette-error, #ff4757) 20%, transparent);
           border-radius: 8px;
           padding: 16px;
           max-height: 500px;
           overflow-y: auto;
         ">
           <pre style="
-            color: #ffffff;
+            color: var(--palette-text, #e0e0e0);
             font-family: 'Courier New', monospace;
             font-size: 13px;
             line-height: 1.6;
@@ -335,19 +332,24 @@ async function handleAudit(
         <div style="
           margin-top: 16px;
           padding-top: 16px;
-          border-top: 1px solid rgba(255, 59, 48, 0.2);
+          border-top: 1px solid color-mix(in srgb, var(--palette-border, rgba(255, 71, 87, 0.3)) 50%, transparent);
           font-size: 12px;
-          color: #888888;
+          color: color-mix(in srgb, var(--palette-text, #ffffff) 65%, transparent);
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          flex-wrap: wrap;
         ">
-          <span style="color: #ff3b30;">💳</span> Credits used: varies (audit complexity)
+          <span style="color: var(--palette-error, #ff4757);">💳</span>
+          <span>Credits used: <strong style="color: var(--palette-secondary, #00ff88);">varies</strong> (audit complexity)</span>
           ${
             options.auditLevel
-              ? `<br><span style="color: #ff3b30;">📊</span> Audit level: ${options.auditLevel}`
+              ? `<span style="margin-left: 12px;"><span style="color: var(--palette-error, #ff4757);">📊</span> Audit level: <strong style="color: var(--palette-text, #e0e0e0);">${options.auditLevel}</strong></span>`
               : ""
           }
           ${
             options.includeGasAnalysis
-              ? `<br><span style="color: #ff9500;">⛽</span> Gas analysis: included`
+              ? `<span style="margin-left: 12px;"><span style="color: var(--palette-warning, #ffa502);">⛽</span> Gas analysis: <strong style="color: var(--palette-text, #e0e0e0);">included</strong></span>`
               : ""
           }
         </div>
@@ -359,12 +361,31 @@ async function handleAudit(
     context.log("", "output");
     context.log("✅ Audit complete!", "success");
   } catch (error: any) {
-    context.log(`❌ Error: ${error.message}`, "error");
-    context.log("", "output");
-    context.log("💡 Troubleshooting:", "info");
-    context.log("   • Check your API key: auditor test", "output");
-    context.log("   • Verify contract code syntax", "output");
-    context.log("   • Get help: auditor help", "output");
+    const errorMsg = error.message || String(error);
+    const errorStr = errorMsg.toLowerCase();
+    
+    // Check if it's an API key/configuration error
+    if (errorStr.includes("key") || errorStr.includes("api") || 
+        errorStr.includes("401") || errorStr.includes("403") ||
+        errorStr.includes("not configured") || errorStr.includes("503")) {
+      context.log(`❌ API Configuration Error`, "error");
+      context.log("", "output");
+      context.log("💡 ChainGPT Smart Contract Auditor requires an API key:", "info");
+      context.log("", "output");
+      context.log("Option 1: Use your own API key (recommended):", "output");
+      context.log("   auditor init <your-api-key>", "info");
+      context.log("   Get one at: https://api.chaingpt.org", "output");
+      context.log("", "output");
+      context.log("Option 2: Server keys may be configured by admin", "output");
+      context.log("   Contact the administrator if server keys are expected", "info");
+    } else {
+      context.log(`❌ Error: ${errorMsg}`, "error");
+      context.log("", "output");
+      context.log("💡 Troubleshooting:", "info");
+      context.log("   • Verify contract code syntax", "output");
+      context.log("   • Check API connection: auditor test", "output");
+      context.log("   • Get help: auditor help", "output");
+    }
   }
 }
 
@@ -467,96 +488,164 @@ async function handleTest(
  * Handle auditor help
  */
 function handleHelp(context: CommandContext, args: string[]): void {
-  context.log("", "output");
-  context.log("🔍 CHAINGPT AI SMART CONTRACT AUDITOR", "info");
-  context.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━", "output");
-  context.log("", "output");
+  const helpLines = [
+    "═ CHAINGPT AI SMART CONTRACT AUDITOR ═",
+    "",
+    "auditor init",
+    "Initialize with default API key",
+    "",
+    "auditor init <api-key>",
+    "Initialize with your API key",
+    "",
+    "auditor audit <code>",
+    "Audit smart contract",
+    "",
+    "auditor severity",
+    "Show severity levels",
+    "",
+    "auditor categories",
+    "Show security categories",
+    "",
+    "auditor test",
+    "Test API connection",
+    "",
+    "auditor help",
+    "Show this help message",
+    "",
+    "→ Options:",
+    "",
+    "--type <type>",
+    "Contract type (token, nft, etc.)",
+    "",
+    "--chain <chain>",
+    "Target blockchain",
+    "",
+    "--level <level>",
+    "Audit level (basic, standard, comprehensive)",
+    "",
+    "--focus <areas>",
+    "Focus areas (comma-separated)",
+    "",
+    "--no-gas",
+    "Skip gas optimization analysis",
+    "",
+    "→ Examples:",
+    "",
+    'auditor audit "contract Token { ... }"',
+    'auditor audit --type token --chain ethereum "contract { ... }"',
+    'auditor audit --focus reentrancy,access_control "contract { ... }"',
+    "",
+    "→ Credits:",
+    "",
+    "Basic audit: ~2 credits",
+    "Comprehensive audit: ~5 credits",
+    "Cost varies by contract complexity",
+  ];
 
-  context.log("📋 SETUP & CONFIGURATION", "info");
-  context.log("", "output");
-  context.log(
-    "  auditor init                  Initialize with default API key",
-    "output"
-  );
-  context.log(
-    "  auditor init <api-key>        Initialize with your API key",
-    "output"
-  );
-  context.log("  auditor test                  Test API connection", "output");
-  context.log("", "output");
+  let helpHtml = `
+    <div style="
+      font-family: 'Courier New', monospace;
+      line-height: 1.8;
+      color: var(--palette-text, #e0e0e0);
+      padding: 10px;
+    ">
+      <div style="
+        font-size: 18px;
+        font-weight: bold;
+        color: var(--palette-primary, #00d4ff);
+        margin-bottom: 20px;
+        text-align: center;
+        padding: 12px;
+        background: linear-gradient(135deg, rgba(0, 212, 255, 0.15), rgba(0, 255, 136, 0.1));
+        border: 1px solid var(--palette-primary, #00d4ff);
+        border-radius: 6px;
+        text-shadow: 0 0 8px rgba(0, 212, 255, 0.5);
+      ">
+        ═ CHAINGPT AI SMART CONTRACT AUDITOR ═
+      </div>
+      <div style="padding: 10px;">
+  `;
 
-  context.log("🔍 AUDIT COMMANDS", "info");
-  context.log("", "output");
-  context.log("  auditor audit <code>          Audit smart contract", "output");
-  context.log("  auditor severity              Show severity levels", "output");
-  context.log(
-    "  auditor categories            Show security categories",
-    "output"
-  );
-  context.log(
-    "  auditor help                  Show this help message",
-    "output"
-  );
-  context.log("", "output");
+  helpLines.forEach((line) => {
+    const trimmed = line.trim();
+    const isCommand = trimmed && !trimmed.startsWith("→") && !trimmed.startsWith("═") && 
+                      !trimmed.startsWith("--") && trimmed.length > 0 && trimmed.length < 60 && 
+                      !trimmed.includes(":") && !trimmed.startsWith("•") &&
+                      (trimmed.includes("auditor ") || trimmed.match(/^[a-z-]+$/));
 
-  context.log("⚙️  OPTIONS", "info");
-  context.log("", "output");
-  context.log(
-    "  --type <type>                 Contract type (token, nft, etc.)",
-    "output"
-  );
-  context.log("  --chain <chain>               Target blockchain", "output");
-  context.log(
-    "  --level <level>               Audit level (basic, standard, comprehensive)",
-    "output"
-  );
-  context.log(
-    "  --focus <areas>               Focus areas (comma-separated)",
-    "output"
-  );
-  context.log(
-    "  --no-gas                      Skip gas optimization analysis",
-    "output"
-  );
-  context.log("", "output");
+    if (isCommand) {
+      const escapedCommand = line.replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+      helpHtml += `
+        <div style="margin: 8px 0; padding-left: 0;">
+          <div
+            class="omega-help-command"
+            data-command="${escapedCommand}"
+            style="
+              color: var(--palette-secondary, #00ff88);
+              font-weight: bold;
+              margin-left: 0;
+              margin-top: 8px;
+              font-family: 'Courier New', monospace;
+              cursor: pointer;
+              display: inline-block;
+              padding: 2px 4px;
+              border-radius: 3px;
+              transition: all 0.2s ease;
+              user-select: none;
+            "
+            title="Click to add '${escapedCommand}' to terminal input"
+          >
+            ${line}
+          </div>
+        </div>
+      `;
+    } else if (trimmed.startsWith("→")) {
+      helpHtml += `
+        <div style="
+          font-size: 14px;
+          font-weight: bold;
+          color: var(--palette-primary, #00d4ff);
+          margin: 15px 0 8px 0;
+          padding: 8px;
+          background: linear-gradient(90deg, rgba(0, 212, 255, 0.2), rgba(0, 212, 255, 0.05));
+          border-left: 4px solid var(--palette-primary, #00d4ff);
+          border-radius: 4px;
+        ">${line}</div>
+      `;
+    } else if (trimmed) {
+      helpHtml += `
+        <div style="
+          color: var(--palette-text, #ccd4e0);
+          margin: 6px 0;
+          padding-left: 0;
+          font-size: 0.95em;
+          line-height: 1.6;
+        ">${escapeHtml(line)}</div>
+      `;
+    } else {
+      helpHtml += `<div style="margin: 8px 0;"></div>`;
+    }
+  });
 
-  context.log("📚 EXAMPLES", "info");
-  context.log("", "output");
-  context.log("  # Simple audit", "output");
-  context.log('  auditor audit "contract Token { ... }"', "info");
-  context.log("", "output");
-  context.log("  # Audit with options", "output");
-  context.log(
-    '  auditor audit --type token --chain ethereum "contract { ... }"',
-    "info"
-  );
-  context.log("", "output");
-  context.log("  # Focus on specific areas", "output");
-  context.log(
-    '  auditor audit --focus reentrancy,access_control "contract { ... }"',
-    "info"
-  );
-  context.log("", "output");
-  context.log("  # Comprehensive audit", "output");
-  context.log(
-    '  auditor audit --level comprehensive "contract { ... }"',
-    "info"
-  );
-  context.log("", "output");
+  helpHtml += `
+        </div>
+        <div style="
+          margin-top: 20px;
+          padding: 12px;
+          background: rgba(0, 212, 255, 0.1);
+          border: 1px solid var(--palette-border, rgba(0, 212, 255, 0.3));
+          border-radius: 6px;
+          font-size: 12px;
+          color: var(--palette-text, #ccd4e0);
+        ">
+          <span style="color: var(--palette-primary, #00d4ff);">🔗</span>
+          <span style="margin-left: 8px;">Get API key: https://api.chaingpt.org</span>
+        </div>
+      </div>
+    </div>
+  `;
 
-  context.log("💳 CREDITS", "info");
-  context.log("", "output");
-  context.log("  • Basic audit: ~2 credits", "output");
-  context.log("  • Comprehensive audit: ~5 credits", "output");
-  context.log("  • Cost varies by contract complexity", "output");
-  context.log("", "output");
-
-  context.log("🔗 RESOURCES", "info");
-  context.log("", "output");
-  context.log("  • Get API key: https://api.chaingpt.org", "output");
-  context.log("  • Documentation: https://docs.chaingpt.org", "output");
-  context.log("  • Support: https://chaingpt.org", "output");
-  context.log("", "output");
+  context.logHtml(helpHtml);
 }
 
 /**

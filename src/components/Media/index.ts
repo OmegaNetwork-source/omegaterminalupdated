@@ -4,6 +4,7 @@
  * Export point for all media player components.
  *
  * Components:
+ * - PerpsPanel: Omega Perps trading interface with iframe embedding
  * - SpotifyPanel: Spotify music player with OAuth authentication
  * - YouTubePanel: YouTube video player with search and playlist
  * - NewsReaderPanel: Crypto news reader with sentiment analysis
@@ -14,12 +15,14 @@
  *
  *   // In your app layout or page dynamically load heavy panels:
  *   <MediaPanelContainer
+ *     PerpsPanel={PerpsPanel}
  *     SpotifyPanel={SpotifyPanel}
  *     YouTubePanel={YouTubePanel}
  *     NewsReaderPanel={NewsReaderPanel}
  *   />
  */
 
+export { PerpsPanel } from "./PerpsPanel";
 export { SpotifyPanel } from "./SpotifyPanel";
 export { YouTubePanel } from "./YouTubePanel";
 export { NewsReaderPanel } from "./NewsReaderPanel";

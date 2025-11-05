@@ -14,7 +14,7 @@ import { BootAnimation } from "./BootAnimation";
 import { TerminalHeader } from "./TerminalHeader";
 import { DashboardTerminalHeader } from "./DashboardTerminalHeader";
 import { TerminalOutput } from "./TerminalOutput";
-import { TerminalInput } from "./TerminalInput";
+import { TerminalInput, type TerminalInputRef } from "./TerminalInput";
 import { MiningStatus, StressTestStats } from "@/components/Mining";
 import { useTheme } from "@/hooks/useTheme";
 import { useWallet } from "@/hooks/useWallet";
@@ -29,6 +29,7 @@ import { useViewMode } from "@/hooks/useViewMode";
 import { useCustomizer } from "@/hooks/useCustomizer";
 
 export function TerminalContainer() {
+  const terminalInputRef = useRef<TerminalInputRef>(null);
   // State management
   const [showBoot, setShowBoot] = useState(true);
   const [commandsReady, setCommandsReady] = useState(false);
@@ -140,6 +141,23 @@ export function TerminalContainer() {
       setConnectionStatus("disconnected");
     }
   }, [walletState.isConnected, walletState.address]);
+
+  // Expose terminal input setter globally for help command clicks
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    
+    (window as any).__omegaSetTerminalInput = (command: string) => {
+      if (terminalInputRef.current) {
+        terminalInputRef.current.setValue(command);
+      }
+    };
+    
+    return () => {
+      if (typeof window !== "undefined") {
+        delete (window as any).__omegaSetTerminalInput;
+      }
+    };
+  }, []);
 
   // Boot animation complete handler
   const handleBootComplete = useCallback(() => {
@@ -283,6 +301,7 @@ export function TerminalContainer() {
 
       {/* Terminal Input */}
       <TerminalInput
+        ref={terminalInputRef}
         onSubmit={executeCommand}
         onHistoryUp={() => navigateHistory("up")}
         onHistoryDown={() => navigateHistory("down")}

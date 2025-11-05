@@ -141,15 +141,7 @@ async function handleGenerate(
   context: CommandContext,
   args: string[]
 ): Promise<void> {
-  // Check initialization
-  if (!chaingpt.isInitialized()) {
-    context.log("❌ ChainGPT not initialized", "error");
-    context.log("", "output");
-    context.log("💡 Initialize first:", "info");
-    context.log("   contract init              (use default key)", "output");
-    context.log("   contract init <api-key>    (use your own key)", "output");
-    return;
-  }
+  // No init required - API will use server keys automatically if available
 
   // Get prompt - skip 'contract' and 'generate' if present
   let promptParts = args.slice(1);
@@ -280,15 +272,16 @@ async function handleGenerate(
       }
     }
 
-    // Display contract with styled HTML card
+    // Display contract with styled HTML card (theme-compatible)
     const html = `
       <div style="
-        background: linear-gradient(135deg, rgba(0, 122, 255, 0.1), rgba(88, 86, 214, 0.1));
-        border: 1px solid rgba(0, 122, 255, 0.3);
+        background: linear-gradient(135deg, color-mix(in srgb, var(--palette-primary, #00d4ff) 15%, transparent), color-mix(in srgb, var(--palette-secondary, #00ff88) 10%, transparent));
+        border: 1px solid color-mix(in srgb, var(--palette-primary, #00d4ff) 30%, transparent);
         border-radius: 12px;
         padding: 20px;
         margin: 10px 0;
         max-width: 100%;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
       ">
         <div style="
           display: flex;
@@ -308,34 +301,38 @@ async function handleGenerate(
             <div style="
               font-size: 18px;
               font-weight: 600;
-              color: #007AFF;
+              color: var(--palette-primary, #00d4ff);
+              text-shadow: 0 0 8px color-mix(in srgb, var(--palette-primary, #00d4ff) 40%, transparent);
             ">Generated Smart Contract</div>
           </div>
           <button
             onclick="navigator.clipboard.writeText(this.getAttribute('data-code')); this.textContent='✅ Copied!'; setTimeout(() => this.textContent='📋 Copy', 2000)"
             data-code="${escapeHtml(contractCode)}"
             style="
-              background: rgba(0, 122, 255, 0.2);
-              border: 1px solid rgba(0, 122, 255, 0.4);
+              background: color-mix(in srgb, var(--palette-primary, #00d4ff) 20%, transparent);
+              border: 1px solid color-mix(in srgb, var(--palette-primary, #00d4ff) 40%, transparent);
               border-radius: 6px;
               padding: 8px 16px;
-              color: #007AFF;
+              color: var(--palette-primary, #00d4ff);
               cursor: pointer;
               font-size: 12px;
               font-weight: 600;
+              transition: all 0.2s ease;
             "
+            onmouseover="this.style.background='color-mix(in srgb, var(--palette-primary, #00d4ff) 30%, transparent)'; this.style.borderColor='var(--palette-primary, #00d4ff)';"
+            onmouseout="this.style.background='color-mix(in srgb, var(--palette-primary, #00d4ff) 20%, transparent)'; this.style.borderColor='color-mix(in srgb, var(--palette-primary, #00d4ff) 40%, transparent)';"
           >📋 Copy</button>
         </div>
         <div style="
-          background: #000000;
-          border: 1px solid rgba(0, 255, 136, 0.3);
+          background: color-mix(in srgb, var(--palette-surface, rgba(21, 21, 32, 1)) 80%, transparent);
+          border: 1px solid color-mix(in srgb, var(--palette-secondary, #00ff88) 30%, transparent);
           border-radius: 8px;
           padding: 16px;
           max-height: 500px;
           overflow-y: auto;
         ">
           <pre style="
-            color: #00ff88;
+            color: var(--palette-secondary, #00ff88);
             font-family: 'Courier New', monospace;
             font-size: 12px;
             line-height: 1.5;
@@ -347,14 +344,19 @@ async function handleGenerate(
         <div style="
           margin-top: 16px;
           padding-top: 16px;
-          border-top: 1px solid rgba(0, 122, 255, 0.2);
+          border-top: 1px solid color-mix(in srgb, var(--palette-border, rgba(0, 212, 255, 0.3)) 50%, transparent);
           font-size: 12px;
-          color: #888888;
+          color: color-mix(in srgb, var(--palette-text, #ffffff) 65%, transparent);
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          flex-wrap: wrap;
         ">
-          <span style="color: #007AFF;">💳</span> Credits used: varies (contract generation)
+          <span style="color: var(--palette-primary, #00d4ff);">💳</span>
+          <span>Credits used: <strong style="color: var(--palette-secondary, #00ff88);">varies</strong> (contract generation)</span>
           ${
             options.securityLevel
-              ? `<br><span style="color: #007AFF;">🔒</span> Security level: ${options.securityLevel}`
+              ? `<span style="margin-left: 12px;"><span style="color: var(--palette-primary, #00d4ff);">🔒</span> Security level: <strong style="color: var(--palette-text, #e0e0e0);">${options.securityLevel}</strong></span>`
               : ""
           }
         </div>
@@ -366,12 +368,31 @@ async function handleGenerate(
     context.log("", "output");
     context.log("✅ Contract generated successfully!", "success");
   } catch (error: any) {
-    context.log(`❌ Error: ${error.message}`, "error");
-    context.log("", "output");
-    context.log("💡 Troubleshooting:", "info");
-    context.log("   • Check your API key: contract test", "output");
-    context.log("   • Try simpler prompt", "output");
-    context.log("   • Get help: contract help", "output");
+    const errorMsg = error.message || String(error);
+    const errorStr = errorMsg.toLowerCase();
+    
+    // Check if it's an API key/configuration error
+    if (errorStr.includes("key") || errorStr.includes("api") || 
+        errorStr.includes("401") || errorStr.includes("403") ||
+        errorStr.includes("not configured") || errorStr.includes("503")) {
+      context.log(`❌ API Configuration Error`, "error");
+      context.log("", "output");
+      context.log("💡 ChainGPT Smart Contract Generator requires an API key:", "info");
+      context.log("", "output");
+      context.log("Option 1: Use your own API key (recommended):", "output");
+      context.log("   contract init <your-api-key>", "info");
+      context.log("   Get one at: https://api.chaingpt.org", "output");
+      context.log("", "output");
+      context.log("Option 2: Server keys may be configured by admin", "output");
+      context.log("   Contact the administrator if server keys are expected", "info");
+    } else {
+      context.log(`❌ Error: ${errorMsg}`, "error");
+      context.log("", "output");
+      context.log("💡 Troubleshooting:", "info");
+      context.log("   • Try simpler prompt", "output");
+      context.log("   • Check API connection: contract test", "output");
+      context.log("   • Get help: contract help", "output");
+    }
   }
 }
 
@@ -471,97 +492,159 @@ async function handleTest(
  * Handle contract help
  */
 function handleHelp(context: CommandContext, args: string[]): void {
-  context.log("", "output");
-  context.log("🔨 CHAINGPT AI SMART CONTRACT GENERATOR", "info");
-  context.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━", "output");
-  context.log("", "output");
+  const helpLines = [
+    "═ CHAINGPT AI SMART CONTRACT GENERATOR ═",
+    "",
+    "contract init",
+    "Initialize with default API key",
+    "",
+    "contract init <api-key>",
+    "Initialize with your API key",
+    "",
+    "contract generate <prompt>",
+    "Generate smart contract",
+    "",
+    "contract templates",
+    "Show available templates",
+    "",
+    "contract chains",
+    "Show supported blockchains",
+    "",
+    "contract test",
+    "Test API connection",
+    "",
+    "contract help",
+    "Show this help message",
+    "",
+    "→ Options:",
+    "",
+    "--type <type>",
+    "Contract type (token, nft, dex, etc.)",
+    "",
+    "--chain <chain>",
+    "Target blockchain (ethereum, bsc, etc.)",
+    "",
+    "--features <f1,f2>",
+    "Comma-separated features",
+    "",
+    "--security <level>",
+    "Security level (basic, standard, high)",
+    "",
+    "→ Examples:",
+    "",
+    "contract generate ERC-20 token called MyToken",
+    "contract generate --type nft ArtNFT with royalties",
+    "contract generate --type dex --chain bsc PancakeSwap clone",
+    "",
+    "→ Credits:",
+    "",
+    "Contract generation: 2-5 credits (varies by complexity)",
+  ];
 
-  context.log("📋 SETUP & CONFIGURATION", "info");
-  context.log("", "output");
-  context.log(
-    "  contract init                  Initialize with default API key",
-    "output"
-  );
-  context.log(
-    "  contract init <api-key>        Initialize with your API key",
-    "output"
-  );
-  context.log("  contract test                  Test API connection", "output");
-  context.log("", "output");
+  let helpHtml = `
+    <div style="
+      font-family: 'Courier New', monospace;
+      line-height: 1.8;
+      color: var(--palette-text, #e0e0e0);
+      padding: 10px;
+    ">
+      <div style="
+        font-size: 18px;
+        font-weight: bold;
+        color: var(--palette-primary, #00d4ff);
+        margin-bottom: 20px;
+        text-align: center;
+        padding: 12px;
+        background: linear-gradient(135deg, rgba(0, 212, 255, 0.15), rgba(0, 255, 136, 0.1));
+        border: 1px solid var(--palette-primary, #00d4ff);
+        border-radius: 6px;
+        text-shadow: 0 0 8px rgba(0, 212, 255, 0.5);
+      ">
+        ═ CHAINGPT AI SMART CONTRACT GENERATOR ═
+      </div>
+      <div style="padding: 10px;">
+  `;
 
-  context.log("🔨 GENERATION COMMANDS", "info");
-  context.log("", "output");
-  context.log(
-    "  contract generate <prompt>     Generate smart contract",
-    "output"
-  );
-  context.log(
-    "  contract templates             Show available templates",
-    "output"
-  );
-  context.log(
-    "  contract chains                Show supported blockchains",
-    "output"
-  );
-  context.log(
-    "  contract help                  Show this help message",
-    "output"
-  );
-  context.log("", "output");
+  helpLines.forEach((line) => {
+    const trimmed = line.trim();
+    const isCommand = trimmed && !trimmed.startsWith("→") && !trimmed.startsWith("═") && 
+                      !trimmed.startsWith("--") && trimmed.length > 0 && trimmed.length < 60 && 
+                      !trimmed.includes(":") && !trimmed.startsWith("•") &&
+                      (trimmed.includes("contract ") || trimmed.match(/^[a-z-]+$/));
 
-  context.log("⚙️  OPTIONS", "info");
-  context.log("", "output");
-  context.log(
-    "  --type <type>                  Contract type (token, nft, dex, etc.)",
-    "output"
-  );
-  context.log(
-    "  --chain <chain>                Target blockchain (ethereum, bsc, etc.)",
-    "output"
-  );
-  context.log(
-    "  --features <f1,f2>             Comma-separated features",
-    "output"
-  );
-  context.log(
-    "  --security <level>             Security level (basic, standard, high)",
-    "output"
-  );
-  context.log("", "output");
+    if (isCommand) {
+      const escapedCommand = line.replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+      helpHtml += `
+        <div style="margin: 8px 0; padding-left: 0;">
+          <div
+            class="omega-help-command"
+            data-command="${escapedCommand}"
+            style="
+              color: var(--palette-secondary, #00ff88);
+              font-weight: bold;
+              margin-left: 0;
+              margin-top: 8px;
+              font-family: 'Courier New', monospace;
+              cursor: pointer;
+              display: inline-block;
+              padding: 2px 4px;
+              border-radius: 3px;
+              transition: all 0.2s ease;
+              user-select: none;
+            "
+            title="Click to add '${escapedCommand}' to terminal input"
+          >
+            ${line}
+          </div>
+        </div>
+      `;
+    } else if (trimmed.startsWith("→")) {
+      helpHtml += `
+        <div style="
+          font-size: 14px;
+          font-weight: bold;
+          color: var(--palette-primary, #00d4ff);
+          margin: 15px 0 8px 0;
+          padding: 8px;
+          background: linear-gradient(90deg, rgba(0, 212, 255, 0.2), rgba(0, 212, 255, 0.05));
+          border-left: 4px solid var(--palette-primary, #00d4ff);
+          border-radius: 4px;
+        ">${line}</div>
+      `;
+    } else if (trimmed) {
+      helpHtml += `
+        <div style="
+          color: var(--palette-text, #ccd4e0);
+          margin: 6px 0;
+          padding-left: 0;
+          font-size: 0.95em;
+          line-height: 1.6;
+        ">${escapeHtml(line)}</div>
+      `;
+    } else {
+      helpHtml += `<div style="margin: 8px 0;"></div>`;
+    }
+  });
 
-  context.log("📚 EXAMPLES", "info");
-  context.log("", "output");
-  context.log("  # Simple token", "output");
-  context.log("  contract generate ERC-20 token called MyToken", "info");
-  context.log("", "output");
-  context.log("  # NFT with features", "output");
-  context.log("  contract generate --type nft ArtNFT with royalties", "info");
-  context.log("", "output");
-  context.log("  # DEX on BSC", "output");
-  context.log(
-    "  contract generate --type dex --chain bsc PancakeSwap clone",
-    "info"
-  );
-  context.log("", "output");
-  context.log("  # Staking with security", "output");
-  context.log(
-    "  contract generate --type staking --security high Token staking",
-    "info"
-  );
-  context.log("", "output");
+  helpHtml += `
+        </div>
+        <div style="
+          margin-top: 20px;
+          padding: 12px;
+          background: rgba(0, 212, 255, 0.1);
+          border: 1px solid var(--palette-border, rgba(0, 212, 255, 0.3));
+          border-radius: 6px;
+          font-size: 12px;
+          color: var(--palette-text, #ccd4e0);
+        ">
+          <span style="color: var(--palette-primary, #00d4ff);">🔗</span>
+          <span style="margin-left: 8px;">Get API key: https://api.chaingpt.org</span>
+        </div>
+      </div>
+    </div>
+  `;
 
-  context.log("💳 CREDITS", "info");
-  context.log("", "output");
-  context.log("  • Contract generation: varies based on complexity", "output");
-  context.log("  • Typically 2-5 credits per contract", "output");
-  context.log("", "output");
-
-  context.log("🔗 RESOURCES", "info");
-  context.log("", "output");
-  context.log("  • Get API key: https://api.chaingpt.org", "output");
-  context.log("  • Documentation: https://docs.chaingpt.org", "output");
-  context.log("  • Support: https://chaingpt.org", "output");
-  context.log("", "output");
+  context.logHtml(helpHtml);
 }
 
 /**

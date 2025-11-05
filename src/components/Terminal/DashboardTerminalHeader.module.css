@@ -163,6 +163,39 @@
   box-shadow: 0 0 10px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #00d4ff) 30%, transparent));
 }
 
+/* AI Select State Indicators - Red when OFF, Green when ON */
+.aiSelectOff {
+  border-color: #ff4757 !important;
+  color: #ff4757 !important;
+  background-image: linear-gradient(45deg, transparent 50%, #ff4757 50%),
+    linear-gradient(135deg, #ff4757 50%, transparent 50%) !important;
+}
+
+.aiSelectOff:hover {
+  border-color: #ff4757 !important;
+  background-color: color-mix(in srgb, #ff4757 15%, transparent) !important;
+}
+
+.aiSelectOn {
+  border-color: #00ff88 !important;
+  color: #00ff88 !important;
+  background-image: linear-gradient(45deg, transparent 50%, #00ff88 50%),
+    linear-gradient(135deg, #00ff88 50%, transparent 50%) !important;
+}
+
+.aiSelectOn:hover {
+  border-color: #00ff88 !important;
+  background-color: color-mix(in srgb, #00ff88 15%, transparent) !important;
+}
+
+.aiLabelOff {
+  color: #ff4757 !important;
+}
+
+.aiLabelOn {
+  color: #00ff88 !important;
+}
+
 .terminalIconBtn {
   background: color-mix(in srgb, var(--palette-primary, #00d4ff) 8%, transparent);
   border: 1px solid color-mix(in srgb, var(--palette-primary, #00d4ff) 15%, transparent);

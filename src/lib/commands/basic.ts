@@ -563,14 +563,26 @@ const CATEGORY_HELP: Record<string, () => string[]> = {
     '  chat history "<question>" → AI with conversation memory',
     "  chat test            → Test ChainGPT connection",
     "  chat help            → Show chat commands help",
-    "  nft init <api-key>   → Initialize ChainGPT NFT Generator",
-    "  nft generate <prompt> → Generate AI NFT images",
-    "  nft enhance <prompt> → Enhance prompt with AI",
-    "  nft models           → Show available AI models",
-    "  nft styles           → Show art styles",
-    "  nft gallery          → View generated NFT gallery",
-    "  nft test             → Test NFT API connection",
-    "  nft help             → Show full NFT commands",
+    "  nftgen init <api-key>   → Initialize ChainGPT NFT Generator",
+    "  nftgen generate <prompt> → Generate AI NFT images",
+    "  nftgen enhance <prompt> → Enhance prompt with AI",
+    "  nftgen models           → Show available AI models",
+    "  nftgen styles           → Show art styles",
+    "  nftgen gallery          → View generated NFT gallery",
+    "  nftgen test             → Test NFT API connection",
+    "  nftgen help             → Show full NFT commands",
+    "  contract init <api-key> → Initialize ChainGPT Contract Generator",
+    "  contract generate <prompt> → Generate smart contract code",
+    "  contract templates      → Show contract templates",
+    "  contract chains         → Show supported blockchains",
+    "  contract test           → Test Contract API connection",
+    "  contract help           → Show contract commands help",
+    "  auditor init <api-key>   → Initialize ChainGPT Auditor",
+    "  auditor audit <code>     → Audit smart contract code",
+    "  auditor severity         → Show severity levels",
+    "  auditor categories       → Show security categories",
+    "  auditor test             → Test Auditor API connection",
+    "  auditor help             → Show auditor commands help",
   ],
   news: () => [
     "📰 CRYPTO NEWS:",
@@ -648,26 +660,21 @@ export const helpCommand: Command = {
          <div style="
            font-family: 'Courier New', monospace;
            line-height: 1.8;
-           color: var(--palette-text, var(--color-text-primary, #e0e0e0));
+          color: var(--palette-text, #e0e0e0);
            padding: 10px;
          ">
            <div style="
              font-size: 20px;
              font-weight: bold;
-             color: var(--palette-primary, var(--color-primary, #00d4ff));
+            color: var(--palette-primary, #00d4ff);
              margin-bottom: 20px;
              text-align: center;
              padding: 15px;
-             background: linear-gradient(135deg, 
-               color-mix(in srgb, var(--palette-primary, var(--color-primary, #00d4ff)) 15%, transparent),
-               color-mix(in srgb, var(--palette-secondary, var(--color-secondary, #00ff88)) 10%, transparent)
-             );
-             border: 2px solid var(--palette-primary, var(--color-primary, #00d4ff));
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.15), rgba(0, 255, 136, 0.1));
+            border: 2px solid var(--palette-primary, #00d4ff);
              border-radius: 8px;
-             box-shadow: 0 0 20px var(--palette-primary-glow, rgba(0, 212, 255, 0.3));
-             text-shadow: 0 0 10px var(--palette-primary-glow, rgba(0, 212, 255, 0.5));
+            text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
              letter-spacing: 2px;
-             transition: all 0.3s ease;
            ">
              ═══ ${category.toUpperCase()} HELP ═══
            </div>
@@ -681,52 +688,62 @@ export const helpCommand: Command = {
              <div style="
                font-size: 16px;
                font-weight: bold;
-               color: var(--palette-primary, var(--color-primary, #00d4ff));
+              color: var(--palette-primary, #00d4ff);
                margin: 15px 0 10px 0;
                padding: 10px;
-               background: linear-gradient(90deg, 
-                 color-mix(in srgb, var(--palette-primary, var(--color-primary, #00d4ff)) 20%, transparent),
-                 color-mix(in srgb, var(--palette-primary, var(--color-primary, #00d4ff)) 5%, transparent)
-               );
-               border-left: 4px solid var(--palette-primary, var(--color-primary, #00d4ff));
+              background: linear-gradient(90deg, rgba(0, 212, 255, 0.2), rgba(0, 212, 255, 0.05));
+              border-left: 4px solid var(--palette-primary, #00d4ff);
                border-radius: 4px;
-               transition: all 0.3s ease;
              ">${line}</div>
            `;
          } else if (line.trim().startsWith("  ") && line.includes("→")) {
-           // Command line with arrow
+          // Command line with arrow - make command clickable
            const parts = line.split("→");
            const commandPart = parts[0]?.trim() || "";
            const descPart = parts[1]?.trim() || "";
+          
+          // Extract command name (remove leading spaces, get first word)
+          const commandName = commandPart.split(/\s+/)[0] || commandPart;
+          const escapedCommand = commandName.replace(/"/g, "&quot;").replace(/'/g, "&#39;");
            
            categoryHtml += `
              <div style="margin: 8px 0; padding-left: 20px; padding-bottom: 6px;">
-               <span style="
-                 color: var(--palette-secondary, var(--color-secondary, #00ff88));
+              <span 
+                class="omega-help-command"
+                data-command="${escapedCommand}"
+                style="
+                  color: var(--palette-secondary, #00ff88);
                  font-weight: bold;
                  font-size: 1.05em;
                  font-family: 'Courier New', monospace;
-                 text-shadow: 0 0 6px var(--palette-secondary-glow, rgba(0, 255, 136, 0.3));
+                  text-shadow: 0 0 6px rgba(0, 255, 136, 0.3);
+                  cursor: pointer;
+                  display: inline-block;
+                  padding: 2px 4px;
+                  border-radius: 3px;
                  transition: all 0.2s ease;
-               ">${commandPart}</span>
+                  user-select: none;
+                "
+                onmouseover="this.style.background = 'color-mix(in srgb, var(--palette-secondary, #00ff88) 15%, transparent)'; this.style.textShadow = '0 0 8px var(--palette-secondary-glow, rgba(0, 255, 136, 0.5))';"
+                onmouseout="this.style.background = 'transparent'; this.style.textShadow = '0 0 6px rgba(0, 255, 136, 0.3)';"
+                title="Click to add '${escapedCommand}' to terminal input"
+              >${commandPart}</span>
                ${descPart ? `<span style="
-                 color: var(--palette-text, var(--color-text-primary, #ccd4e0));
+                color: var(--palette-text, #ccd4e0);
                  margin-left: 15px;
                  font-size: 0.95em;
                  opacity: 0.95;
-                 transition: all 0.2s ease;
                ">→ ${descPart}</span>` : ""}
              </div>
            `;
          } else if (line.trim()) {
            categoryHtml += `
              <div style="
-               color: var(--palette-text, var(--color-text-primary, #ccd4e0));
+              color: var(--palette-text, #ccd4e0);
                margin: 6px 0;
                padding-left: 15px;
                font-size: 0.95em;
                line-height: 1.6;
-               transition: all 0.2s ease;
              ">${line}</div>
            `;
          } else {
@@ -739,22 +756,19 @@ export const helpCommand: Command = {
            <div style="
              margin-top: 25px;
              padding: 15px;
-             background: color-mix(in srgb, var(--palette-primary, var(--color-primary, #00d4ff)) 10%, transparent);
-             border: 1px solid var(--palette-border, var(--color-border, rgba(0, 212, 255, 0.3)));
+            background: rgba(0, 212, 255, 0.1);
+            border: 1px solid var(--palette-border, rgba(0, 212, 255, 0.3));
              border-radius: 6px;
              text-align: center;
-             transition: all 0.3s ease;
            ">
-             <span style="color: var(--palette-primary, var(--color-primary, #00d4ff)); font-weight: bold; transition: all 0.2s ease;">💡</span>
-             <span style="color: var(--palette-text, var(--color-text-primary, #ccd4e0)); margin-left: 8px; transition: all 0.2s ease;">
+            <span style="color: var(--palette-primary, #00d4ff); font-weight: bold;">💡</span>
+            <span style="color: var(--palette-text, #ccd4e0); margin-left: 8px;">
                Use <code style="
-                 color: var(--palette-secondary, var(--color-secondary, #00ff88));
-                 background: color-mix(in srgb, var(--palette-secondary, var(--color-secondary, #00ff88)) 10%, transparent);
+                color: var(--palette-primary-glow, #00ff88);
+                background: rgba(0, 255, 136, 0.1);
                  padding: 2px 6px;
                  border-radius: 3px;
                  font-weight: bold;
-                 border: 1px solid var(--palette-border, var(--color-border, rgba(0, 255, 136, 0.3)));
-                 transition: all 0.2s ease;
                ">help</code> to see all commands
              </span>
            </div>
@@ -793,33 +807,47 @@ export const helpCommand: Command = {
       }
     });
 
-         // Generate HTML help with enhanced color coding - theme and palette aware
+    // Generate HTML help with enhanced color coding - PRIMARY OUTPUT
+    const helpIconSvg = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none"/>
+      <path d="M12 16V12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      <circle cx="12" cy="8" r="1" fill="currentColor"/>
+    </svg>`;
+    
      let helpHtml = `
        <div style="
          font-family: 'Courier New', monospace;
-         line-height: 1.8;
-         color: var(--palette-text, var(--color-text-primary, #e0e0e0));
-         padding: 10px;
+        line-height: 1.6;
+        color: var(--palette-text, #e0e0e0);
+        padding: 12px;
        ">
          <div style="
-           font-size: 22px;
+          font-size: 18px;
            font-weight: bold;
-           color: var(--palette-primary, var(--color-primary, #00d4ff));
-           margin-bottom: 25px;
+          color: var(--palette-primary, #00d4ff);
+          margin-bottom: 20px;
            text-align: center;
-           padding: 15px;
-           background: linear-gradient(135deg, 
-             color-mix(in srgb, var(--palette-primary, var(--color-primary, #00d4ff)) 15%, transparent),
-             color-mix(in srgb, var(--palette-secondary, var(--color-secondary, #00ff88)) 10%, transparent)
-           );
-           border: 2px solid var(--palette-primary, var(--color-primary, #00d4ff));
-           border-radius: 8px;
-           box-shadow: 0 0 20px var(--palette-primary-glow, rgba(0, 212, 255, 0.3));
-           text-shadow: 0 0 10px var(--palette-primary-glow, rgba(0, 212, 255, 0.5));
-           letter-spacing: 2px;
-           transition: all 0.3s ease;
+          padding: 8px;
+          border: 1px solid var(--palette-border, rgba(0, 212, 255, 0.3));
+          border-radius: 4px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 12px;
+        ">
+          <span style="
+            width: 24px;
+            height: 24px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--palette-primary, #00bcf2);
+            flex-shrink: 0;
+            vertical-align: middle;
          ">
-           ═══ Ω Terminal v2.0.1 Commands ═══
+            ${helpIconSvg}
+          </span>
+          <span>Omega Commands</span>
          </div>
      `;
 
@@ -841,26 +869,18 @@ export const helpCommand: Command = {
       const commands = commandsByCategory.get(cat);
       if (commands && commands.length > 0) {
                  helpHtml += `
-           <div style="margin: 25px 0; padding: 5px;">
+          <div style="margin: 24px 0 12px 0;">
              <div style="
-               font-size: 15px;
+              font-size: 14px;
                font-weight: bold;
-               color: var(--palette-primary, var(--color-primary, #00d4ff));
-               text-transform: uppercase;
+              color: var(--palette-primary, #00d4ff);
                margin-bottom: 12px;
-               padding: 10px 15px;
-               background: linear-gradient(90deg, 
-                 color-mix(in srgb, var(--palette-primary, var(--color-primary, #00d4ff)) 20%, transparent),
-                 color-mix(in srgb, var(--palette-primary, var(--color-primary, #00d4ff)) 5%, transparent)
-               );
-               border-left: 4px solid var(--palette-primary, var(--color-primary, #00d4ff));
-               border-radius: 4px;
-               box-shadow: 0 2px 8px var(--palette-primary-glow, rgba(0, 212, 255, 0.2));
-               letter-spacing: 1px;
-               transition: all 0.3s ease;
+              padding: 4px 0;
+              border-bottom: 1px solid var(--palette-border, rgba(0, 212, 255, 0.2));
              ">
-               ═ ${cat.replace(/-/g, " ")} ═
+              ${cat.replace(/-/g, " ").toUpperCase()} (${commands.length})
              </div>
+            <div style="margin-bottom: 16px;">
          `;
 
                  commands
@@ -868,85 +888,91 @@ export const helpCommand: Command = {
            .forEach((cmd) => {
              const aliases = cmd.aliases && cmd.aliases.length > 0 
                ? ` <span style="
-                   color: var(--palette-secondary, var(--color-secondary, #00ff88));
+                  color: var(--palette-primary, #00d4ff);
                    font-size: 0.85em;
                    font-weight: normal;
                    font-style: italic;
-                   opacity: 0.85;
+                  opacity: 0.8;
                    margin-left: 5px;
-                   transition: all 0.2s ease;
                  ">[${cmd.aliases.join(", ")}]</span>` 
                : "";
              
              const usage = cmd.usage 
                ? `<div style="
-                   color: var(--palette-muted, var(--color-text-muted, #99ccff));
-                   font-size: 0.9em;
-                   margin-left: 30px;
-                   margin-top: 2px;
+                  color: var(--palette-secondary, #00ff88);
+                  margin-left: 0;
+                  margin-top: 4px;
+                  font-size: 11px;
                    font-family: 'Courier New', monospace;
-                   opacity: 0.9;
-                   transition: all 0.2s ease;
-                 ">→ Usage: <span style="
-                   color: var(--palette-secondary, var(--color-secondary, #00ff88));
-                   font-weight: 600;
-                   text-shadow: 0 0 4px var(--palette-secondary-glow, rgba(0, 255, 136, 0.3));
-                 ">${cmd.usage}</span></div>`
+                ">→ Usage: <span style="color: var(--palette-secondary, #00ff88);">${cmd.usage}</span></div>`
                : "";
+            
+            // Make command name clickable
+            const escapedCommand = cmd.name.replace(/"/g, "&quot;").replace(/'/g, "&#39;");
              
              helpHtml += `
-               <div style="margin: 10px 0; padding-left: 25px; padding-bottom: 8px;">
-                 <div style="display: flex; align-items: baseline; flex-wrap: wrap; gap: 5px;">
-                   <span style="
-                     color: var(--palette-secondary, var(--color-secondary, #00ff88));
+              <div style="
+                background: linear-gradient(135deg, color-mix(in srgb, var(--palette-primary, #00bcf2) 5%, transparent) 0%, color-mix(in srgb, var(--palette-primary, #00bcf2) 2%, transparent) 100%);
+                border: 1px solid var(--palette-border, color-mix(in srgb, var(--palette-primary, #00bcf2) 20%, transparent));
+                border-radius: 8px;
+                padding: 12px;
+                margin-bottom: 8px;
+              ">
+                <div style="display: flex; align-items: baseline; flex-wrap: wrap; gap: 8px; margin-bottom: 6px;">
+                  <span 
+                    class="omega-help-command"
+                    data-command="${escapedCommand}"
+                    style="
+                      color: var(--palette-secondary, #00ff88);
                      font-weight: bold;
-                     font-size: 1.1em;
-                     text-shadow: 0 0 8px var(--palette-secondary-glow, rgba(0, 255, 136, 0.4));
+                      font-size: 14px;
                      font-family: 'Courier New', monospace;
+                      cursor: pointer;
+                      display: inline-block;
+                      padding: 2px 6px;
+                      border-radius: 3px;
                      transition: all 0.2s ease;
-                   ">${cmd.name}</span>${aliases}
+                      user-select: none;
+                    "
+                    onmouseover="this.style.background = 'color-mix(in srgb, var(--palette-secondary, #00ff88) 15%, transparent)'; this.style.textShadow = '0 0 8px var(--palette-secondary-glow, rgba(0, 255, 136, 0.5))';"
+                    onmouseout="this.style.background = 'transparent'; this.style.textShadow = 'none';"
+                    title="Click to add '${escapedCommand}' to terminal input"
+                  >${cmd.name}</span>${aliases}
                  </div>
                  ${cmd.description ? `<div style="
-                   color: var(--palette-text, var(--color-text-primary, #ccd4e0));
-                   margin-left: 30px;
+                  color: color-mix(in srgb, var(--palette-text, #ffffff) 70%, transparent);
+                  margin-left: 0;
                    margin-top: 4px;
-                   font-size: 0.95em;
-                   line-height: 1.5;
-                   opacity: 0.95;
-                   transition: all 0.2s ease;
+                  font-size: 12px;
+                  line-height: 1.4;
                  ">${cmd.description}</div>` : ""}
                  ${usage}
                </div>
              `;
            });
 
-        helpHtml += `</div>`;
+        helpHtml += `
+            </div>
+          </div>
+        `;
       }
     });
 
          // Display uncategorized commands
      if (uncategorized.length > 0) {
        helpHtml += `
-         <div style="margin: 25px 0; padding: 5px;">
+        <div style="margin: 24px 0 12px 0;">
            <div style="
-             font-size: 15px;
+            font-size: 14px;
              font-weight: bold;
-             color: var(--palette-primary, var(--color-primary, #00d4ff));
-             text-transform: uppercase;
+            color: var(--palette-primary, #00d4ff);
              margin-bottom: 12px;
-             padding: 10px 15px;
-             background: linear-gradient(90deg, 
-               color-mix(in srgb, var(--palette-primary, var(--color-primary, #00d4ff)) 20%, transparent),
-               color-mix(in srgb, var(--palette-primary, var(--color-primary, #00d4ff)) 5%, transparent)
-             );
-             border-left: 4px solid var(--palette-primary, var(--color-primary, #00d4ff));
-             border-radius: 4px;
-             box-shadow: 0 2px 8px var(--palette-primary-glow, rgba(0, 212, 255, 0.2));
-             letter-spacing: 1px;
-             transition: all 0.3s ease;
+            padding: 4px 0;
+            border-bottom: 1px solid var(--palette-border, rgba(0, 212, 255, 0.2));
            ">
-             ═ Other Commands ═
+            OTHER COMMANDS (${uncategorized.length})
            </div>
+          <div style="margin-bottom: 16px;">
        `;
 
              uncategorized
@@ -954,52 +980,63 @@ export const helpCommand: Command = {
          .forEach((cmd) => {
            const aliases = cmd.aliases && cmd.aliases.length > 0 
              ? ` <span style="
-                 color: var(--palette-secondary, var(--color-secondary, #00ff88));
-                 font-size: 0.85em;
+                color: var(--palette-primary, #00d4ff);
+                font-size: 11px;
                  font-weight: normal;
                  font-style: italic;
-                 opacity: 0.85;
+                opacity: 0.8;
                  margin-left: 5px;
-                 transition: all 0.2s ease;
                ">[${cmd.aliases.join(", ")}]</span>` 
              : "";
            
            const usage = cmd.usage 
              ? `<div style="
-                 color: var(--palette-muted, var(--color-text-muted, #99ccff));
-                 font-size: 0.9em;
-                 margin-left: 30px;
-                 margin-top: 2px;
+                color: var(--palette-secondary, #00ff88);
+                margin-left: 0;
+                margin-top: 4px;
+                font-size: 11px;
                  font-family: 'Courier New', monospace;
-                 opacity: 0.9;
-                 transition: all 0.2s ease;
-               ">→ Usage: <span style="
-                 color: var(--palette-secondary, var(--color-secondary, #00ff88));
-                 font-weight: 600;
-                 text-shadow: 0 0 4px var(--palette-secondary-glow, rgba(0, 255, 136, 0.3));
-               ">${cmd.usage}</span></div>`
+              ">→ Usage: <span style="color: var(--palette-secondary, #00ff88);">${cmd.usage}</span></div>`
              : "";
+          
+          // Make command name clickable
+          const escapedCommand = cmd.name.replace(/"/g, "&quot;").replace(/'/g, "&#39;");
            
            helpHtml += `
-             <div style="margin: 10px 0; padding-left: 25px; padding-bottom: 8px;">
-               <div style="display: flex; align-items: baseline; flex-wrap: wrap; gap: 5px;">
-                 <span style="
-                   color: var(--palette-secondary, var(--color-secondary, #00ff88));
+            <div style="
+              background: linear-gradient(135deg, color-mix(in srgb, var(--palette-primary, #00bcf2) 5%, transparent) 0%, color-mix(in srgb, var(--palette-primary, #00bcf2) 2%, transparent) 100%);
+              border: 1px solid var(--palette-border, color-mix(in srgb, var(--palette-primary, #00bcf2) 20%, transparent));
+              border-radius: 8px;
+              padding: 12px;
+              margin-bottom: 8px;
+            ">
+              <div style="display: flex; align-items: baseline; flex-wrap: wrap; gap: 8px; margin-bottom: 6px;">
+                <span 
+                  class="omega-help-command"
+                  data-command="${escapedCommand}"
+                  style="
+                    color: var(--palette-secondary, #00ff88);
                    font-weight: bold;
-                   font-size: 1.1em;
-                   text-shadow: 0 0 8px var(--palette-secondary-glow, rgba(0, 255, 136, 0.4));
+                    font-size: 14px;
                    font-family: 'Courier New', monospace;
+                    cursor: pointer;
+                    display: inline-block;
+                    padding: 2px 6px;
+                    border-radius: 3px;
                    transition: all 0.2s ease;
-                 ">${cmd.name}</span>${aliases}
+                    user-select: none;
+                  "
+                  onmouseover="this.style.background = 'color-mix(in srgb, var(--palette-secondary, #00ff88) 15%, transparent)'; this.style.textShadow = '0 0 8px var(--palette-secondary-glow, rgba(0, 255, 136, 0.5))';"
+                  onmouseout="this.style.background = 'transparent'; this.style.textShadow = 'none';"
+                  title="Click to add '${escapedCommand}' to terminal input"
+                >${cmd.name}</span>${aliases}
                </div>
                ${cmd.description ? `<div style="
-                 color: var(--palette-text, var(--color-text-primary, #ccd4e0));
-                 margin-left: 30px;
+                color: color-mix(in srgb, var(--palette-text, #ffffff) 70%, transparent);
+                margin-left: 0;
                  margin-top: 4px;
-                 font-size: 0.95em;
-                 line-height: 1.5;
-                 opacity: 0.95;
-                 transition: all 0.2s ease;
+                font-size: 12px;
+                line-height: 1.4;
                ">${cmd.description}</div>` : ""}
                ${usage}
              </div>
@@ -1011,232 +1048,23 @@ export const helpCommand: Command = {
 
          helpHtml += `
          <div style="
-           margin-top: 35px;
-           padding: 20px;
-           background: linear-gradient(135deg, 
-             color-mix(in srgb, var(--palette-primary, var(--color-primary, #00d4ff)) 10%, transparent),
-             color-mix(in srgb, var(--palette-secondary, var(--color-secondary, #00ff88)) 5%, transparent)
-           );
-           border: 2px solid var(--palette-border, var(--color-border, rgba(0, 212, 255, 0.4)));
-           border-radius: 8px;
+          margin-top: 20px;
+          padding: 15px;
            text-align: center;
-           box-shadow: 0 4px 12px var(--palette-primary-glow, rgba(0, 212, 255, 0.2));
-           transition: all 0.3s ease;
+          border-top: 1px solid var(--palette-border, rgba(0, 212, 255, 0.2));
          ">
            <div style="
-             color: var(--palette-primary, var(--color-primary, #00d4ff));
-             font-weight: bold;
-             font-size: 1.1em;
-             margin-bottom: 10px;
-             transition: all 0.2s ease;
-           ">💡 Tip</div>
-           <div style="color: var(--palette-text, var(--color-text-primary, #ccd4e0)); font-size: 0.95em; line-height: 1.6; transition: all 0.2s ease;">
-             Type <code style="
-               color: var(--palette-secondary, var(--color-secondary, #00ff88));
-               background: color-mix(in srgb, var(--palette-secondary, var(--color-secondary, #00ff88)) 10%, transparent);
-               padding: 3px 8px;
-               border-radius: 4px;
-               font-weight: bold;
+            color: color-mix(in srgb, var(--palette-text, #ffffff) 60%, transparent);
+            font-size: 0.85em;
                font-family: 'Courier New', monospace;
-               border: 1px solid var(--palette-border, var(--color-border, rgba(0, 255, 136, 0.3)));
-               transition: all 0.2s ease;
-             ">help &lt;command&gt;</code> or <code style="
-               color: var(--palette-secondary, var(--color-secondary, #00ff88));
-               background: color-mix(in srgb, var(--palette-secondary, var(--color-secondary, #00ff88)) 10%, transparent);
-               padding: 3px 8px;
-               border-radius: 4px;
-               font-weight: bold;
-               font-family: 'Courier New', monospace;
-               border: 1px solid var(--palette-border, var(--color-border, rgba(0, 255, 136, 0.3)));
-               transition: all 0.2s ease;
-             ">&lt;command&gt; help</code> for detailed help
+          ">
+            Ω Terminal v2.0.1 - Modern Apple UI • Enhanced Analytics • DeFi Integration • NFT Trading
            </div>
          </div>
        </div>
      `;
 
     context.logHtml(helpHtml);
-
-    // Also show legacy text version for compatibility
-    context.log("=== Ω Terminal v2.0.1 Commands ===", "info");
-    context.log("", "info");
-
-    // New Features Section
-    context.log("🆕 --- NEW FEATURES (v2.0.1) ----", "success");
-    context.log("🍎 Modern UI:", "info");
-    context.log("modern ui | modern-dark", "output");
-    context.log("Apple-style glass-morphism", "output");
-    context.log("", "output");
-    context.log("📊 DexScreener Analytics:", "info");
-    context.log(
-      "dexscreener search | analytics | portfolio | watchlist",
-      "output"
-    );
-    context.log("Complete token analysis suite", "output");
-    context.log("", "output");
-    context.log("🦙 DeFi Llama:", "info");
-    context.log("defillama tvl | protocols | price | chains", "output");
-    context.log("TVL & price data", "output");
-    context.log("", "output");
-    context.log("🎮 Games & Fun:", "info");
-    context.log("games | arcade | flappy | mystery-box", "output");
-    context.log("Entertainment & challenges", "output");
-    context.log("", "output");
-    context.log("🎯 PGT Portfolio:", "info");
-    context.log("pgt track <address> | pgt portfolio | pgt wallets", "output");
-    context.log("Auto-detect network, real-time tracking", "output");
-    context.log("", "output");
-    context.log("🏗️ Terminal Builder:", "info");
-    context.log("terminal create | list | launch", "output");
-    context.log("Create custom terminals with URLs", "output");
-    context.log("", "output");
-    context.log("🔵 NEAR Wallet:", "info");
-    context.log("near connect | balance | swap", "output");
-    context.log("NEAR ecosystem integration", "output");
-    context.log("", "output");
-    context.log("🌊 OpenSea NFTs:", "info");
-    context.log(
-      "nft search | collection | floor | trending | portfolio",
-      "output"
-    );
-    context.log("Professional NFT analytics & trading", "output");
-    context.log("", "output");
-    context.log("🤖 ChainGPT AI:", "info");
-    context.log("chat init | chat ask | nft init | nft generate", "output");
-    context.log(
-      "AI chatbot & NFT generator (default keys included!)",
-      "output"
-    );
-    context.log("", "output");
-    context.log("📜 Smart Contracts:", "info");
-    context.log(
-      "contract init | contract generate | auditor init | auditor audit",
-      "output"
-    );
-    context.log(
-      "AI smart contract creator & auditor (default keys included!)",
-      "output"
-    );
-    context.log("", "info");
-
-    // Core Wallet Functions
-    context.log("--- Core Wallet Functions ----", "info");
-    context.log(
-      "Commands: connect | disconnect | balance | faucet | send | network | forceadd | rpccheck",
-      "output"
-    );
-    context.log("", "info");
-
-    // AI Assistant
-    context.log("--- AI Assistant ----", "info");
-    context.log(
-      "AI Mode: ai - Toggle AI assistant to answer questions and execute commands naturally",
-      "output"
-    );
-    context.log("", "info");
-
-    // Mining & Rewards
-    context.log("--- Mining & Rewards ---", "info");
-    context.log("Commands: mine | claim | status | stats", "output");
-    context.log("", "info");
-
-    // Themes & Interface
-    context.log("🎨 --- Themes & Interface ----", "info");
-    context.log(
-      "Themes: modern ui | modern-dark | dark | matrix | retro | bitcoin | ethereum | solana | pepe",
-      "output"
-    );
-    context.log(
-      "GUI Modes: gui [ios, chatgpt, discord, aol, windows95, limewire]",
-      "output"
-    );
-    context.log("", "info");
-
-    // Analytics & Data
-    context.log("📊 --- Analytics & Data ----", "info");
-    context.log("DexScreener:", "info");
-    context.log("dexscreener search BONK", "output");
-    context.log("dexscreener analytics ETH", "output");
-    context.log("dexscreener portfolio", "output");
-    context.log("", "output");
-    context.log("DeFi Llama:", "info");
-    context.log("defillama tvl", "output");
-    context.log("defillama price ethereum", "output");
-    context.log("defillama protocols", "output");
-    context.log("", "output");
-    context.log("OpenSea NFTs:", "info");
-    context.log("nft search azuki", "output");
-    context.log("nft floor bayc", "output");
-    context.log("nft trending", "output");
-    context.log("", "output");
-    context.log("GeckoTerminal:", "info");
-    context.log("cg help", "output");
-    context.log("", "info");
-
-    // Blockchain Networks
-    context.log("--- Blockchain Networks ---", "info");
-    context.log("Solana:", "info");
-    context.log("solana help", "output");
-    context.log("", "output");
-    context.log("Eclipse:", "info");
-    context.log("eclipse help", "output");
-    context.log("", "output");
-    context.log("NEAR:", "info");
-    context.log("near connect | near help", "output");
-    context.log("", "output");
-    context.log("Hyperliquid:", "info");
-    context.log("hyperliquid help", "output");
-    context.log("", "output");
-    context.log("OpenSea NFTs:", "info");
-    context.log("nft search | nft trending | nft portfolio", "output");
-    context.log("", "info");
-
-    // Advanced Features
-    context.log("--- Advanced Features ---", "info");
-    context.log("Mixer (Privacy):", "info");
-    context.log("mixer help", "output");
-    context.log("", "output");
-    context.log("Ambassador:", "info");
-    context.log("ambassador help", "output");
-    context.log("", "output");
-    context.log("Polymarket:", "info");
-    context.log("polymarket help", "output");
-    context.log("", "output");
-    context.log("🎮 Games:", "info");
-    context.log("game list | play", "output");
-    context.log("", "output");
-    context.log("Email:", "info");
-    context.log("email | inbox", "output");
-    context.log("Encrypted messaging system", "output");
-    context.log("", "info");
-
-    // Quick Start Guide
-    context.log("🚀 --- Quick Start Guide ----", "info");
-    context.log(
-      "💡 Try: modern ui for beautiful Apple-style interface",
-      "output"
-    );
-    context.log("💡 Try: dexscreener search BONK for token analysis", "output");
-    context.log("💡 Try: defillama tvl for DeFi data", "output");
-    context.log("💡 Try: nft trending for hot NFT collections", "output");
-    context.log(
-      "💡 Try: pgt portfolio for multi-chain portfolio tracking",
-      "output"
-    );
-    context.log("💡 Try: game list for interactive games", "output");
-    context.log("", "info");
-
-    // Economy & Trading
-    context.log("--- Economy & Trading ---", "info");
-    context.log("alpha help stocks & economy data", "output");
-    context.log("", "info");
-
-    // Footer
-    context.log("---", "output");
-    context.log(
-      "Ω Terminal v2.0.1 - Modern Apple UI • Enhanced Analytics • DeFi Integration • NFT Trading",
-      "info"
-    );
   },
 };
 

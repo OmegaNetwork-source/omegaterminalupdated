@@ -70,3 +70,8 @@ next-env.d.ts
 # legacy/backup folders
 omegaterminalupdated/
 
+# PGTanks ref folders
+ravaged-planet/
+
+# docs files 
+docs/
