@@ -27,7 +27,7 @@ test.db
 /.next/
 /out/
 /build/
-
+/.npm-cache/
 # production
 /dist
 
