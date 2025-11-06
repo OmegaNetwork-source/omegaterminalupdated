@@ -57,6 +57,9 @@
 
 .headerCenter {
   justify-content: center;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
 }
 
 .headerRight {
@@ -449,9 +452,13 @@
     right: 0;
   }
 
-  /* Hide all header sections on mobile */
-  .headerCenter,
+  /* Hide header sections on mobile, but keep portfolio tracker if needed */
   .headerRight {
+    display: none;
+  }
+  
+  /* On mobile, hide social links but keep portfolio tracker visible if space allows */
+  .headerCenter .socialLinks {
     display: none;
   }
 
