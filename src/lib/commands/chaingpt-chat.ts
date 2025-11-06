@@ -13,6 +13,7 @@
  */
 
 import type { Command, CommandContext } from "@/types/commands";
+import { createCommandLine } from "./command-output-helpers";
 import { chaingpt } from "@/lib/api";
 import { escapeHtml } from "@/lib/utils";
 import { config } from "@/lib/config";
@@ -99,8 +100,8 @@ async function handleAsk(
   if (!question) {
     context.log("❌ Please provide a question", "error");
     context.log("", "output");
-    context.log("💡 Example:", "info");
-    context.log("   chat ask What is DeFi?", "output");
+    const exampleHtml = createCommandLine("chat ask What is DeFi?", "Example question");
+    context.logHtml(exampleHtml);
     return;
   }
 
@@ -181,8 +182,8 @@ async function handleStream(
   if (!question) {
     context.log("❌ Please provide a question", "error");
     context.log("", "output");
-    context.log("💡 Example:", "info");
-    context.log("   chat stream Explain blockchain technology", "output");
+    const exampleHtml = createCommandLine("chat stream Explain blockchain technology", "Example streaming question");
+    context.logHtml(exampleHtml);
     return;
   }
 
@@ -271,8 +272,8 @@ async function handleContext(
   if (!question) {
     context.log("❌ Please provide a question", "error");
     context.log("", "output");
-    context.log("💡 Example:", "info");
-    context.log("   chat context How do I use this terminal?", "output");
+    const exampleHtml = createCommandLine("chat context How do I use this terminal?", "Example context question");
+    context.logHtml(exampleHtml);
     return;
   }
 
@@ -336,8 +337,8 @@ async function handleHistory(
   if (!question) {
     context.log("❌ Please provide a question", "error");
     context.log("", "output");
-    context.log("💡 Example:", "info");
-    context.log("   chat history What did we talk about before?", "output");
+    const exampleHtml = createCommandLine("chat history What did we talk about before?", "Example history question");
+    context.logHtml(exampleHtml);
     return;
   }
 

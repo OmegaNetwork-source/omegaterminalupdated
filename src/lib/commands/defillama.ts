@@ -8,6 +8,7 @@
 import type { Command, CommandContext } from "@/types/commands";
 import { defillama } from "@/lib/api";
 import { formatNumber, formatCurrency, escapeHtml } from "@/lib/utils";
+import { createCommandLine, createUsageError } from "./command-output-helpers";
 
 /**
  * Format large currency values with K/M/B suffixes
@@ -164,10 +165,20 @@ export const defillamaCommand: Command = {
                 style="
                   color: var(--palette-secondary, #00ff88);
                   font-weight: bold;
+                  font-size: 1.05em;
                   margin-left: 0;
                   margin-top: 8px;
                   font-family: 'Courier New', monospace;
+                  text-shadow: 0 0 6px rgba(0, 255, 136, 0.3);
+                  cursor: pointer;
+                  display: inline-block;
+                  padding: 2px 4px;
+                  border-radius: 3px;
+                  transition: all 0.2s ease;
+                  user-select: none;
                 "
+                onmouseover="this.style.background = 'color-mix(in srgb, var(--palette-secondary, #00ff88) 15%, transparent)'; this.style.textShadow = '0 0 8px var(--palette-secondary-glow, rgba(0, 255, 136, 0.5))';"
+                onmouseout="this.style.background = 'transparent'; this.style.textShadow = '0 0 6px rgba(0, 255, 136, 0.3)';"
                 title="Click to add 'defillama ${escapedCommand}' to terminal input"
               >
                 ${line}
@@ -217,7 +228,8 @@ export const defillamaCommand: Command = {
         break;
       default:
         context.log(`Unknown subcommand: ${subcommand}`, "error");
-        context.log('Use "defillama" to see available commands', "info");
+        const helpHtml = createCommandLine("defillama", "See available commands");
+        context.logHtml(helpHtml);
     }
   },
 };
@@ -476,8 +488,11 @@ async function handlePrice(
   const token = args[2]?.toLowerCase();
 
   if (!token) {
-    context.log("Usage: defillama price <token>", "error");
-    context.log("Example: defillama price eth", "info");
+    const usageHtml = createUsageError("defillama price <token>", [
+      "defillama price eth",
+      "defillama price btc",
+    ]);
+    context.logHtml(usageHtml);
     return;
   }
 
@@ -490,7 +505,8 @@ async function handlePrice(
     context.log(result.error || "Token not found", "error");
     context.log("", "output");
     context.log("Try common tokens: eth, btc, sol, usdc, usdt", "info");
-    context.log("Or use: defillama debug <token>", "info");
+    const helpHtml = createCommandLine("defillama debug <token>", "Debug token lookup");
+    context.logHtml(helpHtml);
     return;
   }
 
@@ -529,8 +545,11 @@ async function handleTokens(
   const tokensArg = args[2];
 
   if (!tokensArg) {
-    context.log("Usage: defillama tokens <token,token,...>", "error");
-    context.log("Example: defillama tokens eth,btc,sol", "info");
+    const usageHtml = createUsageError("defillama tokens <token,token,...>", [
+      "defillama tokens eth,btc,sol",
+      "defillama tokens usdc,usdt",
+    ]);
+    context.logHtml(usageHtml);
     return;
   }
 
@@ -639,8 +658,11 @@ async function handleDebug(
   const token = args[2]?.toLowerCase();
 
   if (!token) {
-    context.log("Usage: defillama debug <token>", "error");
-    context.log("Example: defillama debug eth", "info");
+    const usageHtml = createUsageError("defillama debug <token>", [
+      "defillama debug eth",
+      "defillama debug btc",
+    ]);
+    context.logHtml(usageHtml);
     return;
   }
 

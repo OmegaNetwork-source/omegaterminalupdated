@@ -14,6 +14,7 @@
  */
 
 import type { Command, CommandContext } from "@/types/commands";
+import { createCommandLine } from "./command-output-helpers";
 import { chaingpt } from "@/lib/api";
 import { escapeHtml } from "@/lib/utils";
 
@@ -156,8 +157,8 @@ async function handleGenerate(
   if (!prompt) {
     context.log("❌ Please provide a prompt", "error");
     context.log("", "output");
-    context.log("💡 Example:", "info");
-    context.log("   nftgen generate cyberpunk cat with neon lights", "output");
+    const exampleHtml = createCommandLine("nftgen generate cyberpunk cat with neon lights", "Example NFT generation");
+    context.logHtml(exampleHtml);
     return;
   }
 
@@ -599,7 +600,8 @@ function handleModels(context: CommandContext, args: string[]): void {
   context.log("💡 USAGE EXAMPLE:", "info");
   context.log("", "output");
   context.log("  # Use specific model", "output");
-  context.log("  nftgen generate --model Dale3 cyberpunk city", "info");
+  const exampleHtml = createCommandLine("nftgen generate --model Dale3 cyberpunk city", "Example with specific model");
+  context.logHtml(exampleHtml);
   context.log("", "output");
   context.log("💳 CREDIT COSTS:", "info");
   context.log("", "output");
@@ -630,7 +632,8 @@ function handleStyles(context: CommandContext, args: string[]): void {
   context.log("💡 USAGE EXAMPLE:", "info");
   context.log("", "output");
   context.log("  # Apply style to generation", "output");
-  context.log("  nftgen generate --style anime samurai warrior", "info");
+  const exampleHtml = createCommandLine("nftgen generate --style anime samurai warrior", "Example with style");
+  context.logHtml(exampleHtml);
   context.log("", "output");
 }
 

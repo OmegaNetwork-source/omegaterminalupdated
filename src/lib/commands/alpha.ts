@@ -4,6 +4,7 @@
  */
 
 import type { Command, CommandContext } from "@/types/commands";
+import { createUsageError } from "./command-output-helpers";
 import { parseFlags, getFlagString, getFlagNumber } from "@/lib/terminal/flag-parser";
 import { renderTable, renderCard } from "@/lib/terminal/renderers";
 import { formatCurrency } from "@/lib/utils";
@@ -20,8 +21,11 @@ async function handleAlphaInfer(
   const marketId = parsed.positional[0];
 
   if (!marketId) {
-    context.log("❌ Usage: alpha:infer <marketId>", "error");
-    context.log("   Example: alpha:infer polymarket:12345", "info");
+    const usageHtml = createUsageError("alpha:infer <marketId>", [
+      "alpha:infer polymarket:12345",
+      "alpha:infer polymarket:67890",
+    ]);
+    context.logHtml(usageHtml);
     return;
   }
 
@@ -144,8 +148,11 @@ async function handleAlphaSubmit(
   const note = getFlagString(parsed.flags, "note");
 
   if (!marketId) {
-    context.log("❌ Usage: alpha:submit <marketId> --p <0..1> [--note <text>]", "error");
-    context.log("   Example: alpha:submit polymarket:12345 --p 0.62 --note \"ETF flows\"", "info");
+    const usageHtml = createUsageError("alpha:submit <marketId> --p <0..1> [--note <text>]", [
+      'alpha:submit polymarket:12345 --p 0.62 --note "ETF flows"',
+      "alpha:submit polymarket:67890 --p 0.75",
+    ]);
+    context.logHtml(usageHtml);
     return;
   }
 

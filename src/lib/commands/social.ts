@@ -4,6 +4,7 @@
  */
 
 import type { Command, CommandContext } from "@/types/commands";
+import { createUsageError } from "./command-output-helpers";
 import { parseFlags, getFlagString, getFlagNumber } from "@/lib/terminal/flag-parser";
 import { renderTable, renderCard } from "@/lib/terminal/renderers";
 import { formatCurrency } from "@/lib/utils";
@@ -64,8 +65,11 @@ async function handleSocialFollow(
   const username = parsed.positional[0];
 
   if (!username) {
-    context.log("❌ Usage: social:follow <@username>", "error");
-    context.log("   Example: social:follow @yumi", "info");
+    const usageHtml = createUsageError("social:follow <@username>", [
+      "social:follow @yumi",
+      "social:follow @omega",
+    ]);
+    context.logHtml(usageHtml);
     return;
   }
 
@@ -98,8 +102,11 @@ async function handleSocialProfile(
   const range = getFlagString(parsed.flags, "range", "365d");
 
   if (!username) {
-    context.log("❌ Usage: social:profile <@username> [--range <time>]", "error");
-    context.log("   Example: social:profile @omega --range 365d", "info");
+    const usageHtml = createUsageError("social:profile <@username> [--range <time>]", [
+      "social:profile @omega --range 365d",
+      "social:profile @yumi",
+    ]);
+    context.logHtml(usageHtml);
     return;
   }
 

@@ -7,6 +7,7 @@
 import type { Command, CommandContext } from "@/types/commands";
 import { config } from "@/lib/config";
 import { Contract, parseEther, Wallet, JsonRpcProvider } from "ethers";
+import { createCommandLine, createUsageError } from "./command-output-helpers";
 
 // Helper to generate mixer commitment
 function generateMixerCommitment(): {
@@ -112,13 +113,16 @@ async function depositToMixer(
   args: string[]
 ): Promise<void> {
   if (args.length < 3) {
-    context.log("Usage: mixer deposit <amount>", "error");
-    context.log("Example: mixer deposit 1.5", "info");
+    const usageHtml = createUsageError("mixer deposit <amount>", [
+      "mixer deposit 1.5",
+      "mixer deposit 10",
+    ]);
+    context.logHtml(usageHtml);
     return;
   }
 
   const amount = args[2];
-  if (isNaN(parseFloat(amount)) || parseFloat(amount) <= 0) {
+  if (!amount || isNaN(parseFloat(amount)) || parseFloat(amount) <= 0) {
     context.log("❌ Invalid amount. Must be a positive number.", "error");
     return;
   }
@@ -150,18 +154,23 @@ async function depositExecute(
   args: string[]
 ): Promise<void> {
   if (args.length < 3) {
-    context.log("Usage: mixer deposit-execute <amount>", "error");
-    context.log("Example: mixer deposit-execute 1.5", "info");
+    const usageHtml = createUsageError("mixer deposit-execute <amount>", [
+      "mixer deposit-execute 1.5",
+      "mixer deposit-execute 10",
+    ]);
+    context.logHtml(usageHtml);
     return;
   }
 
   if (!context.wallet.state.isConnected) {
-    context.log('❌ No wallet connected. Use "connect" first.', "error");
+    context.log("❌ No wallet connected.", "error");
+    const helpHtml = createCommandLine("connect", "Connect a wallet first");
+    context.logHtml(helpHtml);
     return;
   }
 
   const amount = args[2];
-  if (isNaN(parseFloat(amount)) || parseFloat(amount) <= 0) {
+  if (!amount || isNaN(parseFloat(amount)) || parseFloat(amount) <= 0) {
     context.log("❌ Invalid amount. Must be a positive number.", "error");
     return;
   }
@@ -212,15 +221,15 @@ function showWithdrawInstructions(context: CommandContext): void {
     "output"
   );
   context.log("", "info");
-  context.log(
-    '💡 Use "mixer withdraw-execute" to do this automatically via MetaMask',
-    "info"
-  );
+    const helpHtml = createCommandLine("mixer withdraw-execute", "Do this automatically via MetaMask");
+    context.logHtml(helpHtml);
 }
 
 async function withdrawExecute(context: CommandContext): Promise<void> {
   if (!context.wallet.state.isConnected) {
-    context.log('❌ No wallet connected. Use "connect" first.', "error");
+    context.log("❌ No wallet connected.", "error");
+    const helpHtml = createCommandLine("connect", "Connect a wallet first");
+    context.logHtml(helpHtml);
     return;
   }
 

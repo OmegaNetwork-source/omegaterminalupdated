@@ -1,95 +1,145 @@
 /**
  * @file PortfolioTracker.module.css
  * @description Portfolio tracker component styling for terminal header
+ * Sharp, uniform, inline design matching terminal header aesthetics
  */
 
 .portfolioTracker {
   display: flex;
+  flex-direction: row;
   align-items: center;
-  gap: 16px;
-  padding: 8px 16px;
-  background: color-mix(in srgb, var(--palette-primary, #00bcf2) 8%, transparent);
-  border: 1px solid color-mix(in srgb, var(--palette-primary, #00bcf2) 25%, transparent);
-  border-radius: 8px;
-  backdrop-filter: blur(8px);
-  transition: all 0.3s ease;
+  gap: 12px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  transition: all 0.2s ease;
   min-width: fit-content;
+  position: relative;
+  cursor: pointer;
+  user-select: none;
+  outline: none;
+  font-family: "Courier New", monospace;
+}
+
+.portfolioTracker:focus-visible {
+  outline: 1px solid color-mix(in srgb, var(--palette-primary, #00bcf2) 60%, transparent);
+  outline-offset: 2px;
+  border-radius: 2px;
 }
 
 .portfolioTracker:hover {
-  background: color-mix(in srgb, var(--palette-primary, #00bcf2) 12%, transparent);
-  border-color: color-mix(in srgb, var(--palette-primary, #00bcf2) 40%, transparent);
-  box-shadow: 0 0 12px color-mix(in srgb, var(--palette-primary, #00bcf2) 20%, transparent);
+  opacity: 0.9;
+}
+
+.portfolioTracker:active {
+  opacity: 0.8;
+}
+
+.portfolioTitle {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--palette-primary, #00bcf2);
+  line-height: 1;
+  margin: 0;
+  padding: 0;
+  transition: color 0.3s ease;
+}
+
+.portfolioContentWrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
 }
 
 .portfolioContent {
   display: flex;
-  flex-direction: column;
-  gap: 4px;
-  align-items: flex-start;
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
 }
 
 .portfolioLabel {
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 600;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.5px;
   text-transform: uppercase;
-  color: var(--palette-muted, rgba(255, 255, 255, 0.6));
+  color: rgba(255, 255, 255, 0.7);
   line-height: 1;
+  white-space: nowrap;
+  transition: color 0.3s ease;
 }
 
 .portfolioValue {
-  font-size: 16px;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  color: var(--palette-text, #ffffff);
-  line-height: 1.2;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1;
   font-variant-numeric: tabular-nums;
-  text-shadow: 0 0 8px color-mix(in srgb, var(--palette-primary, #00bcf2) 30%, transparent);
+  white-space: nowrap;
+  transition: color 0.3s ease;
 }
 
 .portfolioChange {
-  font-size: 16px;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  line-height: 1.2;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  line-height: 1;
   font-variant-numeric: tabular-nums;
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 2px;
+  white-space: nowrap;
+  transition: color 0.3s ease;
 }
 
 .portfolioChange.positive {
   color: var(--palette-success, #16c782);
-  text-shadow: 0 0 8px color-mix(in srgb, var(--palette-success, #16c782) 40%, transparent);
 }
 
 .portfolioChange.negative {
   color: var(--palette-error, #ff4d4f);
-  text-shadow: 0 0 8px color-mix(in srgb, var(--palette-error, #ff4d4f) 40%, transparent);
 }
 
 .portfolioDivider {
   width: 1px;
-  height: 32px;
-  background: color-mix(in srgb, var(--palette-border, rgba(0, 188, 242, 0.25)) 50%, transparent);
+  height: 20px;
+  background: color-mix(in srgb, var(--palette-primary, #00d4ff) 15%, transparent);
   flex-shrink: 0;
+  transition: background 0.3s ease;
 }
 
 /* Mobile Responsive */
 @media (max-width: 1024px) {
   .portfolioTracker {
-    gap: 12px;
-    padding: 6px 12px;
+    gap: 8px;
   }
 
+  .portfolioTitle {
+    font-size: 10px;
+  }
+
+  .portfolioContentWrapper {
+    gap: 8px;
+  }
+
+  .portfolioContent {
+    gap: 4px;
+  }
+
+  .portfolioLabel,
   .portfolioValue,
   .portfolioChange {
-    font-size: 14px;
+    font-size: 10px;
   }
 
-  .portfolioLabel {
-    font-size: 9px;
+  .portfolioDivider {
+    height: 16px;
   }
 }
 
@@ -97,5 +147,22 @@
   .portfolioTracker {
     display: none; /* Hide on mobile to save space */
   }
+}
+
+/* Light mode overrides - match terminal header styling */
+:global(body.light-mode) .portfolioTracker .portfolioTitle {
+  color: var(--palette-primary, var(--cyber-blue, #0051d5));
+}
+
+:global(body.light-mode) .portfolioTracker .portfolioLabel {
+  color: rgba(0, 0, 0, 0.7);
+}
+
+:global(body.light-mode) .portfolioTracker .portfolioValue {
+  color: rgba(0, 0, 0, 0.9);
+}
+
+:global(body.light-mode) .portfolioTracker .portfolioDivider {
+  background: color-mix(in srgb, var(--palette-primary, rgba(0, 81, 213, 1)) 20%, transparent);
 }
 

@@ -4,6 +4,7 @@
  */
 
 import type { Command, CommandContext } from "@/types/commands";
+import { createUsageError } from "./command-output-helpers";
 import { parseFlags, getFlagString, getFlagNumber } from "@/lib/terminal/flag-parser";
 import { renderTable, renderCard } from "@/lib/terminal/renderers";
 import { formatCurrency } from "@/lib/utils";
@@ -152,8 +153,11 @@ async function handleBundleView(
   const bundleName = parsed.positional[0];
 
   if (!bundleName) {
-    context.log("❌ Usage: bundle:view <bundleName>", "error");
-    context.log("   Example: bundle:view crypto-2025", "info");
+    const usageHtml = createUsageError("bundle:view <bundleName>", [
+      "bundle:view crypto-2025",
+      "bundle:view defi-2025",
+    ]);
+    context.logHtml(usageHtml);
     return;
   }
 
@@ -197,8 +201,11 @@ async function handleBundleBacktest(
   const rebalance = getFlagString(parsed.flags, "rebalance", "14d");
 
   if (!bundleName) {
-    context.log("❌ Usage: bundle:backtest <bundleName> [--range <time>] [--rebalance <time>]", "error");
-    context.log("   Example: bundle:backtest crypto-2025 --range 180d --rebalance 14d", "info");
+    const usageHtml = createUsageError("bundle:backtest <bundleName> [--range <time>] [--rebalance <time>]", [
+      "bundle:backtest crypto-2025 --range 180d --rebalance 14d",
+      "bundle:backtest defi-2025 --range 365d",
+    ]);
+    context.logHtml(usageHtml);
     return;
   }
 

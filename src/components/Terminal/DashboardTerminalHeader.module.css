@@ -35,6 +35,13 @@
   font-weight: bold;
 }
 
+.terminalCenter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+}
+
 .terminalControls {
   display: flex;
   gap: 16px;

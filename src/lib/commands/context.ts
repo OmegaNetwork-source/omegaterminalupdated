@@ -4,6 +4,7 @@
  */
 
 import type { Command, CommandContext } from "@/types/commands";
+import { createUsageError } from "./command-output-helpers";
 import { parseFlags } from "@/lib/terminal/flag-parser";
 import { renderCard } from "@/lib/terminal/renderers";
 
@@ -79,8 +80,11 @@ async function handleContextSet(
   const pairs = parsed.positional.filter(arg => arg.includes("="));
 
   if (pairs.length === 0) {
-    context.log("❌ Usage: ctx:set <key>=<value> [key2=value2 ...]", "error");
-    context.log("   Example: ctx:set venue=polymarket tag=crypto", "info");
+    const usageHtml = createUsageError("ctx:set <key>=<value> [key2=value2 ...]", [
+      "ctx:set venue=polymarket tag=crypto",
+      "ctx:set tag=defi",
+    ]);
+    context.logHtml(usageHtml);
     return;
   }
 

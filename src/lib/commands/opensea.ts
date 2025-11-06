@@ -8,6 +8,7 @@
  */
 
 import type { Command, CommandContext } from "@/types/commands";
+import { createUsageError } from "./command-output-helpers";
 import { opensea } from "@/lib/api";
 import { escapeHtml, formatNumber } from "@/lib/utils";
 
@@ -266,8 +267,11 @@ async function handleSearch(
   const query = args.slice(2).join(" ");
 
   if (!query) {
-    context.log("❌ Please provide a search query", "error");
-    context.log("   Usage: nft search <query>", "info");
+    const usageHtml = createUsageError("nft search <query>", [
+      "nft search bored ape",
+      "nft search cryptopunks",
+    ]);
+    context.logHtml(usageHtml);
     return;
   }
 
@@ -340,8 +344,11 @@ async function handleCollection(
   const slug = args[2];
 
   if (!slug) {
-    context.log("❌ Please provide a collection slug", "error");
-    context.log("   Usage: nft collection <slug>", "info");
+    const usageHtml = createUsageError("nft collection <slug>", [
+      "nft collection bored-ape-yacht-club",
+      "nft collection cryptopunks",
+    ]);
+    context.logHtml(usageHtml);
     return;
   }
 
@@ -451,8 +458,11 @@ async function handleAssets(
   const limit = parseInt(args[3]) || 12;
 
   if (!slug) {
-    context.log("❌ Please provide a collection slug", "error");
-    context.log("   Usage: nft assets <slug> [limit]", "info");
+    const usageHtml = createUsageError("nft assets <slug> [limit]", [
+      "nft assets bored-ape-yacht-club 20",
+      "nft assets cryptopunks",
+    ]);
+    context.logHtml(usageHtml);
     return;
   }
 
@@ -524,11 +534,11 @@ async function handleItem(
   const tokenId = args[3];
 
   if (!contractAddressOrSlug || !tokenId) {
-    context.log(
-      "❌ Please provide contract address/slug and token ID",
-      "error"
-    );
-    context.log("   Usage: nft item <contractAddress> <tokenId>", "info");
+    const usageHtml = createUsageError("nft item <contractAddress> <tokenId>", [
+      "nft item 0xbc4ca0eda7647a8ab7c2061c2e118a18a936f13d 1",
+      "nft item bored-ape-yacht-club 1",
+    ]);
+    context.logHtml(usageHtml);
     context.log(
       "   Note: Contract address is preferred. Collection slug will be resolved automatically.",
       "info"
@@ -658,8 +668,11 @@ async function handleAnalytics(
   const slug = args[2];
 
   if (!slug) {
-    context.log("❌ Please provide a collection slug", "error");
-    context.log("   Usage: nft analytics <slug>", "info");
+    const usageHtml = createUsageError("nft analytics <slug>", [
+      "nft analytics bored-ape-yacht-club",
+      "nft analytics cryptopunks",
+    ]);
+    context.logHtml(usageHtml);
     return;
   }
 
@@ -746,8 +759,11 @@ async function handleFloor(
   const slug = args[2];
 
   if (!slug) {
-    context.log("❌ Please provide a collection slug", "error");
-    context.log("   Usage: nft floor <slug>", "info");
+    const usageHtml = createUsageError("nft floor <slug>", [
+      "nft floor bored-ape-yacht-club",
+      "nft floor cryptopunks",
+    ]);
+    context.logHtml(usageHtml);
     return;
   }
 
@@ -796,8 +812,11 @@ async function handleBuy(
   const tokenId = args[3];
 
   if (!collection || !tokenId) {
-    context.log("❌ Please provide collection and token ID", "error");
-    context.log("   Usage: nft buy <collection> <tokenId>", "info");
+    const usageHtml = createUsageError("nft buy <collection> <tokenId>", [
+      "nft buy bored-ape-yacht-club 1",
+      "nft buy cryptopunks 1",
+    ]);
+    context.logHtml(usageHtml);
     return;
   }
 
@@ -843,8 +862,11 @@ async function handleBid(
   const tokenId = args[3];
 
   if (!collection || !tokenId) {
-    context.log("❌ Please provide collection and token ID", "error");
-    context.log("   Usage: nft bid <collection> <tokenId>", "info");
+    const usageHtml = createUsageError("nft bid <collection> <tokenId>", [
+      "nft bid bored-ape-yacht-club 1",
+      "nft bid cryptopunks 1",
+    ]);
+    context.logHtml(usageHtml);
     return;
   }
 

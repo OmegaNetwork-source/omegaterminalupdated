@@ -9,6 +9,7 @@ import { parseFlags, getFlagString, getFlagNumber } from "@/lib/terminal/flag-pa
 import { renderTable, renderCard } from "@/lib/terminal/renderers";
 import { escapeHtml, formatCurrency } from "@/lib/utils";
 import { setLastJSONOutput } from "@/lib/commands/export";
+import { createCommandLine, createUsageError } from "./command-output-helpers";
 
 // Context storage for default values
 const marketContext: {
@@ -94,9 +95,14 @@ async function handleMarketsList(
       context.log("❌ No markets found matching your criteria", "error");
       context.log("", "output");
       context.log("💡 Try:", "info");
-      context.log("   • Adjust filters (--tag, --q)", "output");
-      context.log("   • Try different venue: --venue kalshi", "output");
-      context.log("   • Check spelling and try again", "output");
+      const helpHtml = `
+        <div style="margin: 8px 0; padding-left: 20px;">
+          <div style="color: var(--palette-text, #ccd4e0); margin: 4px 0; font-size: 0.95em;">• Adjust filters (--tag, --q)</div>
+          <div style="color: var(--palette-text, #ccd4e0); margin: 4px 0; font-size: 0.95em;">• Try different venue: ${createCommandLine("markets:list --venue kalshi", "")}</div>
+          <div style="color: var(--palette-text, #ccd4e0); margin: 4px 0; font-size: 0.95em;">• Check spelling and try again</div>
+        </div>
+      `;
+      context.logHtml(helpHtml);
       return;
     }
 
@@ -159,7 +165,7 @@ async function handleMarketsList(
           color: var(--palette-primary, #00d4ff);
           font-size: 11px;
         ">
-          💡 Use "markets:view <marketId>" to see details | "markets:list help" for more options
+          💡 Use <span class="omega-help-command" data-command="markets:view" style="color: var(--palette-secondary, #00ff88); font-weight: bold; cursor: pointer; font-family: 'Courier New', monospace; padding: 2px 4px; border-radius: 3px; transition: all 0.2s ease;" onmouseover="this.style.background = 'color-mix(in srgb, var(--palette-secondary, #00ff88) 15%, transparent)';" onmouseout="this.style.background = 'transparent';" title="Click to add 'markets:view' to terminal input">markets:view</span> to see details | <span class="omega-help-command" data-command="markets:list help" style="color: var(--palette-secondary, #00ff88); font-weight: bold; cursor: pointer; font-family: 'Courier New', monospace; padding: 2px 4px; border-radius: 3px; transition: all 0.2s ease;" onmouseover="this.style.background = 'color-mix(in srgb, var(--palette-secondary, #00ff88) 15%, transparent)';" onmouseout="this.style.background = 'transparent';" title="Click to add 'markets:list help' to terminal input">markets:list help</span> for more options
         </div>
       </div>
     `;
@@ -172,11 +178,16 @@ async function handleMarketsList(
     context.log(`✓ Found ${markets.length} markets`, "success");
   } catch (error: any) {
     context.log(`❌ Error: ${error.message}`, "error");
-    context.log("", "output");
-    context.log("💡 Troubleshooting:", "info");
-    context.log("   • Check network connection", "output");
-    context.log("   • Verify relayer URL is configured", "output");
-    context.log("   • Try: markets:list --venue polymarket --limit 10", "output");
+      context.log("", "output");
+      context.log("💡 Troubleshooting:", "info");
+      const helpHtml = `
+        <div style="margin: 8px 0; padding-left: 20px;">
+          <div style="color: var(--palette-text, #ccd4e0); margin: 4px 0; font-size: 0.95em;">• Check network connection</div>
+          <div style="color: var(--palette-text, #ccd4e0); margin: 4px 0; font-size: 0.95em;">• Verify relayer URL is configured</div>
+          <div style="color: var(--palette-text, #ccd4e0); margin: 4px 0; font-size: 0.95em;">• Try: ${createCommandLine("markets:list --venue polymarket --limit 10", "")}</div>
+        </div>
+      `;
+      context.logHtml(helpHtml);
   }
 }
 
@@ -192,11 +203,14 @@ async function handleMarketsView(
   const parsed = parseFlags(args.slice(1));
   const marketId = parsed.positional[0];
 
-  if (!marketId) {
-    context.log("❌ Usage: markets:view <marketId>", "error");
-    context.log("   Example: markets:view polymarket:12345", "info");
-    return;
-  }
+    if (!marketId) {
+      const usageHtml = createUsageError("markets:view <marketId>", [
+        "markets:view polymarket:12345",
+        "markets:view kalshi:abc123",
+      ]);
+      context.logHtml(usageHtml);
+      return;
+    }
 
   const [venue, id] = marketId.includes(":") 
     ? marketId.split(":", 2)
@@ -237,8 +251,13 @@ async function handleMarketsView(
       context.log("❌ Market not found", "error");
       context.log("", "output");
       context.log("💡 Tips:", "info");
-      context.log("   • Verify market ID format: venue:id", "output");
-      context.log("   • Use markets:list to find available markets", "output");
+      const helpHtml = `
+        <div style="margin: 8px 0; padding-left: 20px;">
+          <div style="color: var(--palette-text, #ccd4e0); margin: 4px 0; font-size: 0.95em;">• Verify market ID format: venue:id</div>
+          <div style="color: var(--palette-text, #ccd4e0); margin: 4px 0; font-size: 0.95em;">• Use ${createCommandLine("markets:list", "to find available markets")}</div>
+        </div>
+      `;
+      context.logHtml(helpHtml);
       return;
     }
 
@@ -278,10 +297,15 @@ async function handleMarketsView(
     context.log(`✓ Market details loaded`, "success");
   } catch (error: any) {
     context.log(`❌ Error: ${error.message}`, "error");
-    context.log("", "output");
-    context.log("💡 Troubleshooting:", "info");
-    context.log("   • Check network connection", "output");
-    context.log("   • Verify market ID is correct", "output");
+      context.log("", "output");
+      context.log("💡 Troubleshooting:", "info");
+      const helpHtml = `
+        <div style="margin: 8px 0; padding-left: 20px;">
+          <div style="color: var(--palette-text, #ccd4e0); margin: 4px 0; font-size: 0.95em;">• Check network connection</div>
+          <div style="color: var(--palette-text, #ccd4e0); margin: 4px 0; font-size: 0.95em;">• Verify market ID is correct</div>
+        </div>
+      `;
+      context.logHtml(helpHtml);
   }
 }
 
@@ -324,8 +348,11 @@ async function handleMarketsSimilar(
   const limit = getFlagNumber(parsed.flags, "limit", 10);
 
   if (!query) {
-    context.log("❌ Usage: markets:similar \"<query>\"", "error");
-    context.log('   Example: markets:similar "ETH > $10k by 2026"', "info");
+    const usageHtml = createUsageError('markets:similar "<query>"', [
+      'markets:similar "ETH > $10k by 2026"',
+      'markets:similar "Bitcoin price"',
+    ]);
+    context.logHtml(usageHtml);
     return;
   }
 
@@ -378,29 +405,16 @@ function handleMarketsHelp(context: CommandContext): void {
         </div>
         
         <div style="margin: 12px 0; padding-left: 20px;">
-          <div style="margin: 8px 0;">
-            <span style="
-              color: var(--palette-secondary, #00ff88);
-              font-weight: bold;
-              font-family: 'Courier New', monospace;
-            ">markets:list</span>
-            <span style="
-              color: var(--palette-primary, #00d4ff);
-              font-size: 0.85em;
-              margin-left: 5px;
-              font-style: italic;
-            ">[m:ls]</span>
-          </div>
+          ${createCommandLine("markets:list", "List and filter prediction markets")}
+          <div style="
+            color: var(--palette-primary, #00d4ff);
+            font-size: 0.85em;
+            margin-left: 20px;
+            margin-top: 4px;
+            font-style: italic;
+          ">Alias: m:ls</div>
           <div style="
             color: var(--palette-text, #ccd4e0);
-            margin-left: 0;
-            margin-top: 4px;
-            font-size: 12px;
-          ">
-            List and filter prediction markets
-          </div>
-          <div style="
-            color: var(--palette-secondary, #00ff88);
             margin-left: 0;
             margin-top: 4px;
             font-size: 11px;
@@ -411,62 +425,27 @@ function handleMarketsHelp(context: CommandContext): void {
         </div>
 
         <div style="margin: 12px 0; padding-left: 20px;">
-          <div style="margin: 8px 0;">
-            <span style="
-              color: var(--palette-secondary, #00ff88);
-              font-weight: bold;
-              font-family: 'Courier New', monospace;
-            ">markets:view</span>
-            <span style="
-              color: var(--palette-primary, #00d4ff);
-              font-size: 0.85em;
-              margin-left: 5px;
-              font-style: italic;
-            ">[m:cat]</span>
-          </div>
+          ${createCommandLine("markets:view <marketId>", "View market details")}
           <div style="
-            color: var(--palette-text, #ccd4e0);
-            margin-left: 0;
+            color: var(--palette-primary, #00d4ff);
+            font-size: 0.85em;
+            margin-left: 20px;
             margin-top: 4px;
-            font-size: 12px;
-          ">
-            View market details
-          </div>
-          <div style="
-            color: var(--palette-secondary, #00ff88);
-            margin-left: 0;
-            margin-top: 4px;
-            font-size: 11px;
-            font-family: 'Courier New', monospace;
-          ">
-            → Usage: markets:view <marketId>
-          </div>
+            font-style: italic;
+          ">Alias: m:cat</div>
         </div>
 
         <div style="margin: 12px 0; padding-left: 20px;">
-          <div style="margin: 8px 0;">
-            <span style="
-              color: var(--palette-secondary, #00ff88);
-              font-weight: bold;
-              font-family: 'Courier New', monospace;
-            ">markets:heatmap</span>
-            <span style="
-              color: var(--palette-primary, #00d4ff);
-              font-size: 0.85em;
-              margin-left: 5px;
-              font-style: italic;
-            ">[m:heat]</span>
-          </div>
+          ${createCommandLine("markets:heatmap", "Sentiment/flow heatmap")}
+          <div style="
+            color: var(--palette-primary, #00d4ff);
+            font-size: 0.85em;
+            margin-left: 20px;
+            margin-top: 4px;
+            font-style: italic;
+          ">Alias: m:heat</div>
           <div style="
             color: var(--palette-text, #ccd4e0);
-            margin-left: 0;
-            margin-top: 4px;
-            font-size: 12px;
-          ">
-            Sentiment/flow heatmap
-          </div>
-          <div style="
-            color: var(--palette-secondary, #00ff88);
             margin-left: 0;
             margin-top: 4px;
             font-size: 11px;
@@ -477,36 +456,14 @@ function handleMarketsHelp(context: CommandContext): void {
         </div>
 
         <div style="margin: 12px 0; padding-left: 20px;">
-          <div style="margin: 8px 0;">
-            <span style="
-              color: var(--palette-secondary, #00ff88);
-              font-weight: bold;
-              font-family: 'Courier New', monospace;
-            ">markets:similar</span>
-            <span style="
-              color: var(--palette-primary, #00d4ff);
-              font-size: 0.85em;
-              margin-left: 5px;
-              font-style: italic;
-            ">[m:sim]</span>
-          </div>
+          ${createCommandLine('markets:similar "<query>"', "Find similar markets")}
           <div style="
-            color: var(--palette-text, #ccd4e0);
-            margin-left: 0;
+            color: var(--palette-primary, #00d4ff);
+            font-size: 0.85em;
+            margin-left: 20px;
             margin-top: 4px;
-            font-size: 12px;
-          ">
-            Find similar markets
-          </div>
-          <div style="
-            color: var(--palette-secondary, #00ff88);
-            margin-left: 0;
-            margin-top: 4px;
-            font-size: 11px;
-            font-family: 'Courier New', monospace;
-          ">
-            → Usage: markets:similar "<query>" [--limit <n>]
-          </div>
+            font-style: italic;
+          ">Alias: m:sim</div>
         </div>
       </div>
 
@@ -520,13 +477,7 @@ function handleMarketsHelp(context: CommandContext): void {
       ">
         <span style="color: var(--palette-primary, #00d4ff); font-weight: bold;">💡</span>
         <span style="color: var(--palette-text, #ccd4e0); margin-left: 8px;">
-          Use <code style="
-            color: var(--palette-primary-glow, #00ff88);
-            background: rgba(0, 255, 136, 0.1);
-            padding: 2px 6px;
-            border-radius: 3px;
-            font-weight: bold;
-          ">help</code> to see all commands
+          Use <span class="omega-help-command" data-command="help" style="color: var(--palette-secondary, #00ff88); font-weight: bold; cursor: pointer; font-family: 'Courier New', monospace; padding: 2px 6px; border-radius: 3px; transition: all 0.2s ease; background: rgba(0, 255, 136, 0.1);" onmouseover="this.style.background = 'color-mix(in srgb, var(--palette-secondary, #00ff88) 20%, transparent)';" onmouseout="this.style.background = 'rgba(0, 255, 136, 0.1)';" title="Click to add 'help' to terminal input">help</span> to see all commands
         </span>
       </div>
     </div>

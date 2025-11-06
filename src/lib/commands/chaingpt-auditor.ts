@@ -12,6 +12,7 @@
  */
 
 import type { Command, CommandContext } from "@/types/commands";
+import { createCommandLine } from "./command-output-helpers";
 import { chaingpt } from "@/lib/api";
 import { escapeHtml } from "@/lib/utils";
 import { config } from "@/lib/config";
@@ -145,8 +146,8 @@ async function handleAudit(
   if (!contractCode) {
     context.log("❌ Please provide contract code to audit", "error");
     context.log("", "output");
-    context.log("💡 Example:", "info");
-    context.log('   auditor audit "contract MyToken { ... }"', "output");
+    const exampleHtml = createCommandLine('auditor audit "contract MyToken { ... }"', "Example contract audit");
+    context.logHtml(exampleHtml);
     return;
   }
 
@@ -439,10 +440,8 @@ function handleCategories(context: CommandContext, args: string[]): void {
   context.log("💡 USAGE EXAMPLE:", "info");
   context.log("", "output");
   context.log("  # Focus on specific categories", "output");
-  context.log(
-    "  auditor audit --focus reentrancy,access_control <code>",
-    "info"
-  );
+  const exampleHtml = createCommandLine("auditor audit --focus reentrancy,access_control <code>", "Example with focus categories");
+  context.logHtml(exampleHtml);
   context.log("", "output");
 }
 

@@ -6,6 +6,7 @@
 import type { Command, CommandContext } from "@/types/commands";
 import { config } from "@/lib/config";
 import * as solana from "@/lib/multichain/solana";
+import { createCommandLine, createUsageError } from "./command-output-helpers";
 
 /**
  * Solana command - Main entry point for all Solana operations
@@ -51,9 +52,11 @@ export const solanaCommand: Command = {
         break;
       default:
         context.log(
-          `Unknown Solana subcommand: ${subcommand}. Use 'solana help' for available commands.`,
+          `Unknown Solana subcommand: ${subcommand}.`,
           "error"
         );
+        const helpHtml = createCommandLine("solana help", "See available commands");
+        context.logHtml(helpHtml);
     }
   },
 };
@@ -307,8 +310,11 @@ async function searchTokens(
     const query = args.join(" ");
 
     if (!query) {
-      context.log("❌ Please provide a search query", "error");
-      context.log("Usage: solana search <token name or symbol>", "info");
+      const usageHtml = createUsageError("solana search <token name or symbol>", [
+        "solana search USDC",
+        "solana search Solana",
+      ]);
+      context.logHtml(usageHtml);
       return;
     }
 
@@ -462,8 +468,10 @@ async function getSwapQuote(
 ): Promise<void> {
   try {
     if (args.length < 3) {
-      context.log("❌ Invalid arguments", "error");
-      context.log("Usage: solana quote <from_mint> <to_mint> <amount>", "info");
+      const usageHtml = createUsageError("solana quote <from_mint> <to_mint> <amount>", [
+        "solana quote So11111111111111111111111111111111111111112 EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v 1000000",
+      ]);
+      context.logHtml(usageHtml);
       return;
     }
 
@@ -479,7 +487,8 @@ async function getSwapQuote(
       context.log(`   Output: ${quote.outAmount}`, "info");
       context.log(`   Price Impact: ${quote.priceImpactPct}%`, "info");
       context.log("", "info");
-      context.log("💡 Use 'solana swap' for interactive swapping", "info");
+      const helpHtml = createCommandLine("solana swap", "Use for interactive swapping");
+      context.logHtml(helpHtml);
     } else {
       context.log("❌ Failed to get quote", "error");
     }
@@ -502,7 +511,13 @@ async function showSwapInterface(context: CommandContext): Promise<void> {
 
     if (!state.connected || !state.publicKey) {
       context.log("❌ Please connect your wallet first", "error");
-      context.log("Use 'solana connect' or 'solana generate'", "info");
+      const helpHtml = `
+        <div style="margin: 8px 0;">
+          ${createCommandLine("solana connect", "Connect your Solana wallet")}
+          ${createCommandLine("solana generate", "Generate a new Solana wallet")}
+        </div>
+      `;
+      context.logHtml(helpHtml);
       return;
     }
 
@@ -895,20 +910,22 @@ async function executeSwap(
 
     if (!state.connected || !state.publicKey) {
       context.log("❌ Please connect your wallet first", "error");
-      context.log("Use 'solana connect' or 'solana generate'", "info");
+      const helpHtml = `
+        <div style="margin: 8px 0;">
+          ${createCommandLine("solana connect", "Connect your Solana wallet")}
+          ${createCommandLine("solana generate", "Generate a new Solana wallet")}
+        </div>
+      `;
+      context.logHtml(helpHtml);
       return;
     }
 
     if (args.length < 3) {
-      context.log("❌ Invalid arguments", "error");
-      context.log(
-        "Usage: solana swap execute <from_mint> <to_mint> <amount> [slippage_bps]",
-        "info"
-      );
-      context.log(
-        "Example: solana swap execute So11...AA Bonk...AA 1000000 50",
-        "info"
-      );
+      const usageHtml = createUsageError("solana swap execute <from_mint> <to_mint> <amount> [slippage_bps]", [
+        "solana swap execute So11111111111111111111111111111111111111112 EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v 1000000",
+        "solana swap execute So11...AA Bonk...AA 1000000 50",
+      ]);
+      context.logHtml(usageHtml);
       return;
     }
 

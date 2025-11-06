@@ -10,6 +10,7 @@
 import type { Command, CommandContext } from "@/types/commands";
 import { config } from "@/lib/config";
 import { escapeHtml } from "@/lib/utils";
+import { createUsageError } from "./command-output-helpers";
 import type { MintedNFT, NFTMetadata } from "@/types/nft";
 import { pinata } from "@/lib/api";
 import { Contract } from "ethers";
@@ -583,8 +584,11 @@ async function handleView(
   const index = parseInt(args[2]);
 
   if (isNaN(index)) {
-    context.log("❌ Please provide a valid NFT index", "error");
-    context.log("   Usage: omega view <index>", "info");
+    const usageHtml = createUsageError("omega view <index>", [
+      "omega view 0",
+      "omega view 1",
+    ]);
+    context.logHtml(usageHtml);
     context.log(
       '   Use "omega collection" to see your NFTs with indices',
       "info"

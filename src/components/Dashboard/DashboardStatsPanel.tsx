@@ -15,6 +15,7 @@ import { useOmegaTrancePlayer } from "@/hooks/useOmegaTrancePlayer";
 import { useOmegaMelodiesPlayer } from "@/hooks/useOmegaMelodiesPlayer";
 import { useMobileDetection } from "@/hooks/useMobileDetection";
 import { MobileStatsPanel } from "@/components/Mobile/MobileStatsPanel";
+import Cubes, { CubesRef } from "@/components/Background/Cubes";
 import styles from "./DashboardStatsPanel.module.css";
 
 // Dynamically import media panels (heavy external SDKs)
@@ -76,13 +77,14 @@ type TradingViewWidget = {
  * DashboardStatsPanel
  * Side panel for charts and media players.
  */
-export function DashboardStatsPanel(): JSX.Element {
+export function DashboardStatsPanel(): JSX.Element | null {
   const mobile = useMobileDetection();
   
   // On mobile, don't render the sidebar - panels will show inline in terminal
   if (mobile.isMobile) {
     return null;
   }
+  
   const perps = usePerps();
   const spotify = useSpotify();
   const youtube = useYouTube();
@@ -94,21 +96,32 @@ export function DashboardStatsPanel(): JSX.Element {
   const trancePlayer = useOmegaTrancePlayer();
   const melodiesPlayer = useOmegaMelodiesPlayer();
 
-  // On mobile, render the mobile overlay instead of sidebar
-  if (mobile.isMobile) {
-    return <MobileStatsPanel />;
-  }
-
   const [isChartOpen, setIsChartOpen] = useState<boolean>(false);
   const [chartSymbol, setChartSymbol] = useState<string>("—");
   const [isTradingViewReady, setIsTradingViewReady] = useState<boolean>(false);
   const chartContainerRef = useRef<HTMLDivElement | null>(null);
   const tradingViewWidgetRef = useRef<TradingViewWidget | null>(null);
   const tradingViewScriptLoadedRef = useRef<boolean>(false);
+  const cubesRef = useRef<CubesRef | null>(null);
   const chartContainerId = useMemo(
     () => `tv-chart-${Math.random().toString(36).slice(2)}`,
     []
   );
+
+  // Track previous panel states to detect new components
+  const prevPanelStatesRef = useRef({
+    chart: false,
+    perps: false,
+    spotify: false,
+    youtube: false,
+    newsReader: false,
+    bluesPlayer: false,
+    lofiPlayer: false,
+    techPlayer: false,
+    funkyPlayer: false,
+    trancePlayer: false,
+    melodiesPlayer: false
+  });
 
   useEffect(() => {
     if (!isChartOpen && tradingViewWidgetRef.current) {
@@ -182,25 +195,26 @@ export function DashboardStatsPanel(): JSX.Element {
         console.log(`[Chart] Container dimensions: ${containerElement.offsetWidth}x${containerElement.offsetHeight}`);
         
         // Use 'new' keyword to instantiate TradingView widget
-        // Calculate height based on container width for square aspect ratio
+        // Use container's actual height to ensure iframe is fully visible
+        const containerHeight = containerElement.offsetHeight || 600;
         const containerWidth = containerElement.offsetWidth || 320;
-        const widgetHeight = Math.min(containerWidth, 500); // Square aspect ratio, max 500px
         
         tradingViewWidgetRef.current = new tv.widget({
           symbol: chartSymbol,
           container_id: chartContainerId,
           autosize: true,
           theme: "dark",
-          height: widgetHeight,
-          width: "100%",
+          height: containerHeight,
+          width: containerWidth,
           interval: "D",
           locale: "en",
-          toolbar_bg: "#1a1a2e", // Dark theme background
+          toolbar_bg: "rgba(0, 0, 0, 0.3)", // Match panel background
           enable_publishing: false,
           hide_top_toolbar: false,
           hide_legend: false,
           save_image: false,
           studies_overrides: {},
+          backgroundColor: "rgba(0, 0, 0, 0.4)", // Match container background
         });
         
         console.log(`[Chart] TradingView widget created successfully for ${chartSymbol}`);
@@ -211,12 +225,14 @@ export function DashboardStatsPanel(): JSX.Element {
       }
     };
 
-    // Small delay to ensure DOM is ready
+    // Small delay to ensure DOM is ready and container has dimensions
     const timer = setTimeout(() => {
-      if (isChartOpen) {
+      if (isChartOpen && chartContainerRef.current) {
+        // Force a reflow to ensure dimensions are calculated
+        void chartContainerRef.current.offsetHeight;
         createWidget();
       }
-    }, 100);
+    }, 150);
 
     return () => {
       clearTimeout(timer);
@@ -251,8 +267,82 @@ export function DashboardStatsPanel(): JSX.Element {
     return () => {};
   }, []);
 
+  // Detect when new components enter the panel and trigger pulse animation
+  useEffect(() => {
+    const currentStates = {
+      chart: isChartOpen,
+      perps: perps.playerState.isPanelOpen,
+      spotify: spotify.playerState.isPanelOpen,
+      youtube: youtube.playerState.isPanelOpen,
+      newsReader: newsReader.readerState.isPanelOpen,
+      bluesPlayer: bluesPlayer.playerState.isPanelOpen,
+      lofiPlayer: lofiPlayer.playerState.isPanelOpen,
+      techPlayer: techPlayer.playerState.isPanelOpen,
+      funkyPlayer: funkyPlayer.playerState.isPanelOpen,
+      trancePlayer: trancePlayer.playerState.isPanelOpen,
+      melodiesPlayer: melodiesPlayer.playerState.isPanelOpen
+    };
+
+    // Check if any panel just opened (was false, now true)
+    const panels = Object.keys(currentStates) as Array<keyof typeof currentStates>;
+    const newPanelOpened = panels.some(
+      panel => !prevPanelStatesRef.current[panel] && currentStates[panel]
+    );
+
+    if (newPanelOpened && cubesRef.current) {
+      // Trigger pulse animation with a slight delay to ensure DOM is ready
+      const timeoutId = setTimeout(() => {
+        cubesRef.current?.pulse({
+          intensity: 1.2,
+          duration: 1.0,
+          origin: { row: 4, col: 4 } // Center of 8x8 grid
+        });
+      }, 100);
+
+      // Update previous states
+      prevPanelStatesRef.current = { ...currentStates };
+
+      return () => {
+        clearTimeout(timeoutId);
+      };
+    } else {
+      // Update previous states even if no new panel opened
+      prevPanelStatesRef.current = { ...currentStates };
+    }
+  }, [
+    isChartOpen,
+    perps.playerState.isPanelOpen,
+    spotify.playerState.isPanelOpen,
+    youtube.playerState.isPanelOpen,
+    newsReader.readerState.isPanelOpen,
+    bluesPlayer.playerState.isPanelOpen,
+    lofiPlayer.playerState.isPanelOpen,
+    techPlayer.playerState.isPanelOpen,
+    funkyPlayer.playerState.isPanelOpen,
+    trancePlayer.playerState.isPanelOpen,
+    melodiesPlayer.playerState.isPanelOpen
+  ]);
+
   return (
     <aside className={styles.statsPanel}>
+      {/* Animated Cubes Background Effect */}
+      <Cubes
+        ref={cubesRef}
+        gridSize={8}
+        maxAngle={25}
+        radius={2.5}
+        duration={{ enter: 0.3, leave: 0.6 }}
+        cellGap={4}
+        borderStyle="1px solid var(--palette-border, rgba(0, 188, 242, 0.2))"
+        faceColor="var(--palette-surface, rgba(6, 0, 16, 0.4))"
+        shadow={false}
+        autoAnimate={true}
+        rippleOnClick={true}
+        rippleColor="var(--palette-primary, #00bcf2)"
+        rippleSpeed={2}
+        className={styles.cubesBackground}
+      />
+
       {/* TradingView Script - Load once, use many times */}
       <Script
         src="https://s3.tradingview.com/tv.js"
@@ -302,16 +392,41 @@ export function DashboardStatsPanel(): JSX.Element {
       {/* Chart Panel - visibility controlled via omega:openChart events */}
       {isChartOpen && (
         <section className={styles.section}>
-          <div className={styles.sectionTitle}>Chart Viewer</div>
           <div className={styles.chartPanel}>
             <div className={styles.chartHeader}>
-              <span className={styles.chartSymbol}>Symbol: {chartSymbol}</span>
+              <div className={styles.chartHeaderLeft}>
+                <svg
+                  className={styles.chartIcon}
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <polyline points="22 6 13.5 14.5 8.5 9.5 2 16" />
+                  <polyline points="16 6 22 6 22 12" />
+                </svg>
+                <span className={styles.chartSymbol}>{chartSymbol}</span>
+              </div>
               <button
-                className={styles.closeButton}
+                className={styles.chartCloseButton}
                 aria-label="Close Chart"
                 onClick={() => setIsChartOpen(false)}
+                type="button"
               >
-                ✕
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className={styles.chartCloseIcon}
+                >
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
               </button>
             </div>
             <div

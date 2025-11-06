@@ -6,6 +6,7 @@
 
 import type { Command, CommandContext } from "@/types/commands";
 import { Contract } from "ethers";
+import { createCommandLine, createUsageError } from "./command-output-helpers";
 
 // Direct Message contract address and ABI
 const DM_CONTRACT_ADDRESS = "0x26e31516e5e7790f8aaa35278735970a93fee213";
@@ -72,10 +73,9 @@ export const emailCommand: Command = {
     }
 
     if (!context.wallet.state.isConnected) {
-      context.log(
-        "❌ Please connect your wallet first using: connect",
-        "error"
-      );
+      context.log("❌ Please connect your wallet first.", "error");
+      const helpHtml = createCommandLine("connect", "Connect your wallet");
+      context.logHtml(helpHtml);
       return;
     }
 
@@ -93,7 +93,8 @@ export const emailCommand: Command = {
     context.log("3. Type your message", "output");
     context.log("4. Message is encrypted and sent on-chain", "output");
     context.log("", "info");
-    context.log('💡 Use "inbox" to view received messages', "info");
+    const helpHtml = createCommandLine("inbox", "View received messages");
+    context.logHtml(helpHtml);
   },
 };
 
@@ -107,10 +108,9 @@ export const inboxCommand: Command = {
   category: "communication",
   handler: async (context: CommandContext, args: string[]) => {
     if (!context.wallet.state.isConnected) {
-      context.log(
-        "❌ Please connect your wallet first using: connect",
-        "error"
-      );
+      context.log("❌ Please connect your wallet first.", "error");
+      const helpHtml = createCommandLine("connect", "Connect your wallet");
+      context.logHtml(helpHtml);
       return;
     }
 
@@ -202,9 +202,11 @@ async function showInbox(
     if (!showAll && events.length > 10) {
       context.log("", "info");
       context.log(
-        `Showing last 10 messages. Use "inbox all" to show all ${events.length} messages.`,
+        `Showing last 10 messages.`,
         "info"
       );
+      const helpHtml = createCommandLine(`inbox all`, `Show all ${events.length} messages`);
+      context.logHtml(helpHtml);
     }
   } catch (error: any) {
     context.log(`❌ Failed to fetch inbox: ${error.message}`, "error");
@@ -230,23 +232,19 @@ export const dmCommand: Command = {
   usage: "dm <recipient> <message>",
   category: "communication",
   handler: async (context: CommandContext, args: string[]) => {
-    if (!args[1]) {
-      context.log("Usage: dm <recipient> <message>", "error");
-      context.log("Example: dm 0x123...abc Hello there!", "info");
-      return;
-    }
-
-    if (args.length < 3) {
-      context.log("❌ Please provide a message", "error");
-      context.log("Usage: dm <recipient> <message>", "info");
+    if (!args[1] || args.length < 3) {
+      const usageHtml = createUsageError("dm <recipient> <message>", [
+        "dm 0x123...abc Hello there!",
+        "dm 0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb How are you?",
+      ]);
+      context.logHtml(usageHtml);
       return;
     }
 
     if (!context.wallet.state.isConnected) {
-      context.log(
-        "❌ Please connect your wallet first using: connect",
-        "error"
-      );
+      context.log("❌ Please connect your wallet first.", "error");
+      const helpHtml = createCommandLine("connect", "Connect your wallet");
+      context.logHtml(helpHtml);
       return;
     }
 
@@ -259,7 +257,8 @@ export const dmCommand: Command = {
     context.log("💡 Direct messaging integration coming soon", "warning");
     context.log("📊 This will send an encrypted on-chain message", "info");
     context.log("", "info");
-    context.log('💡 Use "inbox" to view received messages', "info");
+    const helpHtml = createCommandLine("inbox", "View received messages");
+    context.logHtml(helpHtml);
   },
 };
 

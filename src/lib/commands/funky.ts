@@ -14,6 +14,7 @@
  */
 
 import type { Command, CommandContext } from "@/types/commands";
+import { createCommandLine, createUsageError } from "./command-output-helpers";
 
 // ============================================================================
 // Command Handlers
@@ -61,8 +62,11 @@ function handleStop(context: CommandContext, args: string[]) {
 function handleVolume(context: CommandContext, args: string[]) {
   const volume = args[2];
   if (!volume) {
-    context.log("❌ Please provide a volume level (0-100)", "error");
-    context.log('💡 Usage: funky volume 50', "info");
+    const usageHtml = createUsageError("funky volume <0-100>", [
+      "funky volume 50",
+      "funky volume 75",
+    ]);
+    context.logHtml(usageHtml);
     return;
   }
 
@@ -98,7 +102,8 @@ function handleHelp(context: CommandContext, args: string[]) {
   context.log("  • Play/pause controls", "info");
   context.log("  • Right panel integration", "info");
   context.log("", "output");
-  context.log('💡 Example: funky volume 75', "info");
+  const exampleHtml = createCommandLine("funky volume 75", "Set volume to 75%");
+  context.logHtml(exampleHtml);
 }
 
 // ============================================================================
@@ -132,7 +137,8 @@ export const funkyCommand: Command = {
         break;
       default:
         context.log(`Unknown subcommand: ${subcommand}`, "error");
-        context.log('Type "funky help" for available commands', "info");
+        const helpHtml = createCommandLine("funky help", "See available commands");
+        context.logHtml(helpHtml);
     }
   },
 };

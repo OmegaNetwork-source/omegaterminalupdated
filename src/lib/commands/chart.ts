@@ -6,6 +6,7 @@
  */
 
 import type { Command, CommandContext } from "@/types/commands";
+import { createUsageError } from "./command-output-helpers";
 
 /**
  * Chart command
@@ -20,10 +21,12 @@ export const chartCommand: Command = {
     const symbol = args[1]?.toUpperCase() || "BTC";
 
     if (!symbol || symbol.length === 0) {
-      context.log("Usage: chart <symbol>", "info");
-      context.log("Example: chart BTC", "info");
-      context.log("Example: chart ETH", "info");
-      context.log("Example: chart AAPL", "info");
+      const usageHtml = createUsageError("chart <symbol>", [
+        "chart BTC",
+        "chart ETH",
+        "chart AAPL",
+      ]);
+      context.logHtml(usageHtml);
       return;
     }
 

@@ -4,6 +4,7 @@
  */
 
 import type { Command } from "@/types/commands";
+import { createCommandLine, createUsageError } from "./command-output-helpers";
 import {
   ALL_BOTS,
   TRADING_BOTS,
@@ -16,6 +17,7 @@ import {
   getBotsByPlatform,
   searchBots,
 } from "@/lib/data/bots";
+import { escapeHtml } from "@/lib/utils";
 
 const COMING_SOON_MESSAGE = `
 🚧 This feature is coming soon!
@@ -117,8 +119,11 @@ async function handleList(context: any, args: string[]) {
 async function handleInfo(context: any, args: string[]) {
   const botName = args.slice(2).join(" ").toLowerCase();
   if (!botName) {
-    context.log("Usage: bot info <bot-name>", "error");
-    context.log("Example: bot info DCA Trading Bot", "output");
+    const usageHtml = createUsageError("bot info", [
+      "bot info DCA Trading Bot"
+    ]);
+    context.logHtml(usageHtml);
+    context.log("", "output");
     return;
   }
 
@@ -168,8 +173,11 @@ async function handleInfo(context: any, args: string[]) {
 async function handleDeploy(context: any, args: string[]) {
   const botName = args.slice(2).join(" ");
   if (!botName) {
-    context.log("Usage: bot deploy <bot-name>", "error");
-    context.log("Example: bot deploy DCA Trading Bot", "output");
+    const usageHtml = createUsageError("bot deploy", [
+      "bot deploy DCA Trading Bot"
+    ]);
+    context.logHtml(usageHtml);
+    context.log("", "output");
     return;
   }
 
@@ -203,7 +211,9 @@ async function handleDeploy(context: any, args: string[]) {
 async function handleStart(context: any, args: string[]) {
   const botName = args.slice(2).join(" ");
   if (!botName) {
-    context.log("Usage: bot start <bot-name>", "error");
+    const usageHtml = createUsageError("bot start", []);
+    context.logHtml(usageHtml);
+    context.log("", "output");
     return;
   }
 
@@ -219,7 +229,9 @@ async function handleStart(context: any, args: string[]) {
 async function handleStop(context: any, args: string[]) {
   const botName = args.slice(2).join(" ");
   if (!botName) {
-    context.log("Usage: bot stop <bot-name>", "error");
+    const usageHtml = createUsageError("bot stop", []);
+    context.logHtml(usageHtml);
+    context.log("", "output");
     return;
   }
 
@@ -255,8 +267,11 @@ async function handleStatus(context: any, args: string[]) {
 async function handleSearch(context: any, args: string[]) {
   const query = args.slice(2).join(" ");
   if (!query) {
-    context.log("Usage: bot search <keyword>", "error");
-    context.log("Example: bot search trading", "output");
+    const usageHtml = createUsageError("bot search", [
+      "bot search trading"
+    ]);
+    context.logHtml(usageHtml);
+    context.log("", "output");
     return;
   }
 
@@ -296,30 +311,76 @@ async function handleCategories(context: any) {
 }
 
 async function handleHelp(context: any) {
-  context.log("🤖 BOT COMMANDS", "info");
-  context.log("═══════════════════════════════", "output");
+  const helpHtml = `
+    <div style="
+      background: linear-gradient(135deg, color-mix(in srgb, var(--palette-primary, #00d4ff) 15%, transparent), color-mix(in srgb, var(--palette-secondary, #00ff88) 10%, transparent));
+      border: 1px solid color-mix(in srgb, var(--palette-primary, #00d4ff) 30%, transparent);
+      border-radius: 12px;
+      padding: 20px;
+      margin: 10px 0;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    ">
+      <div style="
+        font-size: 18px;
+        font-weight: 600;
+        color: var(--palette-primary, #00d4ff);
+        margin-bottom: 16px;
+        text-shadow: 0 0 8px color-mix(in srgb, var(--palette-primary, #00d4ff) 40%, transparent);
+      ">🤖 BOT COMMANDS</div>
+      
+      <div style="
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--palette-secondary, #00ff88);
+        margin: 16px 0 12px 0;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      ">📋 Available Commands</div>
+      
+      ${createCommandLine("bot list [category]", "List all bots or by category")}
+      ${createCommandLine("bot info <name>", "Show detailed bot information")}
+      ${createCommandLine("bot deploy <name>", "Deploy and configure a bot")}
+      ${createCommandLine("bot start <name>", "Start a deployed bot")}
+      ${createCommandLine("bot stop <name>", "Stop a running bot")}
+      ${createCommandLine("bot status [name]", "Show bot status and metrics")}
+      ${createCommandLine("bot search <keyword>", "Search bots by keyword")}
+      ${createCommandLine("bot categories", "List all bot categories")}
+      ${createCommandLine("bot help", "Show this help message")}
+      
+      <div style="
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--palette-secondary, #00ff88);
+        margin: 20px 0 12px 0;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      ">🎯 Examples</div>
+      
+      ${createCommandLine("bot list", "List all bots")}
+      ${createCommandLine("bot list trading", "List trading bots")}
+      ${createCommandLine("bot info DCA Trading Bot", "Get bot details")}
+      ${createCommandLine("bot deploy Crypto Price Tracker", "Deploy a bot")}
+      ${createCommandLine("bot search telegram", "Search for bots")}
+      
+      <div style="
+        margin-top: 20px;
+        padding: 12px;
+        background: color-mix(in srgb, var(--palette-warning, #ffaa00) 10%, transparent);
+        border: 1px solid color-mix(in srgb, var(--palette-warning, #ffaa00) 30%, transparent);
+        border-radius: 6px;
+        font-size: 12px;
+        color: var(--palette-text, #ccd4e0);
+      ">
+        <span style="color: var(--palette-warning, #ffaa00);">🚧</span>
+        <span style="margin-left: 8px;">NOTE: All features are currently in development. Commands will show preview data and 'coming soon' messages.</span>
+      </div>
+    </div>
+  `;
+  
+  context.logHtml(helpHtml);
   context.log("", "output");
-  context.log("📋 AVAILABLE COMMANDS:", "info");
-  context.log("  bot list [category]      → List all bots or by category", "output");
-  context.log("  bot info <name>          → Show detailed bot information", "output");
-  context.log("  bot deploy <name>        → Deploy and configure a bot", "output");
-  context.log("  bot start <name>         → Start a deployed bot", "output");
-  context.log("  bot stop <name>          → Stop a running bot", "output");
-  context.log("  bot status [name]        → Show bot status and metrics", "output");
-  context.log("  bot search <keyword>     → Search bots by keyword", "output");
-  context.log("  bot categories           → List all bot categories", "output");
-  context.log("  bot help                 → Show this help message", "output");
-  context.log("", "output");
-  context.log("🎯 EXAMPLES:", "info");
-  context.log("  bot list                           # List all bots", "output");
-  context.log("  bot list trading                   # List trading bots", "output");
-  context.log("  bot info DCA Trading Bot           # Get bot details", "output");
-  context.log("  bot deploy Crypto Price Tracker    # Deploy a bot", "output");
-  context.log("  bot search telegram                # Search for bots", "output");
-  context.log("", "output");
-  context.log("🚧 NOTE: All features are currently in development", "warning");
-  context.log("Commands will show preview data and 'coming soon' messages.", "output");
 }
+
 
 export const botCommand: Command = {
   name: "bot",

@@ -5,6 +5,7 @@
  */
 
 import type { Command, CommandContext } from "@/types/commands";
+import { createUsageError } from "./command-output-helpers";
 
 /**
  * Spotify command - Music player controls
@@ -222,8 +223,11 @@ async function searchMusic(
 ): Promise<void> {
   const query = args.slice(2).join(" ");
   if (!query) {
-    context.log("❌ Usage: spotify search <query>", "error");
-    context.log("💡 Example: spotify search lofi hip hop", "info");
+    const usageHtml = createUsageError("spotify search <query>", [
+      "spotify search lofi hip hop",
+      "spotify search coding music",
+    ]);
+    context.logHtml(usageHtml);
     return;
   }
 

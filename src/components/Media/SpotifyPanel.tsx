@@ -103,23 +103,49 @@ export function SpotifyPanel({ mobile = false }: SpotifyPanelProps) {
   if (!authState.isAuthenticated) {
     return (
       <div className={`${styles.panel} ${mobile ? styles.mobile : ""}`}>
-        <div className={styles.header}>
-          <div className={styles.headerLeft}>
-            <span className={styles.logo}>🎵</span>
-            <h2 className={styles.title}>Spotify</h2>
-          </div>
-          <button
-            className={styles.closeButton}
-            onClick={closePanel}
-            aria-label="Close Spotify panel"
+      <div className={styles.header}>
+        <div className={styles.headerLeft}>
+          <svg
+            className={styles.logo}
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            xmlns="http://www.w3.org/2000/svg"
           >
-            ✕
-          </button>
+            <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.42 1.56-.299.421-1.02.599-1.559.3z" />
+          </svg>
+          <h2 className={styles.title}>SPOTIFY</h2>
         </div>
+        <button
+          className={styles.closeButton}
+          onClick={closePanel}
+          aria-label="Close Spotify panel"
+          type="button"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className={styles.closeIcon}
+          >
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
 
         <div className={styles.content}>
           <div className={styles.authContainer}>
-            <div className={styles.authIcon}>🎧</div>
+            <svg
+              className={styles.authIcon}
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.42 1.56-.299.421-1.02.599-1.559.3z" />
+            </svg>
             <h3 className={styles.authTitle}>Connect to Spotify</h3>
             <p className={styles.authDescription}>
               Connect your Spotify Premium account to start playing music
@@ -127,8 +153,19 @@ export function SpotifyPanel({ mobile = false }: SpotifyPanelProps) {
             {error && (
               <div className={styles.errorMessage}>
                 <p>{error}</p>
-                <button onClick={clearError} className={styles.errorClose}>
-                  ✕
+                <button onClick={clearError} className={styles.errorClose} aria-label="Close error">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className={styles.errorCloseIcon}
+                  >
+                    <line x1="18" y1="6" x2="6" y2="18" />
+                    <line x1="6" y1="6" x2="18" y2="18" />
+                  </svg>
                 </button>
               </div>
             )}
@@ -166,7 +203,14 @@ export function SpotifyPanel({ mobile = false }: SpotifyPanelProps) {
           aria-label="Restore Spotify panel"
           type="button"
         >
-          <span className={styles.minimizedIcon}>🎵</span>
+          <svg
+            className={styles.minimizedIcon}
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.42 1.56-.299.421-1.02.599-1.559.3z" />
+          </svg>
           {playerState.currentTrack && (
             <span className={styles.minimizedTrack}>
               {playerState.currentTrack.name}
@@ -181,8 +225,15 @@ export function SpotifyPanel({ mobile = false }: SpotifyPanelProps) {
     <div className={`${styles.panel} ${mobile ? styles.mobile : ""} ${isMinimized ? styles.minimized : ""}`}>
       <div className={styles.header}>
         <div className={styles.headerLeft}>
-          <span className={styles.logo}>🎵</span>
-          <h2 className={styles.title}>Spotify</h2>
+          <svg
+            className={styles.logo}
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.42 1.56-.299.421-1.02.599-1.559.3z" />
+          </svg>
+          <h2 className={styles.title}>SPOTIFY</h2>
         </div>
         <div className={styles.headerRight}>
           {mobile && (
@@ -192,7 +243,17 @@ export function SpotifyPanel({ mobile = false }: SpotifyPanelProps) {
               aria-label="Minimize Spotify panel"
               type="button"
             >
-              _
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className={styles.minimizeIcon}
+              >
+                <line x1="5" y1="12" x2="19" y2="12" />
+              </svg>
             </button>
           )}
           <button
@@ -201,7 +262,18 @@ export function SpotifyPanel({ mobile = false }: SpotifyPanelProps) {
             aria-label="Close Spotify panel"
             type="button"
           >
-            ✕
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className={styles.closeIcon}
+            >
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
           </button>
         </div>
       </div>
@@ -211,8 +283,19 @@ export function SpotifyPanel({ mobile = false }: SpotifyPanelProps) {
         {error && (
           <div className={styles.errorMessage}>
             <p>{error}</p>
-            <button onClick={clearError} className={styles.errorClose}>
-              ✕
+            <button onClick={clearError} className={styles.errorClose} aria-label="Close error">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className={styles.errorCloseIcon}
+              >
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
             </button>
           </div>
         )}
@@ -227,7 +310,16 @@ export function SpotifyPanel({ mobile = false }: SpotifyPanelProps) {
                   alt={playerState.currentTrack.album.name}
                 />
               ) : (
-                <div className={styles.artworkPlaceholder}>🎵</div>
+                <div className={styles.artworkPlaceholder}>
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    xmlns="http://www.w3.org/2000/svg"
+                    className={styles.artworkPlaceholderIcon}
+                  >
+                    <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.42 1.56-.299.421-1.02.599-1.559.3z" />
+                  </svg>
+                </div>
               )}
             </div>
             <div className={styles.trackInfo}>
@@ -260,28 +352,81 @@ export function SpotifyPanel({ mobile = false }: SpotifyPanelProps) {
             className={styles.controlButton}
             onClick={skipPrevious}
             aria-label="Previous track"
+            type="button"
           >
-            ⏮️
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className={styles.controlIcon}
+            >
+              <polygon points="19 20 9 12 19 4 19 20" />
+              <line x1="5" y1="19" x2="5" y2="5" />
+            </svg>
           </button>
           <button
             className={`${styles.controlButton} ${styles.playPauseButton}`}
             onClick={() => void togglePlayPause()}
             aria-label={playerState.isPlaying ? "Pause" : "Play"}
+            type="button"
           >
-            {playerState.isPlaying ? "⏸️" : "▶️"}
+            {playerState.isPlaying ? (
+              <svg
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                className={styles.controlIcon}
+              >
+                <rect x="6" y="4" width="4" height="16" />
+                <rect x="14" y="4" width="4" height="16" />
+              </svg>
+            ) : (
+              <svg
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                className={styles.controlIcon}
+              >
+                <polygon points="5 3 19 12 5 21 5 3" />
+              </svg>
+            )}
           </button>
           <button
             className={styles.controlButton}
             onClick={skipNext}
             aria-label="Next track"
+            type="button"
           >
-            ⏭️
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className={styles.controlIcon}
+            >
+              <polygon points="5 4 15 12 5 20 5 4" />
+              <line x1="19" y1="5" x2="19" y2="19" />
+            </svg>
           </button>
         </div>
 
         {/* Volume Control */}
         <div className={styles.volumeControl}>
-          <label className={styles.volumeLabel}>Volume</label>
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className={styles.volumeIcon}
+          >
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07" />
+          </svg>
           <input
             type="range"
             min="0"
@@ -289,6 +434,7 @@ export function SpotifyPanel({ mobile = false }: SpotifyPanelProps) {
             value={playerState.volume}
             onChange={handleVolumeChange}
             className={styles.volumeSlider}
+            aria-label="Volume"
           />
           <span className={styles.volumeValue}>{playerState.volume}%</span>
         </div>
@@ -303,8 +449,19 @@ export function SpotifyPanel({ mobile = false }: SpotifyPanelProps) {
               placeholder="Search tracks..."
               className={styles.searchInput}
             />
-            <button type="submit" className={styles.searchButton}>
-              🔍
+            <button type="submit" className={styles.searchButton} aria-label="Search">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className={styles.searchIcon}
+              >
+                <circle cx="11" cy="11" r="8" />
+                <path d="m21 21-4.35-4.35" />
+              </svg>
             </button>
           </form>
         </div>
@@ -359,11 +516,37 @@ export function SpotifyPanel({ mobile = false }: SpotifyPanelProps) {
                     {track.album.images[0]?.url ? (
                       <img src={track.album.images[0].url} alt={track.album.name} />
                     ) : (
-                      <div className={styles.trackPlaceholder}>🎵</div>
+                      <div className={styles.trackPlaceholder}>
+                        <svg
+                          viewBox="0 0 24 24"
+                          fill="currentColor"
+                          xmlns="http://www.w3.org/2000/svg"
+                          className={styles.trackPlaceholderIcon}
+                        >
+                          <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.42 1.56-.299.421-1.02.599-1.559.3z" />
+                        </svg>
+                      </div>
                     )}
                     {playerState.currentTrack?.id === track.id && (
                       <div className={styles.playingIndicator}>
-                        {playerState.isPlaying ? "▶️" : "⏸️"}
+                        {playerState.isPlaying ? (
+                          <svg
+                            viewBox="0 0 24 24"
+                            fill="currentColor"
+                            className={styles.playingIcon}
+                          >
+                            <rect x="6" y="4" width="4" height="16" />
+                            <rect x="14" y="4" width="4" height="16" />
+                          </svg>
+                        ) : (
+                          <svg
+                            viewBox="0 0 24 24"
+                            fill="currentColor"
+                            className={styles.playingIcon}
+                          >
+                            <polygon points="5 3 19 12 5 21 5 3" />
+                          </svg>
+                        )}
                       </div>
                     )}
                   </div>
@@ -382,7 +565,14 @@ export function SpotifyPanel({ mobile = false }: SpotifyPanelProps) {
 
             {searchResults.length === 0 && (
               <div className={styles.emptyState}>
-                <div className={styles.emptyIcon}>🎵</div>
+                <svg
+                  className={styles.emptyIcon}
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.42 1.56-.299.421-1.02.599-1.559.3z" />
+                </svg>
                 <p>Search for tracks to start playing</p>
               </div>
             )}
@@ -419,7 +609,16 @@ export function SpotifyPanel({ mobile = false }: SpotifyPanelProps) {
                     {playlist.images[0]?.url ? (
                       <img src={playlist.images[0].url} alt={playlist.name} />
                     ) : (
-                      <div className={styles.playlistPlaceholder}>🎵</div>
+                      <div className={styles.playlistPlaceholder}>
+                        <svg
+                          viewBox="0 0 24 24"
+                          fill="currentColor"
+                          xmlns="http://www.w3.org/2000/svg"
+                          className={styles.playlistPlaceholderIcon}
+                        >
+                          <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.42 1.56-.299.421-1.02.599-1.559.3z" />
+                        </svg>
+                      </div>
                     )}
                   </div>
                   <div className={styles.playlistInfo}>
@@ -434,7 +633,14 @@ export function SpotifyPanel({ mobile = false }: SpotifyPanelProps) {
 
             {playlists.length === 0 && (
               <div className={styles.emptyState}>
-                <div className={styles.emptyIcon}>🎵</div>
+                <svg
+                  className={styles.emptyIcon}
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.42 1.56-.299.421-1.02.599-1.559.3z" />
+                </svg>
                 <p>No playlists found</p>
               </div>
             )}

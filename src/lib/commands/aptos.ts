@@ -5,6 +5,7 @@
 
 import type { Command } from "@/types/commands";
 import { Aptos, AptosConfig, Network } from "@aptos-labs/ts-sdk";
+import { createCommandLine, createUsageError } from "./command-output-helpers";
 
 const APTOS_CONFIG = new AptosConfig({ network: Network.MAINNET });
 const aptosClient = new Aptos(APTOS_CONFIG);
@@ -135,7 +136,9 @@ async function handleBalance(context: any) {
   try {
     const address = await getConnectedAddress();
     if (!address) {
-      context.log("Connect wallet first: aptos connect", "warning");
+      context.log("Connect wallet first.", "warning");
+      const helpHtml = createCommandLine("aptos connect", "Connect your Aptos wallet");
+      context.logHtml(helpHtml);
       return;
     }
 
@@ -217,16 +220,19 @@ async function handleCreateToken(context: any, args: string[]) {
   const [name, symbol, decimalsStr, iconUri, projectUri, initialMintStr] = parts;
 
   if (!name || !symbol || !decimalsStr || !iconUri || !projectUri) {
-    context.log(
-      "Usage: aptos create token [factoryAddress] <name> <symbol> <decimals> <iconUri> <projectUri> [initialMint]",
-      "error"
-    );
+    const usageHtml = createUsageError("aptos create token [factoryAddress] <name> <symbol> <decimals> <iconUri> <projectUri> [initialMint]", [
+      "aptos create token MyToken MTK 8 https://example.com/icon.png https://example.com",
+      "aptos create token 0x123... MyToken MTK 8 https://example.com/icon.png https://example.com 1000",
+    ]);
+    context.logHtml(usageHtml);
     return;
   }
 
   const address = await getConnectedAddress();
   if (!address) {
     context.log("Please connect your Aptos wallet (Petra) first.", "warning");
+    const helpHtml = createCommandLine("aptos connect", "Connect your Aptos wallet");
+    context.logHtml(helpHtml);
     return;
   }
 
@@ -304,15 +310,34 @@ export const aptosCommand: Command = {
         if (args[2]?.toLowerCase() === "token") {
           await handleCreateToken(context, args);
         } else {
-          context.log("Usage: aptos create token", "error");
+          const usageHtml = createUsageError("aptos create token", [
+            "aptos create token",
+          ]);
+          context.logHtml(usageHtml);
         }
         break;
       case "help":
       default:
-        context.log("=== Aptos Commands ===", "info");
-        context.log("aptos connect         → Connect Petra wallet (mainnet)", "output");
-        context.log("aptos balance         → Show APT balance for connected wallet", "output");
-        context.log("aptos create token    → Create fungible token (wizard)", "output");
+        const helpHtml = `
+          <div style="
+            background: linear-gradient(135deg, color-mix(in srgb, var(--palette-primary, #00d4ff) 15%, transparent), color-mix(in srgb, var(--palette-secondary, #00ff88) 10%, transparent));
+            border: 1px solid color-mix(in srgb, var(--palette-primary, #00d4ff) 30%, transparent);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 10px 0;
+          ">
+            <div style="
+              font-size: 18px;
+              font-weight: 600;
+              color: var(--palette-primary, #00d4ff);
+              margin-bottom: 16px;
+            ">=== Aptos Commands ===</div>
+            ${createCommandLine("aptos connect", "Connect Petra wallet (mainnet)")}
+            ${createCommandLine("aptos balance", "Show APT balance for connected wallet")}
+            ${createCommandLine("aptos create token", "Create fungible token (wizard)")}
+          </div>
+        `;
+        context.logHtml(helpHtml);
         break;
     }
   },

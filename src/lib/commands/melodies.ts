@@ -14,6 +14,7 @@
  */
 
 import type { Command, CommandContext } from "@/types/commands";
+import { createCommandLine, createUsageError } from "./command-output-helpers";
 
 // ============================================================================
 // Command Handlers
@@ -62,8 +63,11 @@ function handleStop(context: CommandContext, args: string[]) {
 function handleVolume(context: CommandContext, args: string[]) {
   const volumeStr = args[2];
   if (!volumeStr) {
-    context.log("❌ Please specify volume level (0-100)", "error");
-    context.log('Example: melodies volume 75', "info");
+    const usageHtml = createUsageError("melodies volume <0-100>", [
+      "melodies volume 75",
+      "melodies volume 50",
+    ]);
+    context.logHtml(usageHtml);
     return;
   }
 
@@ -99,7 +103,8 @@ function handleHelp(context: CommandContext, args: string[]) {
   context.log("  ✨ Play/pause controls", "info");
   context.log("  ✨ Right panel integration", "info");
   context.log("", "output");
-  context.log('💡 Example: melodies volume 75', "info");
+  const exampleHtml = createCommandLine("melodies volume 75", "Set volume to 75%");
+  context.logHtml(exampleHtml);
 }
 
 // ============================================================================
@@ -133,7 +138,8 @@ export const melodiesCommand: Command = {
         break;
       default:
         context.log(`Unknown subcommand: ${subcommand}`, "error");
-        context.log('Type "melodies help" for available commands', "info");
+        const helpHtml = createCommandLine("melodies help", "See available commands");
+        context.logHtml(helpHtml);
     }
   },
 };

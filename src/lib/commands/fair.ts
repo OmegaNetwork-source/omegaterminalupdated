@@ -5,6 +5,8 @@
 
 import type { Command, CommandContext } from "@/types/commands";
 import { Wallet, JsonRpcProvider, formatEther } from "ethers";
+import { escapeHtml } from "@/lib/utils";
+import { createCommandLine, createUsageError } from "./command-output-helpers";
 
 // Fair Network Configuration
 const FAIR_CONFIG = {
@@ -206,31 +208,103 @@ export const fairCommand: Command = {
     const subcommand = args[1]?.toLowerCase();
 
     if (!subcommand || subcommand === "help") {
-      context.log("🔗 FAIR BLOCKCHAIN COMMANDS", "info");
-      context.log("═══════════════════════════", "output");
+      const helpHtml = `
+        <div style="
+          background: linear-gradient(135deg, color-mix(in srgb, var(--palette-primary, #00d4ff) 15%, transparent), color-mix(in srgb, var(--palette-secondary, #00ff88) 10%, transparent));
+          border: 1px solid color-mix(in srgb, var(--palette-primary, #00d4ff) 30%, transparent);
+          border-radius: 12px;
+          padding: 20px;
+          margin: 10px 0;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        ">
+          <div style="
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--palette-primary, #00d4ff);
+            margin-bottom: 16px;
+            text-shadow: 0 0 8px color-mix(in srgb, var(--palette-primary, #00d4ff) 40%, transparent);
+          ">🔗 FAIR BLOCKCHAIN COMMANDS</div>
+          
+          <div style="
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--palette-secondary, #00ff88);
+            margin: 16px 0 12px 0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+          ">📋 Available Commands</div>
+          
+          ${createCommandLine("fair generate", "Generate a new FAIR wallet")}
+          ${createCommandLine("fair connect", "Connect MetaMask to FAIR network")}
+          ${createCommandLine("fair wallet", "Show current FAIR wallet details")}
+          ${createCommandLine("fair balance", "Check FAIR balance")}
+          ${createCommandLine("fair faucet", "Get testnet FAIR tokens")}
+          
+          <div style="
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--palette-secondary, #00ff88);
+            margin: 20px 0 12px 0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+          ">🌐 Network Info</div>
+          
+          <div style="
+            color: var(--palette-text, #ccd4e0);
+            margin: 6px 0;
+            padding-left: 20px;
+            font-size: 0.95em;
+            line-height: 1.6;
+          ">Chain ID: 935</div>
+          <div style="
+            color: var(--palette-text, #ccd4e0);
+            margin: 6px 0;
+            padding-left: 20px;
+            font-size: 0.95em;
+            line-height: 1.6;
+          ">RPC: https://testnet-rpc.fair.cloud</div>
+          <div style="
+            color: var(--palette-text, #ccd4e0);
+            margin: 6px 0;
+            padding-left: 20px;
+            font-size: 0.95em;
+            line-height: 1.6;
+          ">Explorer: https://testnet-explorer.fair.cloud</div>
+          <div style="
+            color: var(--palette-text, #ccd4e0);
+            margin: 6px 0;
+            padding-left: 20px;
+            font-size: 0.95em;
+            line-height: 1.6;
+          ">Faucet: https://faucet.fairchain.ai</div>
+          
+          <div style="
+            margin-top: 20px;
+            padding: 12px;
+            background: color-mix(in srgb, var(--palette-primary, #00d4ff) 10%, transparent);
+            border: 1px solid color-mix(in srgb, var(--palette-primary, #00d4ff) 30%, transparent);
+            border-radius: 6px;
+            font-size: 12px;
+            color: var(--palette-text, #ccd4e0);
+          ">
+            <div style="margin-bottom: 8px;">
+              <span style="color: var(--palette-primary, #00d4ff);">💡</span>
+              <span style="margin-left: 8px;">Use <span class="omega-help-command" data-command="fair generate" style="color: var(--palette-secondary, #00ff88); font-weight: bold; cursor: pointer; text-decoration: underline; padding: 2px 4px; border-radius: 3px; transition: all 0.2s ease;" onmouseover="this.style.background = 'color-mix(in srgb, var(--palette-secondary, #00ff88) 15%, transparent)';" onmouseout="this.style.background = 'transparent';" title="Click to add 'fair generate' to terminal input">fair generate</span> to create a new wallet</span>
+            </div>
+            <div style="margin-bottom: 8px;">
+              <span style="color: var(--palette-primary, #00d4ff);">💡</span>
+              <span style="margin-left: 8px;">Use <span class="omega-help-command" data-command="fair connect" style="color: var(--palette-secondary, #00ff88); font-weight: bold; cursor: pointer; text-decoration: underline; padding: 2px 4px; border-radius: 3px; transition: all 0.2s ease;" onmouseover="this.style.background = 'color-mix(in srgb, var(--palette-secondary, #00ff88) 15%, transparent)';" onmouseout="this.style.background = 'transparent';" title="Click to add 'fair connect' to terminal input">fair connect</span> to connect MetaMask</span>
+            </div>
+            <div>
+              <span style="color: var(--palette-primary, #00d4ff);">💡</span>
+              <span style="margin-left: 8px;">Use <span class="omega-help-command" data-command="create" style="color: var(--palette-secondary, #00ff88); font-weight: bold; cursor: pointer; text-decoration: underline; padding: 2px 4px; border-radius: 3px; transition: all 0.2s ease;" onmouseover="this.style.background = 'color-mix(in srgb, var(--palette-secondary, #00ff88) 15%, transparent)';" onmouseout="this.style.background = 'transparent';" title="Click to add 'create' to terminal input">create</span> command for token creation on FAIR</span>
+            </div>
+          </div>
+        </div>
+      `;
+      
+      context.logHtml(helpHtml);
       context.log("", "output");
-      context.log("📋 AVAILABLE COMMANDS:", "info");
-      context.log("  fair generate     Generate a new FAIR wallet", "output");
-      context.log(
-        "  fair connect      Connect MetaMask to FAIR network",
-        "output"
-      );
-      context.log(
-        "  fair wallet       Show current FAIR wallet details",
-        "output"
-      );
-      context.log("  fair balance      Check FAIR balance", "output");
-      context.log("  fair faucet       Get testnet FAIR tokens", "output");
-      context.log("", "output");
-      context.log("🌐 NETWORK INFO:", "info");
-      context.log("Chain ID: 935", "output");
-      context.log("RPC: https://testnet-rpc.fair.cloud", "output");
-      context.log("Explorer: https://testnet-explorer.fair.cloud", "output");
-      context.log("Faucet: https://faucet.fairchain.ai", "output");
-      context.log("", "output");
-      context.log('💡 Use "fair generate" to create a new wallet', "info");
-      context.log('💡 Use "fair connect" to connect MetaMask', "info");
-      context.log('💡 Use "create" command for token creation on FAIR', "info");
       return;
     }
 
@@ -363,8 +437,11 @@ export const fnsCommand: Command = {
     switch (subcommand) {
       case "register":
         if (!args[2]) {
-          context.log("❌ Usage: fns register <name>", "error");
-          context.log("Example: fns register myname", "info");
+          const usageHtml = createUsageError("fns register", [
+            "fns register myname"
+          ]);
+          context.logHtml(usageHtml);
+          context.log("", "output");
           return;
         }
         context.log(`🔗 Registering FNS name: ${args[2]}.fns`, "info");
@@ -381,8 +458,11 @@ export const fnsCommand: Command = {
 
       case "resolve":
         if (!args[2]) {
-          context.log("❌ Usage: fns resolve <name>", "error");
-          context.log("Example: fns resolve myname", "info");
+          const usageHtml = createUsageError("fns resolve", [
+            "fns resolve myname"
+          ]);
+          context.logHtml(usageHtml);
+          context.log("", "output");
           return;
         }
         context.log(`🔍 Resolving FNS name: ${args[2]}.fns`, "info");
@@ -396,5 +476,6 @@ export const fnsCommand: Command = {
     }
   },
 };
+
 
 export const fairCommands: Command[] = [fairCommand, fnsCommand];

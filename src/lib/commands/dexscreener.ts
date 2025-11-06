@@ -8,6 +8,7 @@
 import type { Command, CommandContext } from "@/types/commands";
 import { dexscreener, geckoterminal } from "@/lib/api";
 import { formatNumber, escapeHtml } from "@/lib/utils";
+import { createCommandLine, createUsageError } from "./command-output-helpers";
 
 /**
  * DexScreener command
@@ -104,10 +105,20 @@ export const dexscreenerCommand: Command = {
                 style="
                   color: var(--palette-secondary, #00ff88);
                   font-weight: bold;
+                  font-size: 1.05em;
                   margin-left: 0;
                   margin-top: 8px;
                   font-family: 'Courier New', monospace;
+                  text-shadow: 0 0 6px rgba(0, 255, 136, 0.3);
+                  cursor: pointer;
+                  display: inline-block;
+                  padding: 2px 4px;
+                  border-radius: 3px;
+                  transition: all 0.2s ease;
+                  user-select: none;
                 "
+                onmouseover="this.style.background = 'color-mix(in srgb, var(--palette-secondary, #00ff88) 15%, transparent)'; this.style.textShadow = '0 0 8px var(--palette-secondary-glow, rgba(0, 255, 136, 0.5))';"
+                onmouseout="this.style.background = 'transparent'; this.style.textShadow = '0 0 6px rgba(0, 255, 136, 0.3)';"
                 title="Click to add 'ds ${escapedCommand}' to terminal input"
               >
                 ${line}
@@ -148,7 +159,8 @@ export const dexscreenerCommand: Command = {
         break;
       default:
         context.log(`Unknown subcommand: ${subcommand}`, "error");
-        context.log('Use "ds" to see available commands', "info");
+        const helpHtml = createCommandLine("ds", "See available commands");
+        context.logHtml(helpHtml);
     }
   },
 };
@@ -166,8 +178,11 @@ async function searchTokens(
   const query = args.slice(2).join(" ");
 
   if (!query) {
-    context.log("Usage: ds search <query>", "error");
-    context.log("Example: ds search WETH", "info");
+    const usageHtml = createUsageError("ds search <query>", [
+      "ds search WETH",
+      "ds search bitcoin",
+    ]);
+    context.logHtml(usageHtml);
     return;
   }
 
@@ -183,7 +198,13 @@ async function searchTokens(
     } else {
       context.log("❌ No tokens found", "error");
       context.log("💡 Try searching with full token name or contract address", "info");
-      context.log("💡 Examples: ds search bitcoin, ds search 0x...", "info");
+      const helpHtml = `
+        <div style="margin: 8px 0;">
+          ${createCommandLine("ds search bitcoin", "Search for bitcoin")}
+          ${createCommandLine("ds search 0x...", "Search by contract address")}
+        </div>
+      `;
+      context.logHtml(helpHtml);
     }
     return;
   }
@@ -347,8 +368,11 @@ async function showAnalytics(
   const token = args && args[2] ? args[2].toUpperCase() : null;
 
   if (!token) {
-    context.log("❌ Usage: ds analytics <token>", "error");
-    context.log("💡 Example: ds analytics ETH", "info");
+    const usageHtml = createUsageError("ds analytics <token>", [
+      "ds analytics ETH",
+      "ds analytics BTC",
+    ]);
+    context.logHtml(usageHtml);
     return;
   }
 
@@ -511,7 +535,8 @@ export const geckoterminalCommand: Command = {
         break;
       default:
         context.log(`Unknown subcommand: ${subcommand}`, "error");
-        context.log('Use "cg" to see available commands', "info");
+        const helpHtml = createCommandLine("cg", "See available commands");
+        context.logHtml(helpHtml);
     }
   },
 };
@@ -526,8 +551,11 @@ async function cgSearch(
   const query = args.slice(2).join(" ");
 
   if (!query) {
-    context.log("Usage: cg search <query>", "error");
-    context.log("Example: cg search USDC", "info");
+    const usageHtml = createUsageError("cg search <query>", [
+      "cg search USDC",
+      "cg search WETH",
+    ]);
+    context.logHtml(usageHtml);
     return;
   }
 
@@ -627,8 +655,11 @@ async function cgDexes(context: CommandContext, args: string[]): Promise<void> {
   const network = args[2];
 
   if (!network) {
-    context.log("Usage: cg dexes <network>", "error");
-    context.log("Example: cg dexes eth", "info");
+    const usageHtml = createUsageError("cg dexes <network>", [
+      "cg dexes eth",
+      "cg dexes bsc",
+    ]);
+    context.logHtml(usageHtml);
     return;
   }
 

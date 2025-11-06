@@ -6,6 +6,7 @@
 import type { Command, CommandContext } from "@/types/commands";
 import { config } from "@/lib/config";
 import * as eclipse from "@/lib/multichain/eclipse";
+import { createCommandLine, createUsageError } from "./command-output-helpers";
 
 /**
  * Eclipse command - Main entry point for all Eclipse network operations
@@ -48,9 +49,11 @@ export const eclipseCommand: Command = {
         break;
       default:
         context.log(
-          `Unknown Eclipse subcommand: ${subcommand}. Use 'eclipse help' for available commands.`,
+          `Unknown Eclipse subcommand: ${subcommand}.`,
           "error"
         );
+        const helpHtml = createCommandLine("eclipse help", "See available commands");
+        context.logHtml(helpHtml);
     }
   },
 };
@@ -233,7 +236,13 @@ async function checkBalance(context: CommandContext): Promise<void> {
 
     if (!state.connected || !state.publicKey) {
       context.log("❌ Please connect your wallet first", "error");
-      context.log("Use 'eclipse connect' or 'eclipse generate'", "info");
+      const helpHtml = `
+        <div style="margin: 8px 0;">
+          ${createCommandLine("eclipse connect", "Connect your Eclipse wallet")}
+          ${createCommandLine("eclipse generate", "Generate a new Eclipse wallet")}
+        </div>
+      `;
+      context.logHtml(helpHtml);
       return;
     }
 
@@ -300,7 +309,8 @@ async function showTokenList(context: CommandContext): Promise<void> {
     }
 
     context.log("", "info");
-    context.log("💡 Use 'eclipse swap' to swap tokens", "info");
+    const helpHtml = createCommandLine("eclipse swap", "Swap tokens");
+    context.logHtml(helpHtml);
   } catch (error: any) {
     context.log(`❌ Error: ${error.message}`, "error");
   }
@@ -317,8 +327,11 @@ async function getTokenPrice(
     const mint = args[0];
 
     if (!mint) {
-      context.log("❌ Please provide a token mint address", "error");
-      context.log("Usage: eclipse price <mint_address>", "info");
+      const usageHtml = createUsageError("eclipse price <mint_address>", [
+        "eclipse price So11111111111111111111111111111111111111112",
+        "eclipse price EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+      ]);
+      context.logHtml(usageHtml);
       return;
     }
 
@@ -364,7 +377,13 @@ async function showSwapInterface(context: CommandContext): Promise<void> {
 
     if (!state.connected || !state.publicKey) {
       context.log("❌ Please connect your wallet first", "error");
-      context.log("Use 'eclipse connect' or 'eclipse generate'", "info");
+      const helpHtml = `
+        <div style="margin: 8px 0;">
+          ${createCommandLine("eclipse connect", "Connect your Eclipse wallet")}
+          ${createCommandLine("eclipse generate", "Generate a new Eclipse wallet")}
+        </div>
+      `;
+      context.logHtml(helpHtml);
       return;
     }
 
@@ -454,20 +473,22 @@ async function executeSwap(
 
     if (!state.connected || !state.publicKey) {
       context.log("❌ Please connect your wallet first", "error");
-      context.log("Use 'eclipse connect' or 'eclipse generate'", "info");
+      const helpHtml = `
+        <div style="margin: 8px 0;">
+          ${createCommandLine("eclipse connect", "Connect your Eclipse wallet")}
+          ${createCommandLine("eclipse generate", "Generate a new Eclipse wallet")}
+        </div>
+      `;
+      context.logHtml(helpHtml);
       return;
     }
 
     if (args.length < 3) {
-      context.log("❌ Invalid arguments", "error");
-      context.log(
-        "Usage: eclipse swap execute <from_mint> <to_mint> <amount> [slippage_bps]",
-        "info"
-      );
-      context.log(
-        "Example: eclipse swap execute So11...AA Bonk...AA 1000000 50",
-        "info"
-      );
+      const usageHtml = createUsageError("eclipse swap execute <from_mint> <to_mint> <amount> [slippage_bps]", [
+        "eclipse swap execute So11111111111111111111111111111111111111112 EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v 1000000",
+        "eclipse swap execute So11...AA Bonk...AA 1000000 50",
+      ]);
+      context.logHtml(usageHtml);
       return;
     }
 

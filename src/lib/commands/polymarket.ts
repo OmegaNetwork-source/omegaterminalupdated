@@ -4,6 +4,7 @@
  */
 
 import type { Command, CommandContext } from "@/types/commands";
+import { createUsageError } from "./command-output-helpers";
 
 // Polymarket API endpoints
 const POLYMARKET_API_BASE = "https://gamma-api.polymarket.com";
@@ -79,7 +80,11 @@ export const polymarketCommand: Command = {
         break;
       case "search":
         if (args.length < 3) {
-          context.log("❌ Usage: polymarket search <query>", "error");
+          const usageHtml = createUsageError("polymarket search <query>", [
+            "polymarket search bitcoin",
+            "polymarket search ethereum",
+          ]);
+          context.logHtml(usageHtml);
           return;
         }
         await searchPolymarket(context, args.slice(2).join(" "));

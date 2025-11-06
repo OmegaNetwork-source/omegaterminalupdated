@@ -6,6 +6,7 @@
 
 import type { Command, CommandContext } from "@/types/commands";
 import { parseFlags } from "@/lib/terminal/flag-parser";
+import { createCommandLine, createUsageError } from "./command-output-helpers";
 import {
   getPlayerState,
   setFaction,
@@ -31,7 +32,11 @@ async function handleFactionJoin(
   const factionName = args[1]?.toUpperCase() || "";
 
   if (!factionName) {
-    context.log("❌ Usage: faction:join <faction-name>", "error");
+    const usageHtml = createUsageError("faction:join <faction-name>", [
+      "faction:join BULLS",
+      "faction:join BEARS",
+    ]);
+    context.logHtml(usageHtml);
     context.log("   Available factions:", "info");
     FACTIONS.forEach((f) => {
       context.log(`   - ${f}`, "output");
@@ -66,7 +71,8 @@ async function handleFactionJoin(
   incrementFactionMembers(validFaction);
 
   context.log(`✅ Joined ${validFaction}!`, "success");
-  context.log(`   Use faction:status to see your faction's stats`, "info");
+  const helpHtml = createCommandLine("faction:status", "See your faction's stats");
+  context.logHtml(helpHtml);
 }
 
 /**
@@ -82,7 +88,8 @@ async function handleFactionStatus(
 
   if (!state.faction) {
     context.log("❌ You are not in a faction", "error");
-    context.log("   Use faction:join <name> to join a faction", "info");
+    const helpHtml = createCommandLine("faction:join <name>", "Join a faction");
+    context.logHtml(helpHtml);
     return;
   }
 
@@ -166,7 +173,8 @@ async function handleFactionAttack(
   const state = getPlayerState();
   if (!state.faction) {
     context.log("❌ You must be in a faction to contribute", "error");
-    context.log("   Use faction:join <name> to join a faction", "info");
+    const helpHtml = createCommandLine("faction:join <name>", "Join a faction");
+    context.logHtml(helpHtml);
     return;
   }
 
@@ -194,7 +202,8 @@ async function handleFactionAttack(
   context.log(`⚔️ Contributing to ${state.faction} territory control...`, "info");
   context.log(`   Sector: ${validSector}`, "output");
   context.log(`   Control Points: +${points}`, "success");
-  context.log(`   Use faction:status to see updated stats`, "info");
+    const helpHtml = createCommandLine("faction:status", "See updated stats");
+    context.logHtml(helpHtml);
 }
 
 /**

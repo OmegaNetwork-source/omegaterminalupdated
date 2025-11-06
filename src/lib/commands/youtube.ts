@@ -22,6 +22,7 @@
 
 import type { Command, CommandContext } from "@/types/commands";
 import config from "@/lib/config";
+import { createCommandLine, createUsageError } from "./command-output-helpers";
 
 // ============================================================================
 // Command Handlers
@@ -66,8 +67,11 @@ async function handleSearch(context: CommandContext, args: string[]) {
   const query = args.slice(2).join(" ");
 
   if (!query) {
-    context.log("Usage: youtube search <query>", "error");
-    context.log("Example: youtube search lofi hip hop", "info");
+    const usageHtml = createUsageError("youtube search <query>", [
+      "youtube search lofi hip hop",
+      "youtube search coding music",
+    ]);
+    context.logHtml(usageHtml);
     return;
   }
 
@@ -109,7 +113,8 @@ async function handlePlay(context: CommandContext, args: string[]) {
     } else {
       context.log(`▶️  Would play: ${videoId}`, "info");
       context.log("⚠️  YouTube panel must be open first", "warning");
-      context.log("💡 Use 'youtube open' first", "info");
+      const helpHtml = createCommandLine("youtube open", "Open YouTube panel first");
+      context.logHtml(helpHtml);
     }
   } catch (error: any) {
     context.log(`❌ Failed to play video: ${error.message}`, "error");
@@ -299,7 +304,8 @@ export const youtubeCommand: Command = {
         break;
       default:
         context.log(`Unknown subcommand: ${subcommand}`, "error");
-        context.log('Type "youtube help" for available commands', "info");
+        const helpHtml = createCommandLine("youtube help", "See available commands");
+        context.logHtml(helpHtml);
     }
   },
 };

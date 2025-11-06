@@ -28,6 +28,8 @@ import { useSpotify } from "@/hooks/useSpotify";
 import { useYouTube } from "@/hooks/useYouTube";
 import { useNewsReader } from "@/hooks/useNewsReader";
 import { useGames } from "@/hooks/useGames";
+import { createCommandLine } from "@/lib/commands/command-output-helpers";
+import { APP_VERSION } from "@/lib/constants";
 import { usePGT } from "@/hooks/usePGT";
 import { useSoundEffects } from "@/hooks/useSoundEffects";
 import { commandRegistry } from "@/lib/commands";
@@ -114,27 +116,164 @@ export function useCommandExecution(): UseCommandExecutionReturn {
   const customizerCtx = useCustomizer();
 
   // Terminal output state (start with welcome messages)
-  const [terminalLines, setTerminalLines] = useState<TerminalLine[]>([
-    {
-      id: "welcome-1",
-      type: "success",
-      content: "Welcome to Omega Terminal v2.0.1",
-      timestamp: 0,
-    },
-    {
-      id: "welcome-2",
-      type: "info",
-      content: "Type 'help' to see available commands",
-      timestamp: 0,
-    },
-    {
-      id: "welcome-3",
-      type: "info",
-      content:
-        "Type 'connect' to connect your wallet or 'create' for a session wallet",
-      timestamp: 0,
-    },
-  ]);
+  const [terminalLines, setTerminalLines] = useState<TerminalLine[]>(() => {
+    // SVG Icons (inline for consistency)
+    const lightningIcon = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 6px;"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>`;
+    const rocketIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 6px;"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"></path><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"></path><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"></path><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"></path></svg>`;
+    const lightbulbIcon = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 8px;"><path d="M9 21h6"></path><path d="M12 3a6 6 0 0 0 6 6c0 2.5-1.5 4.5-3 6H9c-1.5-1.5-3-3.5-3-6a6 6 0 0 1 6-6z"></path><line x1="12" y1="9" x2="12" y2="15"></line></svg>`;
+    const globeIcon = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-bottom: 4px;"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>`;
+    const chartIcon = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-bottom: 4px;"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>`;
+    const paletteIcon = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-bottom: 4px;"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"></circle><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"></circle><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"></circle><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"></circle><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"></path></svg>`;
+
+    const welcomeHtml = `
+      <div style="
+        font-family: 'Courier New', monospace;
+        color: var(--palette-text, #e0e0e0);
+        padding: 20px 0;
+        line-height: 1.6;
+      ">
+        <!-- Header Section -->
+        <div style="
+          text-align: center;
+          margin-bottom: 24px;
+          padding-bottom: 20px;
+          border-bottom: 2px solid color-mix(in srgb, var(--palette-primary, #00d4ff) 30%, transparent);
+        ">
+          <div style="
+            font-size: 14px;
+            color: color-mix(in srgb, var(--palette-text, #e0e0e0) 60%, transparent);
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+            font-weight: 300;
+          ">01001111 01101101 01100101 01100111 01100001</div>
+          <div style="
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--palette-primary, #00d4ff);
+            text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+          ">
+            ${lightningIcon}
+            WELCOME TO Ω OMEGA TERMINAL v${APP_VERSION}
+          </div>
+          <div style="
+            font-size: 14px;
+            color: var(--palette-secondary, #00ff88);
+            font-weight: 500;
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+          ">
+            ${rocketIcon}
+            Your Gateway to Web3, DeFi, NFTs & Advanced Trading
+          </div>
+        </div>
+
+        <!-- Quick Start Section -->
+        <div style="
+          background: linear-gradient(135deg, color-mix(in srgb, var(--palette-primary, #00d4ff) 8%, transparent), color-mix(in srgb, var(--palette-secondary, #00ff88) 5%, transparent));
+          border: 1px solid color-mix(in srgb, var(--palette-primary, #00d4ff) 20%, transparent);
+          border-radius: 12px;
+          padding: 20px;
+          margin-bottom: 20px;
+        ">
+          <div style="
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--palette-primary, #00d4ff);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+          ">
+            ${lightbulbIcon}
+            Quick Start
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 12px;">
+            ${createCommandLine("help", "See all available commands")}
+            ${createCommandLine("connect", "Connect your MetaMask wallet")}
+            ${createCommandLine("create", "Create a new session wallet")}
+            ${createCommandLine("pgt track <address>", "Track a wallet portfolio")}
+            ${createCommandLine("chart BTC", "View live crypto charts")}
+            ${createCommandLine("spotify", "Open music player")}
+          </div>
+        </div>
+
+        <!-- Features Section -->
+        <div style="
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+          gap: 12px;
+          margin-bottom: 20px;
+        ">
+          <div style="
+            background: color-mix(in srgb, var(--palette-primary, #00d4ff) 5%, transparent);
+            border: 1px solid color-mix(in srgb, var(--palette-primary, #00d4ff) 15%, transparent);
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+          ">
+            <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 8px; color: var(--palette-primary, #00d4ff);">${globeIcon}</div>
+            <div style="font-size: 12px; color: var(--palette-text, #e0e0e0); font-weight: 500;">Multi-Chain</div>
+            <div style="font-size: 11px; color: color-mix(in srgb, var(--palette-text, #e0e0e0) 70%, transparent); margin-top: 4px;">EVM • Solana • NEAR</div>
+          </div>
+          <div style="
+            background: color-mix(in srgb, var(--palette-secondary, #00ff88) 5%, transparent);
+            border: 1px solid color-mix(in srgb, var(--palette-secondary, #00ff88) 15%, transparent);
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+          ">
+            <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 8px; color: var(--palette-secondary, #00ff88);">${chartIcon}</div>
+            <div style="font-size: 12px; color: var(--palette-text, #e0e0e0); font-weight: 500;">DeFi Analytics</div>
+            <div style="font-size: 11px; color: color-mix(in srgb, var(--palette-text, #e0e0e0) 70%, transparent); margin-top: 4px;">Portfolio • Charts</div>
+          </div>
+          <div style="
+            background: color-mix(in srgb, var(--palette-warning, #ffa502) 5%, transparent);
+            border: 1px solid color-mix(in srgb, var(--palette-warning, #ffa502) 15%, transparent);
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+          ">
+            <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 8px; color: var(--palette-warning, #ffa502);">${paletteIcon}</div>
+            <div style="font-size: 12px; color: var(--palette-text, #e0e0e0); font-weight: 500;">NFT Trading</div>
+            <div style="font-size: 11px; color: color-mix(in srgb, var(--palette-text, #e0e0e0) 70%, transparent); margin-top: 4px;">OpenSea • MagicEden</div>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div style="
+          text-align: center;
+          padding-top: 16px;
+          border-top: 1px solid color-mix(in srgb, var(--palette-text, #e0e0e0) 15%, transparent);
+          font-size: 12px;
+          color: color-mix(in srgb, var(--palette-text, #e0e0e0) 60%, transparent);
+        ">
+          <div style="margin-bottom: 8px; display: flex; align-items: center; justify-content: center; gap: 6px;">
+            ${globeIcon}
+            <span>Access: Omega Network • Multi-Chain • DeFi Analytics</span>
+          </div>
+          <div>Type ${createCommandLine("help", "help")} for full command list or ${createCommandLine("help <category>", "help <category>")} for category-specific commands</div>
+        </div>
+      </div>
+    `;
+
+    return [
+      {
+        id: "welcome-1",
+        type: "html",
+        htmlContent: welcomeHtml,
+        timestamp: 0,
+      },
+    ];
+  });
 
   // Command history state
   const [commandHistory, setCommandHistory] = useState<string[]>([]);

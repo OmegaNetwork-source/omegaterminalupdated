@@ -11,6 +11,7 @@ import type { Command, CommandContext } from "@/types/commands";
 import { magiceden } from "@/lib/api";
 import { formatSOL, formatTime, getActivityEmoji } from "@/lib/api/magiceden";
 import { escapeHtml, formatNumber } from "@/lib/utils";
+import { createUsageError } from "./command-output-helpers";
 
 /**
  * Helper function to create Magic Eden NFT grid HTML
@@ -133,9 +134,11 @@ async function handleView(
   const limit = parseInt(args[3]) || 5;
 
   if (!symbol) {
-    context.log("❌ Please provide a collection symbol", "error");
-    context.log("   Usage: magiceden view <symbol> [limit]", "info");
-    context.log("   Example: magiceden view degods 5", "info");
+    const usageHtml = createUsageError("magiceden view <symbol> [limit]", [
+      "magiceden view degods 5",
+      "magiceden view solana-monkey-business",
+    ]);
+    context.logHtml(usageHtml);
     return;
   }
 
@@ -230,8 +233,11 @@ async function handleActivities(
   const limit = parseInt(args[3]) || 10;
 
   if (!symbol) {
-    context.log("❌ Please provide a collection symbol", "error");
-    context.log("   Usage: magiceden activities <symbol> [limit]", "info");
+    const usageHtml = createUsageError("magiceden activities <symbol> [limit]", [
+      "magiceden activities degods 10",
+      "magiceden activities solana-monkey-business",
+    ]);
+    context.logHtml(usageHtml);
     return;
   }
 
@@ -275,8 +281,11 @@ async function handleStats(
   const symbol = args[2];
 
   if (!symbol) {
-    context.log("❌ Please provide a collection symbol", "error");
-    context.log("   Usage: magiceden stats <symbol>", "info");
+    const usageHtml = createUsageError("magiceden stats <symbol>", [
+      "magiceden stats degods",
+      "magiceden stats solana-monkey-business",
+    ]);
+    context.logHtml(usageHtml);
     return;
   }
 
@@ -343,8 +352,11 @@ async function handleListings(
   const limit = parseInt(args[3]) || 10;
 
   if (!symbol) {
-    context.log("❌ Please provide a collection symbol", "error");
-    context.log("   Usage: magiceden listings <symbol> [limit]", "info");
+    const usageHtml = createUsageError("magiceden listings <symbol> [limit]", [
+      "magiceden listings degods 10",
+      "magiceden listings solana-monkey-business",
+    ]);
+    context.logHtml(usageHtml);
     return;
   }
 
@@ -373,8 +385,11 @@ async function handleHolders(
   const symbol = args[2];
 
   if (!symbol) {
-    context.log("❌ Please provide a collection symbol", "error");
-    context.log("   Usage: magiceden holders <symbol>", "info");
+    const usageHtml = createUsageError("magiceden holders <symbol>", [
+      "magiceden holders degods",
+      "magiceden holders solana-monkey-business",
+    ]);
+    context.logHtml(usageHtml);
     return;
   }
 
@@ -417,8 +432,11 @@ async function handleAttributes(
   const symbol = args[2];
 
   if (!symbol) {
-    context.log("❌ Please provide a collection symbol", "error");
-    context.log("   Usage: magiceden attributes <symbol>", "info");
+    const usageHtml = createUsageError("magiceden attributes <symbol>", [
+      "magiceden attributes degods",
+      "magiceden attributes solana-monkey-business",
+    ]);
+    context.logHtml(usageHtml);
     return;
   }
 

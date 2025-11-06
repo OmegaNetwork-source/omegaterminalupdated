@@ -5,6 +5,7 @@
  */
 
 import type { Command, CommandContext } from "@/types/commands";
+import { createUsageError } from "./command-output-helpers";
 import { parseFlags, getFlagString } from "@/lib/terminal/flag-parser";
 import { useGames } from "@/hooks/useGames";
 import {
@@ -73,8 +74,11 @@ async function handleGameDuel(
 ): Promise<void> {
   const opponent = args[1];
   if (!opponent) {
-    context.log("❌ Usage: game:duel @user", "error");
-    context.log("   Example: game:duel @alice", "info");
+    const usageHtml = createUsageError("game:duel @user", [
+      "game:duel @alice",
+      "game:duel @bob",
+    ]);
+    context.logHtml(usageHtml);
     return;
   }
 

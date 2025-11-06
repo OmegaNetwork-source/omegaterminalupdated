@@ -14,6 +14,7 @@
  */
 
 import type { Command, CommandContext } from "@/types/commands";
+import { createUsageError } from "./command-output-helpers";
 
 /**
  * Rick Roll Command
@@ -210,7 +211,11 @@ export const asciiCommand: Command = {
         "Available ASCII art: omega, pickaxe, diamond, rocket",
         "info"
       );
-      context.log("Usage: ascii <name>", "info");
+      const usageHtml = createUsageError("ascii <name>", [
+        "ascii omega",
+        "ascii rocket",
+      ]);
+      context.logHtml(usageHtml);
       return;
     }
 

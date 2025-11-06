@@ -12,6 +12,7 @@
  */
 
 import type { Command, CommandContext } from "@/types/commands";
+import { createCommandLine } from "./command-output-helpers";
 import { chaingpt } from "@/lib/api";
 import { escapeHtml } from "@/lib/utils";
 import { config } from "@/lib/config";
@@ -154,8 +155,8 @@ async function handleGenerate(
   if (!prompt) {
     context.log("❌ Please provide a contract description", "error");
     context.log("", "output");
-    context.log("💡 Example:", "info");
-    context.log("   contract generate ERC-20 token with minting", "output");
+    const exampleHtml = createCommandLine("contract generate ERC-20 token with minting", "Example contract generation");
+    context.logHtml(exampleHtml);
     return;
   }
 

@@ -9,6 +9,7 @@ import { config } from "@/lib/config";
 import { AVAILABLE_THEMES, APP_TITLE, APP_VERSION } from "@/lib/constants";
 import type { Theme } from "@/types";
 import { commandRegistry } from "./CommandRegistry";
+import { createCommandLine, createUsageError } from "./command-output-helpers";
 
 // Helper functions for GUI transformations
 function createChatGptInterface(context: CommandContext): void {
@@ -785,7 +786,8 @@ export const helpCommand: Command = {
         "💡 Available categories: wallet, mining, market, ai, news, blockchain, games, theme",
         "info"
       );
-      context.log('💡 Use "help" to see all commands', "info");
+      const helpHtml = createCommandLine("help", "See all commands");
+      context.logHtml(helpHtml);
       return;
     }
 
@@ -1097,7 +1099,8 @@ export const statusCommand: Command = {
       );
     } else {
       context.log("Wallet: Not connected", "warning");
-      context.log("Use `connect` to link MetaMask.", "info");
+      const helpHtml = createCommandLine("connect", "Link MetaMask");
+      context.logHtml(helpHtml);
     }
 
     context.log("", "output");
@@ -1197,7 +1200,14 @@ export const viewCommand: Command = {
 
       default:
         context.log("❌ Invalid view mode", "error");
-        context.log("Use: view basic, view futuristic, or view toggle", "info");
+        const helpHtml = `
+          <div style="margin: 8px 0;">
+            ${createCommandLine("view basic", "Switch to basic view")}
+            ${createCommandLine("view futuristic", "Switch to futuristic view")}
+            ${createCommandLine("view toggle", "Toggle between views")}
+          </div>
+        `;
+        context.logHtml(helpHtml);
     }
   },
 };
@@ -1331,10 +1341,11 @@ export const aiCommand: Command = {
   handler: async (context: CommandContext, args: string[]) => {
     if (!args || args.length === 0 || !args[1]) {
       context.log("🤖 OMEGA AI Assistant", "info");
-      context.log("Usage: ai <your message>", "info");
-      context.log('Example: ai "What is my balance?"', "info");
-      context.log('Example: ai "Help me create a token"', "info");
-      context.log("", "info");
+      const usageHtml = createUsageError("ai <your message>", [
+        'ai "What is my balance?"',
+        'ai "Help me create a token"',
+      ]);
+      context.logHtml(usageHtml);
       // Check AI mode from context (matches vanilla behavior)
       const isAIMode = context.aiProvider && context.aiProvider !== "off";
       context.log(`AI Mode: ${isAIMode ? "ON 🟢" : "OFF 🔴"}`, "info");
@@ -1353,7 +1364,12 @@ export const tabCommand: Command = {
   usage: "tab <new|close|switch> [number]",
   handler: (context: CommandContext, args: string[]) => {
     if (args.length < 2 || !args[1]) {
-      context.log("Usage: tab <new|close|switch> [number]", "info");
+      const usageHtml = createUsageError("tab <new|close|switch> [number]", [
+        "tab new",
+        "tab close 2",
+        "tab switch 1",
+      ]);
+      context.logHtml(usageHtml);
       return;
     }
 

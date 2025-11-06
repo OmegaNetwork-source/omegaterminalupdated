@@ -4,6 +4,7 @@
  */
 
 import type { Command, CommandContext } from "@/types/commands";
+import { createUsageError } from "./command-output-helpers";
 
 // Store last command output for formatting
 let lastOutput: any = null;
@@ -26,8 +27,11 @@ async function handleFormat(
   const formatType = args[1]?.toLowerCase();
 
   if (!formatType) {
-    context.log("❌ Usage: format <table|card|chart|json>", "error");
-    context.log("   Example: format table", "info");
+    const usageHtml = createUsageError("format <table|card|chart|json>", [
+      "format table",
+      "format card",
+    ]);
+    context.logHtml(usageHtml);
     return;
   }
 

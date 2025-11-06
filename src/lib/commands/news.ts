@@ -23,6 +23,7 @@
 import type { Command, CommandContext } from "@/types/commands";
 import { cryptonews } from "@/lib/api";
 import type { NewsFilter, NewsArticle } from "@/types/media";
+import { createCommandLine, createUsageError } from "./command-output-helpers";
 
 // ============================================================================
 // Helper Functions
@@ -303,8 +304,11 @@ async function handleSearch(context: CommandContext, args: string[]) {
   const query = args.slice(2).join(" ");
 
   if (!query) {
-    context.log("Usage: news search <query>", "error");
-    context.log("Example: news search ethereum upgrade", "info");
+    const usageHtml = createUsageError("news search <query>", [
+      "news search ethereum upgrade",
+      "news search bitcoin halving",
+    ]);
+    context.logHtml(usageHtml);
     return;
   }
 
@@ -488,7 +492,8 @@ export const newsCommand: Command = {
         break;
       default:
         context.log(`Unknown subcommand: ${subcommand}`, "error");
-        context.log('Type "news help" for available commands', "info");
+        const helpHtml = createCommandLine("news help", "See available commands");
+        context.logHtml(helpHtml);
     }
   },
 };

@@ -4,6 +4,7 @@
  */
 
 import type { Command } from "@/types/commands";
+import { createCommandLine, createUsageError } from "./command-output-helpers";
 import {
   FARMING_NETWORKS,
   CONTRACT_TEMPLATES,
@@ -19,6 +20,7 @@ import {
   searchOpportunities,
 } from "@/lib/services/farming-api";
 import { deployContract } from "@/lib/services/contract-deployment";
+import { escapeHtml } from "@/lib/utils";
 
 const COMING_SOON_MESSAGE = `
 🚧 This feature is coming soon!
@@ -73,9 +75,12 @@ async function handleList(context: any) {
 async function handleSearch(context: any, args: string[]) {
   const query = args[2];
   if (!query) {
-    context.log("Usage: farm search <network|keyword>", "error");
-    context.log("Example: farm search ethereum-testnet", "output");
-    context.log("Example: farm search layerzero", "output");
+    const usageHtml = createUsageError("farm search", [
+      "farm search ethereum-testnet",
+      "farm search layerzero"
+    ]);
+    context.logHtml(usageHtml);
+    context.log("", "output");
     return;
   }
 
@@ -118,8 +123,11 @@ async function handleSearch(context: any, args: string[]) {
 async function handleInfo(context: any, args: string[]) {
   const opportunityId = args[2]?.toLowerCase();
   if (!opportunityId) {
-    context.log("Usage: farm info <opportunity-id>", "error");
-    context.log("Example: farm info layerzero-testnet", "output");
+    const usageHtml = createUsageError("farm info", [
+      "farm info layerzero-testnet"
+    ]);
+    context.logHtml(usageHtml);
+    context.log("", "output");
     return;
   }
 
@@ -199,10 +207,30 @@ async function handleDeploy(context: any, args: string[]) {
   const networkId = args[3]?.toLowerCase();
   
   if (!templateId) {
-    context.log("Usage: farm deploy <template-id> [network-id]", "error");
-    context.log("Example: farm deploy erc20-basic ethereum-testnet", "output");
-    context.log("\nUse 'farm templates' to see available templates", "info");
-    context.log("Use 'farm networks' to see available networks", "info");
+    const usageHtml = createUsageError("farm deploy", [
+      "farm deploy erc20-basic ethereum-testnet"
+    ]) + `
+      <div style="
+        margin-top: 12px;
+        padding: 12px;
+        background: color-mix(in srgb, var(--palette-primary, #00d4ff) 10%, transparent);
+        border: 1px solid color-mix(in srgb, var(--palette-primary, #00d4ff) 30%, transparent);
+        border-radius: 6px;
+        font-size: 12px;
+        color: var(--palette-text, #ccd4e0);
+      ">
+        <div style="margin-bottom: 8px;">
+          <span style="color: var(--palette-primary, #00d4ff);">💡</span>
+          <span style="margin-left: 8px;">Use <span class="omega-help-command" data-command="farm templates" style="color: var(--palette-secondary, #00ff88); font-weight: bold; cursor: pointer; text-decoration: underline; padding: 2px 4px; border-radius: 3px; transition: all 0.2s ease;" onmouseover="this.style.background = 'color-mix(in srgb, var(--palette-secondary, #00ff88) 15%, transparent)';" onmouseout="this.style.background = 'transparent';" title="Click to add 'farm templates' to terminal input">farm templates</span> to see available templates</span>
+        </div>
+        <div>
+          <span style="color: var(--palette-primary, #00d4ff);">💡</span>
+          <span style="margin-left: 8px;">Use <span class="omega-help-command" data-command="farm networks" style="color: var(--palette-secondary, #00ff88); font-weight: bold; cursor: pointer; text-decoration: underline; padding: 2px 4px; border-radius: 3px; transition: all 0.2s ease;" onmouseover="this.style.background = 'color-mix(in srgb, var(--palette-secondary, #00ff88) 15%, transparent)';" onmouseout="this.style.background = 'transparent';" title="Click to add 'farm networks' to terminal input">farm networks</span> to see available networks</span>
+        </div>
+      </div>
+    `;
+    context.logHtml(usageHtml);
+    context.log("", "output");
     return;
   }
 
@@ -238,7 +266,11 @@ async function handleDeploy(context: any, args: string[]) {
       context.log(`  Estimated Gas: ${template.estimatedGas}`, "output");
     }
     context.log("\n⚠️  Please specify a network: farm deploy <template-id> <network-id>", "warning");
-    context.log("Example: farm deploy erc20-basic ethereum-testnet", "output");
+    const usageHtml = createUsageError("farm deploy", [
+      "farm deploy erc20-basic ethereum-testnet"
+    ]);
+    context.logHtml(usageHtml);
+    context.log("", "output");
     return;
   }
 
@@ -275,8 +307,11 @@ async function handleDeploy(context: any, args: string[]) {
 async function handleFlow(context: any, args: string[]) {
   const flowId = args[2]?.toLowerCase();
   if (!flowId) {
-    context.log("Usage: farm flow <flow-id>", "error");
-    context.log("Example: farm flow layerzero-bridge-flow", "output");
+    const usageHtml = createUsageError("farm flow", [
+      "farm flow layerzero-bridge-flow"
+    ]);
+    context.logHtml(usageHtml);
+    context.log("", "output");
     return;
   }
 
@@ -305,8 +340,11 @@ async function handleFlow(context: any, args: string[]) {
 async function handleLinks(context: any, args: string[]) {
   const opportunityId = args[2]?.toLowerCase();
   if (!opportunityId) {
-    context.log("Usage: farm links <opportunity-id>", "error");
-    context.log("Example: farm links layerzero-testnet", "output");
+    const usageHtml = createUsageError("farm links", [
+      "farm links layerzero-testnet"
+    ]);
+    context.logHtml(usageHtml);
+    context.log("", "output");
     return;
   }
 
@@ -399,31 +437,77 @@ async function handleTemplates(context: any) {
 }
 
 async function handleHelp(context: any) {
-  context.log("🌾 FARMING COMMANDS", "info");
-  context.log("═══════════════════════════════", "output");
+  const helpHtml = `
+    <div style="
+      background: linear-gradient(135deg, color-mix(in srgb, var(--palette-primary, #00d4ff) 15%, transparent), color-mix(in srgb, var(--palette-secondary, #00ff88) 10%, transparent));
+      border: 1px solid color-mix(in srgb, var(--palette-primary, #00d4ff) 30%, transparent);
+      border-radius: 12px;
+      padding: 20px;
+      margin: 10px 0;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    ">
+      <div style="
+        font-size: 18px;
+        font-weight: 600;
+        color: var(--palette-primary, #00d4ff);
+        margin-bottom: 16px;
+        text-shadow: 0 0 8px color-mix(in srgb, var(--palette-primary, #00d4ff) 40%, transparent);
+      ">🌾 FARMING COMMANDS</div>
+      
+      <div style="
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--palette-secondary, #00ff88);
+        margin: 16px 0 12px 0;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      ">📋 Available Commands</div>
+      
+      ${createCommandLine("farm list", "List all farming opportunities")}
+      ${createCommandLine("farm search <network>", "Search opportunities by network")}
+      ${createCommandLine("farm info <id>", "Show detailed opportunity info")}
+      ${createCommandLine("farm deploy <template>", "Deploy contract template")}
+      ${createCommandLine("farm flow <id>", "Execute automated farming flow")}
+      ${createCommandLine("farm links <id>", "Show Discord/Telegram links")}
+      ${createCommandLine("farm networks", "List supported testnet networks")}
+      ${createCommandLine("farm templates", "List available contract templates")}
+      ${createCommandLine("farm help", "Show this help message")}
+      
+      <div style="
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--palette-secondary, #00ff88);
+        margin: 20px 0 12px 0;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      ">🎯 Examples</div>
+      
+      ${createCommandLine("farm list", "List all opportunities")}
+      ${createCommandLine("farm search ethereum-testnet", "Search by network")}
+      ${createCommandLine("farm info layerzero-testnet", "Get opportunity details")}
+      ${createCommandLine("farm deploy erc20-basic", "Deploy ERC20 token")}
+      ${createCommandLine("farm flow layerzero-bridge-flow", "Execute farming flow")}
+      ${createCommandLine("farm links layerzero-testnet", "Get community links")}
+      
+      <div style="
+        margin-top: 20px;
+        padding: 12px;
+        background: color-mix(in srgb, var(--palette-warning, #ffaa00) 10%, transparent);
+        border: 1px solid color-mix(in srgb, var(--palette-warning, #ffaa00) 30%, transparent);
+        border-radius: 6px;
+        font-size: 12px;
+        color: var(--palette-text, #ccd4e0);
+      ">
+        <span style="color: var(--palette-warning, #ffaa00);">🚧</span>
+        <span style="margin-left: 8px;">NOTE: All features are currently in development. Commands will show preview data and 'coming soon' messages.</span>
+      </div>
+    </div>
+  `;
+  
+  context.logHtml(helpHtml);
   context.log("", "output");
-  context.log("📋 AVAILABLE COMMANDS:", "info");
-  context.log("  farm list              → List all farming opportunities", "output");
-  context.log("  farm search <network>  → Search opportunities by network", "output");
-  context.log("  farm info <id>         → Show detailed opportunity info", "output");
-  context.log("  farm deploy <template> → Deploy contract template", "output");
-  context.log("  farm flow <id>         → Execute automated farming flow", "output");
-  context.log("  farm links <id>        → Show Discord/Telegram links", "output");
-  context.log("  farm networks          → List supported testnet networks", "output");
-  context.log("  farm templates         → List available contract templates", "output");
-  context.log("  farm help              → Show this help message", "output");
-  context.log("", "output");
-  context.log("🎯 EXAMPLES:", "info");
-  context.log("  farm list                           # List all opportunities", "output");
-  context.log("  farm search ethereum-testnet        # Search by network", "output");
-  context.log("  farm info layerzero-testnet         # Get opportunity details", "output");
-  context.log("  farm deploy erc20-basic             # Deploy ERC20 token", "output");
-  context.log("  farm flow layerzero-bridge-flow    # Execute farming flow", "output");
-  context.log("  farm links layerzero-testnet        # Get community links", "output");
-  context.log("", "output");
-  context.log("🚧 NOTE: All features are currently in development", "warning");
-  context.log("Commands will show preview data and 'coming soon' messages.", "output");
 }
+
 
 export const farmCommand: Command = {
   name: "farm",

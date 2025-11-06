@@ -5,6 +5,8 @@
 
 import type { Command, CommandContext } from "@/types/commands";
 import { Contract, Wallet, parseEther, formatEther, parseUnits } from "ethers";
+import { escapeHtml } from "@/lib/utils";
+import { createCommandLine, createUsageError } from "./command-output-helpers";
 
 // Rome Network Configuration
 const ROME_CONFIG = {
@@ -296,11 +298,11 @@ async function createRomeToken(
   }
 
   if (args.length < 3) {
-    context.log(
-      "❌ Usage: rome token create <name> <symbol> <supply> [decimals]",
-      "error"
-    );
-    context.log("Example: rome token create RomeCoin ROME 1000000 18", "info");
+    const usageHtml = createUsageError("rome token create", [
+      "rome token create RomeCoin ROME 1000000 18"
+    ]);
+    context.logHtml(usageHtml);
+    context.log("", "output");
     return;
   }
 
@@ -398,8 +400,11 @@ async function registerRomeENS(
   name: string | undefined
 ): Promise<void> {
   if (!name) {
-    context.log("❌ Usage: rome ens register <name>", "error");
-    context.log("Example: rome ens register myname", "info");
+    const usageHtml = createUsageError("rome ens register", [
+      "rome ens register myname"
+    ]);
+    context.logHtml(usageHtml);
+    context.log("", "output");
     return;
   }
 
@@ -477,8 +482,11 @@ async function resolveRomeENS(
   name: string | undefined
 ): Promise<void> {
   if (!name) {
-    context.log("❌ Usage: rome ens resolve <name>", "error");
-    context.log("Example: rome ens resolve myname", "info");
+    const usageHtml = createUsageError("rome ens resolve", [
+      "rome ens resolve myname"
+    ]);
+    context.logHtml(usageHtml);
+    context.log("", "output");
     return;
   }
 
@@ -559,49 +567,77 @@ export const romeCommand: Command = {
     const subcommand = args[1]?.toLowerCase();
 
     if (!subcommand || subcommand === "help") {
-      context.log("🏛️ ROME NETWORK COMMANDS", "info");
-      context.log("═══════════════════════════", "output");
+      const helpHtml = `
+        <div style="
+          background: linear-gradient(135deg, color-mix(in srgb, var(--palette-primary, #00d4ff) 15%, transparent), color-mix(in srgb, var(--palette-secondary, #00ff88) 10%, transparent));
+          border: 1px solid color-mix(in srgb, var(--palette-primary, #00d4ff) 30%, transparent);
+          border-radius: 12px;
+          padding: 20px;
+          margin: 10px 0;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        ">
+          <div style="
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--palette-primary, #00d4ff);
+            margin-bottom: 16px;
+            text-shadow: 0 0 8px color-mix(in srgb, var(--palette-primary, #00d4ff) 40%, transparent);
+          ">🏛️ ROME NETWORK COMMANDS</div>
+          
+          <div style="
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--palette-secondary, #00ff88);
+            margin: 16px 0 12px 0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+          ">📋 Available Commands</div>
+          
+          ${createCommandLine("rome connect", "Connect to Rome Network")}
+          ${createCommandLine("rome balance", "Check Rome Network balance")}
+          ${createCommandLine("rome status", "Show Rome Network status")}
+          ${createCommandLine("rome info", "Display Rome Network information")}
+          ${createCommandLine("rome gen-wallet", "Generate a new Rome wallet")}
+          ${createCommandLine("rome token create", "Create a new token on Rome")}
+          ${createCommandLine("rome ens", "ENS commands (register/resolve)")}
+          ${createCommandLine("rome send", "Send tokens via ENS or address")}
+          ${createCommandLine("rome nft mint", "Mint NFT on Rome Network with UI")}
+          ${createCommandLine("rome help", "Show this help message")}
+          
+          <div style="
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--palette-secondary, #00ff88);
+            margin: 20px 0 12px 0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+          ">🎯 Examples</div>
+          
+          ${createCommandLine("rome connect", "Connect to Rome Network")}
+          ${createCommandLine("rome balance", "Check your Rome balance")}
+          ${createCommandLine("rome gen-wallet", "Generate new Rome wallet")}
+          ${createCommandLine("rome token create", "Create Rome token")}
+          ${createCommandLine("rome ens register myname", "Register myname.rome")}
+          ${createCommandLine("rome ens resolve myname", "Look up myname.rome")}
+          ${createCommandLine("rome send 1 rSOL roman.rome", "Send 1 rSOL")}
+          
+          <div style="
+            margin-top: 20px;
+            padding: 12px;
+            background: color-mix(in srgb, var(--palette-primary, #00d4ff) 10%, transparent);
+            border: 1px solid color-mix(in srgb, var(--palette-primary, #00d4ff) 30%, transparent);
+            border-radius: 6px;
+            font-size: 12px;
+            color: var(--palette-text, #ccd4e0);
+          ">
+            <span style="color: var(--palette-primary, #00d4ff);">💡</span>
+            <span style="margin-left: 8px;">Rome Network is a Layer 2 scaling solution!</span>
+          </div>
+        </div>
+      `;
+      
+      context.logHtml(helpHtml);
       context.log("", "output");
-      context.log("📋 AVAILABLE COMMANDS:", "info");
-      context.log("  rome connect     Connect to Rome Network", "output");
-      context.log("  rome balance     Check Rome Network balance", "output");
-      context.log("  rome status      Show Rome Network status", "output");
-      context.log(
-        "  rome info        Display Rome Network information",
-        "output"
-      );
-      context.log("  rome gen-wallet  Generate a new Rome wallet", "output");
-      context.log("  rome token create Create a new token on Rome", "output");
-      context.log(
-        "  rome ens         ENS commands (register/resolve)",
-        "output"
-      );
-      context.log(
-        "  rome send        Send tokens via ENS or address",
-        "output"
-      );
-      context.log(
-        "  rome nft mint    Mint NFT on Rome Network with UI",
-        "output"
-      );
-      context.log("  rome help        Show this help message", "output");
-      context.log("", "output");
-      context.log("🎯 EXAMPLES:", "info");
-      context.log("  rome connect     # Connect to Rome Network", "output");
-      context.log("  rome balance     # Check your Rome balance", "output");
-      context.log("  rome gen-wallet  # Generate new Rome wallet", "output");
-      context.log("  rome token create # Create Rome token", "output");
-      context.log(
-        "  rome ens register myname  # Register myname.rome",
-        "output"
-      );
-      context.log(
-        "  rome ens resolve myname   # Look up myname.rome",
-        "output"
-      );
-      context.log("  rome send 1 rSOL roman.rome  # Send 1 rSOL", "output");
-      context.log("", "output");
-      context.log("💡 Rome Network is a Layer 2 scaling solution!", "success");
       return;
     }
 
@@ -647,12 +683,34 @@ export const romeCommand: Command = {
         if (args[2] === "create") {
           await createRomeToken(context, args.slice(3));
         } else {
-          context.log("🏛️ Rome Token Factory", "info");
-          context.log("═══════════════════════", "output");
+          const usageHtml = `
+            <div style="
+              background: linear-gradient(135deg, color-mix(in srgb, var(--palette-primary, #00d4ff) 15%, transparent), color-mix(in srgb, var(--palette-secondary, #00ff88) 10%, transparent));
+              border: 1px solid color-mix(in srgb, var(--palette-primary, #00d4ff) 30%, transparent);
+              border-radius: 12px;
+              padding: 16px;
+              margin: 10px 0;
+            ">
+              <div style="
+                font-size: 16px;
+                font-weight: 600;
+                color: var(--palette-primary, #00d4ff);
+                margin-bottom: 12px;
+              ">🏛️ Rome Token Factory</div>
+              <div style="
+                color: var(--palette-text, #ccd4e0);
+                margin: 8px 0;
+                font-size: 0.95em;
+              ">Usage: <span class="omega-help-command" data-command="rome token create" style="color: var(--palette-secondary, #00ff88); font-weight: bold; cursor: pointer; font-family: 'Courier New', monospace; padding: 2px 4px; border-radius: 3px; transition: all 0.2s ease;" onmouseover="this.style.background = 'color-mix(in srgb, var(--palette-secondary, #00ff88) 15%, transparent)';" onmouseout="this.style.background = 'transparent';" title="Click to add 'rome token create' to terminal input">rome token create &lt;name&gt; &lt;symbol&gt; &lt;supply&gt; [decimals]</span></div>
+              <div style="
+                color: var(--palette-text, #ccd4e0);
+                margin: 8px 0;
+                font-size: 0.95em;
+              ">Example: <span class="omega-help-command" data-command="rome token create RomeCoin ROME 1000000 18" style="color: var(--palette-secondary, #00ff88); font-weight: bold; cursor: pointer; font-family: 'Courier New', monospace; padding: 2px 4px; border-radius: 3px; transition: all 0.2s ease;" onmouseover="this.style.background = 'color-mix(in srgb, var(--palette-secondary, #00ff88) 15%, transparent)';" onmouseout="this.style.background = 'transparent';" title="Click to add 'rome token create RomeCoin ROME 1000000 18' to terminal input">rome token create RomeCoin ROME 1000000 18</span></div>
+            </div>
+          `;
+          context.logHtml(usageHtml);
           context.log("", "output");
-          context.log("Usage: rome token create <name> <symbol> <supply> [decimals]", "info");
-          context.log("", "output");
-          context.log("Example: rome token create RomeCoin ROME 1000000 18", "output");
         }
         break;
 
@@ -713,5 +771,6 @@ export const romeCommand: Command = {
     }
   },
 };
+
 
 export const romeCommands: Command[] = [romeCommand];

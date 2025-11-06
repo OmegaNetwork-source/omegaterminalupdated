@@ -6,6 +6,7 @@
 
 import type { Command, CommandContext } from "@/types/commands";
 import { escapeHtml } from "@/lib/utils";
+import { createCommandLine, createUsageError } from "./command-output-helpers";
 
 /**
  * PGT Command - Portfolio tracking and analytics
@@ -192,9 +193,11 @@ function showPgtHelp(context: CommandContext): void {
           style="
             color: var(--palette-secondary, #00ff88);
             font-weight: bold;
+            font-size: 1.05em;
             margin-left: 0;
             margin-top: 8px;
             font-family: 'Courier New', monospace;
+            text-shadow: 0 0 6px rgba(0, 255, 136, 0.3);
             cursor: pointer;
             display: inline-block;
             padding: 2px 4px;
@@ -202,6 +205,8 @@ function showPgtHelp(context: CommandContext): void {
             transition: all 0.2s ease;
             user-select: none;
           "
+          onmouseover="this.style.background = 'color-mix(in srgb, var(--palette-secondary, #00ff88) 15%, transparent)'; this.style.textShadow = '0 0 8px var(--palette-secondary-glow, rgba(0, 255, 136, 0.5))';"
+          onmouseout="this.style.background = 'transparent'; this.style.textShadow = '0 0 6px rgba(0, 255, 136, 0.3)';"
           title="Click to add 'pgt ${escapedCommand}' to terminal input"
         >
           ${escapeHtml(line)}
@@ -233,13 +238,42 @@ async function trackWallet(
   args: string[]
 ): Promise<void> {
   if (!context.media?.pgt) {
-    context.log("❌ PGT system not available", "error");
+    context.log("PGT system not available", "error");
     return;
   }
 
   if (args.length < 3) {
-    context.log("Usage: pgt track <address> <network> [label]", "error");
-    context.log("Example: pgt track 0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b6 ethereum", "info");
+    const usageHtml = `
+      <div style="
+        background: rgba(0, 0, 0, 0.3);
+        border: 1px solid color-mix(in srgb, var(--palette-error, #ff4757) 30%, transparent);
+        border-radius: 6px;
+        padding: 16px;
+        margin: 10px 0;
+      ">
+        <div style="
+          font-size: 13px;
+          font-weight: 600;
+          color: var(--palette-error, #ff4757);
+          margin-bottom: 12px;
+          font-family: 'Courier New', monospace;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        ">USAGE ERROR</div>
+        <div style="
+          color: var(--palette-text, #ccd4e0);
+          margin: 8px 0;
+          font-size: 0.95em;
+        ">Usage: <span class="omega-help-command" data-command="pgt track" style="color: var(--palette-secondary, #00ff88); font-weight: bold; cursor: pointer; font-family: 'Courier New', monospace; padding: 2px 4px; border-radius: 3px; transition: all 0.2s ease;" onmouseover="this.style.background = 'color-mix(in srgb, var(--palette-secondary, #00ff88) 15%, transparent)';" onmouseout="this.style.background = 'transparent';" title="Click to add 'pgt track' to terminal input">pgt track &lt;address&gt; &lt;network&gt; [label]</span></div>
+        <div style="
+          color: var(--palette-text, #ccd4e0);
+          margin: 8px 0;
+          font-size: 0.95em;
+        ">Example: <span class="omega-help-command" data-command="pgt track 0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b6 ethereum" style="color: var(--palette-secondary, #00ff88); font-weight: bold; cursor: pointer; font-family: 'Courier New', monospace; padding: 2px 4px; border-radius: 3px; transition: all 0.2s ease;" onmouseover="this.style.background = 'color-mix(in srgb, var(--palette-secondary, #00ff88) 15%, transparent)';" onmouseout="this.style.background = 'transparent';" title="Click to add 'pgt track 0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b6 ethereum' to terminal input">pgt track 0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b6 ethereum</span></div>
+      </div>
+    `;
+    context.logHtml(usageHtml);
+    context.log("", "output");
     return;
   }
 
@@ -248,9 +282,42 @@ async function trackWallet(
   const label = args[4] || undefined;
 
   if (!address) {
-    context.log("Usage: pgt track <address> [network] [label]", "error");
-    context.log("Example: pgt track 0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b6 ethereum", "info");
-    context.log("Example: pgt track 40c5117703fe6bd1f286a3912334904c65dcd39c187b1df66e62dc9e85f016d5 solana", "info");
+    const usageHtml = `
+      <div style="
+        background: rgba(0, 0, 0, 0.3);
+        border: 1px solid color-mix(in srgb, var(--palette-error, #ff4757) 30%, transparent);
+        border-radius: 6px;
+        padding: 16px;
+        margin: 10px 0;
+      ">
+        <div style="
+          font-size: 13px;
+          font-weight: 600;
+          color: var(--palette-error, #ff4757);
+          margin-bottom: 12px;
+          font-family: 'Courier New', monospace;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        ">USAGE ERROR</div>
+        <div style="
+          color: var(--palette-text, #ccd4e0);
+          margin: 8px 0;
+          font-size: 0.95em;
+        ">Usage: <span class="omega-help-command" data-command="pgt track" style="color: var(--palette-secondary, #00ff88); font-weight: bold; cursor: pointer; font-family: 'Courier New', monospace; padding: 2px 4px; border-radius: 3px; transition: all 0.2s ease;" onmouseover="this.style.background = 'color-mix(in srgb, var(--palette-secondary, #00ff88) 15%, transparent)';" onmouseout="this.style.background = 'transparent';" title="Click to add 'pgt track' to terminal input">pgt track &lt;address&gt; [network] [label]</span></div>
+        <div style="
+          color: var(--palette-text, #ccd4e0);
+          margin: 8px 0;
+          font-size: 0.95em;
+        ">Example: <span class="omega-help-command" data-command="pgt track 0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b6 ethereum" style="color: var(--palette-secondary, #00ff88); font-weight: bold; cursor: pointer; font-family: 'Courier New', monospace; padding: 2px 4px; border-radius: 3px; transition: all 0.2s ease;" onmouseover="this.style.background = 'color-mix(in srgb, var(--palette-secondary, #00ff88) 15%, transparent)';" onmouseout="this.style.background = 'transparent';" title="Click to add 'pgt track 0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b6 ethereum' to terminal input">pgt track 0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b6 ethereum</span></div>
+        <div style="
+          color: var(--palette-text, #ccd4e0);
+          margin: 8px 0;
+          font-size: 0.95em;
+        ">Example: <span class="omega-help-command" data-command="pgt track 40c5117703fe6bd1f286a3912334904c65dcd39c187b1df66e62dc9e85f016d5 solana" style="color: var(--palette-secondary, #00ff88); font-weight: bold; cursor: pointer; font-family: 'Courier New', monospace; padding: 2px 4px; border-radius: 3px; transition: all 0.2s ease;" onmouseover="this.style.background = 'color-mix(in srgb, var(--palette-secondary, #00ff88) 15%, transparent)';" onmouseout="this.style.background = 'transparent';" title="Click to add 'pgt track 40c5117703fe6bd1f286a3912334904c65dcd39c187b1df66e62dc9e85f016d5 solana' to terminal input">pgt track 40c5117703fe6bd1f286a3912334904c65dcd39c187b1df66e62dc9e85f016d5 solana</span></div>
+      </div>
+    `;
+    context.logHtml(usageHtml);
+    context.log("", "output");
     return;
   }
 
@@ -271,12 +338,12 @@ async function trackWallet(
     // Default to ethereum for unknown formats (but warn)
     else {
       network = "ethereum";
-      context.log(`⚠️ Unknown address format, defaulting to ethereum. If this fails, specify network explicitly.`, "info");
+      context.log(`Unknown address format, defaulting to ethereum. If this fails, specify network explicitly.`, "info");
     }
-    context.log(`🔍 Auto-detected network: ${network}`, "info");
+    context.log(`Auto-detected network: ${network}`, "info");
   }
 
-  context.log(`🎯 Adding wallet to PGT tracking...`, "info");
+  context.log(`Adding wallet to PGT tracking...`, "info");
 
   // Play balance/wealth sound effect
   if (context.sound) {
@@ -292,26 +359,23 @@ async function trackWallet(
   if (result.success) {
     const successHtml = `
       <div style="
-        background: linear-gradient(135deg, color-mix(in srgb, var(--palette-secondary, #00ff88) 15%, transparent), color-mix(in srgb, var(--palette-primary, #00d4ff) 10%, transparent));
+        background: rgba(0, 0, 0, 0.3);
         border: 1px solid color-mix(in srgb, var(--palette-secondary, #00ff88) 30%, transparent);
-        border-radius: 12px;
-        padding: 20px;
+        border-radius: 6px;
+        padding: 16px;
         margin: 10px 0;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
       ">
         <div style="
-          display: flex;
-          align-items: center;
-          gap: 12px;
           margin-bottom: 16px;
         ">
-          <div style="font-size: 32px; line-height: 1;">✅</div>
           <div style="
-            font-size: 18px;
+            font-size: 13px;
             font-weight: 600;
             color: var(--palette-secondary, #00ff88);
-            text-shadow: 0 0 8px color-mix(in srgb, var(--palette-secondary, #00ff88) 40%, transparent);
-          ">Wallet Tracked Successfully</div>
+            font-family: 'Courier New', monospace;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+          ">WALLET TRACKED SUCCESSFULLY</div>
         </div>
         
         <div style="
@@ -514,29 +578,33 @@ async function trackWallet(
   } else {
     const errorHtml = `
       <div style="
-        background: linear-gradient(135deg, color-mix(in srgb, var(--palette-error, #ff4757) 15%, transparent), color-mix(in srgb, var(--palette-warning, #ffa502) 10%, transparent));
+        background: rgba(0, 0, 0, 0.3);
         border: 1px solid color-mix(in srgb, var(--palette-error, #ff4757) 30%, transparent);
-        border-radius: 12px;
-        padding: 20px;
+        border-radius: 6px;
+        padding: 16px;
         margin: 10px 0;
         text-align: center;
       ">
-        <div style="font-size: 32px; line-height: 1; margin-bottom: 12px;">❌</div>
         <div style="
-          font-size: 16px;
+          font-size: 13px;
           font-weight: 600;
           color: var(--palette-error, #ff4757);
           margin-bottom: 8px;
-        ">Tracking Failed</div>
+          font-family: 'Courier New', monospace;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        ">TRACKING FAILED</div>
         <div style="
           color: color-mix(in srgb, var(--palette-text, #ffffff) 70%, transparent);
-          font-size: 12px;
+          font-size: 11px;
           margin-bottom: 12px;
+          font-family: 'Courier New', monospace;
         ">${escapeHtml(result.error || "Unknown error")}</div>
         <div style="
           color: color-mix(in srgb, var(--palette-text, #ffffff) 60%, transparent);
-          font-size: 11px;
-        ">💡 Please check the address format and network type</div>
+          font-size: 10px;
+          font-family: 'Courier New', monospace;
+        ">Please check the address format and network type</div>
       </div>
     `;
     context.logHtml(errorHtml);
@@ -546,7 +614,7 @@ async function trackWallet(
 
 async function showPortfolio(context: CommandContext): Promise<void> {
   if (!context.media?.pgt) {
-    context.log("❌ PGT system not available", "error");
+    context.log("PGT system not available", "error");
     return;
   }
 
@@ -555,32 +623,35 @@ async function showPortfolio(context: CommandContext): Promise<void> {
   if (!portfolio || portfolio.walletCount === 0) {
     const emptyHtml = `
       <div style="
-        background: linear-gradient(135deg, color-mix(in srgb, var(--palette-primary, #00d4ff) 15%, transparent), color-mix(in srgb, var(--palette-secondary, #00ff88) 10%, transparent));
-        border: 1px solid color-mix(in srgb, var(--palette-primary, #00d4ff) 30%, transparent);
-        border-radius: 12px;
+        background: rgba(0, 0, 0, 0.3);
+        border: 1px solid color-mix(in srgb, var(--palette-primary, #00d4ff) 15%, transparent);
+        border-radius: 6px;
         padding: 24px;
         margin: 10px 0;
         text-align: center;
       ">
-        <div style="font-size: 48px; line-height: 1; margin-bottom: 16px;">📊</div>
         <div style="
-          font-size: 18px;
+          font-size: 14px;
           font-weight: 600;
           color: var(--palette-primary, #00d4ff);
           margin-bottom: 12px;
-          text-shadow: 0 0 8px color-mix(in srgb, var(--palette-primary, #00d4ff) 40%, transparent);
+          font-family: 'Courier New', monospace;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
         ">No Wallets Tracked</div>
         <div style="
           color: color-mix(in srgb, var(--palette-text, #ffffff) 70%, transparent);
-          font-size: 14px;
+          font-size: 12px;
           margin-bottom: 20px;
+          font-family: 'Courier New', monospace;
         ">Start tracking wallets to see your portfolio</div>
         <div style="
           color: color-mix(in srgb, var(--palette-text, #ffffff) 60%, transparent);
-          font-size: 12px;
+          font-size: 11px;
           margin-top: 16px;
+          font-family: 'Courier New', monospace;
         ">
-          💡 Example: <span style="color: var(--palette-secondary, #00ff88); font-family: 'Courier New', monospace;">pgt track 0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b6</span>
+          Example: <span class="omega-help-command" data-command="pgt track 0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b6" style="color: var(--palette-secondary, #00ff88); font-weight: bold; cursor: pointer; font-family: 'Courier New', monospace; padding: 2px 4px; border-radius: 3px; transition: all 0.2s ease;" onmouseover="this.style.background = 'color-mix(in srgb, var(--palette-secondary, #00ff88) 15%, transparent)';" onmouseout="this.style.background = 'transparent';" title="Click to add 'pgt track 0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b6' to terminal input">pgt track 0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b6</span>
         </div>
       </div>
     `;
@@ -793,7 +864,7 @@ async function showPortfolio(context: CommandContext): Promise<void> {
 
 async function showWallets(context: CommandContext): Promise<void> {
   if (!context.media?.pgt) {
-    context.log("❌ PGT system not available", "error");
+    context.log("PGT system not available", "error");
     return;
   }
 
@@ -802,32 +873,35 @@ async function showWallets(context: CommandContext): Promise<void> {
   if (!wallets || wallets.length === 0) {
     const emptyHtml = `
       <div style="
-        background: linear-gradient(135deg, color-mix(in srgb, var(--palette-primary, #00d4ff) 15%, transparent), color-mix(in srgb, var(--palette-secondary, #00ff88) 10%, transparent));
-        border: 1px solid color-mix(in srgb, var(--palette-primary, #00d4ff) 30%, transparent);
-        border-radius: 12px;
+        background: rgba(0, 0, 0, 0.3);
+        border: 1px solid color-mix(in srgb, var(--palette-primary, #00d4ff) 15%, transparent);
+        border-radius: 6px;
         padding: 24px;
         margin: 10px 0;
         text-align: center;
       ">
-        <div style="font-size: 48px; line-height: 1; margin-bottom: 16px;">👛</div>
         <div style="
-          font-size: 18px;
+          font-size: 14px;
           font-weight: 600;
           color: var(--palette-primary, #00d4ff);
           margin-bottom: 12px;
-          text-shadow: 0 0 8px color-mix(in srgb, var(--palette-primary, #00d4ff) 40%, transparent);
+          font-family: 'Courier New', monospace;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
         ">No Wallets Tracked</div>
         <div style="
           color: color-mix(in srgb, var(--palette-text, #ffffff) 70%, transparent);
-          font-size: 14px;
+          font-size: 12px;
           margin-bottom: 20px;
+          font-family: 'Courier New', monospace;
         ">Start tracking wallets to see them here</div>
         <div style="
           color: color-mix(in srgb, var(--palette-text, #ffffff) 60%, transparent);
-          font-size: 12px;
+          font-size: 11px;
           margin-top: 16px;
+          font-family: 'Courier New', monospace;
         ">
-          💡 Example: <span style="color: var(--palette-secondary, #00ff88); font-family: 'Courier New', monospace;">pgt track 0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b6</span>
+          Example: <span class="omega-help-command" data-command="pgt track 0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b6" style="color: var(--palette-secondary, #00ff88); font-weight: bold; cursor: pointer; font-family: 'Courier New', monospace; padding: 2px 4px; border-radius: 3px; transition: all 0.2s ease;" onmouseover="this.style.background = 'color-mix(in srgb, var(--palette-secondary, #00ff88) 15%, transparent)';" onmouseout="this.style.background = 'transparent';" title="Click to add 'pgt track 0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b6' to terminal input">pgt track 0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b6</span>
         </div>
       </div>
     `;
@@ -839,64 +913,107 @@ async function showWallets(context: CommandContext): Promise<void> {
   let walletsHtml = "";
   wallets.forEach((w, i) => {
     const displayAddress = w.address.length > 40 ? w.address.slice(0, 20) + "..." + w.address.slice(-20) : w.address;
+    const escapedAddress = escapeHtml(w.address);
+    const escapedNetwork = escapeHtml(w.network);
+    const escapedLabel = escapeHtml(w.label || "Unnamed Wallet");
+    const removeCommand = `pgt untrack ${escapedAddress} ${escapedNetwork}`;
+    const escapedRemoveCommand = removeCommand.replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+    
     walletsHtml += `
       <div style="
-        background: color-mix(in srgb, var(--palette-surface, rgba(21, 21, 32, 1)) 60%, transparent);
-        border: 1px solid color-mix(in srgb, var(--palette-primary, #00d4ff) 20%, transparent);
-        border-radius: 8px;
-        padding: 16px;
+        background: rgba(0, 0, 0, 0.2);
+        border: 1px solid color-mix(in srgb, var(--palette-primary, #00d4ff) 15%, transparent);
+        border-radius: 6px;
+        padding: 12px;
         margin: 8px 0;
         transition: all 0.2s ease;
+        font-family: 'Courier New', monospace;
       "
-      onmouseover="this.style.borderColor='color-mix(in srgb, var(--palette-primary, #00d4ff) 40%, transparent)'; this.style.background='color-mix(in srgb, var(--palette-surface, rgba(21, 21, 32, 1)) 80%, transparent)';"
-      onmouseout="this.style.borderColor='color-mix(in srgb, var(--palette-primary, #00d4ff) 20%, transparent)'; this.style.background='color-mix(in srgb, var(--palette-surface, rgba(21, 21, 32, 1)) 60%, transparent)';"
+      onmouseover="this.style.borderColor='color-mix(in srgb, var(--palette-primary, #00d4ff) 30%, transparent)'; this.style.background='rgba(0, 0, 0, 0.35)';"
+      onmouseout="this.style.borderColor='color-mix(in srgb, var(--palette-primary, #00d4ff) 15%, transparent)'; this.style.background='rgba(0, 0, 0, 0.2)';"
       >
         <div style="
           display: flex;
           justify-content: space-between;
           align-items: center;
-          margin-bottom: 12px;
+          margin-bottom: 8px;
         ">
           <div style="
             font-weight: 600;
             color: var(--palette-text, #e0e0e0);
-            font-size: 16px;
-          ">${i + 1}. ${escapeHtml(w.label || "Unnamed Wallet")}</div>
+            font-size: 13px;
+            font-family: 'Courier New', monospace;
+            letter-spacing: 0.3px;
+          ">${i + 1}. ${escapedLabel}</div>
           <div style="
-            color: var(--palette-primary, #00d4ff);
-            font-size: 11px;
-            text-transform: uppercase;
-            padding: 4px 8px;
-            background: color-mix(in srgb, var(--palette-primary, #00d4ff) 15%, transparent);
-            border-radius: 4px;
-          ">${escapeHtml(w.network)}</div>
+            display: flex;
+            align-items: center;
+            gap: 8px;
+          ">
+            <div style="
+              color: var(--palette-primary, #00d4ff);
+              font-size: 10px;
+              text-transform: uppercase;
+              padding: 3px 6px;
+              background: color-mix(in srgb, var(--palette-primary, #00d4ff) 10%, transparent);
+              border: 1px solid color-mix(in srgb, var(--palette-primary, #00d4ff) 30%, transparent);
+              border-radius: 4px;
+              font-family: 'Courier New', monospace;
+              letter-spacing: 0.5px;
+            ">${escapedNetwork}</div>
+            <button
+              onclick="if (window.__omegaExecuteCommand) { window.__omegaExecuteCommand('${escapedRemoveCommand}'); } else if (window.__omegaSetTerminalInput) { window.__omegaSetTerminalInput('${escapedRemoveCommand}'); }"
+              style="
+                width: 20px;
+                height: 20px;
+                background: transparent;
+                border: 1px solid color-mix(in srgb, var(--palette-error, #ff4757) 30%, transparent);
+                border-radius: 4px;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 0;
+                transition: all 0.2s ease;
+                color: color-mix(in srgb, var(--palette-error, #ff4757) 70%, transparent);
+                font-size: 12px;
+                font-family: 'Courier New', monospace;
+                line-height: 1;
+              "
+              onmouseover="this.style.background='color-mix(in srgb, var(--palette-error, #ff4757) 20%, transparent)'; this.style.borderColor='color-mix(in srgb, var(--palette-error, #ff4757) 50%, transparent)'; this.style.color='var(--palette-error, #ff4757)';"
+              onmouseout="this.style.background='transparent'; this.style.borderColor='color-mix(in srgb, var(--palette-error, #ff4757) 30%, transparent)'; this.style.color='color-mix(in srgb, var(--palette-error, #ff4757) 70%, transparent)';"
+              title="Remove wallet"
+            >×</button>
+          </div>
         </div>
         <div style="
           color: color-mix(in srgb, var(--palette-text, #ffffff) 70%, transparent);
-          font-size: 12px;
+          font-size: 11px;
           font-family: 'Courier New', monospace;
-          padding: 8px;
-          background: color-mix(in srgb, var(--palette-surface, rgba(21, 21, 32, 1)) 40%, transparent);
+          padding: 6px 8px;
+          background: rgba(0, 0, 0, 0.3);
           border-radius: 4px;
           word-break: break-all;
+          margin-bottom: 8px;
         ">${escapeHtml(displayAddress)}</div>
         ${w.totalValue !== undefined && w.totalValue > 0 ? `
           <div style="
-            margin-top: 12px;
-            padding-top: 12px;
-            border-top: 1px solid color-mix(in srgb, var(--palette-border, rgba(0, 212, 255, 0.3)) 30%, transparent);
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid color-mix(in srgb, var(--palette-border, rgba(0, 212, 255, 0.3)) 20%, transparent);
             display: flex;
             justify-content: space-between;
             align-items: center;
           ">
             <span style="
               color: color-mix(in srgb, var(--palette-text, #ffffff) 70%, transparent);
-              font-size: 12px;
-            ">Value:</span>
+              font-size: 11px;
+              font-family: 'Courier New', monospace;
+            ">VALUE:</span>
             <span style="
               color: var(--palette-secondary, #00ff88);
               font-weight: 700;
-              font-size: 14px;
+              font-size: 12px;
               font-family: 'Courier New', monospace;
             ">$${w.totalValue.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
           </div>
@@ -907,32 +1024,34 @@ async function showWallets(context: CommandContext): Promise<void> {
 
   const walletsListHtml = `
     <div style="
-      background: linear-gradient(135deg, color-mix(in srgb, var(--palette-primary, #00d4ff) 15%, transparent), color-mix(in srgb, var(--palette-secondary, #00ff88) 10%, transparent));
-      border: 1px solid color-mix(in srgb, var(--palette-primary, #00d4ff) 30%, transparent);
-      border-radius: 12px;
-      padding: 20px;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid color-mix(in srgb, var(--palette-primary, #00d4ff) 15%, transparent);
+      border-radius: 6px;
+      padding: 16px;
       margin: 10px 0;
       max-width: 100%;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     ">
       <div style="
         display: flex;
         align-items: center;
-        gap: 12px;
-        margin-bottom: 20px;
+        justify-content: space-between;
+        margin-bottom: 16px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid color-mix(in srgb, var(--palette-primary, #00d4ff) 15%, transparent);
       ">
-        <div style="font-size: 32px; line-height: 1;">👛</div>
         <div style="
-          font-size: 18px;
+          font-size: 13px;
           font-weight: 600;
           color: var(--palette-primary, #00d4ff);
-          text-shadow: 0 0 8px color-mix(in srgb, var(--palette-primary, #00d4ff) 40%, transparent);
-        ">Tracked Wallets</div>
+          font-family: 'Courier New', monospace;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        ">TRACKED WALLETS</div>
         <div style="
-          margin-left: auto;
           color: color-mix(in srgb, var(--palette-text, #ffffff) 65%, transparent);
-          font-size: 12px;
-        ">${wallets.length} wallet${wallets.length !== 1 ? "s" : ""}</div>
+          font-size: 11px;
+          font-family: 'Courier New', monospace;
+        ">${wallets.length} WALLET${wallets.length !== 1 ? "S" : ""}</div>
       </div>
       ${walletsHtml}
     </div>
@@ -952,8 +1071,34 @@ async function showWallet(
   }
 
   if (args.length < 4) {
-    context.log("Usage: pgt wallet <address> <network>", "error");
-    context.log("Example: pgt wallet 0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b6 ethereum", "info");
+    const usageHtml = `
+      <div style="
+        background: linear-gradient(135deg, color-mix(in srgb, var(--palette-error, #ff4757) 15%, transparent), color-mix(in srgb, var(--palette-warning, #ffa502) 10%, transparent));
+        border: 1px solid color-mix(in srgb, var(--palette-error, #ff4757) 30%, transparent);
+        border-radius: 12px;
+        padding: 16px;
+        margin: 10px 0;
+      ">
+        <div style="
+          font-size: 16px;
+          font-weight: 600;
+          color: var(--palette-error, #ff4757);
+          margin-bottom: 12px;
+        ">❌ Usage Error</div>
+        <div style="
+          color: var(--palette-text, #ccd4e0);
+          margin: 8px 0;
+          font-size: 0.95em;
+        ">Usage: <span class="omega-help-command" data-command="pgt wallet" style="color: var(--palette-secondary, #00ff88); font-weight: bold; cursor: pointer; font-family: 'Courier New', monospace; padding: 2px 4px; border-radius: 3px; transition: all 0.2s ease;" onmouseover="this.style.background = 'color-mix(in srgb, var(--palette-secondary, #00ff88) 15%, transparent)';" onmouseout="this.style.background = 'transparent';" title="Click to add 'pgt wallet' to terminal input">pgt wallet &lt;address&gt; &lt;network&gt;</span></div>
+        <div style="
+          color: var(--palette-text, #ccd4e0);
+          margin: 8px 0;
+          font-size: 0.95em;
+        ">Example: <span class="omega-help-command" data-command="pgt wallet 0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b6 ethereum" style="color: var(--palette-secondary, #00ff88); font-weight: bold; cursor: pointer; font-family: 'Courier New', monospace; padding: 2px 4px; border-radius: 3px; transition: all 0.2s ease;" onmouseover="this.style.background = 'color-mix(in srgb, var(--palette-secondary, #00ff88) 15%, transparent)';" onmouseout="this.style.background = 'transparent';" title="Click to add 'pgt wallet 0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b6 ethereum' to terminal input">pgt wallet 0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b6 ethereum</span></div>
+      </div>
+    `;
+    context.logHtml(usageHtml);
+    context.log("", "output");
     return;
   }
 
@@ -961,7 +1106,29 @@ async function showWallet(
   const network = args[3] || "";
 
   if (!address || !network) {
-    context.log("Usage: pgt wallet <address> <network>", "error");
+    const usageHtml = `
+      <div style="
+        background: linear-gradient(135deg, color-mix(in srgb, var(--palette-error, #ff4757) 15%, transparent), color-mix(in srgb, var(--palette-warning, #ffa502) 10%, transparent));
+        border: 1px solid color-mix(in srgb, var(--palette-error, #ff4757) 30%, transparent);
+        border-radius: 12px;
+        padding: 16px;
+        margin: 10px 0;
+      ">
+        <div style="
+          font-size: 16px;
+          font-weight: 600;
+          color: var(--palette-error, #ff4757);
+          margin-bottom: 12px;
+        ">❌ Usage Error</div>
+        <div style="
+          color: var(--palette-text, #ccd4e0);
+          margin: 8px 0;
+          font-size: 0.95em;
+        ">Usage: <span class="omega-help-command" data-command="pgt wallet" style="color: var(--palette-secondary, #00ff88); font-weight: bold; cursor: pointer; font-family: 'Courier New', monospace; padding: 2px 4px; border-radius: 3px; transition: all 0.2s ease;" onmouseover="this.style.background = 'color-mix(in srgb, var(--palette-secondary, #00ff88) 15%, transparent)';" onmouseout="this.style.background = 'transparent';" title="Click to add 'pgt wallet' to terminal input">pgt wallet &lt;address&gt; &lt;network&gt;</span></div>
+      </div>
+    `;
+    context.logHtml(usageHtml);
+    context.log("", "output");
     return;
   }
 
@@ -1176,13 +1343,16 @@ async function removeWallet(
   args: string[]
 ): Promise<void> {
   if (!context.media?.pgt) {
-    context.log("❌ PGT system not available", "error");
+    context.log("PGT system not available", "error");
     return;
   }
 
   if (args.length < 4) {
-    context.log("Usage: pgt remove <address> <network>", "error");
-    context.log("Example: pgt remove 0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b6 ethereum", "info");
+    const usageHtml = createUsageError("pgt remove <address> <network>", [
+      "pgt remove 0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b6 ethereum",
+      "pgt remove 40c5117703fe6bd1f286a3912334904c65dcd39c187b1df66e62dc9e85f016d5 solana",
+    ]);
+    context.logHtml(usageHtml);
     return;
   }
 
@@ -1190,7 +1360,10 @@ async function removeWallet(
   const network = args[3] || "";
 
   if (!address || !network) {
-    context.log("Usage: pgt remove <address> <network>", "error");
+    const usageHtml = createUsageError("pgt remove <address> <network>", [
+      "pgt remove 0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b6 ethereum",
+    ]);
+    context.logHtml(usageHtml);
     return;
   }
 
@@ -1199,23 +1372,26 @@ async function removeWallet(
   if (!wallet) {
     const notFoundHtml = `
       <div style="
-        background: linear-gradient(135deg, color-mix(in srgb, var(--palette-error, #ff4757) 15%, transparent), color-mix(in srgb, var(--palette-warning, #ffa502) 10%, transparent));
+        background: rgba(0, 0, 0, 0.3);
         border: 1px solid color-mix(in srgb, var(--palette-error, #ff4757) 30%, transparent);
-        border-radius: 12px;
-        padding: 20px;
+        border-radius: 6px;
+        padding: 16px;
         margin: 10px 0;
         text-align: center;
       ">
-        <div style="font-size: 32px; line-height: 1; margin-bottom: 12px;">❌</div>
         <div style="
-          font-size: 16px;
+          font-size: 13px;
           font-weight: 600;
           color: var(--palette-error, #ff4757);
           margin-bottom: 8px;
-        ">Wallet Not Found</div>
+          font-family: 'Courier New', monospace;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        ">WALLET NOT FOUND</div>
         <div style="
           color: color-mix(in srgb, var(--palette-text, #ffffff) 70%, transparent);
-          font-size: 12px;
+          font-size: 11px;
+          font-family: 'Courier New', monospace;
         ">Cannot remove wallet that is not being tracked</div>
       </div>
     `;
@@ -1229,43 +1405,47 @@ async function removeWallet(
   if (result.success) {
     const successHtml = `
       <div style="
-        background: linear-gradient(135deg, color-mix(in srgb, var(--palette-secondary, #00ff88) 15%, transparent), color-mix(in srgb, var(--palette-primary, #00d4ff) 10%, transparent));
+        background: rgba(0, 0, 0, 0.3);
         border: 1px solid color-mix(in srgb, var(--palette-secondary, #00ff88) 30%, transparent);
-        border-radius: 12px;
-        padding: 20px;
+        border-radius: 6px;
+        padding: 16px;
         margin: 10px 0;
         text-align: center;
       ">
-        <div style="font-size: 32px; line-height: 1; margin-bottom: 12px;">✅</div>
         <div style="
-          font-size: 16px;
+          font-size: 13px;
           font-weight: 600;
           color: var(--palette-secondary, #00ff88);
           margin-bottom: 8px;
-        ">Wallet Removed</div>
+          font-family: 'Courier New', monospace;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        ">WALLET REMOVED</div>
         <div style="
           color: color-mix(in srgb, var(--palette-text, #ffffff) 70%, transparent);
-          font-size: 12px;
+          font-size: 11px;
           font-family: 'Courier New', monospace;
           word-break: break-all;
+          margin-bottom: 4px;
         ">${escapeHtml(address)}</div>
         <div style="
           color: color-mix(in srgb, var(--palette-text, #ffffff) 65%, transparent);
-          font-size: 11px;
-          margin-top: 8px;
-        ">Network: ${escapeHtml(network)}</div>
+          font-size: 10px;
+          font-family: 'Courier New', monospace;
+          text-transform: uppercase;
+        ">NETWORK: ${escapeHtml(network)}</div>
       </div>
     `;
     context.logHtml(successHtml);
     context.log("", "output");
   } else {
-    context.log(`❌ Error: ${result.error}`, "error");
+    context.log(`Error: ${result.error}`, "error");
   }
 }
 
 async function refreshPortfolio(context: CommandContext): Promise<void> {
   if (!context.media?.pgt) {
-    context.log("❌ PGT system not available", "error");
+    context.log("PGT system not available", "error");
     return;
   }
 
@@ -1274,23 +1454,26 @@ async function refreshPortfolio(context: CommandContext): Promise<void> {
   if (walletCount === 0) {
     const emptyHtml = `
       <div style="
-        background: linear-gradient(135deg, color-mix(in srgb, var(--palette-warning, #ffa502) 15%, transparent), color-mix(in srgb, var(--palette-error, #ff4757) 10%, transparent));
+        background: rgba(0, 0, 0, 0.3);
         border: 1px solid color-mix(in srgb, var(--palette-warning, #ffa502) 30%, transparent);
-        border-radius: 12px;
-        padding: 20px;
+        border-radius: 6px;
+        padding: 16px;
         margin: 10px 0;
         text-align: center;
       ">
-        <div style="font-size: 32px; line-height: 1; margin-bottom: 12px;">⚠️</div>
         <div style="
-          font-size: 16px;
+          font-size: 13px;
           font-weight: 600;
           color: var(--palette-warning, #ffa502);
           margin-bottom: 8px;
-        ">No Wallets to Refresh</div>
+          font-family: 'Courier New', monospace;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        ">NO WALLETS TO REFRESH</div>
         <div style="
           color: color-mix(in srgb, var(--palette-text, #ffffff) 70%, transparent);
-          font-size: 12px;
+          font-size: 11px;
+          font-family: 'Courier New', monospace;
         ">Add wallets first to refresh portfolio data</div>
       </div>
     `;
@@ -1299,30 +1482,33 @@ async function refreshPortfolio(context: CommandContext): Promise<void> {
     return;
   }
 
-  context.log("🔄 Refreshing portfolio data...", "info");
+  context.log("Refreshing portfolio data...", "info");
   context.log(`Refreshing ${walletCount} wallet(s)...`, "info");
 
   await context.media.pgt.refreshPortfolio();
 
   const successHtml = `
     <div style="
-      background: linear-gradient(135deg, color-mix(in srgb, var(--palette-secondary, #00ff88) 15%, transparent), color-mix(in srgb, var(--palette-primary, #00d4ff) 10%, transparent));
+      background: rgba(0, 0, 0, 0.3);
       border: 1px solid color-mix(in srgb, var(--palette-secondary, #00ff88) 30%, transparent);
-      border-radius: 12px;
-      padding: 20px;
+      border-radius: 6px;
+      padding: 16px;
       margin: 10px 0;
       text-align: center;
     ">
-      <div style="font-size: 32px; line-height: 1; margin-bottom: 12px;">✅</div>
       <div style="
-        font-size: 16px;
+        font-size: 13px;
         font-weight: 600;
         color: var(--palette-secondary, #00ff88);
         margin-bottom: 8px;
-      ">Portfolio Refreshed</div>
+        font-family: 'Courier New', monospace;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      ">PORTFOLIO REFRESHED</div>
       <div style="
         color: color-mix(in srgb, var(--palette-text, #ffffff) 70%, transparent);
-        font-size: 12px;
+        font-size: 11px;
+        font-family: 'Courier New', monospace;
       ">Updated ${walletCount} wallet${walletCount !== 1 ? "s" : ""}</div>
     </div>
   `;
@@ -1332,7 +1518,7 @@ async function refreshPortfolio(context: CommandContext): Promise<void> {
 
 async function testConnection(context: CommandContext): Promise<void> {
   if (!context.media?.pgt) {
-    context.log("❌ PGT system not available", "error");
+    context.log("PGT system not available", "error");
     return;
   }
 

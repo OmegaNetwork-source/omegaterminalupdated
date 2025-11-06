@@ -83,11 +83,7 @@ export function TerminalHeader({
 
       {/* Center Section: Portfolio Tracker and Social Links */}
       <div className={styles.headerCenter}>
-        <PortfolioTracker
-          totalValue="$122,486.96"
-          change24h="+0.98%"
-          change24hPercent="+0.98%"
-        />
+        <PortfolioTracker />
         <div className={styles.socialLinks}>
           <a
             href={SOCIAL_LINKS.website}

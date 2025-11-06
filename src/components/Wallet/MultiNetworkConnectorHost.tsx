@@ -378,7 +378,46 @@ export function MultiNetworkConnectorHost(): JSX.Element | null {
       (window as typeof window & { ethereum?: any }).ethereum = ethereum;
 
       try {
-        log(`Connecting to ${network.name}...`, "info");
+        // Show connecting message with uniform HTML output
+        if (detail.logHtml) {
+          const connectingHtml = `
+            <div style="
+              background: linear-gradient(135deg, color-mix(in srgb, var(--palette-primary, #00d4ff) 10%, transparent), color-mix(in srgb, var(--palette-secondary, #00ff88) 6%, transparent));
+              border: 1px solid color-mix(in srgb, var(--palette-primary, #00d4ff) 25%, transparent);
+              border-radius: 12px;
+              padding: 16px;
+              margin: 10px 0;
+              display: flex;
+              align-items: center;
+              gap: 12px;
+            ">
+              <div style="color: var(--palette-primary, #00d4ff);">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; animation: rotate 1s linear infinite;">
+                  <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path>
+                  <path d="M21 3v5h-5"></path>
+                  <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"></path>
+                  <path d="M3 21v-5h5"></path>
+                </svg>
+              </div>
+              <div style="flex: 1;">
+                <div style="
+                  font-size: 16px;
+                  font-weight: 600;
+                  color: var(--palette-primary, #00d4ff);
+                ">Connecting to ${network.name}...</div>
+              </div>
+            </div>
+            <style>
+              @keyframes rotate {
+                from { transform: rotate(0deg); }
+                to { transform: rotate(360deg); }
+              }
+            </style>
+          `;
+          detail.logHtml(connectingHtml);
+        } else {
+          log(`Connecting to ${network.name}...`, "info");
+        }
 
         // Debug: Log the ethereum object before calling
         if (process.env.NODE_ENV !== "production") {
@@ -461,12 +500,111 @@ export function MultiNetworkConnectorHost(): JSX.Element | null {
           networkName: network.name,
         });
 
-        log("", "info");
-        log(`Connected to ${network.name}!`, "success");
-        log(`Network: ${network.name}`, "info");
-        log(`Currency: ${network.currency.symbol}`, "info");
-        log(`Address: ${formatAddress(address)}`, "info");
-        log("", "info");
+        // Show connection success with uniform HTML output
+        if (detail.logHtml) {
+          const successHtml = `
+            <div style="
+              background: linear-gradient(135deg, color-mix(in srgb, var(--palette-secondary, #00ff88) 12%, transparent), color-mix(in srgb, var(--palette-success, #00ff88) 8%, transparent));
+              border: 1px solid color-mix(in srgb, var(--palette-secondary, #00ff88) 30%, transparent);
+              border-radius: 12px;
+              padding: 20px;
+              margin: 12px 0;
+            ">
+              <div style="
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                margin-bottom: 16px;
+              ">
+                <div style="color: var(--palette-secondary, #00ff88);">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle;">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                  </svg>
+                </div>
+                <div style="
+                  font-size: 20px;
+                  font-weight: 700;
+                  color: var(--palette-secondary, #00ff88);
+                  text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+                ">Connected to ${network.name}!</div>
+              </div>
+              <div style="
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 12px;
+                margin-top: 16px;
+              ">
+                <div style="
+                  background: color-mix(in srgb, var(--palette-secondary, #00ff88) 5%, transparent);
+                  border: 1px solid color-mix(in srgb, var(--palette-secondary, #00ff88) 15%, transparent);
+                  border-radius: 8px;
+                  padding: 12px;
+                ">
+                  <div style="
+                    font-size: 11px;
+                    color: color-mix(in srgb, var(--palette-text, #ccd4e0) 70%, transparent);
+                    margin-bottom: 4px;
+                    text-transform: uppercase;
+                    letter-spacing: 1px;
+                  ">Network</div>
+                  <div style="
+                    font-size: 14px;
+                    font-weight: 600;
+                    color: var(--palette-text, #ccd4e0);
+                  ">${network.name}</div>
+                </div>
+                <div style="
+                  background: color-mix(in srgb, var(--palette-secondary, #00ff88) 5%, transparent);
+                  border: 1px solid color-mix(in srgb, var(--palette-secondary, #00ff88) 15%, transparent);
+                  border-radius: 8px;
+                  padding: 12px;
+                ">
+                  <div style="
+                    font-size: 11px;
+                    color: color-mix(in srgb, var(--palette-text, #ccd4e0) 70%, transparent);
+                    margin-bottom: 4px;
+                    text-transform: uppercase;
+                    letter-spacing: 1px;
+                  ">Currency</div>
+                  <div style="
+                    font-size: 14px;
+                    font-weight: 600;
+                    color: var(--palette-text, #ccd4e0);
+                  ">${network.currency.symbol}</div>
+                </div>
+                <div style="
+                  background: color-mix(in srgb, var(--palette-secondary, #00ff88) 5%, transparent);
+                  border: 1px solid color-mix(in srgb, var(--palette-secondary, #00ff88) 15%, transparent);
+                  border-radius: 8px;
+                  padding: 12px;
+                ">
+                  <div style="
+                    font-size: 11px;
+                    color: color-mix(in srgb, var(--palette-text, #ccd4e0) 70%, transparent);
+                    margin-bottom: 4px;
+                    text-transform: uppercase;
+                    letter-spacing: 1px;
+                  ">Address</div>
+                  <div style="
+                    font-size: 14px;
+                    font-weight: 600;
+                    color: var(--palette-text, #ccd4e0);
+                    font-family: 'Courier New', monospace;
+                  ">${formatAddress(address)}</div>
+                </div>
+              </div>
+            </div>
+          `;
+          detail.logHtml(successHtml);
+        } else {
+          log("", "info");
+          log(`Connected to ${network.name}!`, "success");
+          log(`Network: ${network.name}`, "info");
+          log(`Currency: ${network.currency.symbol}`, "info");
+          log(`Address: ${formatAddress(address)}`, "info");
+          log("", "info");
+        }
 
         if (detail.sound?.playWalletConnectSound) {
           detail.sound.playWalletConnectSound().catch(() => undefined);
@@ -475,19 +613,72 @@ export function MultiNetworkConnectorHost(): JSX.Element | null {
         try {
           const balance = await browserProvider.getBalance(address);
           const formatted = formatEther(balance);
-          log(
-            `${network.name} Wallet Balance: ${Number(formatted).toFixed(
-              4
-            )} ${network.currency.symbol}`,
-            "success"
-          );
+          const balanceNum = Number(formatted).toFixed(4);
+          
+          if (detail.logHtml) {
+            const balanceHtml = `
+              <div style="
+                background: linear-gradient(135deg, color-mix(in srgb, var(--palette-primary, #00d4ff) 8%, transparent), color-mix(in srgb, var(--palette-secondary, #00ff88) 5%, transparent));
+                border: 1px solid color-mix(in srgb, var(--palette-primary, #00d4ff) 20%, transparent);
+                border-radius: 8px;
+                padding: 14px 16px;
+                margin: 8px 0;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+              ">
+                <div style="color: var(--palette-secondary, #00ff88);">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle;">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="M12 6v12M6 12h12"></path>
+                  </svg>
+                </div>
+                <div style="flex: 1;">
+                  <div style="
+                    font-size: 16px;
+                    font-weight: 600;
+                    color: var(--palette-secondary, #00ff88);
+                  ">${network.name} Wallet Balance: ${balanceNum} ${network.currency.symbol}</div>
+                </div>
+              </div>
+            `;
+            detail.logHtml(balanceHtml);
+          } else {
+            log(
+              `${network.name} Wallet Balance: ${balanceNum} ${network.currency.symbol}`,
+              "success"
+            );
+          }
         } catch (balanceError) {
-          log(
-            `Connected but could not fetch balance: ${String(
-              balanceError
-            )}`,
-            "warning"
-          );
+          if (detail.logHtml) {
+            const warningHtml = `
+              <div style="
+                background: color-mix(in srgb, var(--palette-warning, #ffa502) 10%, transparent);
+                border: 1px solid color-mix(in srgb, var(--palette-warning, #ffa502) 25%, transparent);
+                border-radius: 8px;
+                padding: 12px 16px;
+                margin: 8px 0;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                color: var(--palette-text, #ccd4e0);
+                font-size: 0.9em;
+              ">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; color: var(--palette-warning, #ffa502);">
+                  <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path>
+                  <line x1="12" y1="9" x2="12" y2="13"></line>
+                  <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                </svg>
+                <span>Connected but could not fetch balance: ${String(balanceError)}</span>
+              </div>
+            `;
+            detail.logHtml(warningHtml);
+          } else {
+            log(
+              `Connected but could not fetch balance: ${String(balanceError)}`,
+              "warning"
+            );
+          }
         }
 
         closeModal();

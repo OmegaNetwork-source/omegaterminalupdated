@@ -6,6 +6,7 @@
 import type { Command, CommandContext } from "@/types/commands";
 import { config } from "@/lib/config";
 import * as near from "@/lib/multichain/near";
+import { createCommandLine, createUsageError } from "./command-output-helpers";
 
 /**
  * NEAR command - Main entry point for all NEAR Protocol operations
@@ -51,9 +52,11 @@ export const nearCommand: Command = {
         break;
       default:
         context.log(
-          `Unknown NEAR subcommand: ${subcommand}. Use 'near help' for available commands.`,
+          `Unknown NEAR subcommand: ${subcommand}.`,
           "error"
         );
+        const helpHtml = createCommandLine("near help", "See available commands");
+        context.logHtml(helpHtml);
     }
   },
 };
@@ -168,7 +171,8 @@ async function getBalance(context: CommandContext): Promise<void> {
 
     if (!state.connected || !state.accountId) {
       context.log("❌ Please connect your wallet first", "error");
-      context.log("Use 'near connect'", "info");
+      const helpHtml = createCommandLine("near connect", "Connect your NEAR wallet");
+      context.logHtml(helpHtml);
       return;
     }
 
@@ -210,10 +214,8 @@ async function showTokens(context: CommandContext): Promise<void> {
       context.log("", "info");
     });
 
-    context.log(
-      "💡 Use 'near swap <from> <to> <amount>' to swap tokens",
-      "info"
-    );
+    const helpHtml = createCommandLine("near swap <from> <to> <amount>", "Swap tokens");
+    context.logHtml(helpHtml);
   } catch (error: any) {
     context.log(`❌ Error: ${error.message}`, "error");
   }
@@ -236,13 +238,17 @@ async function swapTokens(
 
     if (!state.connected || !state.accountId) {
       context.log("❌ Please connect your wallet first", "error");
-      context.log("Use 'near connect'", "info");
+      const helpHtml = createCommandLine("near connect", "Connect your NEAR wallet");
+      context.logHtml(helpHtml);
       return;
     }
 
     if (args.length < 3) {
-      context.log("❌ Invalid arguments", "error");
-      context.log("Usage: near swap <from_token> <to_token> <amount>", "info");
+      const usageHtml = createUsageError("near swap <from_token> <to_token> <amount>", [
+        "near swap NEAR USDC 1",
+        "near swap USDC NEAR 10",
+      ]);
+      context.logHtml(usageHtml);
       return;
     }
 
@@ -296,7 +302,8 @@ async function getAccountInfo(context: CommandContext): Promise<void> {
 
     if (!state.connected || !state.accountId) {
       context.log("❌ NEAR wallet not connected", "error");
-      context.log("💡 Use 'near connect' first", "info");
+      const helpHtml = createCommandLine("near connect", "Connect your NEAR wallet first");
+      context.logHtml(helpHtml);
       return;
     }
 
@@ -321,8 +328,13 @@ async function getAccountInfo(context: CommandContext): Promise<void> {
     context.log("", "info");
     context.log("🔗 Wallet Type: NEAR Wallet (Web)", "info");
     context.log("", "info");
-    context.log('💡 Use "near validators" to see network validators', "info");
-    context.log('💡 Use "near shade deploy" to create Shade Agents', "info");
+    const helpHtml = `
+      <div style="margin: 8px 0;">
+        ${createCommandLine("near validators", "See network validators")}
+        ${createCommandLine("near shade deploy", "Create Shade Agents")}
+      </div>
+    `;
+    context.logHtml(helpHtml);
   } catch (error: any) {
     context.log(`❌ Error: ${error.message}`, "error");
   }
@@ -399,9 +411,11 @@ async function shadeAgent(
         break;
       default:
         context.log(
-          `Unknown shade subcommand: ${subcommand}. Use 'near shade help' for available commands.`,
+          `Unknown shade subcommand: ${subcommand}.`,
           "error"
         );
+        const helpHtml = createCommandLine("near shade help", "See available commands");
+        context.logHtml(helpHtml);
     }
   } catch (error: any) {
     context.log(`❌ Error: ${error.message}`, "error");
@@ -482,7 +496,8 @@ async function listShadeAgents(context: CommandContext): Promise<void> {
         "⚠️  Shade Agent functionality coming in Phase 14",
         "warning"
       );
-      context.log("Use 'near shade deploy <name>' when available", "info");
+      const helpHtml = createCommandLine("near shade deploy <name>", "Deploy when available");
+      context.logHtml(helpHtml);
     } else {
       context.log(`✅ Found ${agents.length} Shade Agents:`, "success");
       // Display agents when functionality is implemented
@@ -503,8 +518,11 @@ async function getShadeAgentStatus(
     const agentId = args[0];
 
     if (!agentId) {
-      context.log("❌ Please provide an agent ID", "error");
-      context.log("Usage: near shade status <agent_id>", "info");
+      const usageHtml = createUsageError("near shade status <agent_id>", [
+        "near shade status myagent.near",
+        "near shade status agent123",
+      ]);
+      context.logHtml(usageHtml);
       return;
     }
 

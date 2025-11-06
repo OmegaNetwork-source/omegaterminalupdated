@@ -5,6 +5,7 @@
 
 import type { Command, CommandContext } from "@/types/commands";
 import { Contract } from "ethers";
+import { createCommandLine, createUsageError } from "./command-output-helpers";
 
 // Omega Network ENS contract address
 const ENS_CONTRACT_ADDRESS = "0xd9ce49734db4f033362d2fd51d52f24cabeb87fa";
@@ -119,13 +120,18 @@ async function registerName(
   args: string[]
 ): Promise<void> {
   if (!args[2]) {
-    context.log("❌ Please provide a name to register", "error");
-    context.log("Usage: ens register <name>", "info");
+    const usageHtml = createUsageError("ens register <name>", [
+      "ens register myname",
+      "ens register alice",
+    ]);
+    context.logHtml(usageHtml);
     return;
   }
 
   if (!context.wallet.state.isConnected) {
-    context.log("❌ Please connect your wallet first using: connect", "error");
+    context.log("❌ Please connect your wallet first.", "error");
+    const helpHtml = createCommandLine("connect", "Connect your wallet");
+    context.logHtml(helpHtml);
     return;
   }
 
@@ -163,8 +169,11 @@ async function resolveName(
   args: string[]
 ): Promise<void> {
   if (!args[2]) {
-    context.log("❌ Please provide a name to resolve", "error");
-    context.log("Usage: ens resolve <name>", "info");
+    const usageHtml = createUsageError("ens resolve <name>", [
+      "ens resolve myname",
+      "ens resolve alice",
+    ]);
+    context.logHtml(usageHtml);
     return;
   }
 
@@ -201,8 +210,11 @@ async function searchName(
   args: string[]
 ): Promise<void> {
   if (!args[2]) {
-    context.log("❌ Please provide a name to search", "error");
-    context.log("Usage: ens search <name>", "info");
+    const usageHtml = createUsageError("ens search <name>", [
+      "ens search myname",
+      "ens search alice",
+    ]);
+    context.logHtml(usageHtml);
     return;
   }
 

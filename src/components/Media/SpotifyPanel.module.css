@@ -46,54 +46,58 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 20px 24px;
-  border-bottom: 1px solid var(--palette-border, color-mix(in srgb, var(--palette-primary, #1db954) 28%, transparent));
+  padding: 12px 16px;
+  border-bottom: 1px solid color-mix(in srgb, var(--palette-primary, #1db954) 15%, transparent);
   position: relative;
   z-index: 1;
   transition: border-color 0.3s ease;
+  background: rgba(0, 0, 0, 0.2);
 }
 
 .headerLeft {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 8px;
 }
 
 .headerRight {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
 }
 
 .logo {
-  font-size: 26px;
-  filter: drop-shadow(0 4px 14px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #1db954) 25%, transparent)));
-  transition: filter 0.3s ease;
+  width: 18px;
+  height: 18px;
+  color: var(--palette-primary, #1db954);
+  flex-shrink: 0;
+  transition: color 0.3s ease, filter 0.3s ease;
+  filter: drop-shadow(0 0 6px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #1db954) 30%, transparent)));
 }
 
 .title {
   margin: 0;
-  font-size: 20px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
   text-transform: uppercase;
   color: var(--palette-primary, #1db954);
+  font-family: "Courier New", monospace;
   transition: color 0.3s ease;
+  line-height: 1;
 }
 
 .minimizeButton {
-  background: color-mix(in srgb, var(--palette-text, #ffffff) 4%, transparent);
-  border: 1px solid var(--palette-border, color-mix(in srgb, var(--palette-text, #ffffff) 20%, transparent));
-  color: color-mix(in srgb, var(--palette-text, #ffffff) 78%, transparent);
-  font-size: 20px;
-  font-weight: 600;
+  background: transparent;
+  border: 1px solid color-mix(in srgb, var(--palette-primary, #1db954) 15%, transparent);
+  color: color-mix(in srgb, var(--palette-text, #ffffff) 70%, transparent);
   cursor: pointer;
-  padding: 10px 14px;
+  padding: 0;
   line-height: 1;
-  border-radius: var(--theme-radius-md, 12px);
+  border-radius: 4px;
   transition: all 0.2s ease;
-  min-width: 40px;
-  min-height: 44px;
+  min-width: 24px;
+  min-height: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -101,28 +105,43 @@
 
 .minimizeButton:hover {
   color: var(--palette-text, #ffffff);
-  border-color: var(--palette-border, color-mix(in srgb, var(--palette-primary, #1db954) 35%, transparent));
-  transform: translateY(-1px);
+  border-color: color-mix(in srgb, var(--palette-primary, #1db954) 30%, transparent);
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.minimizeIcon {
+  width: 14px;
+  height: 14px;
+  stroke: currentColor;
 }
 
 .closeButton {
-  background: color-mix(in srgb, var(--palette-text, #ffffff) 4%, transparent);
-  border: 1px solid var(--palette-border, color-mix(in srgb, var(--palette-text, #ffffff) 20%, transparent));
-  color: color-mix(in srgb, var(--palette-text, #ffffff) 78%, transparent);
-  font-size: 22px;
+  background: transparent;
+  border: 1px solid color-mix(in srgb, var(--palette-primary, #1db954) 15%, transparent);
+  color: color-mix(in srgb, var(--palette-text, #ffffff) 70%, transparent);
   cursor: pointer;
-  padding: 10px;
+  padding: 0;
   line-height: 1;
-  border-radius: var(--theme-radius-md, 12px);
+  border-radius: 4px;
   transition: all 0.2s ease;
-  min-width: 44px;
-  min-height: 44px;
+  min-width: 24px;
+  min-height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .closeButton:hover {
-  color: var(--palette-text, #ffffff);
-  border-color: var(--palette-border, color-mix(in srgb, var(--palette-primary, #1db954) 35%, transparent));
-  transform: translateY(-1px);
+  color: var(--palette-error, #ff4757);
+  border-color: color-mix(in srgb, var(--palette-error, #ff4757) 30%, transparent);
+  background: color-mix(in srgb, var(--palette-error, #ff4757) 10%, transparent);
+}
+
+.closeIcon {
+  width: 14px;
+  height: 14px;
+  stroke: currentColor;
+  stroke-width: 2;
 }
 
 .content {
@@ -168,7 +187,9 @@
 }
 
 .authIcon {
-  font-size: 64px;
+  width: 48px;
+  height: 48px;
+  color: var(--palette-primary, #1db954);
   filter: drop-shadow(0 8px 24px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #1db954) 30%, transparent)));
 }
 
@@ -282,13 +303,24 @@
   border: none;
   color: #ffcccc;
   cursor: pointer;
-  font-size: 18px;
-  padding: 4px 8px;
+  padding: 4px;
   line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  min-height: 20px;
 }
 
 .errorClose:hover {
   color: #ffffff;
+}
+
+.errorCloseIcon {
+  width: 14px;
+  height: 14px;
+  stroke: currentColor;
+  stroke-width: 2;
 }
 
 /* -----------------------------------------------------------------------------
@@ -331,8 +363,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 64px;
   color: var(--palette-primary, #1db954);
+}
+
+.artworkPlaceholderIcon {
+  width: 48px;
+  height: 48px;
+  opacity: 0.6;
 }
 
 .trackInfo {
@@ -401,36 +438,40 @@
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  gap: 16px;
-  padding: 18px 20px;
-  border-radius: var(--theme-radius-lg, 16px);
-  background: color-mix(in srgb, var(--palette-primary, #1db954) 8%, transparent);
-  border: 1px solid var(--palette-border, color-mix(in srgb, var(--palette-primary, #1db954) 22%, transparent));
-  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.28);
+  gap: 8px;
+  padding: 12px;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid color-mix(in srgb, var(--palette-primary, #1db954) 15%, transparent);
   transition: all 0.3s ease;
 }
 
 .controlButton {
-  background: color-mix(in srgb, var(--palette-text, #ffffff) 4%, transparent);
-  border: 1px solid var(--palette-border, color-mix(in srgb, var(--palette-primary, #1db954) 32%, transparent));
-  color: color-mix(in srgb, var(--palette-text, #ffffff) 88%, transparent);
-  font-size: 22px;
-  width: 52px;
-  height: 52px;
-  min-width: 52px;
-  min-height: 52px;
-  border-radius: 50%;
+  background: transparent;
+  border: 1px solid color-mix(in srgb, var(--palette-primary, #1db954) 15%, transparent);
+  color: color-mix(in srgb, var(--palette-text, #ffffff) 70%, transparent);
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  min-height: 32px;
+  border-radius: 4px;
   cursor: pointer;
   transition: all 0.2s ease;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 0;
 }
 
 .controlButton:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--palette-primary, #1db954) 24%, transparent);
-  border-color: var(--palette-border, color-mix(in srgb, var(--palette-primary, #1db954) 45%, transparent));
-  transform: translateY(-1px) scale(1.02);
+  background: color-mix(in srgb, var(--palette-primary, #1db954) 10%, transparent);
+  border-color: color-mix(in srgb, var(--palette-primary, #1db954) 30%, transparent);
+  color: var(--palette-text, #ffffff);
+  transform: translateY(-1px);
+}
+
+.controlButton:active:not(:disabled) {
+  transform: translateY(0);
 }
 
 .controlButton:disabled {
@@ -438,22 +479,33 @@
   cursor: not-allowed;
 }
 
+.controlIcon {
+  width: 14px;
+  height: 14px;
+  stroke: currentColor;
+  fill: currentColor;
+}
+
 .playPauseButton {
-  width: 60px;
-  height: 60px;
-  min-width: 60px;
-  min-height: 60px;
-  background: linear-gradient(135deg, var(--palette-primary, #1db954) 0%, #1ed760 100%);
-  border: none;
-  color: #0a0a0a;
-  font-size: 26px;
-  box-shadow: 0 18px 32px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #1db954) 32%, transparent));
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  min-height: 36px;
+  background: color-mix(in srgb, var(--palette-primary, #1db954) 20%, transparent);
+  border: 1px solid color-mix(in srgb, var(--palette-primary, #1db954) 30%, transparent);
+  color: var(--palette-text, #ffffff);
   transition: all 0.2s ease;
 }
 
 .playPauseButton:hover {
-  transform: translateY(-2px) scale(1.04);
-  box-shadow: 0 18px 40px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #1db954) 38%, transparent));
+  background: color-mix(in srgb, var(--palette-primary, #1db954) 30%, transparent);
+  border-color: color-mix(in srgb, var(--palette-primary, #1db954) 40%, transparent);
+  transform: translateY(-1px);
+}
+
+.playPauseButton .controlIcon {
+  width: 16px;
+  height: 16px;
 }
 
 /* -----------------------------------------------------------------------------
@@ -463,19 +515,23 @@
 .volumeControl {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px 16px;
-  background: color-mix(in srgb, var(--palette-text, #ffffff) 4%, transparent);
-  border-radius: var(--theme-radius-md, 12px);
-  border: 1px solid var(--palette-border, color-mix(in srgb, var(--palette-primary, #1db954) 20%, transparent));
+  gap: 8px;
+  padding: 8px 12px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+  border: 1px solid color-mix(in srgb, var(--palette-primary, #1db954) 15%, transparent);
+}
+
+.volumeIcon {
+  width: 14px;
+  height: 14px;
+  stroke: currentColor;
+  color: color-mix(in srgb, var(--palette-text, #ffffff) 70%, transparent);
+  flex-shrink: 0;
 }
 
 .volumeLabel {
-  font-size: 12px;
-  color: color-mix(in srgb, var(--palette-text, #ffffff) 65%, transparent);
-  min-width: 50px;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
+  display: none;
 }
 
 .volumeSlider {
@@ -486,13 +542,14 @@
   outline: none;
   -webkit-appearance: none;
   appearance: none;
+  cursor: pointer;
 }
 
 .volumeSlider::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 14px;
-  height: 14px;
+  width: 10px;
+  height: 10px;
   background: var(--palette-primary, #1db954);
   border-radius: 50%;
   cursor: pointer;
@@ -501,12 +558,12 @@
 
 .volumeSlider::-webkit-slider-thumb:hover {
   transform: scale(1.2);
-  box-shadow: 0 0 8px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #1db954) 50%, transparent));
+  box-shadow: 0 0 6px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #1db954) 40%, transparent));
 }
 
 .volumeSlider::-moz-range-thumb {
-  width: 14px;
-  height: 14px;
+  width: 10px;
+  height: 10px;
   background: var(--palette-primary, #1db954);
   border-radius: 50%;
   cursor: pointer;
@@ -516,14 +573,16 @@
 
 .volumeSlider::-moz-range-thumb:hover {
   transform: scale(1.2);
-  box-shadow: 0 0 8px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #1db954) 50%, transparent));
+  box-shadow: 0 0 6px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #1db954) 40%, transparent));
 }
 
 .volumeValue {
-  font-size: 12px;
+  font-size: 10px;
+  font-family: "Courier New", monospace;
   color: color-mix(in srgb, var(--palette-text, #ffffff) 65%, transparent);
-  min-width: 40px;
+  min-width: 32px;
   text-align: right;
+  letter-spacing: 0.3px;
 }
 
 /* -----------------------------------------------------------------------------
@@ -531,60 +590,78 @@
    ----------------------------------------------------------------------------- */
 
 .searchContainer {
-  padding-top: 6px;
+  padding-top: 4px;
 }
 
 .searchForm {
   display: flex;
-  gap: 10px;
+  gap: 6px;
+  align-items: center;
 }
 
 .searchInput {
   flex: 1;
-  padding: 12px 18px;
-  background: color-mix(in srgb, var(--palette-text, #ffffff) 6%, transparent);
-  border: 1px solid var(--palette-border, color-mix(in srgb, var(--palette-primary, #1db954) 30%, transparent));
-  border-radius: 999px;
+  padding: 8px 12px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid color-mix(in srgb, var(--palette-primary, #1db954) 15%, transparent);
+  border-radius: 6px;
   color: var(--palette-text, rgba(255, 255, 255, 0.88));
-  font-size: 15px;
+  font-size: 11px;
+  font-family: "Courier New", monospace;
+  letter-spacing: 0.3px;
   outline: none;
   transition: all 0.2s ease;
-  min-height: 48px;
+  min-height: 32px;
 }
 
 .searchInput:focus {
-  background: color-mix(in srgb, var(--palette-primary, #1db954) 12%, transparent);
-  border-color: var(--palette-border, color-mix(in srgb, var(--palette-primary, #1db954) 48%, transparent));
-  box-shadow: 0 0 0 3px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #1db954) 15%, transparent));
+  background: rgba(0, 0, 0, 0.4);
+  border-color: color-mix(in srgb, var(--palette-primary, #1db954) 30%, transparent);
+  box-shadow: 0 0 0 2px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #1db954) 10%, transparent));
 }
 
 .searchInput::placeholder {
   color: color-mix(in srgb, var(--palette-text, #ffffff) 45%, transparent);
+  font-family: "Courier New", monospace;
+  font-size: 11px;
 }
 
 .searchButton {
-  padding: 12px 22px;
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--palette-primary, #1db954) 85%, transparent) 0%,
-    var(--palette-primary, #1db954) 100%
-  );
-  border: none;
-  border-radius: 999px;
-  color: #0a0a0a;
-  font-size: 18px;
+  padding: 0;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid color-mix(in srgb, var(--palette-primary, #1db954) 15%, transparent);
+  border-radius: 6px;
+  color: var(--palette-primary, #1db954);
   cursor: pointer;
   transition: all 0.2s ease;
-  min-height: 48px;
-  min-width: 48px;
+  min-height: 32px;
+  min-width: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 }
 
 .searchButton:hover {
+  background: color-mix(in srgb, var(--palette-primary, #1db954) 10%, transparent);
+  border-color: color-mix(in srgb, var(--palette-primary, #1db954) 30%, transparent);
   transform: translateY(-1px);
-  box-shadow: 0 12px 22px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #1db954) 35%, transparent));
+}
+
+.searchButton:active {
+  transform: translateY(0);
+  background: color-mix(in srgb, var(--palette-primary, #1db954) 15%, transparent);
+}
+
+.searchIcon {
+  width: 14px;
+  height: 14px;
+  stroke: currentColor;
+  transition: stroke 0.2s ease;
+}
+
+.searchButton:hover .searchIcon {
+  stroke: var(--palette-primary, #1db954);
 }
 
 /* -----------------------------------------------------------------------------
@@ -759,8 +836,14 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 24px;
   color: var(--palette-primary, #1db954);
+}
+
+.trackPlaceholderIcon,
+.playlistPlaceholderIcon {
+  width: 24px;
+  height: 24px;
+  opacity: 0.6;
 }
 
 .playingIndicator {
@@ -770,8 +853,13 @@
   align-items: center;
   justify-content: center;
   background: rgba(0, 0, 0, 0.35);
-  font-size: 20px;
   color: var(--palette-text, rgba(255, 255, 255, 0.92));
+}
+
+.playingIcon {
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
 }
 
 .trackInfo {
@@ -850,9 +938,12 @@
 }
 
 .emptyIcon {
-  font-size: 48px;
+  width: 32px;
+  height: 32px;
+  color: var(--palette-primary, #1db954);
   filter: drop-shadow(0 8px 24px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #1db954) 30%, transparent)));
   transition: filter 0.3s ease;
+  opacity: 0.6;
 }
 
 .emptyState p {
@@ -951,11 +1042,24 @@
   }
   
   .panel.mobile .logo {
-    font-size: 20px;
+    width: 16px;
+    height: 16px;
   }
   
   .panel.mobile .title {
-    font-size: 16px;
+    font-size: 12px;
+  }
+  
+  .panel.mobile .closeButton,
+  .panel.mobile .minimizeButton {
+    min-width: 22px;
+    min-height: 22px;
+  }
+  
+  .panel.mobile .closeIcon,
+  .panel.mobile .minimizeIcon {
+    width: 12px;
+    height: 12px;
   }
 }
 
@@ -976,27 +1080,35 @@
 }
 
 .panel.mobile .controls {
-  gap: 8px;
-  padding: 12px;
+  gap: 6px;
+  padding: 10px;
   flex-wrap: nowrap;
 }
 
 .panel.mobile .controlButton {
-  width: 40px;
-  height: 40px;
-  min-width: 40px;
-  min-height: 40px;
-  font-size: 18px;
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  min-height: 28px;
   padding: 0;
 }
 
+.panel.mobile .controlIcon {
+  width: 12px;
+  height: 12px;
+}
+
 .panel.mobile .playPauseButton {
-  width: 48px;
-  height: 48px;
-  min-width: 48px;
-  min-height: 48px;
-  font-size: 22px;
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  min-height: 32px;
   padding: 0;
+}
+
+.panel.mobile .playPauseButton .controlIcon {
+  width: 14px;
+  height: 14px;
 }
 
 .panel.mobile .authButton,
@@ -1040,8 +1152,18 @@
 }
 
 .panel.mobile .volumeControl {
-  padding: 8px 12px;
-  gap: 8px;
+  padding: 6px 10px;
+  gap: 6px;
+}
+
+.panel.mobile .volumeIcon {
+  width: 12px;
+  height: 12px;
+}
+
+.panel.mobile .volumeValue {
+  font-size: 9px;
+  min-width: 28px;
 }
 
 .panel.mobile .nowPlaying {
@@ -1054,13 +1176,24 @@
 }
 
 .panel.mobile .searchForm {
-  gap: 8px;
+  gap: 6px;
 }
 
 .panel.mobile .searchInput {
-  padding: 10px 14px;
-  font-size: 14px;
-  min-height: 40px;
+  padding: 8px 12px;
+  font-size: 11px;
+  min-height: 32px;
+}
+
+.panel.mobile .searchButton {
+  min-height: 32px;
+  min-width: 32px;
+  padding: 0;
+}
+
+.panel.mobile .searchIcon {
+  width: 14px;
+  height: 14px;
 }
 
 .panel.mobile .tabs {
@@ -1110,8 +1243,10 @@
 }
 
 .minimizedIcon {
-  font-size: 24px;
+  width: 20px;
+  height: 20px;
   flex-shrink: 0;
+  color: var(--palette-primary, #1db954);
   filter: drop-shadow(0 2px 8px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #1db954) 30%, transparent)));
 }
 

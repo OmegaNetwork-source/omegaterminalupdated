@@ -8,6 +8,7 @@
 import type { Command, CommandContext } from "@/types/commands";
 import { alphavantage } from "@/lib/api";
 import { formatNumber, escapeHtml } from "@/lib/utils";
+import { createCommandLine, createUsageError } from "./command-output-helpers";
 
 /**
  * Alpha Vantage command
@@ -72,8 +73,9 @@ export const alphaCommand: Command = {
         await showApiKeyInfo(context);
         break;
       default:
-        context.log(`Unknown subcommand: ${subcommand}`);
-        context.log('Use "alpha" to see available commands');
+        context.log(`Unknown subcommand: ${subcommand}`, "error");
+        const helpHtml = createCommandLine("alpha", "See available commands");
+        context.logHtml(helpHtml);
     }
   },
 };
@@ -88,8 +90,11 @@ async function getQuote(
   const symbol = args[2]?.toUpperCase();
 
   if (!symbol) {
-    context.log("Usage: alpha quote <symbol>");
-    context.log("Example: alpha quote AAPL");
+    const usageHtml = createUsageError("alpha quote <symbol>", [
+      "alpha quote AAPL",
+      "alpha quote GOOGL",
+    ]);
+    context.logHtml(usageHtml);
     return;
   }
 
@@ -160,8 +165,11 @@ async function getDaily(
   const symbol = args[2]?.toUpperCase();
 
   if (!symbol) {
-    context.log("Usage: alpha daily <symbol>");
-    context.log("Example: alpha daily AAPL");
+    const usageHtml = createUsageError("alpha daily <symbol>", [
+      "alpha daily AAPL",
+      "alpha daily TSLA",
+    ]);
+    context.logHtml(usageHtml);
     return;
   }
 
@@ -206,8 +214,11 @@ async function getOverview(
   const symbol = args[2]?.toUpperCase();
 
   if (!symbol) {
-    context.log("Usage: alpha overview <symbol>");
-    context.log("Example: alpha overview AAPL");
+    const usageHtml = createUsageError("alpha overview <symbol>", [
+      "alpha overview AAPL",
+      "alpha overview MSFT",
+    ]);
+    context.logHtml(usageHtml);
     return;
   }
 

@@ -8,10 +8,13 @@ import { isValidEthereumAddress, shortenAddress } from "@/lib/utils";
 import { config } from "@/lib/config";
 import { parseEther } from "ethers";
 import { openNetworkSelector } from "@/lib/wallet/networkSelector";
+import { createCommandLine, createUsageError } from "./command-output-helpers";
 
 function requireConnection(context: CommandContext): boolean {
   if (!context.wallet.state.isConnected || !context.wallet.state.address) {
-    context.log("No wallet connected. Use `connect` first.", "warning");
+    context.log("No wallet connected.", "warning");
+    const helpHtml = createCommandLine("connect", "Connect a wallet first");
+    context.logHtml(helpHtml);
     return false;
   }
   return true;
@@ -245,9 +248,14 @@ export const balanceCommand: Command = {
     if (!hasAnyWallet) {
       context.log("", "info");
       context.log("💡 No wallets connected", "warning");
-      context.log('Use "connect" to connect a wallet', "info");
-      context.log('Or use "solana connect" for Solana', "info");
-      context.log('Or use "near connect" for NEAR Protocol', "info");
+      const helpHtml = `
+        <div style="margin: 12px 0;">
+          ${createCommandLine("connect", "Connect a wallet")}
+          ${createCommandLine("solana connect", "Connect Solana wallet")}
+          ${createCommandLine("near connect", "Connect NEAR Protocol wallet")}
+        </div>
+      `;
+      context.logHtml(helpHtml);
     }
   },
 };
@@ -263,7 +271,11 @@ export const sendCommand: Command = {
     }
 
     if (args.length < 3 || !args[1] || !args[2]) {
-      context.log("Usage: send <amount> <address>", "error");
+      const usageHtml = createUsageError("send <amount> <address>", [
+        "send 10 0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb",
+        "send 0.5 0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb",
+      ]);
+      context.logHtml(usageHtml);
       return;
     }
 
@@ -320,7 +332,10 @@ export const importCommand: Command = {
   handler: async (context: CommandContext, args: string[]) => {
     const privateKey = args[1];
     if (!privateKey) {
-      context.log("Usage: import <private-key>", "error");
+      const usageHtml = createUsageError("import <private-key>", [
+        "import 0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+      ]);
+      context.logHtml(usageHtml);
       return;
     }
 
@@ -453,7 +468,8 @@ export const fundCommand: Command = {
           context.log(`Amount: ${data.amount} OMEGA`, "info");
         }
         context.log("", "info");
-        context.log("💡 Check your balance with: balance", "info");
+        const helpHtml = createCommandLine("balance", "Check your balance");
+        context.logHtml(helpHtml);
       } else {
         context.log(
           `❌ Faucet error: ${data.error || "Unknown error"}`,
@@ -530,7 +546,8 @@ export const fundDirectCommand: Command = {
       );
       context.log("", "info");
       context.log("💰 OMEGA tokens should arrive shortly", "info");
-      context.log("💡 Check your balance with: balance", "info");
+      const helpHtml = createCommandLine("balance", "Check your balance");
+      context.logHtml(helpHtml);
     } catch (error: any) {
       context.log(`❌ Faucet request failed: ${error.message}`, "error");
       if (error.message.includes("Already claimed")) {
@@ -548,33 +565,77 @@ export const fundDirectCommand: Command = {
  * Displays helpful instructions in a nicely formatted panel
  */
 function showWalletSetupGuide(context: CommandContext): void {
-  context.log("=== 🦊 Wallet Setup Guide ===", "info");
-  context.log("", "info");
-  context.log("No wallet is currently connected.", "warning");
-  context.log("Here's how to get started:", "info");
-  context.log("", "info");
-  context.log("Option 1: Connect MetaMask", "info");
-  context.log('  Type "connect" to connect your MetaMask wallet', "output");
-  context.log("", "info");
-  context.log("Option 2: Create Test Wallet", "info");
-  context.log(
-    '  Type "test-wallet" to create a temporary test wallet',
-    "output"
-  );
-  context.log(
-    "  (For testing only - wallet clears when tab closes)",
-    "warning"
-  );
-  context.log("", "info");
-  context.log("After connecting:", "info");
-  context.log('  • Use "balance" to check your balance', "output");
-  context.log('  • Use "send <amount> <address>" to transfer tokens', "output");
-  context.log('  • Use "fund" to get testnet tokens', "output");
-  context.log("", "info");
-  context.log(
-    '💡 You can still use commands like "help", "balance", and "mine"',
-    "info"
-  );
+  const helpHtml = `
+    <div style="
+      background: linear-gradient(135deg, color-mix(in srgb, var(--palette-primary, #00d4ff) 15%, transparent), color-mix(in srgb, var(--palette-secondary, #00ff88) 10%, transparent));
+      border: 1px solid color-mix(in srgb, var(--palette-primary, #00d4ff) 30%, transparent);
+      border-radius: 12px;
+      padding: 20px;
+      margin: 10px 0;
+    ">
+      <div style="
+        font-size: 18px;
+        font-weight: 600;
+        color: var(--palette-primary, #00d4ff);
+        margin-bottom: 16px;
+        text-align: center;
+      ">🦊 Wallet Setup Guide</div>
+      
+      <div style="color: var(--palette-warning, #ffa502); margin-bottom: 12px;">
+        No wallet is currently connected.
+      </div>
+      
+      <div style="margin: 16px 0;">
+        <div style="
+          font-size: 14px;
+          font-weight: bold;
+          color: var(--palette-primary, #00d4ff);
+          margin-bottom: 8px;
+        ">Option 1: Connect MetaMask</div>
+        ${createCommandLine("connect", "Connect your MetaMask wallet")}
+      </div>
+      
+      <div style="margin: 16px 0;">
+        <div style="
+          font-size: 14px;
+          font-weight: bold;
+          color: var(--palette-primary, #00d4ff);
+          margin-bottom: 8px;
+        ">Option 2: Create Test Wallet</div>
+        ${createCommandLine("test-wallet", "Create a temporary test wallet")}
+        <div style="
+          color: var(--palette-warning, #ffa502);
+          margin-top: 4px;
+          font-size: 0.9em;
+          padding-left: 20px;
+        ">(For testing only - wallet clears when tab closes)</div>
+      </div>
+      
+      <div style="margin: 16px 0;">
+        <div style="
+          font-size: 14px;
+          font-weight: bold;
+          color: var(--palette-primary, #00d4ff);
+          margin-bottom: 8px;
+        ">After connecting:</div>
+        ${createCommandLine("balance", "Check your balance")}
+        ${createCommandLine("send <amount> <address>", "Transfer tokens")}
+        ${createCommandLine("fund", "Get testnet tokens")}
+      </div>
+      
+      <div style="
+        margin-top: 20px;
+        padding-top: 12px;
+        border-top: 1px solid color-mix(in srgb, var(--palette-primary, #00d4ff) 20%, transparent);
+        color: var(--palette-text, #ccd4e0);
+        font-size: 0.9em;
+        text-align: center;
+      ">
+        💡 You can still use commands like <span class="omega-help-command" data-command="help" style="color: var(--palette-secondary, #00ff88); font-weight: bold; cursor: pointer; font-family: 'Courier New', monospace; padding: 2px 4px; border-radius: 3px; transition: all 0.2s ease;" onmouseover="this.style.background = 'color-mix(in srgb, var(--palette-secondary, #00ff88) 15%, transparent)';" onmouseout="this.style.background = 'transparent';" title="Click to add 'help' to terminal input">help</span>, <span class="omega-help-command" data-command="balance" style="color: var(--palette-secondary, #00ff88); font-weight: bold; cursor: pointer; font-family: 'Courier New', monospace; padding: 2px 4px; border-radius: 3px; transition: all 0.2s ease;" onmouseover="this.style.background = 'color-mix(in srgb, var(--palette-secondary, #00ff88) 15%, transparent)';" onmouseout="this.style.background = 'transparent';" title="Click to add 'balance' to terminal input">balance</span>, and <span class="omega-help-command" data-command="mine" style="color: var(--palette-secondary, #00ff88); font-weight: bold; cursor: pointer; font-family: 'Courier New', monospace; padding: 2px 4px; border-radius: 3px; transition: all 0.2s ease;" onmouseover="this.style.background = 'color-mix(in srgb, var(--palette-secondary, #00ff88) 15%, transparent)';" onmouseout="this.style.background = 'transparent';" title="Click to add 'mine' to terminal input">mine</span>
+      </div>
+    </div>
+  `;
+  context.logHtml(helpHtml);
 }
 
 export const walletCommands: Command[] = [

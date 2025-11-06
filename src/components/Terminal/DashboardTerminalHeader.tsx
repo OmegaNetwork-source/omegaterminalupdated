@@ -11,6 +11,7 @@ import { APP_VERSION, SOCIAL_LINKS } from "@/lib/constants";
 import styles from "./DashboardTerminalHeader.module.css";
 import { useSoundEffects } from "@/hooks/useSoundEffects";
 import { useWallet } from "@/hooks/useWallet";
+import { PortfolioTracker } from "./PortfolioTracker";
 
 /**
  * Get network icon based on chainId or network name
@@ -82,6 +83,9 @@ export function DashboardTerminalHeader({
       <div className={styles.terminalTitle}>
         <span id="omega-title-symbol">Ω</span>
         <span>OMEGA TERMINAL v{APP_VERSION}</span>
+      </div>
+      <div className={styles.terminalCenter}>
+        <PortfolioTracker />
       </div>
       <div className={styles.terminalControls}>
         {/* Status Indicators */}
