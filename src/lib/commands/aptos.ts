@@ -4,7 +4,7 @@
  */
 
 import type { Command } from "@/types/commands";
-import { Aptos, AptosConfig, Network, getAccountAPTAmount } from "@aptos-labs/ts-sdk";
+import { Aptos, AptosConfig, Network } from "@aptos-labs/ts-sdk";
 
 const APTOS_CONFIG = new AptosConfig({ network: Network.MAINNET });
 const aptosClient = new Aptos(APTOS_CONFIG);
@@ -140,8 +140,13 @@ async function handleBalance(context: any) {
     }
 
     context.log(`Checking APT balance for ${address}...`, "info");
-    const amount = await getAccountAPTAmount({ aptosConfig: APTOS_CONFIG, accountAddress: address });
-    const aptAmount = Number(amount) / 1e8; // APT has 8 decimals
+    // Get account resource to fetch APT balance
+    const accountResource = await aptosClient.getAccountResource({
+      accountAddress: address,
+      resourceType: "0x1::coin::CoinStore<0x1::aptos_coin::AptosCoin>",
+    });
+    const balance = (accountResource.data as any).coin?.value || "0";
+    const aptAmount = Number(balance) / 1e8; // APT has 8 decimals
     context.log(`💰 APT Balance: ${aptAmount.toFixed(8)} APT`, "success");
   } catch (err: any) {
     context.log(`Balance error: ${err?.message ?? err}`, "error");

@@ -60,6 +60,8 @@ import { whoamiCommands } from "./whoami";
 import { gameArenaCommands } from "./game-arena";
 import { factionCommands } from "./faction";
 import { aptosCommands } from "./aptos";
+import { farmingCommands } from "./farm";
+import { botCommands } from "./bot";
 
 export interface CommandRegistrationResult {
   registeredGroups: string[];
@@ -132,6 +134,8 @@ const COMMAND_GROUPS: Array<{ label: string; commands: Command[] }> = [
   { label: "game-arena", commands: gameArenaCommands },
   { label: "faction", commands: factionCommands },
   { label: "aptos", commands: aptosCommands },
+  { label: "farming", commands: farmingCommands },
+  { label: "bots", commands: botCommands },
 ];
 
 let registrationAttempted = false;
@@ -281,5 +285,7 @@ export {
   gameArenaCommands,
   factionCommands,
   aptosCommands,
+  farmingCommands,
+  botCommands,
 };
 export default commandRegistry;

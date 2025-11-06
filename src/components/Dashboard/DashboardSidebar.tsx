@@ -179,6 +179,28 @@ const NetworkSection = dynamic(
   }
 );
 
+const FarmingSection = dynamic(
+  () =>
+    import("./sidebar-sections/FarmingSection").then((mod) => ({
+      default: mod.FarmingSection,
+    })),
+  {
+    ssr: false,
+    loading: SectionSkeleton,
+  }
+);
+
+const BotSection = dynamic(
+  () =>
+    import("./sidebar-sections/BotSection").then((mod) => ({
+      default: mod.BotSection,
+    })),
+  {
+    ssr: false,
+    loading: SectionSkeleton,
+  }
+);
+
 const PGTStatsPanel = dynamic(
   () =>
     import("./PGTStatsPanel").then((mod) => ({
@@ -1578,6 +1600,16 @@ export function DashboardSidebar(): JSX.Element {
         id: "network",
         title: "Network",
         content: <NetworkSection />,
+      },
+      {
+        id: "farming",
+        title: "Farming",
+        content: <FarmingSection />,
+      },
+      {
+        id: "bots",
+        title: "Bots (coming soon)",
+        content: <BotSection />,
       },
       {
         id: "tx",

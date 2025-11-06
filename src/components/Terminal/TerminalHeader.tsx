@@ -14,6 +14,7 @@ import styles from "./TerminalHeader.module.css";
 import { useSoundEffects } from "@/hooks/useSoundEffects";
 import { useMobileDetection } from "@/hooks/useMobileDetection";
 import { MobileMenu } from "@/components/Mobile/MobileMenu";
+import { PortfolioTracker } from "./PortfolioTracker";
 
 export function TerminalHeader({
   onThemeCycle,
@@ -80,8 +81,13 @@ export function TerminalHeader({
         </nav>
       </div>
 
-      {/* Center Section: Social Links */}
+      {/* Center Section: Portfolio Tracker and Social Links */}
       <div className={styles.headerCenter}>
+        <PortfolioTracker
+          totalValue="$122,486.96"
+          change24h="+0.98%"
+          change24hPercent="+0.98%"
+        />
         <div className={styles.socialLinks}>
           <a
             href={SOCIAL_LINKS.website}

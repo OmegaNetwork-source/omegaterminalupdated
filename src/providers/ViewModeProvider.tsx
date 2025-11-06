@@ -8,7 +8,6 @@ import React, {
   useCallback,
 } from "react";
 import type { ViewMode, ViewModeContextValue } from "@/types/ui";
-import { useSoundEffects } from "@/hooks/useSoundEffects";
 import { useMobileDetection } from "@/hooks/useMobileDetection";
 
 const VIEW_MODE_STORAGE_KEY = "omega-view-mode";
@@ -27,7 +26,6 @@ export const ViewModeContext = createContext<ViewModeContextValue | undefined>(
  */
 export function ViewModeProvider({ children }: { children: React.ReactNode }) {
   const [viewMode, setViewModeState] = useState<ViewMode>("futuristic");
-  const soundEffects = useSoundEffects();
   const mobileDetection = useMobileDetection();
 
   const applyBodyClasses = useCallback((mode: ViewMode): void => {
@@ -95,15 +93,8 @@ export function ViewModeProvider({ children }: { children: React.ReactNode }) {
       applyBodyClasses(next);
       // eslint-disable-next-line no-console
       console.log(`[Omega] View mode set to: ${next}`);
-
-      // Play sound when switching to basic terminal mode
-      if (next === "basic") {
-        try {
-          soundEffects.playBasicViewSound();
-        } catch {}
-      }
     },
-    [applyBodyClasses, soundEffects]
+    [applyBodyClasses]
   );
 
   const toggleViewMode = useCallback((): void => {

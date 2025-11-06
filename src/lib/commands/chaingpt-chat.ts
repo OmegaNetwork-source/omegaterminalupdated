@@ -130,51 +130,9 @@ async function handleAsk(
       throw new Error("Unknown response format");
     }
 
-    // Display response with styled HTML card
-    const html = `
-      <div style="
-        background: linear-gradient(135deg, rgba(0, 188, 242, 0.1), rgba(0, 255, 136, 0.1));
-        border: 1px solid rgba(0, 188, 242, 0.3);
-        border-radius: 12px;
-        padding: 20px;
-        margin: 10px 0;
-        max-width: 100%;
-      ">
-        <div style="
-          display: flex;
-          align-items: center;
-          margin-bottom: 16px;
-          gap: 12px;
-        ">
-          <div style="
-            font-size: 32px;
-            line-height: 1;
-          ">🤖</div>
-          <div style="
-            font-size: 18px;
-            font-weight: 600;
-            color: #00bcf2;
-          ">ChainGPT AI Response</div>
-        </div>
-        <div style="
-          color: #ffffff;
-          font-size: 14px;
-          line-height: 1.6;
-          white-space: pre-wrap;
-          word-wrap: break-word;
-        ">${escapeHtml(botResponse)}</div>
-        <div style="
-          margin-top: 16px;
-          padding-top: 16px;
-          border-top: 1px solid rgba(0, 188, 242, 0.2);
-          font-size: 12px;
-          color: #888888;
-        ">
-          <span style="color: #00bcf2;">💳</span> Credits used: ~0.5
-        </div>
-      </div>
-    `;
-
+    // Display response with uniform styling
+    const { createChainGPTResponseCard } = await import("./chaingpt-styling");
+    const html = createChainGPTResponseCard(botResponse, "ChainGPT AI Response", undefined, undefined, "0.5");
     context.logHtml(html);
   } catch (error: any) {
     const errorMsg = error.message || String(error);
@@ -348,51 +306,9 @@ async function handleContext(
       throw new Error("Unknown response format");
     }
 
-    // Display response with yellow/gold themed card
-    const html = `
-      <div style="
-        background: linear-gradient(135deg, rgba(255, 193, 7, 0.1), rgba(255, 152, 0, 0.1));
-        border: 1px solid rgba(255, 193, 7, 0.3);
-        border-radius: 12px;
-        padding: 20px;
-        margin: 10px 0;
-        max-width: 100%;
-      ">
-        <div style="
-          display: flex;
-          align-items: center;
-          margin-bottom: 16px;
-          gap: 12px;
-        ">
-          <div style="
-            font-size: 32px;
-            line-height: 1;
-          ">🎯</div>
-          <div style="
-            font-size: 18px;
-            font-weight: 600;
-            color: #ffc107;
-          ">ChainGPT (Omega Terminal Context)</div>
-        </div>
-        <div style="
-          color: #ffffff;
-          font-size: 14px;
-          line-height: 1.6;
-          white-space: pre-wrap;
-          word-wrap: break-word;
-        ">${escapeHtml(botResponse)}</div>
-        <div style="
-          margin-top: 16px;
-          padding-top: 16px;
-          border-top: 1px solid rgba(255, 193, 7, 0.2);
-          font-size: 12px;
-          color: #888888;
-        ">
-          <span style="color: #ffc107;">💳</span> Credits used: ~0.5
-        </div>
-      </div>
-    `;
-
+    // Display response with uniform context styling
+    const { createContextResponseCard } = await import("./chaingpt-styling");
+    const html = createContextResponseCard(botResponse, "0.5");
     context.logHtml(html);
   } catch (error: any) {
     context.log(`❌ Error: ${error.message}`, "error");
@@ -451,51 +367,9 @@ async function handleHistory(
       throw new Error("Unknown response format");
     }
 
-    // Display response with green themed card (memory active)
-    const html = `
-      <div style="
-        background: linear-gradient(135deg, rgba(0, 255, 136, 0.1), rgba(0, 188, 242, 0.1));
-        border: 1px solid rgba(0, 255, 136, 0.3);
-        border-radius: 12px;
-        padding: 20px;
-        margin: 10px 0;
-        max-width: 100%;
-      ">
-        <div style="
-          display: flex;
-          align-items: center;
-          margin-bottom: 16px;
-          gap: 12px;
-        ">
-          <div style="
-            font-size: 32px;
-            line-height: 1;
-          ">🧠</div>
-          <div style="
-            font-size: 18px;
-            font-weight: 600;
-            color: #00ff88;
-          ">ChainGPT (Memory Active)</div>
-        </div>
-        <div style="
-          color: #ffffff;
-          font-size: 14px;
-          line-height: 1.6;
-          white-space: pre-wrap;
-          word-wrap: break-word;
-        ">${escapeHtml(botResponse)}</div>
-        <div style="
-          margin-top: 16px;
-          padding-top: 16px;
-          border-top: 1px solid rgba(0, 255, 136, 0.2);
-          font-size: 12px;
-          color: #888888;
-        ">
-          <span style="color: #00ff88;">💳</span> Credits used: ~1.0 (history enabled)
-        </div>
-      </div>
-    `;
-
+    // Display response with uniform memory styling
+    const { createMemoryResponseCard } = await import("./chaingpt-styling");
+    const html = createMemoryResponseCard(botResponse, "1.0 (history enabled)");
     context.logHtml(html);
   } catch (error: any) {
     context.log(`❌ Error: ${error.message}`, "error");

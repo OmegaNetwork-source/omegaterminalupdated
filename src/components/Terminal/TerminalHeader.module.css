@@ -452,13 +452,9 @@
     right: 0;
   }
 
-  /* Hide header sections on mobile, but keep portfolio tracker if needed */
+  /* Hide all header sections on mobile */
+  .headerCenter,
   .headerRight {
-    display: none;
-  }
-  
-  /* On mobile, hide social links but keep portfolio tracker visible if space allows */
-  .headerCenter .socialLinks {
     display: none;
   }
 

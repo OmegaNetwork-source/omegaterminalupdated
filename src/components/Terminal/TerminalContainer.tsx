@@ -10,7 +10,6 @@
  */
 
 import { useState, useCallback, useEffect, useRef } from "react";
-import { BootAnimation } from "./BootAnimation";
 import { TerminalHeader } from "./TerminalHeader";
 import { DashboardTerminalHeader } from "./DashboardTerminalHeader";
 import { TerminalOutput } from "./TerminalOutput";
@@ -31,7 +30,6 @@ import { useCustomizer } from "@/hooks/useCustomizer";
 export function TerminalContainer() {
   const terminalInputRef = useRef<TerminalInputRef>(null);
   // State management
-  const [showBoot, setShowBoot] = useState(true);
   const [commandsReady, setCommandsReady] = useState(false);
   const [connectionStatus, setConnectionStatus] =
     useState<ConnectionStatus>("disconnected");
@@ -159,11 +157,6 @@ export function TerminalContainer() {
     };
   }, []);
 
-  // Boot animation complete handler
-  const handleBootComplete = useCallback(() => {
-    setShowBoot(false);
-  }, []);
-
   // Theme cycle handler
   const handleThemeCycle = useCallback(() => {
     toggleTheme();
@@ -192,11 +185,6 @@ export function TerminalContainer() {
     },
     [setAiProvider]
   );
-
-  // Render boot animation
-  if (isBasicMode && showBoot) {
-    return <BootAnimation onComplete={handleBootComplete} />;
-  }
 
   // Render main terminal interface
   return (

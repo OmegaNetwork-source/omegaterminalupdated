@@ -3,6 +3,28 @@
 import { useCallback } from "react";
 import { useTerminal } from "@/providers/TerminalProvider";
 import styles from "../DashboardSidebar.module.css";
+import {
+  KeyIcon,
+  ChatIcon,
+  StreamIcon,
+  TargetIcon,
+  BrainIcon,
+  TestIcon,
+  HelpIcon,
+  ArtIcon,
+  RobotIcon,
+  PaletteIcon,
+  SparkleIcon,
+  ImageIcon,
+  ChartIcon,
+  DocumentIcon,
+  ClipboardIcon,
+  ChainIcon,
+  BuildingIcon,
+  SearchIcon,
+  WarningIcon,
+  ShieldIcon,
+} from "../utils/chainGptIcons";
 
 /**
  * ChainGPT Tools Section - AI-powered Web3 tools
@@ -44,43 +66,50 @@ export function ChainGptToolsSection(): JSX.Element {
             className={styles.subButton}
             onClick={() => handleCommand("chat init")}
           >
-            <span>→ 🔑 Custom API Key</span>
+            <KeyIcon />
+            <span>→ Custom API Key</span>
           </button>
           <button
             className={styles.subButton}
             onClick={() => handleCommand("chat ask")}
           >
-            <span>→ 💬 Ask Question</span>
+            <ChatIcon />
+            <span>→ Ask Question</span>
           </button>
           <button
             className={styles.subButton}
             onClick={() => handleCommand("chat stream")}
           >
-            <span>→ 🌊 Stream Response</span>
+            <StreamIcon />
+            <span>→ Stream Response</span>
           </button>
           <button
             className={styles.subButton}
             onClick={() => handleCommand("chat context")}
           >
-            <span>→ 🎯 With Context</span>
+            <TargetIcon />
+            <span>→ With Context</span>
           </button>
           <button
             className={styles.subButton}
             onClick={() => handleCommand("chat history")}
           >
-            <span>→ 🧠 With Memory</span>
+            <BrainIcon />
+            <span>→ With Memory</span>
           </button>
           <button
             className={styles.subButton}
             onClick={() => handleCommand("chat test")}
           >
-            <span>→ 🧪 Test API</span>
+            <TestIcon />
+            <span>→ Test API</span>
           </button>
           <button
             className={styles.subButton}
             onClick={() => handleCommand("chat help")}
           >
-            <span>→ ❓ Chat Help</span>
+            <HelpIcon />
+            <span>→ Chat Help</span>
           </button>
         </div>
       </details>
@@ -109,55 +138,64 @@ export function ChainGptToolsSection(): JSX.Element {
             className={styles.subButton}
             onClick={() => handleCommand("nftgen init")}
           >
-            <span>→ 🔑 Custom API Key</span>
+            <KeyIcon />
+            <span>→ Custom API Key</span>
           </button>
           <button
             className={styles.subButton}
             onClick={() => handleCommand("nftgen generate")}
           >
-            <span>→ 🎨 Generate AI NFT</span>
+            <ArtIcon />
+            <span>→ Generate AI NFT</span>
           </button>
           <button
             className={styles.subButton}
             onClick={() => handleCommand("nftgen models")}
           >
-            <span>→ 🤖 AI Models</span>
+            <RobotIcon />
+            <span>→ AI Models</span>
           </button>
           <button
             className={styles.subButton}
             onClick={() => handleCommand("nftgen styles")}
           >
-            <span>→ 🎭 Art Styles</span>
+            <PaletteIcon />
+            <span>→ Art Styles</span>
           </button>
           <button
             className={styles.subButton}
             onClick={() => handleCommand("nftgen enhance")}
           >
-            <span>→ ✨ Enhance Prompt</span>
+            <SparkleIcon />
+            <span>→ Enhance Prompt</span>
           </button>
           <button
             className={styles.subButton}
             onClick={() => handleCommand("nftgen gallery")}
           >
-            <span>→ 🖼️ View Gallery</span>
+            <ImageIcon />
+            <span>→ View Gallery</span>
           </button>
           <button
             className={styles.subButton}
             onClick={() => handleCommand("nftgen test")}
           >
-            <span>→ 🧪 Test API</span>
+            <TestIcon />
+            <span>→ Test API</span>
           </button>
           <button
             className={styles.subButton}
             onClick={() => handleCommand("opensea trending")}
           >
-            <span>→ 📊 Trending NFTs</span>
+            <ChartIcon />
+            <span>→ Trending NFTs</span>
           </button>
           <button
             className={styles.subButton}
             onClick={() => handleCommand("nftgen help")}
           >
-            <span>→ ❓ NFT Help</span>
+            <HelpIcon />
+            <span>→ NFT Help</span>
           </button>
         </div>
       </details>
@@ -186,43 +224,50 @@ export function ChainGptToolsSection(): JSX.Element {
             className={styles.subButton}
             onClick={() => handleCommand("contract init")}
           >
-            <span>→ 🔑 Custom API Key</span>
+            <KeyIcon />
+            <span>→ Custom API Key</span>
           </button>
           <button
             className={styles.subButton}
             onClick={() => handleCommand("contract generate")}
           >
-            <span>→ 📜 Generate Contract</span>
+            <DocumentIcon />
+            <span>→ Generate Contract</span>
           </button>
           <button
             className={styles.subButton}
             onClick={() => handleCommand("contract templates")}
           >
-            <span>→ 📋 Templates</span>
+            <ClipboardIcon />
+            <span>→ Templates</span>
           </button>
           <button
             className={styles.subButton}
             onClick={() => handleCommand("contract chains")}
           >
-            <span>→ ⛓️ Supported Chains</span>
+            <ChainIcon />
+            <span>→ Supported Chains</span>
           </button>
           <button
             className={styles.subButton}
             onClick={() => handleCommand("contract templates")}
           >
-            <span>→ 🏗️ Contract Templates</span>
+            <BuildingIcon />
+            <span>→ Contract Templates</span>
           </button>
           <button
             className={styles.subButton}
             onClick={() => handleCommand("contract test")}
           >
-            <span>→ 🧪 Test API</span>
+            <TestIcon />
+            <span>→ Test API</span>
           </button>
           <button
             className={styles.subButton}
             onClick={() => handleCommand("contract help")}
           >
-            <span>→ ❓ Creator Help</span>
+            <HelpIcon />
+            <span>→ Creator Help</span>
           </button>
         </div>
       </details>
@@ -251,37 +296,43 @@ export function ChainGptToolsSection(): JSX.Element {
             className={styles.subButton}
             onClick={() => handleCommand("auditor init")}
           >
-            <span>→ 🔑 Custom API Key</span>
+            <KeyIcon />
+            <span>→ Custom API Key</span>
           </button>
           <button
             className={styles.subButton}
             onClick={() => handleCommand("auditor audit")}
           >
-            <span>→ 🔍 Audit Contract</span>
+            <SearchIcon />
+            <span>→ Audit Contract</span>
           </button>
           <button
             className={styles.subButton}
             onClick={() => handleCommand("auditor severity")}
           >
-            <span>→ ⚠️ Severity Levels</span>
+            <WarningIcon />
+            <span>→ Severity Levels</span>
           </button>
           <button
             className={styles.subButton}
             onClick={() => handleCommand("auditor categories")}
           >
-            <span>→ 🛡️ Security Categories</span>
+            <ShieldIcon />
+            <span>→ Security Categories</span>
           </button>
           <button
             className={styles.subButton}
             onClick={() => handleCommand("auditor test")}
           >
-            <span>→ 🧪 Test API</span>
+            <TestIcon />
+            <span>→ Test API</span>
           </button>
           <button
             className={styles.subButton}
             onClick={() => handleCommand("auditor help")}
           >
-            <span>→ ❓ Auditor Help</span>
+            <HelpIcon />
+            <span>→ Auditor Help</span>
           </button>
         </div>
       </details>
