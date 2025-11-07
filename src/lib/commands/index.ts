@@ -62,6 +62,7 @@ import { factionCommands } from "./faction";
 import { aptosCommands } from "./aptos";
 import { farmingCommands } from "./farm";
 import { botCommands } from "./bot";
+import { web3telegramCommands } from "./web3telegram";
 
 export interface CommandRegistrationResult {
   registeredGroups: string[];
@@ -104,6 +105,7 @@ const COMMAND_GROUPS: Array<{ label: string; commands: Command[] }> = [
   { label: "referral", commands: referralCommands },
   { label: "perps", commands: perpsCommands },
   { label: "email", commands: emailCommands },
+  { label: "web3telegram", commands: web3telegramCommands },
   { label: "eth", commands: ethCommands },
   { label: "games", commands: [gamesCommand] },
   { label: "kalshi", commands: [kalshiCommand] },
@@ -157,7 +159,8 @@ function registerCommandGroup(
       succeeded.push(command.name);
     } catch (error) {
       // Check if error is due to duplicate registration (already exists)
-      const errorMessage = error instanceof Error ? error.message : String(error ?? "");
+      const errorMessage =
+        error instanceof Error ? error.message : String(error ?? "");
       if (errorMessage.includes("already in use")) {
         // Command already registered (likely from HMR or double registration) - skip silently
         succeeded.push(command.name);

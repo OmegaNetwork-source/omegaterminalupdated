@@ -32,6 +32,7 @@ import { createCommandLine } from "@/lib/commands/command-output-helpers";
 import { APP_VERSION } from "@/lib/constants";
 import { usePGT } from "@/hooks/usePGT";
 import { useSoundEffects } from "@/hooks/useSoundEffects";
+import { useTelegram } from "@/providers/TelegramProvider";
 import { commandRegistry } from "@/lib/commands";
 import { openNetworkSelector } from "@/lib/wallet/networkSelector";
 import { useViewMode } from "@/hooks/useViewMode";
@@ -111,6 +112,7 @@ export function useCommandExecution(): UseCommandExecutionReturn {
   const games = useGames();
   const pgt = usePGT();
   const soundEffects = useSoundEffects();
+  const telegram = useTelegram();
   const viewModeCtx = useViewMode();
   const guiThemeCtx = useGUITheme();
   const customizerCtx = useCustomizer();
@@ -970,6 +972,19 @@ export function useCommandExecution(): UseCommandExecutionReturn {
               }
             },
           },
+          telegram: {
+            state: telegram.state,
+            setupAccount: telegram.setupAccount,
+            addContact: telegram.addContact,
+            removeContact: telegram.removeContact,
+            sendMessage: telegram.sendMessage,
+            grantAccessToUser: telegram.grantAccessToUser,
+            revokeAccessFromUser: telegram.revokeAccessFromUser,
+            refreshContacts: telegram.refreshContacts,
+            getContactByLabel: telegram.getContactByLabel,
+            updateConfiguration: telegram.updateConfiguration,
+            clearError: telegram.clearError,
+          },
         };
 
         if (!commandsInitialized) {
@@ -1004,6 +1019,7 @@ export function useCommandExecution(): UseCommandExecutionReturn {
     newsReader,
     games,
     soundEffects,
+    telegram,
     aiProvider,
     miningState,
     stressTestState,

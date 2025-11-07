@@ -63,6 +63,16 @@ const PGTProvider = dynamic(
   }
 );
 
+const TelegramProvider = dynamic(
+  () =>
+    import("./TelegramProvider").then((mod) => ({
+      default: mod.TelegramProvider,
+    })),
+  {
+    ssr: false,
+  }
+);
+
 function ProvidersFallback() {
   return (
     <div
@@ -103,10 +113,12 @@ export function ProviderShell({ children }: { children: ReactNode }) {
             <YouTubeProvider>
               <NewsReaderProvider>
                 <GamesProvider>
-                  <TerminalProvider>
-                    {children}
-                    <GlobalGameModal />
-                  </TerminalProvider>
+                  <TelegramProvider>
+                    <TerminalProvider>
+                      {children}
+                      <GlobalGameModal />
+                    </TerminalProvider>
+                  </TelegramProvider>
                 </GamesProvider>
               </NewsReaderProvider>
             </YouTubeProvider>

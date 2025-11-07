@@ -38,6 +38,13 @@ import type {
   WalletConnectResult,
   InitializeExternalWalletParams,
 } from "@/types/wallet";
+import type {
+  TelegramState,
+  TelegramContact,
+  GrantedAccessInfo,
+  TelegramConfig,
+  CreateProtectedDataParams,
+} from "@/types/telegram";
 
 /**
  * Command context provided to all command handlers
@@ -488,6 +495,113 @@ export interface CommandContext {
     playModernUIThemeSound: (options?: SoundPlayOptions) => Promise<void>;
     playHelpCommandSound: (options?: SoundPlayOptions) => Promise<void>;
     playFaucetSound: (options?: SoundPlayOptions) => Promise<void>;
+  };
+
+  /**
+   * Web3Telegram integration context
+   * Enables commands to interact with the decentralized Telegram messaging system
+   */
+  telegram?: {
+    /** Current Web3Telegram state */
+    state: TelegramState;
+
+    /**
+     * Setup account with protected Telegram Chat ID
+     * @param params - Account setup parameters including chatId and name
+     * @returns Promise with success status and protectedDataAddress
+     */
+    setupAccount: (params: CreateProtectedDataParams) => Promise<{
+      success: boolean;
+      protectedDataAddress?: string;
+      error?: string;
+    }>;
+
+    /**
+     * Add a contact to local storage
+     * @param contact - Contact information without timestamp fields
+     * @returns Result with success status
+     */
+    addContact: (
+      contact: Omit<TelegramContact, "addedAt" | "lastMessageSent">
+    ) => {
+      success: boolean;
+      error?: string;
+    };
+
+    /**
+     * Remove a contact from local storage
+     * @param protectedDataAddress - Address of the protected data to remove
+     * @returns Result with success status
+     */
+    removeContact: (protectedDataAddress: string) => {
+      success: boolean;
+      error?: string;
+    };
+
+    /**
+     * Send a Telegram message to a contact by label
+     * @param params - Message parameters including label and content
+     * @returns Promise with success status and taskId
+     */
+    sendMessage: (params: {
+      label: string;
+      message: string;
+      dataMaxPrice?: number;
+      appMaxPrice?: number;
+      workerpoolMaxPrice?: number;
+    }) => Promise<{
+      success: boolean;
+      taskId?: string;
+      error?: string;
+    }>;
+
+    /**
+     * Grant access to a user's wallet address
+     * @param walletAddress - Address to grant access to
+     * @param numberOfAccess - Number of accesses to grant (default: 1)
+     * @returns Promise with success status
+     */
+    grantAccessToUser: (
+      walletAddress: string,
+      numberOfAccess?: number
+    ) => Promise<{
+      success: boolean;
+      error?: string;
+    }>;
+
+    /**
+     * Revoke access from a user
+     * @param grantedAccess - The granted access object to revoke
+     * @returns Promise with success status
+     */
+    revokeAccessFromUser: (grantedAccess: GrantedAccessInfo) => Promise<{
+      success: boolean;
+      error?: string;
+    }>;
+
+    /**
+     * Refresh the granted access list from blockchain
+     * @returns Promise that resolves when refresh is complete
+     */
+    refreshContacts: () => Promise<void>;
+
+    /**
+     * Find a contact by label
+     * @param label - Contact label to search for
+     * @returns Contact object or null if not found
+     */
+    getContactByLabel: (label: string) => TelegramContact | null;
+
+    /**
+     * Update configuration settings
+     * @param updates - Partial config object with fields to update
+     */
+    updateConfiguration: (updates: Partial<TelegramConfig>) => void;
+
+    /**
+     * Clear the current error state
+     */
+    clearError: () => void;
   };
 }
 
