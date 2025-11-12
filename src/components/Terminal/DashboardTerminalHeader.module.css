@@ -5,7 +5,7 @@
  */
 
 .terminalHeader {
-  padding: 16px 24px;
+  padding: 12px 20px;
   border-bottom: 1px solid color-mix(in srgb, var(--palette-primary, #00d4ff) 15%, transparent);
   display: flex;
   align-items: center;
@@ -15,6 +15,13 @@
   position: relative;
   z-index: 10;
   transition: border-color 0.3s ease;
+}
+
+.terminalLeft {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex: 1;
 }
 
 .terminalTitle {
@@ -31,27 +38,44 @@
 }
 
 .terminalTitle span:first-child {
-  font-size: 16px;
+  font-size: 18px;
   font-weight: bold;
 }
 
-.terminalCenter {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex: 1;
+.terminalTitleText {
+  font-size: 11px;
+  letter-spacing: 0.8px;
 }
 
 .terminalControls {
   display: flex;
-  gap: 16px;
+  gap: 10px;
   align-items: center;
+}
+
+.walletInfo {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.9);
+  font-family: "Courier New", monospace;
+  font-weight: 600;
+  padding: 4px 10px;
+  background: color-mix(in srgb, var(--palette-primary, #00d4ff) 5%, transparent);
+  border: 1px solid color-mix(in srgb, var(--palette-primary, #00d4ff) 20%, transparent);
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+.walletAddress {
+  letter-spacing: 0.5px;
 }
 
 .statusIndicator {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 0;
   font-size: 11px;
   color: rgba(255, 255, 255, 0.7);
   font-family: "Courier New", monospace;
@@ -137,10 +161,10 @@
   background: color-mix(in srgb, var(--palette-primary, #00d4ff) 8%, transparent);
   border: 1px solid color-mix(in srgb, var(--palette-primary, #00d4ff) 30%, transparent);
   border-radius: 6px;
-  padding: 6px 10px;
+  padding: 5px 24px 5px 8px;
   color: var(--palette-primary, #00d4ff);
   font-family: "Courier New", monospace;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 600;
   cursor: pointer;
   text-transform: uppercase;
@@ -150,12 +174,11 @@
   -moz-appearance: none;
   background-image: linear-gradient(45deg, transparent 50%, var(--palette-primary, #00d4ff) 50%),
     linear-gradient(135deg, var(--palette-primary, #00d4ff) 50%, transparent 50%);
-  background-position: calc(100% - 15px) calc(1em + 2px),
-    calc(100% - 10px) calc(1em + 2px);
-  background-size: 5px 5px, 5px 5px;
+  background-position: calc(100% - 12px) calc(50% + 1px),
+    calc(100% - 8px) calc(50% + 1px);
+  background-size: 4px 4px, 4px 4px;
   background-repeat: no-repeat;
-  min-width: 120px;
-  margin-right: 8px;
+  min-width: 90px;
   transition: all 0.3s ease;
 }
 
@@ -280,4 +303,113 @@
 
 :global(body.light-mode) .statusIndicator {
   color: rgba(0, 0, 0, 0.7);
+}
+
+:global(body.light-mode) .walletInfo {
+  color: rgba(0, 0, 0, 0.9);
+  background: color-mix(in srgb, var(--palette-primary, rgba(0, 81, 213, 1)) 5%, transparent);
+  border-color: color-mix(in srgb, var(--palette-primary, rgba(0, 81, 213, 1)) 20%, transparent);
+}
+
+/* Settings Menu */
+.settingsMenuContainer {
+  position: relative;
+}
+
+.settingsDropdown {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  background: rgba(0, 0, 0, 0.95);
+  border: 1px solid color-mix(in srgb, var(--palette-primary, #00d4ff) 30%, transparent);
+  border-radius: 8px;
+  min-width: 200px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5),
+              0 0 20px color-mix(in srgb, var(--palette-primary, #00d4ff) 15%, transparent);
+  overflow: hidden;
+  z-index: 1000;
+  animation: dropdownFadeIn 0.2s ease-out;
+  backdrop-filter: blur(10px);
+}
+
+@keyframes dropdownFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.settingsMenuItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  color: rgba(255, 255, 255, 0.8);
+  font-family: "Courier New", monospace;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  width: 100%;
+  text-align: left;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.settingsMenuItem:hover {
+  background: color-mix(in srgb, var(--palette-primary, #00d4ff) 15%, transparent);
+  color: var(--palette-primary, #00d4ff);
+}
+
+.settingsMenuItem svg {
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+  flex-shrink: 0;
+}
+
+.settingsMenuDivider {
+  height: 1px;
+  background: color-mix(in srgb, var(--palette-primary, #00d4ff) 15%, transparent);
+  margin: 4px 0;
+}
+
+.terminalIconBtn.active {
+  background: color-mix(in srgb, var(--palette-primary, #00d4ff) 15%, transparent);
+  border-color: var(--palette-primary, #00d4ff);
+  box-shadow: 0 0 10px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #00d4ff) 20%, transparent));
+}
+
+/* Light mode for settings dropdown */
+:global(body.light-mode) .settingsDropdown {
+  background: rgba(255, 255, 255, 0.95);
+  border-color: color-mix(in srgb, var(--palette-primary, rgba(0, 81, 213, 1)) 30%, transparent);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15),
+              0 0 20px color-mix(in srgb, var(--palette-primary, rgba(0, 81, 213, 1)) 15%, transparent);
+}
+
+:global(body.light-mode) .settingsMenuItem {
+  color: rgba(0, 0, 0, 0.8);
+}
+
+:global(body.light-mode) .settingsMenuItem:hover {
+  background: color-mix(in srgb, var(--palette-primary, rgba(0, 81, 213, 1)) 15%, transparent);
+  color: var(--palette-primary, var(--cyber-blue, #0051d5));
+}
+
+:global(body.light-mode) .settingsMenuDivider {
+  background: color-mix(in srgb, var(--palette-primary, rgba(0, 81, 213, 1)) 15%, transparent);
+}
+
+:global(body.light-mode) .terminalIconBtn.active {
+  background: color-mix(in srgb, var(--palette-primary, rgba(0, 81, 213, 1)) 15%, transparent);
+  border-color: var(--palette-primary, var(--cyber-blue, #0051d5));
+  box-shadow: 0 0 10px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, rgba(0, 81, 213, 1)) 20%, transparent));
 }

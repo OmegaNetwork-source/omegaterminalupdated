@@ -56,7 +56,7 @@ export function PortfolioTracker({
     <div 
       className={`${styles.portfolioTracker} ${className || ""}`}
       onClick={handleClick}
-      title="Click to add 'pgt track' command to terminal input"
+      title="PGT Portfolio - Click to track wallets"
       role="button"
       tabIndex={0}
       onKeyDown={(e) => {
@@ -68,21 +68,14 @@ export function PortfolioTracker({
     >
       <span className={styles.portfolioTitle}>PGT</span>
       <div className={styles.portfolioContentWrapper}>
-        <div className={styles.portfolioContent}>
-          <span className={styles.portfolioLabel}>Total Value:</span>
-          <span className={styles.portfolioValue}>{totalValue}</span>
-        </div>
-        <div className={styles.portfolioDivider}></div>
-        <div className={styles.portfolioContent}>
-          <span className={styles.portfolioLabel}>24h:</span>
-          <span
-            className={`${styles.portfolioChange} ${
-              isPositive ? styles.positive : styles.negative
-            }`}
-          >
-            {change24h}
-          </span>
-        </div>
+        <span className={styles.portfolioValue}>{totalValue}</span>
+        <span
+          className={`${styles.portfolioChange} ${
+            isPositive ? styles.positive : styles.negative
+          }`}
+        >
+          {change24h}
+        </span>
       </div>
     </div>
   );
