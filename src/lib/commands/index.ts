@@ -63,6 +63,7 @@ import { aptosCommands } from "./aptos";
 import { farmingCommands } from "./farm";
 import { botCommands } from "./bot";
 import { web3telegramCommands } from "./web3telegram";
+import { rubicCommands } from "./rubic";
 
 export interface CommandRegistrationResult {
   registeredGroups: string[];
@@ -138,6 +139,7 @@ const COMMAND_GROUPS: Array<{ label: string; commands: Command[] }> = [
   { label: "aptos", commands: aptosCommands },
   { label: "farming", commands: farmingCommands },
   { label: "bots", commands: botCommands },
+  { label: "rubic", commands: rubicCommands },
 ];
 
 let registrationAttempted = false;

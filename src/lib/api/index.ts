@@ -24,3 +24,4 @@ export * as chaingpt from "./chaingpt";
 export * as cryptonews from "./cryptonews";
 export * as referral from "./referral";
 export * as kalshi from "./kalshi";
+export * as rubic from "./rubic";

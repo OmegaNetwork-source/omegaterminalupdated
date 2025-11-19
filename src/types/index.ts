@@ -70,3 +70,4 @@ export * from "./kalshi";
 export * from "./profile";
 export * from "./ui";
 export * from "./sound";
+export * from "./rubic";

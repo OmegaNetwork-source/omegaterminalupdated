@@ -26,7 +26,7 @@ function getNetworkIcon(chainId: number | null, networkName: string | null): str
       42161: "🔵", // Arbitrum
       10: "🔴", // Optimism
       8453: "🔷", // Base
-      1313161256: "Ω", // Omega Network
+      1313161768: "Ω", // Omega Network
       121212: "🏛️", // Rome Protocol
       935: "⚖️", // FAIR Testnet
       120000: "🔷", // Monad

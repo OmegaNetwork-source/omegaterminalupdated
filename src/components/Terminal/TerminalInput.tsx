@@ -13,6 +13,10 @@ import {
   handleTokenCreationInput,
   isAwaitingTokenInput,
 } from "@/lib/commands/token-factory";
+import {
+  handleSwapInput,
+  isAwaitingSwapInput,
+} from "@/lib/commands/rubic";
 import { useMobileDetection } from "@/hooks/useMobileDetection";
 import { VirtualKeyboard } from "@/components/Mobile/VirtualKeyboard";
 import styles from "./TerminalInput.module.css";
@@ -147,6 +151,13 @@ export const TerminalInput = forwardRef<TerminalInputRef, TerminalInputProps>(({
           return;
         }
       }
+      if (isAwaitingSwapInput()) {
+        const handled = handleSwapInput(inputValue.trim());
+        if (handled) {
+          setInputValue("");
+          return;
+        }
+      }
       onSubmit(inputValue.trim());
       setInputValue("");
     }
@@ -160,6 +171,15 @@ export const TerminalInput = forwardRef<TerminalInputRef, TerminalInputProps>(({
           // Check if we're in token creation mode (matches vanilla terminal.html line 4028)
           if (isAwaitingTokenInput()) {
             const handled = handleTokenCreationInput(inputValue.trim());
+            if (handled) {
+              setInputValue("");
+              e.preventDefault();
+              return;
+            }
+          }
+          // Check if we're in swap mode
+          if (isAwaitingSwapInput()) {
+            const handled = handleSwapInput(inputValue.trim());
             if (handled) {
               setInputValue("");
               e.preventDefault();

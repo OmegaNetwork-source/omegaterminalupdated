@@ -142,6 +142,32 @@ export const balanceCommand: Command = {
           "error"
         );
       }
+
+      // Check for claimable mining rewards (Omega Network)
+      try {
+        const response = await fetch(`${config.RELAYER_URL}/claimable`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ address: context.wallet.state.address }),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success && data.amount && parseFloat(data.amount) > 0) {
+            const claimableAmount = parseFloat(data.amount);
+            context.log(
+              `⛏️  Pending Mining Rewards: ${claimableAmount.toFixed(4)} OMEGA`,
+              "info"
+            );
+            context.logHtml(
+              `💡 Use ${createCommandLine("claim", "claim")} to withdraw your rewards`
+            );
+          }
+        }
+      } catch (error) {
+        // Silently fail - claimable rewards check is optional
+        console.warn("Failed to check claimable rewards:", error);
+      }
     }
 
     // 2. Check Solana Wallet

@@ -69,6 +69,11 @@ export default function RootLayout({
         />
         <meta httpEquiv="Pragma" content="no-cache" />
         <meta httpEquiv="Expires" content="0" />
+        {/* Load Rubic SDK from CDN to avoid webpack bundling issues */}
+        <script
+          src="https://unpkg.com/rubic-sdk@latest/dist/rubic-sdk.min.js"
+          async
+        />
       </head>
       <body suppressHydrationWarning data-omega-hydrated="true">
         <WebVitals />

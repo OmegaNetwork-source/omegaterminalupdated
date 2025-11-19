@@ -15,7 +15,12 @@ import {
   escapeHtml,
   randomHex,
 } from "@/lib/utils";
-import { Contract, JsonRpcProvider, formatEther } from "ethers";
+import {
+  Contract,
+  JsonRpcProvider,
+  formatEther,
+  BrowserProvider,
+} from "ethers";
 import { createCommandLine, createUsageError } from "./command-output-helpers";
 import { SVG_ICONS } from "@/lib/utils/svg-icons";
 
@@ -78,7 +83,10 @@ function createMiningStatusHtml(
         color: var(--palette-primary, #00d4ff);
         animation: pulse 2s ease-in-out infinite;
       ">
-        ${SVG_ICONS.pickaxe.replace('style="display: inline-block; vertical-align: middle;"', 'style="display: inline-block; vertical-align: middle; animation: rotate 2s linear infinite;"')}
+        ${SVG_ICONS.pickaxe.replace(
+          'style="display: inline-block; vertical-align: middle;"',
+          'style="display: inline-block; vertical-align: middle; animation: rotate 2s linear infinite;"'
+        )}
         <span style="font-weight: 600; font-size: 0.9em;">Block #${blockNumber}</span>
       </div>
       <div style="
@@ -199,7 +207,10 @@ function createMiningStartHtml(): string {
         margin-bottom: 16px;
       ">
         <div style="color: var(--palette-primary, #00d4ff);">
-          ${SVG_ICONS.pickaxe.replace('style="display: inline-block; vertical-align: middle;"', 'style="display: inline-block; vertical-align: middle; animation: rotate 2s linear infinite;"')}
+          ${SVG_ICONS.pickaxe.replace(
+            'style="display: inline-block; vertical-align: middle;"',
+            'style="display: inline-block; vertical-align: middle; animation: rotate 2s linear infinite;"'
+          )}
         </div>
         <div style="
           font-size: 18px;
@@ -234,7 +245,10 @@ function createMiningStartHtml(): string {
         gap: 8px;
       ">
         ${SVG_ICONS.activity}
-        <span>Mining will continue automatically. Use ${createCommandLine("stop", "stop")} to stop.</span>
+        <span>Mining will continue automatically. Use ${createCommandLine(
+          "stop",
+          "stop"
+        )} to stop.</span>
       </div>
     </div>
     <style>
@@ -306,7 +320,10 @@ const mineCommand: Command = {
             ${SVG_ICONS.warning}
           </div>
           <div style="flex: 1; color: var(--palette-text, #ccd4e0);">
-            Mining is already running. Use ${createCommandLine("stop", "stop")} to stop it.
+            Mining is already running. Use ${createCommandLine(
+              "stop",
+              "stop"
+            )} to stop it.
           </div>
         </div>
       `;
@@ -323,6 +340,7 @@ const mineCommand: Command = {
 
       // Get current address
       const address = context.wallet.state.address;
+      console.log(`[Mine] Mining for address: ${address}`);
       if (!address) {
         const errorHtml = `
           <div style="
@@ -397,7 +415,10 @@ const mineCommand: Command = {
               color: var(--palette-text, #ccd4e0);
               font-size: 0.9em;
             ">
-              ${SVG_ICONS.refresh.replace('style="display: inline-block; vertical-align: middle;"', 'style="display: inline-block; vertical-align: middle; animation: rotate 1s linear infinite; color: var(--palette-primary, #00d4ff);"')}
+              ${SVG_ICONS.refresh.replace(
+                'style="display: inline-block; vertical-align: middle;"',
+                'style="display: inline-block; vertical-align: middle; animation: rotate 1s linear infinite; color: var(--palette-primary, #00d4ff);"'
+              )}
               <span>Sending mining request to network...</span>
             </div>
             <style>
@@ -448,6 +469,16 @@ const mineCommand: Command = {
           let data;
           try {
             data = await response.json();
+            // Log relayer response for debugging
+            console.log("[Mine] Relayer response:", {
+              success: data.success,
+              reward: data.reward,
+              txHash: data.txHash,
+              transactionHash: data.transactionHash,
+              blockNumber: data.blockNumber,
+              status: response.status,
+              fullData: data,
+            });
           } catch (jsonError) {
             const warningHtml = `
               <div style="
@@ -479,12 +510,291 @@ const mineCommand: Command = {
           }
 
           if (data.success && data.reward && data.reward > 0) {
+            // Verify transaction exists on-chain if we have a txHash
+            if (data.txHash || data.transactionHash) {
+              const txHash = data.txHash || data.transactionHash;
+              const explorerUrl = `https://0x4e454228.explorer.aurora-cloud.dev/tx/${txHash}`;
+
+              console.log(`[Mine] Verifying transaction ${txHash} on-chain...`);
+
+              // Log network info
+              try {
+                const provider = context.wallet.getProvider();
+                if (provider) {
+                  const browserProvider =
+                    provider instanceof BrowserProvider
+                      ? provider
+                      : new BrowserProvider(provider);
+                  const network = await browserProvider.getNetwork();
+                  const chainId = Number(network.chainId);
+                  console.log(`[Mine] Current network: Chain ID ${chainId}`);
+                  console.log(
+                    `[Mine] Expected network: Chain ID ${config.OMEGA_NETWORK.chainIdDecimal}`
+                  );
+
+                  if (chainId !== config.OMEGA_NETWORK.chainIdDecimal) {
+                    context.log(
+                      `⚠️  Warning: You're on Chain ID ${chainId}, but Omega Network is ${config.OMEGA_NETWORK.chainIdDecimal}`,
+                      "warning"
+                    );
+                    context.log(
+                      "💡 The transaction may be on a different network. Check the explorer link below.",
+                      "warning"
+                    );
+                  }
+                }
+              } catch (networkError) {
+                console.warn("[Mine] Could not check network:", networkError);
+              }
+
+              // Show explorer link immediately
+              context.logHtml(
+                `🔍 <a href="${explorerUrl}" target="_blank">View transaction on explorer</a>`
+              );
+
+              // Poll for transaction confirmation with retries
+              // Use direct RPC provider to ensure we're querying Omega Network
+              try {
+                // Create direct RPC provider for Omega Network
+                const directProvider = new JsonRpcProvider(
+                  config.OMEGA_RPC_URL
+                );
+                console.log(`[Mine] Using direct RPC: ${config.OMEGA_RPC_URL}`);
+
+                // Also try wallet provider as fallback
+                let walletProvider = null;
+                try {
+                  const provider = context.wallet.getProvider();
+                  if (provider) {
+                    walletProvider =
+                      provider instanceof BrowserProvider
+                        ? provider
+                        : new BrowserProvider(provider);
+                  }
+                } catch (e) {
+                  console.warn("[Mine] Could not get wallet provider:", e);
+                }
+
+                // Poll for transaction receipt (max 30 seconds, 15 attempts)
+                let receipt = null;
+                const maxAttempts = 15;
+                const pollInterval = 2000; // 2 seconds
+
+                for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+                  try {
+                    // Try direct RPC provider first (more reliable)
+                    receipt = await directProvider.getTransactionReceipt(
+                      txHash
+                    );
+                    if (receipt) {
+                      console.log(
+                        `[Mine] Found transaction via direct RPC (attempt ${attempt})`
+                      );
+                      break;
+                    }
+                  } catch (e) {
+                    // Try wallet provider as fallback
+                    if (walletProvider) {
+                      try {
+                        receipt = await walletProvider.getTransactionReceipt(
+                          txHash
+                        );
+                        if (receipt) {
+                          console.log(
+                            `[Mine] Found transaction via wallet provider (attempt ${attempt})`
+                          );
+                          break;
+                        }
+                      } catch (e2) {
+                        // Both failed, continue polling
+                      }
+                    }
+                  }
+
+                  if (attempt < maxAttempts) {
+                    await new Promise((resolve) =>
+                      setTimeout(resolve, pollInterval)
+                    );
+                  }
+                }
+
+                if (receipt) {
+                  console.log(`[Mine] Transaction confirmed on-chain:`, {
+                    blockNumber: receipt.blockNumber,
+                    status: receipt.status,
+                    gasUsed: receipt.gasUsed.toString(),
+                    to: receipt.to,
+                    from: receipt.from,
+                    logs: receipt.logs?.length || 0,
+                  });
+
+                  // Check if transaction is to the mining contract
+                  const isMiningContract =
+                    receipt.to?.toLowerCase() ===
+                    config.CONTRACT_ADDRESS.toLowerCase();
+                  console.log(
+                    `[Mine] Transaction to mining contract:`,
+                    isMiningContract
+                  );
+                  console.log(
+                    `[Mine] Expected contract: ${config.CONTRACT_ADDRESS}`
+                  );
+                  console.log(`[Mine] Actual to address: ${receipt.to}`);
+
+                  // Try to decode transaction to see what function was called
+                  if (receipt.to && isMiningContract) {
+                    try {
+                      const tx = await directProvider.getTransaction(txHash);
+                      if (tx && tx.data) {
+                        console.log(
+                          `[Mine] Transaction data (first 10 bytes):`,
+                          tx.data.slice(0, 10)
+                        );
+                        // Check if it's a transfer or contract call
+                        if (tx.data === "0x" || tx.data.length === 2) {
+                          console.log(
+                            `[Mine] This appears to be a native token transfer (not a contract call)`
+                          );
+                        } else {
+                          console.log(
+                            `[Mine] This is a contract function call`
+                          );
+                        }
+                      }
+                    } catch (e) {
+                      console.warn(
+                        `[Mine] Could not fetch transaction details:`,
+                        e
+                      );
+                    }
+                  }
+
+                  // Check transaction logs for BlockMined event
+                  if (receipt.logs && receipt.logs.length > 0) {
+                    console.log(
+                      `[Mine] Transaction has ${receipt.logs.length} log entries`
+                    );
+                    // Try to decode logs if we have the contract
+                    try {
+                      const contract = new Contract(
+                        config.CONTRACT_ADDRESS,
+                        config.CONTRACT_ABI,
+                        directProvider
+                      );
+                      for (const log of receipt.logs) {
+                        try {
+                          const parsedLog = contract.interface.parseLog({
+                            topics: log.topics as string[],
+                            data: log.data,
+                          });
+                          if (parsedLog) {
+                            console.log(
+                              `[Mine] Log event:`,
+                              parsedLog.name,
+                              parsedLog.args
+                            );
+                            if (parsedLog.name === "BlockMined") {
+                              console.log(`[Mine] BlockMined event found!`, {
+                                miner: parsedLog.args.miner,
+                                reward: parsedLog.args.reward?.toString(),
+                              });
+                            }
+                          }
+                        } catch (e) {
+                          // Not a contract event we can parse
+                        }
+                      }
+                    } catch (e) {
+                      console.warn(`[Mine] Could not parse logs:`, e);
+                    }
+                  } else {
+                    console.log(
+                      `[Mine] Transaction has no logs - may be a direct transfer`
+                    );
+                  }
+
+                  if (receipt.status === 0) {
+                    context.log(
+                      "❌ Transaction failed on-chain (status: 0)",
+                      "error"
+                    );
+                    context.log(
+                      "💡 The relayer reported success but the transaction failed. Check the transaction on the explorer.",
+                      "warning"
+                    );
+                  } else {
+                    // Transaction succeeded
+                    context.log("✅ Transaction confirmed on-chain", "success");
+                    context.log(`📦 Block: ${receipt.blockNumber}`, "info");
+
+                    if (!isMiningContract) {
+                      context.log(
+                        "💡 Transaction is not to the mining contract - rewards may be sent directly via transfer",
+                        "info"
+                      );
+                    } else if (receipt.logs && receipt.logs.length === 0) {
+                      context.log(
+                        "💡 Transaction to mining contract but no events - may be using claimTo() directly",
+                        "info"
+                      );
+                    }
+
+                    // Check balance after a short delay to see if it increased
+                    setTimeout(async () => {
+                      try {
+                        const newBalance = await context.wallet.getBalance();
+                        if (newBalance) {
+                          console.log(
+                            `[Mine] Balance after mining: ${newBalance} OMEGA`
+                          );
+                          context.log(
+                            `💰 Current Balance: ${newBalance} OMEGA`,
+                            "info"
+                          );
+                        }
+                      } catch (e) {
+                        // Ignore balance check errors
+                      }
+                    }, 2000);
+                  }
+                } else {
+                  console.log(
+                    `[Mine] Transaction not found after ${maxAttempts} attempts (${
+                      (maxAttempts * pollInterval) / 1000
+                    }s)`
+                  );
+                  context.log(
+                    "⏳ Transaction not found on-chain yet. It may still be pending or the transaction hash may be invalid.",
+                    "warning"
+                  );
+                  context.log(
+                    "💡 Check the explorer link above to verify the transaction status.",
+                    "info"
+                  );
+                }
+              } catch (verifyError) {
+                console.warn(
+                  "[Mine] Could not verify transaction:",
+                  verifyError
+                );
+                context.log(
+                  "⚠️  Could not verify transaction on-chain. Check the explorer link above.",
+                  "warning"
+                );
+              }
+            }
+
             // Update total earned
             if (updaters) {
               updaters.addToTotalEarned(parseFloat(data.reward));
             }
 
-            context.logHtml(createMiningSuccessHtml(data.reward, data.txHash));
+            context.logHtml(
+              createMiningSuccessHtml(
+                data.reward,
+                data.txHash || data.transactionHash
+              )
+            );
           } else {
             const noRewardHtml = `
               <div style="
@@ -529,7 +839,7 @@ const mineCommand: Command = {
 
         // Continue mining loop
         if (updaters?.miningActiveRef?.current) {
-          const timeoutId = setTimeout(mineLoop, 15000); // 15 second intervals
+          const timeoutId = setTimeout(mineLoop, 8000); // 8 second intervals (matches vanilla implementation)
           if (updaters?.miningTimeoutRef) {
             updaters.miningTimeoutRef.current = timeoutId as unknown as number;
           }
@@ -576,7 +886,8 @@ const mineCommand: Command = {
 
 /**
  * Claim command - Claim pending mining rewards
- * Uses direct contract interaction with MetaMask signing
+ * Uses relayer API endpoint (matches vanilla implementation)
+ * Rewards are accumulated on the server in rewardsByAddress, not in the contract
  */
 const claimCommand: Command = {
   name: "claim",
@@ -593,49 +904,6 @@ const claimCommand: Command = {
     }
 
     try {
-      // Check if on correct network
-      const currentChainId = context.wallet.state.chainId;
-      const expectedChainIdHex = config.OMEGA_NETWORK.chainId;
-      const expectedChainIdDecimal = config.OMEGA_NETWORK.chainIdDecimal;
-
-      if (!isExpectedOmegaChain(currentChainId)) {
-        context.log(
-          `⚠️  Wrong network detected. Expected chain ID: ${expectedChainIdHex} (${expectedChainIdDecimal}), Current: ${
-            currentChainId ?? "Unknown"
-          }`,
-          "warning"
-        );
-        context.log("🔄 Attempting to switch to Omega Network...", "info");
-
-        const switched = await context.wallet.addOmegaNetwork();
-        if (!switched) {
-          context.log(
-            "❌ Failed to switch network. Please switch to Omega Network manually.",
-            "error"
-          );
-          return;
-        }
-
-        // Re-check after switch attempt
-        const newChainId = context.wallet.state.chainId;
-        if (!isExpectedOmegaChain(newChainId)) {
-          context.log(
-            "❌ Network switch unsuccessful. Please ensure you're on the Omega Network.",
-            "error"
-          );
-          return;
-        }
-
-        context.log("✅ Successfully switched to Omega Network", "success");
-      }
-
-      // Get signer
-      const signer = await context.wallet.getSigner();
-      if (!signer) {
-        context.log("❌ Failed to get wallet signer", "error");
-        return;
-      }
-
       // Get address
       const address = context.wallet.state.address;
       if (!address) {
@@ -643,44 +911,64 @@ const claimCommand: Command = {
         return;
       }
 
-      // Create contract instance
-      const contract = context.getContract?.(
-        config.CONTRACT_ADDRESS,
-        config.CONTRACT_ABI,
-        signer
-      );
+      // Display info message (matches vanilla implementation)
+      context.log("💸 Sending claim request to network...", "info");
 
-      if (!contract) {
-        context.log("❌ Failed to create contract instance", "error");
+      // Send claim request to relayer (matches vanilla implementation)
+      const response = await fetch(`${config.RELAYER_URL}/claim`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ address }),
+      });
+
+      // Check response status
+      if (!response.ok) {
+        const errorText = await response.text();
+        let errorMessage = "Claim request failed";
+        try {
+          const errorData = JSON.parse(errorText);
+          errorMessage = errorData.error || errorData.message || errorMessage;
+        } catch (e) {
+          errorMessage = errorText || `HTTP ${response.status}`;
+        }
+        context.log(`❌ Claim failed: ${errorMessage}`, "error");
         return;
       }
 
-      // Check pending rewards
-      context.log("🔍 Checking pending rewards...", "info");
-      const minerInfo = await contract.getMinerInfo(address);
-      const pendingRewards = formatEther(minerInfo[2]); // _pendingRewards is third return value
+      // Parse response
+      const data = await response.json();
 
-      if (parseFloat(pendingRewards) === 0) {
-        context.log("ℹ️  No pending rewards to claim", "info");
-        return;
+      // Handle response (matches vanilla implementation)
+      if (data.success) {
+        const amount = data.amount || "0";
+        context.log(`✅ Claimed ${amount} OMEGA to your wallet!`, "success");
+
+        if (data.txHash) {
+          context.log(`📤 Claim tx sent: ${data.txHash}`, "info");
+          context.logHtml(
+            `🔍 <a href="https://0x4e454228.explorer.aurora-cloud.dev/tx/${data.txHash}" target="_blank">View transaction</a>`
+          );
+        }
+      } else {
+        const errorMessage = data.error || data.message || "Claim failed";
+        context.log(`❌ Claim failed: ${errorMessage}`, "error");
+
+        // If no rewards, provide helpful message
+        if (
+          errorMessage.toLowerCase().includes("no rewards") ||
+          errorMessage.toLowerCase().includes("no pending")
+        ) {
+          context.log(
+            "💡 Note: Rewards accumulate on the server after mining.",
+            "info"
+          );
+          context.log("💡 Try mining first using the 'mine' command.", "info");
+        }
       }
-
-      // Claim rewards
-      context.log(`💰 Claiming ${pendingRewards} OMEGA...`, "info");
-      const tx = await contract.claimRewards();
-      context.log(`📝 Transaction sent: ${tx.hash}`, "info");
-      context.log("⏳ Waiting for confirmation...", "info");
-
-      const receipt = await tx.wait();
-      context.log(`✅ Rewards claimed successfully!`, "success");
-      context.log(`📦 Block: ${receipt.blockNumber}`, "info");
-      context.logHtml(
-        `🔍 <a href="https://0x4e454228.explorer.aurora-cloud.dev/tx/${tx.hash}" target="_blank">View transaction</a>`
-      );
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : String(error);
-      context.log(`❌ Failed to claim rewards: ${errorMessage}`, "error");
+      context.log(`❌ Claim error: ${errorMessage}`, "error");
     }
   },
 };
@@ -713,7 +1001,9 @@ async function showFaucetStatus(context: CommandContext): Promise<void> {
     );
 
     context.log("🚰 Checking faucet status...", "info");
-    const status = await (faucetContract.getFaucetStatus as (address: string) => Promise<any>)(address);
+    const status = await (
+      faucetContract.getFaucetStatus as (address: string) => Promise<any>
+    )(address);
 
     context.log("\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━", "info");
     context.log("          🚰 FAUCET STATUS", "info");
@@ -851,7 +1141,10 @@ const faucetCommand: Command = {
           "⏰ Faucet on cooldown. Please wait 24 hours between claims.",
           "warning"
         );
-        const helpHtml = createCommandLine("faucet status", "Check when you can claim next");
+        const helpHtml = createCommandLine(
+          "faucet status",
+          "Check when you can claim next"
+        );
         context.logHtml(helpHtml);
       } else {
         context.log(`❌ Failed to claim from faucet: ${errorMessage}`, "error");
