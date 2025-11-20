@@ -15,8 +15,7 @@ const nextConfig: NextConfig = {
   // Optimize package imports for large packages
   experimental: {
     optimizePackageImports: ["@solana/web3.js", "ethers"],
-    // Disable ESM externals to treat rubic-sdk as CommonJS (fixes _interopRequireDefault error)
-    esmExternals: false,
+    // Note: esmExternals removed - Next.js handles this automatically
     serverActions: {
       bodySizeLimit: "2mb",
       allowedOrigins: [
