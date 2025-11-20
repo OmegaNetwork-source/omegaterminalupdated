@@ -63,7 +63,7 @@ function getNetworkNameFromChainId(chainId: number): string | null {
     42161: "Arbitrum One",
     10: "Optimism",
     8453: "Base",
-    1313161256: "Omega Network",
+    1313161768: "Omega Network",
     121212: "Rome Protocol",
     935: "FAIR Testnet",
     120000: "Monad",

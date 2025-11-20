@@ -652,7 +652,7 @@ export const config: OmegaConfig = {
   // Network Configuration
   OMEGA_NETWORK: {
     chainId: "0x4e454228",
-    chainIdDecimal: 1313161256,
+    chainIdDecimal: 1313161768,
     chainName: "Omega Network",
     nativeCurrency: {
       name: "OMEGA",

@@ -1106,7 +1106,7 @@ details[open] .expandIcon {
 :global(body.theme-executive) .sidebar {
   background: rgba(8, 8, 16, 0.92);
   border: 1px solid var(--palette-border, rgba(255, 255, 255, 0.2));
-  box-shadow: 0 28px 60px var(--palette-primary-glow, rgba(0, 0, 0, 0.3));
+  box-shadow: 0 28px 60px rgba(0, 0, 0, 0.3);
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
@@ -1116,7 +1116,7 @@ details[open] .expandIcon {
 
 :global(body.theme-executive) .button {
   background: color-mix(in srgb, var(--palette-primary, #ffffff) 8%, transparent);
-  border: 1px solid var(--palette-border, color-mix(in srgb, var(--palette-primary, #ffffff) 20%, transparent));
+  border: 1px solid color-mix(in srgb, var(--palette-primary, #ffffff) 20%, transparent);
   color: var(--palette-text, #ffffff);
 }
 

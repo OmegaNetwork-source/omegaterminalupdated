@@ -122,7 +122,7 @@ const NETWORKS: NetworkMap = {
     key: "omega",
     name: "Omega Network",
     chainId: "0x4e454228",
-    chainIdDecimal: 1313161256,
+    chainIdDecimal: 1313161768,
     rpcUrl: "https://0x4e454228.rpc.aurora-cloud.dev",
     explorerUrl: "https://0x4e454228.explorer.aurora-cloud.dev",
     currency: { name: "Omega", symbol: "OMEGA", decimals: 18 },
