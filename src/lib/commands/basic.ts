@@ -646,14 +646,14 @@ const CATEGORY_HELP: Record<string, () => string[]> = {
 function listAvailableThemes(context: CommandContext): void {
   context.log("🎨 Available Themes:", "info");
   context.log("", "output");
-  
+
   const themeDescriptions: Record<string, string> = {
     void: "🌑 Deep void terminal - Pure darkness with vibrant accents",
     neo: "💚 Neo Matrix - Digital rain with cyberpunk green glow",
     elite: "👑 Elite Prestige - Luxury gold and premium serif typography",
     neon: "⚡ Neon Cyber - Futuristic glassmorphism with electric neon",
   };
-  
+
   AVAILABLE_THEMES.forEach((theme) => {
     const description = themeDescriptions[theme] || theme;
     context.log(`  theme ${theme.padEnd(10)} → ${description}`, "output");
@@ -679,7 +679,7 @@ export const helpCommand: Command = {
     // Show category-specific help with enhanced formatting
     if (category && CATEGORY_HELP[category]) {
       const categoryLines = CATEGORY_HELP[category]();
-             let categoryHtml = `
+      let categoryHtml = `
          <div style="
            font-family: 'Courier New', monospace;
            line-height: 1.8;
@@ -703,11 +703,11 @@ export const helpCommand: Command = {
            </div>
            <div style="padding: 10px;">
        `;
-      
+
       categoryLines.forEach((line) => {
-                 // Check if line is a header (contains emoji and uppercase text)
-         if (line.match(/^[🎮💰⛏️📊🤖📰🌐🎨]|^[A-Z\s]+:$/)) {
-           categoryHtml += `
+        // Check if line is a header (contains emoji and uppercase text)
+        if (line.match(/^[🎮💰⛏️📊🤖📰🌐🎨]|^[A-Z\s]+:$/)) {
+          categoryHtml += `
              <div style="
                font-size: 16px;
                font-weight: bold;
@@ -719,17 +719,19 @@ export const helpCommand: Command = {
                border-radius: 4px;
              ">${line}</div>
            `;
-         } else if (line.trim().startsWith("  ") && line.includes("→")) {
+        } else if (line.trim().startsWith("  ") && line.includes("→")) {
           // Command line with arrow - make command clickable
-           const parts = line.split("→");
-           const commandPart = parts[0]?.trim() || "";
-           const descPart = parts[1]?.trim() || "";
-          
+          const parts = line.split("→");
+          const commandPart = parts[0]?.trim() || "";
+          const descPart = parts[1]?.trim() || "";
+
           // Extract command name (remove leading spaces, get first word)
           const commandName = commandPart.split(/\s+/)[0] || commandPart;
-          const escapedCommand = commandName.replace(/"/g, "&quot;").replace(/'/g, "&#39;");
-           
-           categoryHtml += `
+          const escapedCommand = commandName
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#39;");
+
+          categoryHtml += `
              <div style="margin: 8px 0; padding-left: 20px; padding-bottom: 6px;">
               <span 
                 class="omega-help-command"
@@ -751,16 +753,20 @@ export const helpCommand: Command = {
                 onmouseout="this.style.background = 'transparent'; this.style.textShadow = '0 0 6px rgba(0, 255, 136, 0.3)';"
                 title="Click to add '${escapedCommand}' to terminal input"
               >${commandPart}</span>
-               ${descPart ? `<span style="
+               ${
+                 descPart
+                   ? `<span style="
                 color: var(--palette-text, #ccd4e0);
                  margin-left: 15px;
                  font-size: 0.95em;
                  opacity: 0.95;
-               ">→ ${descPart}</span>` : ""}
+               ">→ ${descPart}</span>`
+                   : ""
+               }
              </div>
            `;
-         } else if (line.trim()) {
-           categoryHtml += `
+        } else if (line.trim()) {
+          categoryHtml += `
              <div style="
               color: var(--palette-text, #ccd4e0);
                margin: 6px 0;
@@ -769,12 +775,12 @@ export const helpCommand: Command = {
                line-height: 1.6;
              ">${line}</div>
            `;
-         } else {
-           categoryHtml += `<div style="margin: 8px 0;"></div>`;
-         }
+        } else {
+          categoryHtml += `<div style="margin: 8px 0;"></div>`;
+        }
       });
-      
-             categoryHtml += `
+
+      categoryHtml += `
            </div>
            <div style="
              margin-top: 25px;
@@ -797,7 +803,7 @@ export const helpCommand: Command = {
            </div>
          </div>
        `;
-      
+
       context.logHtml(categoryHtml);
       return;
     }
@@ -815,11 +821,11 @@ export const helpCommand: Command = {
 
     // Dynamic help display using command registry
     const allCommands = commandRegistry.getAllCommands();
-    
+
     // Group commands by category
     const commandsByCategory = new Map<string, Command[]>();
     const uncategorized: Command[] = [];
-    
+
     allCommands.forEach((cmd) => {
       if (cmd.category) {
         if (!commandsByCategory.has(cmd.category)) {
@@ -837,8 +843,8 @@ export const helpCommand: Command = {
       <path d="M12 16V12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
       <circle cx="12" cy="8" r="1" fill="currentColor"/>
     </svg>`;
-    
-     let helpHtml = `
+
+    let helpHtml = `
        <div style="
          font-family: 'Courier New', monospace;
         line-height: 1.6;
@@ -877,22 +883,62 @@ export const helpCommand: Command = {
 
     // Display commands grouped by category with enhanced color coding
     const categoryOrder = [
-      "wallet", "mining", "network", "news", "entertainment", "games",
-      "market", "trading", "analytics", "nft", "ai", "chaingpt-chat",
-      "chaingpt-contract", "chaingpt-nft", "chaingpt-auditor",
-      "solana", "near", "eclipse", "hyperliquid", "rome", "monad", "fair",
-      "spotify", "youtube", "blues", "lofi", "tech", "funky",
-      "dexscreener", "defillama", "alphavantage", "opensea", "magiceden",
-      "pgt", "mixer", "referral", "perps", "email", "eth", "ens",
-      "kalshi", "polymarket", "token-factory", "nft-mint", "airdrop",
-      "chatter", "profile", "chart", "color"
+      "wallet",
+      "mining",
+      "network",
+      "news",
+      "entertainment",
+      "games",
+      "market",
+      "trading",
+      "analytics",
+      "nft",
+      "ai",
+      "chaingpt-chat",
+      "chaingpt-contract",
+      "chaingpt-nft",
+      "chaingpt-auditor",
+      "solana",
+      "near",
+      "eclipse",
+      "hyperliquid",
+      "rome",
+      "monad",
+      "fair",
+      "spotify",
+      "youtube",
+      "blues",
+      "lofi",
+      "tech",
+      "funky",
+      "dexscreener",
+      "defillama",
+      "alphavantage",
+      "opensea",
+      "magiceden",
+      "pgt",
+      "mixer",
+      "referral",
+      "perps",
+      "email",
+      "eth",
+      "ens",
+      "kalshi",
+      "polymarket",
+      "token-factory",
+      "nft-mint",
+      "airdrop",
+      "chatter",
+      "profile",
+      "chart",
+      "color",
     ];
 
     // Display categorized commands
     categoryOrder.forEach((cat) => {
       const commands = commandsByCategory.get(cat);
       if (commands && commands.length > 0) {
-                 helpHtml += `
+        helpHtml += `
           <div style="margin: 24px 0 12px 0;">
              <div style="
               font-size: 14px;
@@ -907,34 +953,37 @@ export const helpCommand: Command = {
             <div style="margin-bottom: 16px;">
          `;
 
-                 commands
-           .sort((a, b) => a.name.localeCompare(b.name))
-           .forEach((cmd) => {
-             const aliases = cmd.aliases && cmd.aliases.length > 0 
-               ? ` <span style="
+        commands
+          .sort((a, b) => a.name.localeCompare(b.name))
+          .forEach((cmd) => {
+            const aliases =
+              cmd.aliases && cmd.aliases.length > 0
+                ? ` <span style="
                   color: var(--palette-primary, #00d4ff);
                    font-size: 0.85em;
                    font-weight: normal;
                    font-style: italic;
                   opacity: 0.8;
                    margin-left: 5px;
-                 ">[${cmd.aliases.join(", ")}]</span>` 
-               : "";
-             
-             const usage = cmd.usage 
-               ? `<div style="
+                 ">[${cmd.aliases.join(", ")}]</span>`
+                : "";
+
+            const usage = cmd.usage
+              ? `<div style="
                   color: var(--palette-secondary, #00ff88);
                   margin-left: 0;
                   margin-top: 4px;
                   font-size: 11px;
                    font-family: 'Courier New', monospace;
                 ">→ Usage: <span style="color: var(--palette-secondary, #00ff88);">${cmd.usage}</span></div>`
-               : "";
-            
+              : "";
+
             // Make command name clickable
-            const escapedCommand = cmd.name.replace(/"/g, "&quot;").replace(/'/g, "&#39;");
-             
-             helpHtml += `
+            const escapedCommand = cmd.name
+              .replace(/"/g, "&quot;")
+              .replace(/'/g, "&#39;");
+
+            helpHtml += `
               <div style="
                 background: linear-gradient(135deg, color-mix(in srgb, var(--palette-primary, #00bcf2) 5%, transparent) 0%, color-mix(in srgb, var(--palette-primary, #00bcf2) 2%, transparent) 100%);
                 border: 1px solid var(--palette-border, color-mix(in srgb, var(--palette-primary, #00bcf2) 20%, transparent));
@@ -963,17 +1012,21 @@ export const helpCommand: Command = {
                     title="Click to add '${escapedCommand}' to terminal input"
                   >${cmd.name}</span>${aliases}
                  </div>
-                 ${cmd.description ? `<div style="
+                 ${
+                   cmd.description
+                     ? `<div style="
                   color: color-mix(in srgb, var(--palette-text, #ffffff) 70%, transparent);
                   margin-left: 0;
                    margin-top: 4px;
                   font-size: 12px;
                   line-height: 1.4;
-                 ">${cmd.description}</div>` : ""}
+                 ">${cmd.description}</div>`
+                     : ""
+                 }
                  ${usage}
                </div>
              `;
-           });
+          });
 
         helpHtml += `
             </div>
@@ -982,9 +1035,9 @@ export const helpCommand: Command = {
       }
     });
 
-         // Display uncategorized commands
-     if (uncategorized.length > 0) {
-       helpHtml += `
+    // Display uncategorized commands
+    if (uncategorized.length > 0) {
+      helpHtml += `
         <div style="margin: 24px 0 12px 0;">
            <div style="
             font-size: 14px;
@@ -999,34 +1052,37 @@ export const helpCommand: Command = {
           <div style="margin-bottom: 16px;">
        `;
 
-             uncategorized
-         .sort((a, b) => a.name.localeCompare(b.name))
-         .forEach((cmd) => {
-           const aliases = cmd.aliases && cmd.aliases.length > 0 
-             ? ` <span style="
+      uncategorized
+        .sort((a, b) => a.name.localeCompare(b.name))
+        .forEach((cmd) => {
+          const aliases =
+            cmd.aliases && cmd.aliases.length > 0
+              ? ` <span style="
                 color: var(--palette-primary, #00d4ff);
                 font-size: 11px;
                  font-weight: normal;
                  font-style: italic;
                 opacity: 0.8;
                  margin-left: 5px;
-               ">[${cmd.aliases.join(", ")}]</span>` 
-             : "";
-           
-           const usage = cmd.usage 
-             ? `<div style="
+               ">[${cmd.aliases.join(", ")}]</span>`
+              : "";
+
+          const usage = cmd.usage
+            ? `<div style="
                 color: var(--palette-secondary, #00ff88);
                 margin-left: 0;
                 margin-top: 4px;
                 font-size: 11px;
                  font-family: 'Courier New', monospace;
               ">→ Usage: <span style="color: var(--palette-secondary, #00ff88);">${cmd.usage}</span></div>`
-             : "";
-          
+            : "";
+
           // Make command name clickable
-          const escapedCommand = cmd.name.replace(/"/g, "&quot;").replace(/'/g, "&#39;");
-           
-           helpHtml += `
+          const escapedCommand = cmd.name
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#39;");
+
+          helpHtml += `
             <div style="
               background: linear-gradient(135deg, color-mix(in srgb, var(--palette-primary, #00bcf2) 5%, transparent) 0%, color-mix(in srgb, var(--palette-primary, #00bcf2) 2%, transparent) 100%);
               border: 1px solid var(--palette-border, color-mix(in srgb, var(--palette-primary, #00bcf2) 20%, transparent));
@@ -1055,22 +1111,26 @@ export const helpCommand: Command = {
                   title="Click to add '${escapedCommand}' to terminal input"
                 >${cmd.name}</span>${aliases}
                </div>
-               ${cmd.description ? `<div style="
+               ${
+                 cmd.description
+                   ? `<div style="
                 color: color-mix(in srgb, var(--palette-text, #ffffff) 70%, transparent);
                 margin-left: 0;
                  margin-top: 4px;
                 font-size: 12px;
                 line-height: 1.4;
-               ">${cmd.description}</div>` : ""}
+               ">${cmd.description}</div>`
+                   : ""
+               }
                ${usage}
              </div>
            `;
-         });
+        });
 
       helpHtml += `</div>`;
     }
 
-         helpHtml += `
+    helpHtml += `
          <div style="
           margin-top: 20px;
           padding: 15px;
@@ -1482,26 +1542,43 @@ async function callAI(
   }
 
   try {
-    // Try enhanced agent first (if available)
-    try {
-      const { handleEnhancedAI } = await import("@/lib/ai/command-enhancer");
-      const { CommandRegistry } = await import("@/lib/commands/CommandRegistry");
-      
-      // Get command registry from context if available
-      const registry = (context as any).commandRegistry as InstanceType<typeof CommandRegistry> | undefined;
-      
-      if (registry) {
-        // Use enhanced agent for better command recognition
-        await handleEnhancedAI(prompt, context, registry);
-        return;
+    // Try enhanced agent first (if available) - but skip for very simple prompts
+    const isSimplePrompt =
+      prompt.trim().split(/\s+/).length <= 2 &&
+      !/\b(check|show|display|view|get|create|make|trade|swap|buy|sell|analyze|help)\b/i.test(
+        prompt
+      );
+
+    if (!isSimplePrompt) {
+      try {
+        const { handleEnhancedAI } = await import("@/lib/ai/command-enhancer");
+        const { CommandRegistry } = await import(
+          "@/lib/commands/CommandRegistry"
+        );
+
+        // Get command registry from context if available
+        const registry = (context as any).commandRegistry as
+          | InstanceType<typeof CommandRegistry>
+          | undefined;
+
+        if (registry) {
+          // Use enhanced agent for better command recognition
+          await handleEnhancedAI(prompt, context, registry);
+          return;
+        }
+      } catch (error) {
+        // Enhanced agent not available, fall back to standard AI
+        console.log("[DEBUG] Enhanced agent not available, using standard AI");
       }
-    } catch (error) {
-      // Enhanced agent not available, fall back to standard AI
-      console.log("[DEBUG] Enhanced agent not available, using standard AI");
+    } else {
+      console.log(
+        "[DEBUG] Skipping enhanced agent for simple prompt, using standard AI"
+      );
     }
 
     // Matches vanilla terminal.html lines 4763-4841
-    const url = process.env.NEXT_PUBLIC_AI_CHAT_URL || "https://ai.omeganetwork.co/chat";
+    const url =
+      process.env.NEXT_PUBLIC_AI_CHAT_URL || "https://ai.omeganetwork.co/chat";
     const evm = context.wallet?.address || null;
     const solana = context.wallet?.solana?.address || null;
 
@@ -1531,17 +1608,25 @@ async function callAI(
       data = await response.json();
     } catch (parseError) {
       const textResponse = await response.text();
-      console.error("[DEBUG] Failed to parse JSON response. Raw response:", textResponse.substring(0, 500));
-      throw new Error(`Invalid JSON response from AI endpoint. Server returned: ${textResponse.substring(0, 200)}`);
+      console.error(
+        "[DEBUG] Failed to parse JSON response. Raw response:",
+        textResponse.substring(0, 500)
+      );
+      throw new Error(
+        `Invalid JSON response from AI endpoint. Server returned: ${textResponse.substring(
+          0,
+          200
+        )}`
+      );
     }
-    
+
     console.log("[DEBUG] AI Response:", data);
-    
+
     // Enhance response if possible
     try {
       const { enhanceAIResponse } = await import("@/lib/ai/command-enhancer");
       const enhanced = enhanceAIResponse(data, context);
-      
+
       // Use enhanced response if it has better structure
       if (enhanced.type === "command" && enhanced.commands) {
         if (!data.data) data.data = {};
@@ -1617,7 +1702,7 @@ async function callAI(
         // Show helpful suggestions
         context.log("Can't perform this action", "error");
         context.log("", "output");
-        
+
         // Try to provide helpful suggestions
         try {
           const { getQuickActions } = await import("@/lib/ai/command-enhancer");
@@ -1634,9 +1719,10 @@ async function callAI(
       }
     } else if (data && (data.answer || data.message || data.response)) {
       // Handle alternative response structures
-      const answer = data.answer || data.message || data.response || "No response generated";
+      const answer =
+        data.answer || data.message || data.response || "No response generated";
       context.log(`🤖 AI: ${answer}`, "info");
-      
+
       // Track in chat history
       if (context.chatHistory) {
         context.chatHistory.push({
@@ -1646,14 +1732,26 @@ async function callAI(
       }
     } else {
       // Log the actual response for debugging
-      console.error("[DEBUG] Invalid AI response structure:", JSON.stringify(data, null, 2));
+      console.error(
+        "[DEBUG] Invalid AI response structure:",
+        JSON.stringify(data, null, 2)
+      );
       context.log("AI agent error: Invalid response format.", "error");
       context.log("", "output");
-      context.log("💡 The AI endpoint returned an unexpected response format", "info");
-      context.log("💡 Try rephrasing your question or use 'help' for available commands", "info");
+      context.log(
+        "💡 The AI endpoint returned an unexpected response format",
+        "info"
+      );
+      context.log(
+        "💡 Try rephrasing your question or use 'help' for available commands",
+        "info"
+      );
       if (data) {
         context.log("", "output");
-        context.log(`📊 Response preview: ${JSON.stringify(data).substring(0, 200)}...`, "output");
+        context.log(
+          `📊 Response preview: ${JSON.stringify(data).substring(0, 200)}...`,
+          "output"
+        );
       }
     }
   } catch (error: any) {
@@ -1683,7 +1781,10 @@ export const quickActionsCommand: Command = {
       context.log("", "output");
 
       if (actions.length === 0) {
-        context.log("No custom quick actions set. Use 'quick-actions add' to add some!", "info");
+        context.log(
+          "No custom quick actions set. Use 'quick-actions add' to add some!",
+          "info"
+        );
         return;
       }
 
@@ -1691,25 +1792,37 @@ export const quickActionsCommand: Command = {
         context.log(`📁 ${category}:`, "output");
         categoryActions.forEach((action) => {
           context.logHtml(
-            `  • ${createCommandLine(action.command, action.label)} ${action.description ? `→ ${action.description}` : ""}`
+            `  • ${createCommandLine(action.command, action.label)} ${
+              action.description ? `→ ${action.description}` : ""
+            }`
           );
         });
         context.log("", "output");
       });
 
       context.log("💡 Click any command above to execute it", "info");
-      context.log("💡 Use 'quick-actions add <command> <label> [description]' to add more", "info");
+      context.log(
+        "💡 Use 'quick-actions add <command> <label> [description]' to add more",
+        "info"
+      );
     } else if (subcommand === "add") {
       const command = args[2];
       if (!command) {
-        context.log("❌ Usage: quick-actions add <command> <label> [description] [category:<name>]", "error");
-        context.log("Example: quick-actions add 'chart ETH' 'Chart Ethereum' 'View ETH chart' category:'Trading'", "info");
+        context.log(
+          "❌ Usage: quick-actions add <command> <label> [description] [category:<name>]",
+          "error"
+        );
+        context.log(
+          "Example: quick-actions add 'chart ETH' 'Chart Ethereum' 'View ETH chart' category:'Trading'",
+          "info"
+        );
         return;
       }
 
       const label = args[3] || command;
       const description = args.slice(4).join(" ") || undefined;
-      const category = args.find((a) => a.startsWith("category:"))?.split(":")[1] || "Other";
+      const category =
+        args.find((a) => a.startsWith("category:"))?.split(":")[1] || "Other";
 
       const newAction = addQuickAction({
         command,
@@ -1723,7 +1836,10 @@ export const quickActionsCommand: Command = {
       if (newAction.description) {
         context.log(`   Description: ${newAction.description}`, "output");
       }
-      context.log("💡 Your quick actions will appear in the welcome message on next load", "info");
+      context.log(
+        "💡 Your quick actions will appear in the welcome message on next load",
+        "info"
+      );
     } else if (subcommand === "remove" || subcommand === "delete") {
       const id = args[2];
       if (!id) {
@@ -1741,7 +1857,10 @@ export const quickActionsCommand: Command = {
     } else if (subcommand === "edit" || subcommand === "update") {
       const id = args[2];
       if (!id) {
-        context.log("❌ Usage: quick-actions edit <id> [command] [label] [description]", "error");
+        context.log(
+          "❌ Usage: quick-actions edit <id> [command] [label] [description]",
+          "error"
+        );
         return;
       }
 
@@ -1760,8 +1879,14 @@ export const quickActionsCommand: Command = {
       resetQuickActions();
       context.log("✅ Reset quick actions to defaults", "success");
     } else {
-      context.log("❌ Unknown subcommand. Use: list, add, remove, edit, or reset", "error");
-      context.log("💡 Type 'quick-actions list' to see your current quick actions", "info");
+      context.log(
+        "❌ Unknown subcommand. Use: list, add, remove, edit, or reset",
+        "error"
+      );
+      context.log(
+        "💡 Type 'quick-actions list' to see your current quick actions",
+        "info"
+      );
     }
   },
 };

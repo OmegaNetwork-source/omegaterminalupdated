@@ -43,9 +43,9 @@ export class EnhancedAIAgent {
   }
 
   /**
-   * Load command guide for better context
+   * Load command guide for better context (synchronous for speed)
    */
-  async loadCommandGuide(): Promise<void> {
+  loadCommandGuide(): void {
     try {
       // In production, this would load from the actual datav3.md or API
       // For now, we'll use a summary
@@ -166,14 +166,22 @@ export class EnhancedAIAgent {
     }
 
     // Extract amounts
-    const amountPattern = /(\d+\.?\d*)\s*(?:tokens?|coins?|usd|eth|sol|near)?/gi;
+    const amountPattern =
+      /(\d+\.?\d*)\s*(?:tokens?|coins?|usd|eth|sol|near)?/gi;
     const amounts = prompt.match(amountPattern);
     if (amounts) {
       entities.amounts = amounts;
     }
 
     // Extract network names
-    const networks = ["solana", "ethereum", "near", "eclipse", "aptos", "monad"];
+    const networks = [
+      "solana",
+      "ethereum",
+      "near",
+      "eclipse",
+      "aptos",
+      "monad",
+    ];
     const foundNetworks = networks.filter((net) =>
       prompt.toLowerCase().includes(net)
     );
@@ -299,6 +307,11 @@ export class EnhancedAIAgent {
   ): EnhancedAIResponse {
     const commands: string[] = [];
 
+    // If we can't recognize the intent, fall back to standard AI
+    if (intent.action === "unknown") {
+      throw new Error("Intent not recognized, falling back to standard AI");
+    }
+
     // Map intent to commands
     if (intent.category === "wallet" && intent.action === "check") {
       commands.push("balance");
@@ -338,7 +351,11 @@ export class EnhancedAIAgent {
     } else if (intent.category === "trading") {
       suggestions.push("solana swap", "near swap", "eclipse swap");
     } else if (intent.category === "market") {
-      suggestions.push("markets:list", "markets:heatmap", "polymarket trending");
+      suggestions.push(
+        "markets:list",
+        "markets:heatmap",
+        "polymarket trending"
+      );
     }
 
     return suggestions;
@@ -347,12 +364,12 @@ export class EnhancedAIAgent {
   /**
    * Execute a command plan with progress tracking
    */
-  async executePlan(
-    plan: CommandPlan,
-    context: CommandContext
-  ): Promise<void> {
+  async executePlan(plan: CommandPlan, context: CommandContext): Promise<void> {
     context.log(`📋 Executing plan: ${plan.summary}`, "info");
-    context.log(`⏱️  Estimated time: ${plan.estimatedTime || "unknown"}`, "info");
+    context.log(
+      `⏱️  Estimated time: ${plan.estimatedTime || "unknown"}`,
+      "info"
+    );
     context.log("", "output");
 
     const executed: boolean[] = [];
@@ -493,4 +510,3 @@ export class EnhancedAIAgent {
     return actions;
   }
 }
-

@@ -16,7 +16,7 @@ export async function handleEnhancedAI(
   commandRegistry: CommandRegistry
 ): Promise<void> {
   const agent = new EnhancedAIAgent(commandRegistry);
-  await agent.loadCommandGuide();
+  agent.loadCommandGuide(); // Now synchronous
 
   // Show processing indicator
   context.logHtml(`<span style='color:#99ccff'>🤖 Analyzing request...</span>`);
@@ -99,9 +99,19 @@ export async function handleEnhancedAI(
         break;
     }
   } catch (error: any) {
+    // If it's a fallback error from enhanced agent, re-throw to use standard AI
+    if (
+      error.message === "Intent not recognized, falling back to standard AI"
+    ) {
+      throw error;
+    }
+
     context.log(`❌ Error: ${error.message}`, "error");
     context.log("", "output");
-    context.log("💡 Try rephrasing your request or use 'help' for available commands", "info");
+    context.log(
+      "💡 Try rephrasing your request or use 'help' for available commands",
+      "info"
+    );
   }
 }
 
@@ -160,7 +170,3 @@ export function getQuickActions(context: CommandContext): string[] {
 
   return actions;
 }
-
-
-
-
