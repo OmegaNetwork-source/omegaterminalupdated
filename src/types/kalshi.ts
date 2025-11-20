@@ -75,6 +75,8 @@ export interface KalshiApiResponse<T> {
   orderbook?: KalshiOrderbook;
   trades?: KalshiTrade[];
   cursor?: string;
+  data?: T[] | { markets?: T[]; [key: string]: any };
+  success?: boolean;
 }
 
 export {};

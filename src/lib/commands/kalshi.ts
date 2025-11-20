@@ -111,7 +111,7 @@ async function handleMarkets(
         markets = res.markets;
       } else if (res.data && Array.isArray(res.data)) {
         markets = res.data;
-      } else if (res.data && res.data.markets && Array.isArray(res.data.markets)) {
+      } else if (res.data && typeof res.data === 'object' && !Array.isArray(res.data) && 'markets' in res.data && Array.isArray(res.data.markets)) {
         markets = res.data.markets;
       }
     }
@@ -2509,7 +2509,7 @@ async function handleTrending(ctx: CommandContext, args: string[]): Promise<void
         markets = res.markets;
       } else if (res.data && Array.isArray(res.data)) {
         markets = res.data;
-      } else if (res.data && res.data.markets && Array.isArray(res.data.markets)) {
+      } else if (res.data && typeof res.data === 'object' && !Array.isArray(res.data) && 'markets' in res.data && Array.isArray(res.data.markets)) {
         markets = res.data.markets;
       }
     }
@@ -2636,7 +2636,7 @@ async function handleNew(ctx: CommandContext, args: string[]): Promise<void> {
         markets = res.markets;
       } else if (res.data && Array.isArray(res.data)) {
         markets = res.data;
-      } else if (res.data && res.data.markets && Array.isArray(res.data.markets)) {
+      } else if (res.data && typeof res.data === 'object' && !Array.isArray(res.data) && 'markets' in res.data && Array.isArray(res.data.markets)) {
         markets = res.data.markets;
       }
     }
@@ -2764,7 +2764,7 @@ async function handleCategory(ctx: CommandContext, args: string[], category: str
         markets = res.markets;
       } else if (res.data && Array.isArray(res.data)) {
         markets = res.data;
-      } else if (res.data && res.data.markets && Array.isArray(res.data.markets)) {
+      } else if (res.data && typeof res.data === 'object' && !Array.isArray(res.data) && 'markets' in res.data && Array.isArray(res.data.markets)) {
         markets = res.data.markets;
       }
     }
@@ -2850,7 +2850,7 @@ async function handleCategoryCombined(ctx: CommandContext, args: string[], categ
         markets = res.markets;
       } else if (res.data && Array.isArray(res.data)) {
         markets = res.data;
-      } else if (res.data && res.data.markets && Array.isArray(res.data.markets)) {
+      } else if (res.data && typeof res.data === 'object' && !Array.isArray(res.data) && 'markets' in res.data && Array.isArray(res.data.markets)) {
         markets = res.data.markets;
       }
     }
