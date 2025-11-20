@@ -19,7 +19,7 @@ const COLOR_PALETTES: Record<string, string> = {
   purple: "Purple - Royal violet mystique",
   violet: "Purple - Royal violet mystique",
   cyber: "Cyber - Neon cyan and magenta electric",
-  neon: "Cyber - Neon cyan and magenta electric",
+  neon: "Neon - Electric cyan, hot pink and lime cyberpunk aesthetic",
   gold: "Gold - Opulent gold and bronze luxury",
   luxury: "Gold - Opulent gold and bronze luxury",
   ice: "Ice - Glacial blue and silver frost",
@@ -38,6 +38,8 @@ const COLOR_PALETTES: Record<string, string> = {
   lilac: "Lavender - Soft purple and lilac",
   toxic: "Toxic - Radioactive lime green",
   radioactive: "Toxic - Radioactive lime green",
+  infrared: "Infrared - Deep red and hot pink thermal vision",
+  xmas: "Xmas - Classic Christmas red, green, and white festive spirit",
   light: "Light - White background with dark text and accents",
 };
 
@@ -90,14 +92,19 @@ function setColorPalette(context: CommandContext, paletteName: string): void {
     return;
   }
 
-  // Apply palette to body
-  if (typeof document !== "undefined") {
-    document.body.setAttribute("data-color-palette", palette);
-  }
+  // Use CustomizerProvider's setColorPalette if available (updates React state)
+  if (context.ui?.setColorPalette) {
+    context.ui.setColorPalette(palette as any);
+  } else {
+    // Fallback: Apply palette to body directly
+    if (typeof document !== "undefined") {
+      document.body.setAttribute("data-color-palette", palette);
+    }
 
-  // Store in localStorage
-  if (typeof localStorage !== "undefined") {
-    localStorage.setItem("omega-color-palette", palette);
+    // Store in localStorage
+    if (typeof localStorage !== "undefined") {
+      localStorage.setItem("omega-color-palette", palette);
+    }
   }
 
   // Get palette description
@@ -131,8 +138,14 @@ function listPalettes(context: CommandContext): void {
     "output"
   );
   context.log("  color cyber        Cyber - Neon cyan/magenta", "output");
+  context.log("  color neon         Neon - Electric cyan/pink/lime cyberpunk", "output");
   context.log("  color fire         Fire - Blazing flames", "output");
   context.log("  color toxic        Toxic - Radioactive lime", "output");
+  context.log("  color infrared     Infrared - Deep red thermal vision", "output");
+  context.log("", "output");
+
+  context.log("SEASONAL:", "info");
+  context.log("  color xmas         Xmas - Classic Christmas red, green, white", "output");
   context.log("", "output");
 
   context.log("COOL TONES:", "info");
@@ -194,12 +207,18 @@ function showCurrent(context: CommandContext): void {
 }
 
 function resetPalette(context: CommandContext): void {
-  if (typeof document !== "undefined") {
-    document.body.removeAttribute("data-color-palette");
-  }
+  // Use CustomizerProvider's resetColorPalette if available
+  if (context.ui?.resetColorPalette) {
+    context.ui.resetColorPalette();
+  } else {
+    // Fallback: Remove palette directly
+    if (typeof document !== "undefined") {
+      document.body.removeAttribute("data-color-palette");
+    }
 
-  if (typeof localStorage !== "undefined") {
-    localStorage.removeItem("omega-color-palette");
+    if (typeof localStorage !== "undefined") {
+      localStorage.removeItem("omega-color-palette");
+    }
   }
 
   context.log("✅ Color palette reset to default", "success");

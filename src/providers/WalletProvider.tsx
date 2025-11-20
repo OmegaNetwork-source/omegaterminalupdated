@@ -105,7 +105,9 @@ export function WalletProvider({ children }: WalletProviderProps) {
   const accountsChangedHandlerRef = useRef<(accounts: string[]) => void>(
     () => {}
   );
-  const chainChangedHandlerRef = useRef<(chainIdHex: string) => void>(() => {});
+  const chainChangedHandlerRef = useRef<
+    (chainIdHex: string) => void | Promise<void>
+  >(() => {});
 
   /**
    * Debug helper: Log ethereum provider availability on mount
@@ -579,11 +581,64 @@ export function WalletProvider({ children }: WalletProviderProps) {
 
   /**
    * Handle chain changed event (MetaMask)
+   * Updates wallet state without reloading the page
    */
-  const handleChainChanged = useCallback((chainIdHex: string) => {
-    // Reload page on chain change (recommended by MetaMask)
-    window.location.reload();
-  }, []);
+  const handleChainChanged = useCallback(
+    async (chainIdHex: string) => {
+      try {
+        // Convert hex chainId to number
+        const chainId = parseInt(chainIdHex, 16);
+        const networkName = getNetworkNameFromChainId(chainId);
+
+        // Get the current provider
+        const ethereumProvider = getEthereumProvider();
+        if (!ethereumProvider) {
+          console.warn("[WalletProvider] No ethereum provider available on chain change");
+          return;
+        }
+
+        // Create new BrowserProvider with updated chain
+        const newProvider = new BrowserProvider(ethereumProvider);
+        const newSigner = await newProvider.getSigner();
+        const address = await newSigner.getAddress();
+
+        // Update provider and signer
+        setProvider(newProvider);
+        setSigner(newSigner);
+
+        // Update wallet state with new chain info
+        setWalletState((prev) => ({
+          ...prev,
+          chainId,
+          networkName,
+          address: address || prev.address, // Keep existing address if new one fails
+        }));
+
+        // Update balance with new provider
+        if (address) {
+          handleGetBalance(newProvider, address);
+        }
+
+        // Save network name to localStorage
+        if (typeof window !== "undefined" && networkName) {
+          localStorage.setItem("walletNetworkName", networkName);
+        }
+
+        console.log(`[WalletProvider] Chain changed to ${networkName || chainId}`);
+      } catch (error: any) {
+        console.error("[WalletProvider] Error handling chain change:", error);
+        // On error, update chainId but keep existing connection
+        const chainId = parseInt(chainIdHex, 16);
+        const networkName = getNetworkNameFromChainId(chainId);
+        setWalletState((prev) => ({
+          ...prev,
+          chainId,
+          networkName,
+        }));
+      }
+    },
+    [handleGetBalance]
+  );
 
   /**
    * Update ref functions to point to latest handlers (Comment 1)

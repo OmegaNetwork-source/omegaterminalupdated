@@ -238,8 +238,8 @@ body[data-color-palette="light"] ::-webkit-scrollbar-thumb:hover {
    ============================================================================= */
 
 /* -----------------------------------------------------------------------------
-   DARK THEME - Classic Terminal
-   Monospace fonts, tight spacing, traditional terminal aesthetic
+   VOID THEME - Deep Void Terminal
+   Pure darkness with vibrant neon accents, enhanced glow effects
    ----------------------------------------------------------------------------- */
 body.theme-dark {
   /* Base Colors */
@@ -272,6 +272,9 @@ body.theme-dark {
   --theme-radius-lg: 12px;
   --theme-radius-xl: 16px;
   --theme-text-transform: none;
+  
+  /* Enhanced Void effects - subtle depth and glow */
+  box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.5);
 }
 
 /* -----------------------------------------------------------------------------
@@ -312,13 +315,13 @@ body.theme-light {
 }
 
 /* -----------------------------------------------------------------------------
-   MATRIX THEME - Green-on-Black Matrix
-   Authentic Matrix movie aesthetic, tight spacing, uppercase, glow effects
+   NEO THEME - Matrix Digital Rain
+   Enhanced cyberpunk green glow, authentic Matrix aesthetic
    ----------------------------------------------------------------------------- */
 body.theme-matrix {
   /* Base Colors */
   background: #000000;
-  color: #00ff00;
+  color: #ffffff;
   
   /* Typography */
   font-family: "Courier New", "Monaco", monospace;
@@ -347,6 +350,9 @@ body.theme-matrix {
   --theme-radius-lg: 4px;
   --theme-radius-xl: 6px;
   --theme-text-transform: uppercase;
+  
+  /* Enhanced Neo Matrix effects - white glow */
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.8), 0 0 20px rgba(255, 255, 255, 0.4);
 }
 
 /* -----------------------------------------------------------------------------
@@ -424,19 +430,19 @@ body.theme-powershell {
 }
 
 /* -----------------------------------------------------------------------------
-   EXECUTIVE THEME - Premium Professional
-   Elegant typography, gold accents, serif fonts
+   ELITE THEME - Elite Prestige
+   Luxury gold accents, premium serif typography, sophisticated elegance
    ----------------------------------------------------------------------------- */
 body.theme-executive {
   /* Base Colors */
-  background: #0a0a0f;
+  background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 50%, #0a0a0f 100%);
   color: #ffffff;
   
   /* Typography */
   font-family: "Playfair Display", "Georgia", "Times New Roman", serif;
   font-size: 15px;
-  line-height: 1.6;
-  letter-spacing: 0.01em;
+  line-height: 1.65;
+  letter-spacing: 0.015em;
   font-weight: 400;
   
   /* Theme Variables */
@@ -444,8 +450,8 @@ body.theme-executive {
   --theme-font-heading: "Playfair Display", "Georgia", serif;
   --theme-font-mono: "SF Mono", "Monaco", "Cascadia Code", "Fira Code", monospace;
   --theme-font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", "SF Pro Display", sans-serif;
-  --theme-letter-spacing: 0.01em;
-  --theme-line-height: 1.6;
+  --theme-letter-spacing: 0.015em;
+  --theme-line-height: 1.65;
   --theme-font-weight-normal: 400;
   --theme-font-weight-bold: 600;
   --theme-spacing-xs: 6px;
@@ -458,17 +464,20 @@ body.theme-executive {
   --theme-radius-lg: 14px;
   --theme-radius-xl: 20px;
   --theme-text-transform: none;
+  
+  /* Enhanced Elite effects - luxury gold shimmer */
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 /* -----------------------------------------------------------------------------
-   MODERN THEME - Apple-Inspired Sleek Design
-   SF Pro fonts, glassmorphism, modern spacing
+   NEON THEME - Neon Cyber Futuristic
+   Enhanced glassmorphism, electric neon glow, futuristic aesthetics
    ----------------------------------------------------------------------------- */
 body.theme-modern,
 body.modern-ui-futuristic,
 body.modern-terminal-ui {
   /* Base Colors */
-  background: #000000;
+  background: linear-gradient(135deg, #000000 0%, #0a0a1a 50%, #000000 100%);
   color: #ffffff;
   
   /* Typography */
@@ -497,6 +506,10 @@ body.modern-terminal-ui {
   --theme-radius-lg: 16px;
   --theme-radius-xl: 24px;
   --theme-text-transform: none;
+  
+  /* Enhanced Neon effects - glassmorphism and neon glow */
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
 }
 
 /* =============================================================================
@@ -504,7 +517,7 @@ body.modern-terminal-ui {
    Buttons adapt to each theme's unique style and typography
    ============================================================================= */
 
-/* Dark Theme Buttons */
+/* Void Theme Buttons - Enhanced with vibrant glow */
 body.theme-dark button,
 body.theme-dark [class*="button"],
 body.theme-dark [class*="Button"] {
@@ -514,6 +527,16 @@ body.theme-dark [class*="Button"] {
   border-radius: var(--theme-radius-md, 8px);
   padding: var(--theme-spacing-sm, 8px) var(--theme-spacing-md, 16px);
   transition: all var(--transition-normal, 0.3s ease);
+  border: 1px solid var(--palette-border, color-mix(in srgb, var(--palette-primary, #00d4ff) 30%, transparent));
+  background: color-mix(in srgb, var(--palette-primary, #00d4ff) 8%, transparent);
+  color: var(--palette-primary, #00d4ff);
+}
+
+body.theme-dark button:hover,
+body.theme-dark [class*="button"]:hover {
+  background: color-mix(in srgb, var(--palette-primary, #00d4ff) 15%, transparent);
+  box-shadow: 0 0 15px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #00d4ff) 40%, transparent));
+  transform: translateY(-1px);
 }
 
 /* Light Theme Buttons */
@@ -528,7 +551,7 @@ body.theme-light [class*="Button"] {
   transition: all var(--transition-normal, 0.3s ease);
 }
 
-/* Matrix Theme Buttons */
+/* Neo Theme Buttons - White glow */
 body.theme-matrix button,
 body.theme-matrix [class*="button"],
 body.theme-matrix [class*="Button"] {
@@ -539,15 +562,18 @@ body.theme-matrix [class*="Button"] {
   border-radius: var(--theme-radius-sm, 0px);
   padding: var(--theme-spacing-sm, 8px) var(--theme-spacing-md, 12px);
   transition: all var(--transition-fast, 0.15s ease);
-  border: 1px solid var(--palette-primary, #39ff14);
-  background: color-mix(in srgb, var(--palette-primary, #39ff14) 10%, transparent);
-  color: var(--palette-primary, #39ff14);
+  border: 1px solid var(--palette-primary, #ffffff);
+  background: color-mix(in srgb, var(--palette-primary, #ffffff) 10%, transparent);
+  color: var(--palette-primary, #ffffff);
+  text-shadow: 0 0 8px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #ffffff) 60%, transparent));
 }
 
 body.theme-matrix button:hover,
 body.theme-matrix [class*="button"]:hover {
-  background: color-mix(in srgb, var(--palette-primary, #39ff14) 20%, transparent);
-  box-shadow: 0 0 10px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #39ff14) 30%, transparent));
+  background: color-mix(in srgb, var(--palette-primary, #ffffff) 25%, transparent);
+  box-shadow: 0 0 15px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #ffffff) 50%, transparent)), 
+              0 0 30px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #ffffff) 25%, transparent));
+  transform: translateY(-1px);
 }
 
 /* Retro Theme Buttons */
@@ -592,28 +618,37 @@ body.theme-powershell [class*="button"]:hover {
   box-shadow: 0 0 10px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, rgba(0, 188, 242, 1)) 30%, transparent));
 }
 
-/* Executive Theme Buttons */
+/* Elite Theme Buttons - Enhanced luxury gold effects */
 body.theme-executive button,
 body.theme-executive [class*="button"],
 body.theme-executive [class*="Button"] {
   font-family: var(--theme-font-body, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif);
   font-weight: var(--theme-font-weight-bold, 600);
-  letter-spacing: var(--theme-letter-spacing, 0.01em);
+  letter-spacing: var(--theme-letter-spacing, 0.015em);
   border-radius: var(--theme-radius-md, 10px);
   padding: var(--theme-spacing-sm, 12px) var(--theme-spacing-md, 20px);
-  transition: all var(--transition-normal, 0.3s ease);
-  border: 1px solid var(--palette-border, color-mix(in srgb, var(--palette-primary, rgba(255, 215, 0, 1)) 30%, transparent));
-  background: color-mix(in srgb, var(--palette-primary, rgba(255, 215, 0, 1)) 8%, transparent);
-  color: var(--palette-primary, rgba(255, 215, 0, 0.95));
+  transition: all var(--transition-normal, 0.4s cubic-bezier(0.4, 0, 0.2, 1));
+  border: 2px solid var(--palette-border, color-mix(in srgb, var(--palette-primary, rgba(255, 215, 0, 1)) 35%, transparent));
+  background: linear-gradient(135deg, 
+    color-mix(in srgb, var(--palette-primary, rgba(255, 215, 0, 1)) 12%, transparent) 0%, 
+    color-mix(in srgb, var(--palette-primary, rgba(255, 215, 0, 1)) 6%, transparent) 100%);
+  color: var(--palette-primary, rgba(255, 215, 0, 0.98));
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 body.theme-executive button:hover,
 body.theme-executive [class*="button"]:hover {
-  background: color-mix(in srgb, var(--palette-primary, rgba(255, 215, 0, 1)) 15%, transparent);
-  box-shadow: 0 0 15px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, rgba(255, 215, 0, 1)) 25%, transparent));
+  background: linear-gradient(135deg, 
+    color-mix(in srgb, var(--palette-primary, rgba(255, 215, 0, 1)) 20%, transparent) 0%, 
+    color-mix(in srgb, var(--palette-primary, rgba(255, 215, 0, 1)) 12%, transparent) 100%);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4), 
+              0 0 25px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, rgba(255, 215, 0, 1)) 40%, transparent)), 
+              inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
+  border-color: var(--palette-primary, rgba(255, 215, 0, 0.6));
 }
 
-/* Modern Theme Buttons */
+/* Neon Theme Buttons - Enhanced futuristic glassmorphism */
 body.theme-modern button,
 body.modern-ui-futuristic button,
 body.modern-terminal-ui button,
@@ -625,12 +660,15 @@ body.modern-terminal-ui [class*="button"] {
   letter-spacing: var(--theme-letter-spacing, -0.01em);
   border-radius: var(--theme-radius-md, 12px);
   padding: var(--theme-spacing-sm, 8px) var(--theme-spacing-md, 16px);
-  transition: all var(--transition-normal, 0.3s ease);
-  border: 1px solid var(--palette-border, color-mix(in srgb, var(--palette-primary, rgba(0, 255, 210, 1)) 20%, transparent));
-  background: color-mix(in srgb, var(--palette-primary, rgba(0, 255, 210, 1)) 8%, transparent);
-  color: var(--palette-primary, rgba(0, 255, 210, 0.95));
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  transition: all var(--transition-normal, 0.4s cubic-bezier(0.4, 0, 0.2, 1));
+  border: 1px solid var(--palette-border, color-mix(in srgb, var(--palette-primary, rgba(0, 255, 210, 1)) 25%, transparent));
+  background: linear-gradient(135deg, 
+    color-mix(in srgb, var(--palette-primary, rgba(0, 255, 210, 1)) 12%, rgba(255, 255, 255, 0.05)) 0%, 
+    color-mix(in srgb, var(--palette-primary, rgba(0, 255, 210, 1)) 6%, rgba(255, 255, 255, 0.02)) 100%);
+  color: var(--palette-primary, rgba(0, 255, 210, 0.98));
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 body.theme-modern button:hover,
@@ -639,8 +677,14 @@ body.modern-terminal-ui button:hover,
 body.theme-modern [class*="button"]:hover,
 body.modern-ui-futuristic [class*="button"]:hover,
 body.modern-terminal-ui [class*="button"]:hover {
-  background: color-mix(in srgb, var(--palette-primary, rgba(0, 255, 210, 1)) 15%, transparent);
-  box-shadow: 0 0 15px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, rgba(0, 255, 210, 1)) 25%, transparent));
+  background: linear-gradient(135deg, 
+    color-mix(in srgb, var(--palette-primary, rgba(0, 255, 210, 1)) 20%, rgba(255, 255, 255, 0.08)) 0%, 
+    color-mix(in srgb, var(--palette-primary, rgba(0, 255, 210, 1)) 12%, rgba(255, 255, 255, 0.04)) 100%);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3), 
+              0 0 30px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, rgba(0, 255, 210, 1)) 35%, transparent)), 
+              inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
+  border-color: var(--palette-primary, rgba(0, 255, 210, 0.5));
 }
 
 /* =============================================================================
@@ -657,6 +701,7 @@ body.theme-dark [class*="Title"] {
   font-weight: var(--theme-font-weight-bold, 700);
   letter-spacing: var(--theme-letter-spacing, 0.05em);
   color: var(--palette-primary, #00bcf2);
+  text-shadow: 0 0 15px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #00bcf2) 40%, transparent));
 }
 
 body.theme-light h1,
@@ -679,8 +724,8 @@ body.theme-matrix [class*="Title"] {
   font-weight: var(--theme-font-weight-bold, 700);
   letter-spacing: var(--theme-letter-spacing, 0.08em);
   text-transform: uppercase;
-  color: var(--palette-primary, #39ff14);
-  text-shadow: 0 0 10px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #39ff14) 50%, transparent));
+  color: var(--palette-primary, #ffffff);
+  text-shadow: 0 0 10px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #ffffff) 50%, transparent));
 }
 
 body.theme-retro h1,
@@ -713,8 +758,9 @@ body.theme-executive [class*="title"],
 body.theme-executive [class*="Title"] {
   font-family: var(--theme-font-heading, "Playfair Display", "Georgia", serif);
   font-weight: var(--theme-font-weight-bold, 600);
-  letter-spacing: var(--theme-letter-spacing, 0.01em);
-  color: var(--palette-primary, rgba(255, 215, 0, 0.95));
+  letter-spacing: var(--theme-letter-spacing, 0.015em);
+  color: var(--palette-primary, rgba(255, 215, 0, 0.98));
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4), 0 0 15px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, rgba(255, 215, 0, 1)) 25%, transparent));
 }
 
 body.theme-modern h1,
@@ -732,7 +778,8 @@ body.modern-terminal-ui [class*="title"] {
   font-family: var(--theme-font-heading, "SF Pro Display", -apple-system, BlinkMacSystemFont, sans-serif);
   font-weight: var(--theme-font-weight-bold, 600);
   letter-spacing: var(--theme-letter-spacing, -0.01em);
-  color: var(--palette-primary, rgba(0, 255, 210, 0.95));
+  color: var(--palette-primary, rgba(0, 255, 210, 0.98));
+  text-shadow: 0 0 20px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, rgba(0, 255, 210, 1)) 30%, transparent));
 }
 
 /* =============================================================================
@@ -791,8 +838,11 @@ body.theme-executive textarea,
 body.theme-executive [class*="input"],
 body.theme-executive [class*="Input"] {
   font-family: var(--theme-font-body, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif);
-  letter-spacing: var(--theme-letter-spacing, 0.01em);
+  letter-spacing: var(--theme-letter-spacing, 0.015em);
   border-radius: var(--theme-radius-md, 10px);
+  border: 1px solid var(--palette-border, color-mix(in srgb, var(--palette-primary, rgba(255, 215, 0, 1)) 25%, transparent));
+  background: color-mix(in srgb, var(--palette-primary, rgba(255, 215, 0, 1)) 5%, transparent);
+  color: var(--palette-text, #ffffff);
 }
 
 body.theme-modern input,
@@ -807,8 +857,11 @@ body.modern-terminal-ui [class*="input"] {
   font-family: var(--theme-font-body, -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif);
   letter-spacing: var(--theme-letter-spacing, -0.01em);
   border-radius: var(--theme-radius-md, 12px);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--palette-border, color-mix(in srgb, var(--palette-primary, rgba(0, 255, 210, 1)) 20%, transparent));
+  background: color-mix(in srgb, var(--palette-primary, rgba(0, 255, 210, 1)) 5%, rgba(255, 255, 255, 0.02));
+  color: var(--palette-text, #ffffff);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
 }
 
 /* =============================================================================
@@ -852,7 +905,10 @@ body.theme-powershell [class*="Sidebar"] {
 body.theme-executive [class*="sidebar"],
 body.theme-executive [class*="Sidebar"] {
   font-family: var(--theme-font-body, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif);
-  letter-spacing: var(--theme-letter-spacing, 0.01em);
+  letter-spacing: var(--theme-letter-spacing, 0.015em);
+  background: linear-gradient(135deg, rgba(10, 10, 15, 0.95) 0%, rgba(26, 26, 46, 0.95) 100%);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 body.theme-modern [class*="sidebar"],
@@ -863,8 +919,10 @@ body.modern-ui-futuristic [class*="Sidebar"],
 body.modern-terminal-ui [class*="Sidebar"] {
   font-family: var(--theme-font-body, -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif);
   letter-spacing: var(--theme-letter-spacing, -0.01em);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.7) 0%, rgba(10, 10, 26, 0.8) 100%);
+  backdrop-filter: blur(30px) saturate(180%);
+  -webkit-backdrop-filter: blur(30px) saturate(180%);
+  border-right: 1px solid var(--palette-border, color-mix(in srgb, var(--palette-primary, rgba(0, 255, 210, 1)) 15%, transparent));
 }
 
 /* =============================================================================
@@ -904,38 +962,38 @@ body[data-color-palette].theme-light [class*="Sidebar"] button {
    ============================================================================= */
 
 :root {
-  --palette-primary: #00bcf2;
-  --palette-secondary: #00ff88;
-  --palette-accent: #ff00ff;
-  --palette-bg: #0a0a0f;
-  --palette-surface: #111218;
-  --palette-text: #ffffff;
-  --palette-muted: #b7b7c2;
-  --palette-border: #2a2a33;
-  --palette-success: #16c782;
-  --palette-warning: #f2b705;
-  --palette-error: #ff4d4f;
+  --palette-primary: #e8e8e8;
+  --palette-secondary: #c8c8c8;
+  --palette-accent: #ffffff;
+  --palette-bg: #0a0a0a;
+  --palette-surface: #151515;
+  --palette-text: #f0f0f0;
+  --palette-muted: #707070;
+  --palette-border: #2d2d2d;
+  --palette-success: #b8b8b8;
+  --palette-warning: #d0d0d0;
+  --palette-error: #e0e0e0;
   /* Glow effects for palette colors */
-  --palette-primary-glow: rgba(0, 188, 242, 0.3);
-  --palette-secondary-glow: rgba(0, 255, 136, 0.3);
-  --palette-accent-glow: rgba(255, 0, 255, 0.3);
-  --palette-success-glow: rgba(22, 199, 130, 0.3);
-  --palette-warning-glow: rgba(242, 183, 5, 0.3);
-  --palette-error-glow: rgba(255, 77, 79, 0.3);
+  --palette-primary-glow: rgba(232, 232, 232, 0.25);
+  --palette-secondary-glow: rgba(200, 200, 200, 0.2);
+  --palette-accent-glow: rgba(255, 255, 255, 0.3);
+  --palette-success-glow: rgba(184, 184, 184, 0.25);
+  --palette-warning-glow: rgba(208, 208, 208, 0.25);
+  --palette-error-glow: rgba(224, 224, 224, 0.25);
 }
 
 body[data-color-palette="default"] {
-  --palette-primary: #00bcf2;
-  --palette-secondary: #00ff88;
-  --palette-accent: #ff00ff;
-  --palette-bg: #0a0a0f;
-  --palette-surface: #111218;
-  --palette-text: #ffffff;
-  --palette-muted: #b7b7c2;
-  --palette-border: #2a2a33;
-  --palette-success: #16c782;
-  --palette-warning: #f2b705;
-  --palette-error: #ff4d4f;
+  --palette-primary: #e8e8e8;
+  --palette-secondary: #c8c8c8;
+  --palette-accent: #ffffff;
+  --palette-bg: #0a0a0a;
+  --palette-surface: #151515;
+  --palette-text: #f0f0f0;
+  --palette-muted: #707070;
+  --palette-border: #2d2d2d;
+  --palette-success: #b8b8b8;
+  --palette-warning: #d0d0d0;
+  --palette-error: #e0e0e0;
 }
 
 body[data-color-palette="red"] {
@@ -967,31 +1025,39 @@ body[data-color-palette="crimson"] {
 }
 
 body[data-color-palette="anime"] {
-  --palette-primary: #ff6bd6;
-  --palette-secondary: #6bffea;
-  --palette-accent: #ffd66b;
-  --palette-bg: #0d0a12;
-  --palette-surface: #171321;
-  --palette-text: #ffffff;
-  --palette-muted: #cbc4d9;
-  --palette-border: #2a2336;
-  --palette-success: #16c782;
-  --palette-warning: #f2b705;
-  --palette-error: #ff4d4f;
+  /* Neon Pastel Anime - Synthwave candy vibes */
+  --palette-primary: #ff66e5;
+  --palette-secondary: #7af8ff;
+  --palette-accent: #ffd86f;
+  --palette-bg: #07040f;
+  --palette-surface: #140a1e;
+  --palette-text: #fff7ff;
+  --palette-muted: #d7c5ff;
+  --palette-border: #2f1b4b;
+  --palette-success: #7af8ff;
+  --palette-warning: #ffd86f;
+  --palette-error: #ff4fa7;
+  --palette-primary-glow: rgba(255, 102, 229, 0.45);
+  --palette-secondary-glow: rgba(122, 248, 255, 0.45);
+  --palette-accent-glow: rgba(255, 216, 111, 0.4);
 }
 
 body[data-color-palette="ocean"] {
-  --palette-primary: #00a3ff;
-  --palette-secondary: #00e1ff;
-  --palette-accent: #00ffa3;
-  --palette-bg: #06121a;
-  --palette-surface: #0c1c28;
-  --palette-text: #e7f7ff;
-  --palette-muted: #a8c7d6;
-  --palette-border: #153040;
-  --palette-success: #16c782;
-  --palette-warning: #f2b705;
-  --palette-error: #ff4d4f;
+  /* Abyssal Ocean - Deep teal currents */
+  --palette-primary: #00c2ff;
+  --palette-secondary: #0066ff;
+  --palette-accent: #00ffd5;
+  --palette-bg: #02111f;
+  --palette-surface: #061b2d;
+  --palette-text: #e1f7ff;
+  --palette-muted: #9cc7dd;
+  --palette-border: #123147;
+  --palette-success: #00ffd5;
+  --palette-warning: #ffd479;
+  --palette-error: #ff5d73;
+  --palette-primary-glow: rgba(0, 194, 255, 0.45);
+  --palette-secondary-glow: rgba(0, 102, 255, 0.4);
+  --palette-accent-glow: rgba(0, 255, 213, 0.4);
 }
 
 body[data-color-palette="blue"] {
@@ -1079,31 +1145,44 @@ body[data-color-palette="violet"] {
 }
 
 body[data-color-palette="cyber"] {
-  --palette-primary: #00e8ff;
-  --palette-secondary: #00ff9c;
-  --palette-accent: #ff00e0;
-  --palette-bg: #05060a;
-  --palette-surface: #0a0c12;
-  --palette-text: #e8fbff;
-  --palette-muted: #b9d8df;
-  --palette-border: #1a2030;
-  --palette-success: #00ff9c;
-  --palette-warning: #ffd166;
-  --palette-error: #ff4d6d;
+  /* Cyber Grid - Electric cyan x ultraviolet */
+  --palette-primary: #00d4ff;
+  --palette-secondary: #8c3bff;
+  --palette-accent: #00ffba;
+  --palette-bg: #010414;
+  --palette-surface: #050c1f;
+  --palette-text: #dff9ff;
+  --palette-muted: #a6c4ff;
+  --palette-border: #15253f;
+  --palette-success: #00ffba;
+  --palette-warning: #ffb347;
+  --palette-error: #ff4dd6;
+  --palette-primary-glow: rgba(0, 212, 255, 0.45);
+  --palette-secondary-glow: rgba(140, 59, 255, 0.45);
+  --palette-accent-glow: rgba(0, 255, 186, 0.45);
 }
 
 body[data-color-palette="neon"] {
-  --palette-primary: #39ff14;
-  --palette-secondary: #00f7ff;
-  --palette-accent: #ff00ff;
-  --palette-bg: #050a05;
-  --palette-surface: #0a120a;
-  --palette-text: #eeffef;
-  --palette-muted: #c8f7d4;
-  --palette-border: #133217;
-  --palette-success: #39ff14;
-  --palette-warning: #ffe066;
-  --palette-error: #ff3860;
+  /* Neon Color Palette - Electric Cyberpunk Aesthetic */
+  /* Vibrant electric colors: Electric Cyan, Hot Pink, Electric Lime */
+  --palette-primary: #00ffff;
+  --palette-secondary: #ff00ff;
+  --palette-accent: #00ff41;
+  --palette-bg: #000000;
+  --palette-surface: #0a0514;
+  --palette-text: #ffffff;
+  --palette-muted: #b8a0ff;
+  --palette-border: #1a0d2e;
+  --palette-success: #00ff41;
+  --palette-warning: #ffaa00;
+  --palette-error: #ff0066;
+  /* Glow effects for neon - intense electric glows */
+  --palette-primary-glow: rgba(0, 255, 255, 0.5);
+  --palette-secondary-glow: rgba(255, 0, 255, 0.5);
+  --palette-accent-glow: rgba(0, 255, 65, 0.5);
+  --palette-success-glow: rgba(0, 255, 65, 0.5);
+  --palette-warning-glow: rgba(255, 170, 0, 0.45);
+  --palette-error-glow: rgba(255, 0, 102, 0.4);
 }
 
 body[data-color-palette="gold"] {
@@ -1135,17 +1214,21 @@ body[data-color-palette="luxury"] {
 }
 
 body[data-color-palette="ice"] {
-  --palette-primary: #a8d8ff;
-  --palette-secondary: #e0f7ff;
-  --palette-accent: #b0ffe0;
-  --palette-bg: #070a10;
-  --palette-surface: #0d121a;
-  --palette-text: #f5fbff;
-  --palette-muted: #d3e6f3;
-  --palette-border: #1a2533;
-  --palette-success: #8ef5c0;
-  --palette-warning: #ffe08a;
-  --palette-error: #ff7b8b;
+  /* Glacier Ice - Arctic chrome blues */
+  --palette-primary: #9bddff;
+  --palette-secondary: #6eb7ff;
+  --palette-accent: #c1fff7;
+  --palette-bg: #030b15;
+  --palette-surface: #0a1724;
+  --palette-text: #f2fbff;
+  --palette-muted: #c7dfee;
+  --palette-border: #183249;
+  --palette-success: #6fffd7;
+  --palette-warning: #ffe3a3;
+  --palette-error: #ff6b9f;
+  --palette-primary-glow: rgba(155, 221, 255, 0.4);
+  --palette-secondary-glow: rgba(110, 183, 255, 0.4);
+  --palette-accent-glow: rgba(193, 255, 247, 0.35);
 }
 
 body[data-color-palette="frost"] {
@@ -1163,31 +1246,39 @@ body[data-color-palette="frost"] {
 }
 
 body[data-color-palette="fire"] {
-  --palette-primary: #ff6b00;
-  --palette-secondary: #ff3b3b;
-  --palette-accent: #ffd166;
-  --palette-bg: #160c07;
-  --palette-surface: #24130b;
-  --palette-text: #fff2e6;
-  --palette-muted: #f1c1a6;
-  --palette-border: #3a2115;
-  --palette-success: #53d88b;
-  --palette-warning: #ffb703;
-  --palette-error: #ff4d4f;
+  /* Firestorm - Lava core heat */
+  --palette-primary: #ff4b0f;
+  --palette-secondary: #ff9a1a;
+  --palette-accent: #ffd44d;
+  --palette-bg: #140401;
+  --palette-surface: #210a04;
+  --palette-text: #fff3e5;
+  --palette-muted: #f2c4a3;
+  --palette-border: #3c1506;
+  --palette-success: #ffd44d;
+  --palette-warning: #ff9a1a;
+  --palette-error: #ff2c2c;
+  --palette-primary-glow: rgba(255, 75, 15, 0.4);
+  --palette-secondary-glow: rgba(255, 154, 26, 0.4);
+  --palette-accent-glow: rgba(255, 212, 77, 0.4);
 }
 
 body[data-color-palette="flame"] {
-  --palette-primary: #ff8c42;
-  --palette-secondary: #ff5e57;
-  --palette-accent: #ffd166;
-  --palette-bg: #170e09;
-  --palette-surface: #24160e;
-  --palette-text: #fff2e8;
-  --palette-muted: #f5c7a1;
-  --palette-border: #3d2518;
-  --palette-success: #53d88b;
-  --palette-warning: #ffb703;
-  --palette-error: #ff4d4f;
+  /* Plasma Flame - Magma orange + neon magenta */
+  --palette-primary: #ff1767;
+  --palette-secondary: #ff7300;
+  --palette-accent: #ffb347;
+  --palette-bg: #150108;
+  --palette-surface: #23060d;
+  --palette-text: #ffeaf4;
+  --palette-muted: #f9b7c6;
+  --palette-border: #3b0f1b;
+  --palette-success: #ffb347;
+  --palette-warning: #ff7300;
+  --palette-error: #ff2f7d;
+  --palette-primary-glow: rgba(255, 23, 103, 0.45);
+  --palette-secondary-glow: rgba(255, 115, 0, 0.4);
+  --palette-accent-glow: rgba(255, 179, 71, 0.4);
 }
 
 body[data-color-palette="mint"] {
@@ -1331,31 +1422,85 @@ body[data-color-palette="lilac"] {
 }
 
 body[data-color-palette="toxic"] {
-  --palette-primary: #b6ff00;
-  --palette-secondary: #00ff9c;
-  --palette-accent: #00e8ff;
-  --palette-bg: #091003;
-  --palette-surface: #0f1809;
-  --palette-text: #f2ffe6;
-  --palette-muted: #d6f7b9;
-  --palette-border: #1c2e10;
-  --palette-success: #a3ff57;
-  --palette-warning: #ffe066;
-  --palette-error: #ff4d6d;
+  /* Biohazard Toxic - Neon lime & hazard violet */
+  --palette-primary: #b7ff2f;
+  --palette-secondary: #00ffa6;
+  --palette-accent: #ff2fe3;
+  --palette-bg: #030c05;
+  --palette-surface: #07180d;
+  --palette-text: #edffe8;
+  --palette-muted: #c6ffce;
+  --palette-border: #13351f;
+  --palette-success: #00ffa6;
+  --palette-warning: #ffe04d;
+  --palette-error: #ff2f73;
+  --palette-primary-glow: rgba(183, 255, 47, 0.45);
+  --palette-secondary-glow: rgba(0, 255, 166, 0.4);
+  --palette-accent-glow: rgba(255, 47, 227, 0.4);
+}
+
+body[data-color-palette="infrared"] {
+  /* Thermal Vision Color Palette - Authentic Infrared Look */
+  /* Hot objects: White/Yellow, Warm: Red/Orange, Cool: Dark Red, Cold: Black */
+  --palette-primary: #ffff00;
+  --palette-secondary: #ff6600;
+  --palette-accent: #ff3300;
+  --palette-bg: #000000;
+  --palette-surface: #0a0000;
+  --palette-text: #ffcccc;
+  --palette-muted: #ff9999;
+  --palette-border: #330000;
+  --palette-success: #ffff00;
+  --palette-warning: #ff9900;
+  --palette-error: #cc0000;
+  /* Glow effects for thermal vision - hot white/yellow glows */
+  --palette-primary-glow: rgba(255, 255, 0, 0.4);
+  --palette-secondary-glow: rgba(255, 102, 0, 0.35);
+  --palette-accent-glow: rgba(255, 51, 0, 0.3);
+  --palette-success-glow: rgba(255, 255, 0, 0.4);
+  --palette-warning-glow: rgba(255, 153, 0, 0.35);
+  --palette-error-glow: rgba(204, 0, 0, 0.3);
 }
 
 body[data-color-palette="radioactive"] {
-  --palette-primary: #39ff14;
-  --palette-secondary: #b6ff00;
-  --palette-accent: #00ffea;
-  --palette-bg: #060b05;
-  --palette-surface: #0b140a;
-  --palette-text: #ebffe8;
-  --palette-muted: #c7f7c1;
-  --palette-border: #132a13;
-  --palette-success: #39ff14;
-  --palette-warning: #ffd166;
-  --palette-error: #ff4d6d;
+  /* Radioactive Reactor - Chartreuse core with ion blue sparks */
+  --palette-primary: #9dff00;
+  --palette-secondary: #00f0ff;
+  --palette-accent: #fff727;
+  --palette-bg: #040806;
+  --palette-surface: #08110d;
+  --palette-text: #e7ffe8;
+  --palette-muted: #c1ffc9;
+  --palette-border: #142818;
+  --palette-success: #9dff00;
+  --palette-warning: #fff727;
+  --palette-error: #ff4b8f;
+  --palette-primary-glow: rgba(157, 255, 0, 0.45);
+  --palette-secondary-glow: rgba(0, 240, 255, 0.45);
+  --palette-accent-glow: rgba(255, 247, 39, 0.4);
+}
+
+body[data-color-palette="xmas"] {
+  /* Christmas Color Palette - Festive Holiday Spirit */
+  /* Classic Christmas: Red, Green, White */
+  --palette-primary: #dc143c;
+  --palette-secondary: #228b22;
+  --palette-accent: #ffffff;
+  --palette-bg: #0a0f0a;
+  --palette-surface: #141914;
+  --palette-text: #ffffff;
+  --palette-muted: #c8e6c9;
+  --palette-border: #2d4a2d;
+  --palette-success: #228b22;
+  --palette-warning: #ffffff;
+  --palette-error: #dc143c;
+  /* Glow effects for Christmas - warm festive glows */
+  --palette-primary-glow: rgba(220, 20, 60, 0.4);
+  --palette-secondary-glow: rgba(34, 139, 34, 0.35);
+  --palette-accent-glow: rgba(255, 255, 255, 0.4);
+  --palette-success-glow: rgba(34, 139, 34, 0.35);
+  --palette-warning-glow: rgba(255, 255, 255, 0.4);
+  --palette-error-glow: rgba(220, 20, 60, 0.3);
 }
 
 body[data-color-palette="light"] {
@@ -1855,7 +2000,7 @@ body.theme-light [class*="controlButton"] {
 
 body.theme-matrix [class*="terminalIconBtn"],
 body.theme-matrix [class*="controlButton"] {
-  color: var(--palette-primary, #39ff14);
+  color: var(--palette-primary, #ffffff);
 }
 
 body.theme-retro [class*="terminalIconBtn"],
@@ -1870,7 +2015,7 @@ body.theme-powershell [class*="controlButton"] {
 
 body.theme-executive [class*="terminalIconBtn"],
 body.theme-executive [class*="controlButton"] {
-  color: var(--palette-primary, rgba(255, 215, 0, 0.95));
+  color: var(--palette-primary, #ffffff);
 }
 
 body.theme-modern [class*="terminalIconBtn"],

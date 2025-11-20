@@ -3,180 +3,46 @@ import { useGameState } from '../context/GameContext';
 import { PLAYER_COLORS } from '../../engine/constants';
 import { W, H } from '../../engine/constants';
 import { hideMenu, showMenu } from '../../engine/menu';
-import { loadAllSprites } from '../../spriteLoader';
 import './Menu.css';
 
 const MENU_OPTIONS = [
   { id: 'start', text: 'START GAME' },
-  { id: 'character', text: 'SELECT CHARACTER' },
-  { id: 'mapeditor', text: 'MAP EDITOR' },
-  // Hidden until enhanced: 'gamemodes', 'multiplayer', 'leaderboard', 'selectmap'
+  // Character system removed - was causing game freezing issues
 ];
 
-export const Menu = memo(({ onStartGame, onOpenGameModes, onOpenLeaderboard, onOpenMapEditor, onOpenMapSelector, onOpenMultiplayer, onOpenCharacterSelector }) => {
+export const Menu = memo(({ onStartGame, onOpenGameModes, onOpenLeaderboard, onOpenMapEditor, onOpenMapSelector, onOpenMultiplayer }) => {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const { menuVisible } = useGameState();
   const menuCanvasRef = useRef(null);
-  const characterCanvasRef = useRef(null);
-  const [spriteSheets, setSpriteSheets] = useState(null);
-  const [selectedCharacter, setSelectedCharacter] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem('selectedCharacter') || 'simple-character';
-    }
-    return 'simple-character';
-  });
 
-  // Load sprite sheets for character display
-  useEffect(() => {
-    loadAllSprites('/games/ravaged-planet/sprites').then(sheets => {
-      setSpriteSheets(sheets);
-    }).catch(err => {
-      console.error('Failed to load sprite sheets for menu:', err);
-    });
-  }, []);
-
-  // Update selected character from localStorage
-  useEffect(() => {
-    const updateCharacter = () => {
-      if (typeof window !== 'undefined') {
-        const stored = localStorage.getItem('selectedCharacter');
-        if (stored) {
-          setSelectedCharacter(stored);
-        }
-      }
-    };
-    updateCharacter();
-    // Listen for character selection changes
-    window.addEventListener('storage', updateCharacter);
-    window.addEventListener('characterSelected', updateCharacter);
-    return () => {
-      window.removeEventListener('storage', updateCharacter);
-      window.removeEventListener('characterSelected', updateCharacter);
-    };
-  }, []);
-
-  // Draw character sprite below title
-  useEffect(() => {
-    if (!menuVisible || !characterCanvasRef.current || !spriteSheets) return;
-
-    const canvas = characterCanvasRef.current;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    const sprite = spriteSheets.get(selectedCharacter);
-    if (!sprite || !sprite.frames || sprite.frames.length === 0) return;
-
-    // Initialize canvas size
-    canvas.width = 80;
-    canvas.height = 80;
-
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    // Determine which row to use (same logic as CharacterSelector)
-    const row1Characters = [
-      'dragon-red',
-      'character-angular',
-      'lizard-blue',
-      'simple-character',
-      'robot-orange'
-    ];
-    const targetRow = row1Characters.includes(selectedCharacter) ? 0 : 2;
-    const targetFrames = sprite.frames.filter(frame => frame.row === targetRow);
-    
-    const frame = targetFrames.length > 0 
-      ? targetFrames[Math.floor(targetFrames.length / 2)] 
-      : sprite.frames[0];
-
-    if (frame && frame.canvas && sprite.width > 0 && sprite.height > 0) {
-      const displayHeight = 60;
-      const scale = displayHeight / sprite.height;
-      const scaledWidth = sprite.width * scale;
-      const scaledHeight = sprite.height * scale;
-      
-      const x = Math.round((canvas.width - scaledWidth) / 2);
-      const y = Math.round((canvas.height - scaledHeight) / 2);
-      
-      ctx.imageSmoothingEnabled = false;
-      ctx.drawImage(
-        frame.canvas,
-        x,
-        y,
-        Math.round(scaledWidth),
-        Math.round(scaledHeight)
-      );
-    }
-  }, [menuVisible, spriteSheets, selectedCharacter]);
-
-  // Draw menu background with tanks
+  // Menu background canvas (minimal setup)
   useEffect(() => {
     if (!menuVisible || !menuCanvasRef.current) return;
-
     const canvas = menuCanvasRef.current;
     const ctx = canvas.getContext('2d');
-    
-    // Set canvas size
     canvas.width = W;
     canvas.height = H;
-
-    // Draw background (will be behind game canvas, so just clear)
     ctx.clearRect(0, 0, W, H);
-    
-    // The actual game canvas will show the map/terrain background
-    // This canvas is just for any overlay effects if needed
   }, [menuVisible]);
 
   const handleSelect = useCallback(() => {
     const option = MENU_OPTIONS[selectedIndex];
     
-    // Special handling for character selector - don't hide menu
-    if (option.id === 'character') {
-      if (onOpenCharacterSelector) {
-        onOpenCharacterSelector();
-      }
-      return; // Don't hide menu for character selection
-    }
-    
-    // Hide menu immediately when any other option is selected
+    // Hide menu immediately
     hideMenu();
     
-    // Small delay to ensure menu state updates before triggering action
+    // Execute action after small delay to ensure menu state updates
     setTimeout(() => {
-      switch(option.id) {
-        case 'start':
+      if (option.id === 'start') {
           if (onStartGame) {
+          console.log('Menu: Starting game');
             onStartGame();
           }
-          break;
-        case 'gamemodes':
-          if (onOpenGameModes) {
-            onOpenGameModes();
-          }
-          break;
-        case 'leaderboard':
-          if (onOpenLeaderboard) {
-            onOpenLeaderboard();
-          }
-          break;
-        case 'mapeditor':
-          if (onOpenMapEditor) {
-            onOpenMapEditor();
-          }
-          break;
-        case 'selectmap':
-          if (onOpenMapSelector) {
-            onOpenMapSelector();
-          }
-          break;
-        case 'multiplayer':
-          if (onOpenMultiplayer) {
-            onOpenMultiplayer();
-          }
-          break;
-        default:
-          break;
+      } else {
+        console.warn('Menu: Unknown option', option.id);
       }
-    }, 50);
-  }, [selectedIndex, onStartGame, onOpenGameModes, onOpenLeaderboard, onOpenMapEditor, onOpenMapSelector, onOpenMultiplayer, onOpenCharacterSelector]);
+    }, 100);
+  }, [selectedIndex, onStartGame]);
 
   useEffect(() => {
     if (!menuVisible) return;
@@ -228,12 +94,6 @@ export const Menu = memo(({ onStartGame, onOpenGameModes, onOpenLeaderboard, onO
         <div className="menu-header">
           <div className="menu-title">BATTLE TANKS</div>
           <div className="menu-subtitle">PGT ROYALE</div>
-          <div className="menu-character-display">
-            <canvas 
-              ref={characterCanvasRef}
-              className="menu-character-canvas"
-            />
-          </div>
         </div>
 
         <div className="menu-buttons-container">
@@ -246,8 +106,8 @@ export const Menu = memo(({ onStartGame, onOpenGameModes, onOpenLeaderboard, onO
                 e.preventDefault();
                 e.stopPropagation();
                 setSelectedIndex(index);
-                // Call handleSelect which will hide menu and trigger action
-                handleSelect();
+                // Small delay to ensure visual feedback before action
+                setTimeout(() => handleSelect(), 50);
               }}
               onMouseEnter={() => setSelectedIndex(index)}
               style={option.id === 'multiplayer' ? { 

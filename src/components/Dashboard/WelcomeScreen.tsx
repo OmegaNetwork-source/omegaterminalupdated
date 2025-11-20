@@ -6,7 +6,7 @@ import { useCustomizer } from "@/hooks/useCustomizer";
 import styles from "./WelcomeScreen.module.css";
 import { APP_VERSION } from "@/lib/constants";
 import type { ViewMode } from "@/types/ui";
-import { LetterGlitch } from "./LetterGlitch";
+import { LetterGlitch, type LetterGlitchRef } from "./LetterGlitch";
 
 export interface WelcomeScreenProps {
   onComplete: () => void;
@@ -25,12 +25,22 @@ export function WelcomeScreen({ onComplete, initialMode }: WelcomeScreenProps): 
   const [exiting, setExiting] = useState<boolean>(false);
   const [selectedMode, setSelectedMode] = useState<ViewMode>(initialMode || "futuristic");
   const [isMobile, setIsMobile] = useState(false);
+  const letterGlitchRef = useRef<LetterGlitchRef>(null);
+  const [temporaryPalette, setTemporaryPalette] = useState<string[] | null>(null);
+  const paletteTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // State to force recalculation when palette CSS variables change
   const [paletteUpdateKey, setPaletteUpdateKey] = useState(0);
   // Store last known color values to detect changes
   const lastPrimaryColorRef = useRef<string>("");
   const lastMutedColorRef = useRef<string>("");
+
+  // Palette color schemes for different sections
+  const sectionPalettes = useMemo(() => ({
+    header: ['#00d4ff', '#00ff88', '#ffffff', '#00bcf2'], // Cyan/Green - Tech
+    basic: ['#ffffff', '#e0e0e0', '#c0c0c0', '#a0a0a0'], // White/Gray - Clean
+    dashboard: ['#9d4edd', '#c77dff', '#e0aaff', '#f3d9ff'], // Purple - Futuristic
+  }), []);
 
   // Get glitch colors from CSS variables based on current palette
   const glitchColors = useMemo(() => {
@@ -131,6 +141,53 @@ export function WelcomeScreen({ onComplete, initialMode }: WelcomeScreenProps): 
     
     return [primary, secondary, accent];
   }, [colorPalette, paletteUpdateKey]);
+
+  // Get current glitch colors (temporary or normal)
+  const currentGlitchColors = useMemo(() => {
+    return temporaryPalette || glitchColors;
+  }, [temporaryPalette, glitchColors]);
+
+  // Trigger hover glitch effect (slower, gradual separation)
+  const triggerHoverGlitch = useCallback((section: 'header' | 'basic' | 'dashboard') => {
+    if (!letterGlitchRef.current) return;
+    
+    const sectionColors = sectionPalettes[section];
+    setTemporaryPalette(sectionColors);
+    
+    // Trigger hover glitch (slower, gradual)
+    letterGlitchRef.current.triggerHoverGlitch(sectionColors, 1000);
+  }, [sectionPalettes]);
+  
+  // Stop hover glitch and return to normal
+  const stopHoverGlitch = useCallback(() => {
+    if (!letterGlitchRef.current) return;
+    letterGlitchRef.current.stopHoverGlitch();
+    // Reset palette immediately to return to default colors
+    setTemporaryPalette(null);
+  }, []);
+  
+  // Trigger click glitch effect (intense, fast)
+  const triggerSectionGlitch = useCallback((section: 'header' | 'basic' | 'dashboard', duration: number = 400) => {
+    if (!letterGlitchRef.current) return;
+    
+    const sectionColors = sectionPalettes[section];
+    setTemporaryPalette(sectionColors);
+    
+    // Stop any hover glitch first
+    letterGlitchRef.current.stopHoverGlitch();
+    
+    // Trigger intense glitch
+    letterGlitchRef.current.triggerIntenseGlitch(sectionColors, duration);
+    
+    // Reset palette after glitch
+    if (paletteTimeoutRef.current) {
+      clearTimeout(paletteTimeoutRef.current);
+    }
+    
+    paletteTimeoutRef.current = setTimeout(() => {
+      setTemporaryPalette(null);
+    }, duration + 200); // Slightly longer to see the reorganization
+  }, [sectionPalettes]);
 
   // Direct update when colorPalette from context changes
   useEffect(() => {
@@ -317,7 +374,8 @@ export function WelcomeScreen({ onComplete, initialMode }: WelcomeScreenProps): 
     <div className={`${styles.container} ${exiting ? styles.exiting : ""}`}>
       <div className={styles.letterGlitchContainer}>
         <LetterGlitch
-          glitchColors={glitchColors}
+          ref={letterGlitchRef}
+          glitchColors={currentGlitchColors}
           glitchSpeed={50}
           centerVignette={true}
           outerVignette={true}
@@ -326,7 +384,13 @@ export function WelcomeScreen({ onComplete, initialMode }: WelcomeScreenProps): 
       </div>
 
       {/* Header */}
-      <div className={styles.header}>
+      <div 
+        className={styles.header}
+        onMouseEnter={() => triggerHoverGlitch('header')}
+        onMouseLeave={() => stopHoverGlitch()}
+        onClick={() => triggerSectionGlitch('header', 500)}
+        style={{ cursor: 'pointer', transition: 'all 0.3s ease' }}
+      >
         <div className={styles.logoContainer}>
           <div className={styles.logoIcon}>Ω</div>
           <span className={styles.logoText}>OMEGA TERMINAL</span>
@@ -339,7 +403,13 @@ export function WelcomeScreen({ onComplete, initialMode }: WelcomeScreenProps): 
       {/* Main Content - Centered */}
       <div className={styles.mainContent}>
         {/* Main Text */}
-        <div className={styles.mainTextContainer}>
+        <div 
+          className={styles.mainTextContainer}
+          onMouseEnter={() => isReady && triggerHoverGlitch('header')}
+          onMouseLeave={() => isReady && stopHoverGlitch()}
+          onClick={() => isReady && triggerSectionGlitch('header', 500)}
+          style={{ cursor: isReady ? 'pointer' : 'default', transition: 'all 0.3s ease' }}
+        >
           {isReady ? (
             <>
               <div className={styles.omegaSymbol}>Ω</div>
@@ -368,7 +438,12 @@ export function WelcomeScreen({ onComplete, initialMode }: WelcomeScreenProps): 
               className={`${styles.actionButton} ${styles.primaryButton} ${
                 selectedMode === "basic" ? styles.activeButton : ""
               }`}
-              onClick={() => handleModeSelect("basic")}
+              onClick={() => {
+                triggerSectionGlitch('basic', 400);
+                setTimeout(() => handleModeSelect("basic"), 200);
+              }}
+              onMouseEnter={() => triggerHoverGlitch('basic')}
+              onMouseLeave={() => stopHoverGlitch()}
               disabled={!isReady}
             >
               Basic Terminal
@@ -377,7 +452,12 @@ export function WelcomeScreen({ onComplete, initialMode }: WelcomeScreenProps): 
               className={`${styles.actionButton} ${styles.secondaryButton} ${
                 selectedMode === "futuristic" ? styles.activeButton : ""
               }`}
-              onClick={() => handleModeSelect("futuristic")}
+              onClick={() => {
+                triggerSectionGlitch('dashboard', 400);
+                setTimeout(() => handleModeSelect("futuristic"), 200);
+              }}
+              onMouseEnter={() => triggerHoverGlitch('dashboard')}
+              onMouseLeave={() => stopHoverGlitch()}
               disabled={!isReady || isMobile}
               title={isMobile ? "Dashboard is desktop-only" : undefined}
             >

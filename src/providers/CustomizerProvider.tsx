@@ -55,6 +55,8 @@ const COLOR_PALETTES: ColorPalette[] = [
   "lilac",
   "toxic",
   "radioactive",
+  "infrared",
+  "xmas",
   "light",
 ];
 

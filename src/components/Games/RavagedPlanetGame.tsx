@@ -130,12 +130,7 @@ export function RavagedPlanetGame({
         </div>
       </div>
       
-      {/* Score overlay - shown during gameplay only */}
-      {gameState !== "menu" && gameState !== "game-over" && gameState !== "player-win" && (
-        <div className={styles.scoreOverlay}>
-          <div className={styles.scoreItem}>Score: {score}</div>
-        </div>
-      )}
+      {/* Score overlay removed - all UI in left sidebar now */}
     </div>
   );
 }

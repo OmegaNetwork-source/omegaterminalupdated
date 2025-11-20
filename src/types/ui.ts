@@ -64,6 +64,8 @@ export type ColorPalette =
   | "lilac"
   | "toxic"
   | "radioactive"
+  | "infrared"
+  | "xmas"
   | "light";
 
 /**

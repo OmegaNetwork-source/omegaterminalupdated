@@ -169,17 +169,7 @@ export function GameModal({
           )}
         </div>
 
-        {/* Footer */}
-        <div className={styles.footer}>
-          <div className={styles.scoreDisplay}>
-            {gameScore !== null ? `Score: ${gameScore}` : "Play to set a score"}
-          </div>
-          {gameScore !== null && onScoreSubmit && (
-            <button className={styles.submitBtn} onClick={handleScoreSubmit}>
-              Submit Score
-            </button>
-          )}
-        </div>
+        {/* Footer hidden - UI moved to left sidebar */}
       </div>
     </div>
   );

@@ -337,3 +337,8 @@ Your Next.js version uses the same Spotify integration pattern as the vanilla ve
 
 
 
+
+
+
+
+

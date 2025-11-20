@@ -30,6 +30,7 @@ import { useWallet } from "@/hooks/useWallet";
 import { useViewMode } from "@/hooks/useViewMode";
 import { useTheme } from "@/hooks/useTheme";
 import { useCustomizer } from "@/hooks/useCustomizer";
+import { commandRegistry } from "@/lib/commands";
 import styles from "./DashboardSidebar.module.css";
 import { getSubActionIcon } from "./utils/subActionIcons";
 
@@ -77,6 +78,22 @@ function SortableSection({
     opacity: isDragging ? 0.5 : 1,
   };
 
+  // Handle HTML5 drag for dropping into quick actions
+  const handleDragStart = (e: React.DragEvent) => {
+    e.dataTransfer.effectAllowed = "copy";
+    e.dataTransfer.setData("text/plain", `section:${section.id}`);
+    // Add visual feedback
+    if (e.currentTarget instanceof HTMLElement) {
+      e.currentTarget.style.opacity = "0.5";
+    }
+  };
+
+  const handleDragEnd = (e: React.DragEvent) => {
+    if (e.currentTarget instanceof HTMLElement) {
+      e.currentTarget.style.opacity = "1";
+    }
+  };
+
   return (
     <div
       ref={setNodeRef}
@@ -85,6 +102,9 @@ function SortableSection({
     >
       <div
         className={cssStyles.sectionTitle}
+        draggable={true}
+        onDragStart={handleDragStart}
+        onDragEnd={handleDragEnd}
         onClick={(e) => {
           // Don't toggle if clicking on drag handle
           const target = e.target as HTMLElement;
@@ -92,6 +112,8 @@ function SortableSection({
             onToggle(section.id);
           }
         }}
+        style={{ cursor: "grab" }}
+        title="Drag to reorder sections or drag to Quick Actions area to add commands"
       >
         {/* Drag Handle */}
         <div
@@ -262,15 +284,14 @@ export function DashboardSidebar(): JSX.Element {
   );
 
   // Searchable index of all quick actions
-  // This includes section titles and common button labels
+  // This includes section titles, common button labels, AND all registered commands/subcommands
   const searchableIndex = useMemo(() => {
     const index: Record<string, string[]> = {
       quick: [
         "System Help", "Connect Wallet", "Claim Faucet", "AI Assistant", "AI Toggle", "AI Help",
         "Basic View", "Clear Terminal", "Terminal Style", "Color Palettes", "Cycle Palette",
         "Crimson", "Anime", "Ocean", "Forest", "Sunset", "Purple", "Cyber", "Gold", "Ice", "Fire",
-        "Reset Default", "Themes", "Cycle Theme", "Executive", "Modern UI", "Dark", "Light",
-        "Matrix", "Retro", "PowerShell"
+        "Reset Default", "Themes", "Cycle Theme", "Void", "Neo", "Elite", "Neon"
       ],
       news: [
         "Crypto News", "Open News Reader", "Latest News", "Trending News", "Bitcoin News",
@@ -320,6 +341,67 @@ export function DashboardSidebar(): JSX.Element {
         "ChainGPT Tools", "Chat", "NFT Generator", "Tutorials"
       ],
     };
+
+    // Add ALL registered commands and their aliases to the search index
+    try {
+      const allCommands = commandRegistry.getAllCommands();
+      const allCommandNames = commandRegistry.getCommandNames();
+      
+      // Create a comprehensive search index with command names, aliases, descriptions, and usage
+      const commandSearchTerms: string[] = [];
+      
+      allCommands.forEach((cmd) => {
+        // Add command name
+        commandSearchTerms.push(cmd.name);
+        
+        // Add aliases
+        if (cmd.aliases && cmd.aliases.length > 0) {
+          cmd.aliases.forEach((alias) => {
+            commandSearchTerms.push(alias);
+          });
+        }
+        
+        // Add description words
+        if (cmd.description) {
+          const descWords = cmd.description
+            .toLowerCase()
+            .split(/\s+/)
+            .filter((word) => word.length > 3); // Only meaningful words
+          commandSearchTerms.push(...descWords);
+        }
+        
+        // Add usage patterns (extract subcommands)
+        if (cmd.usage) {
+          // Extract subcommands like "markets:list", "pgt track", etc.
+          const usageParts = cmd.usage
+            .split(/\s+/)
+            .filter((part) => part.includes(":") || part.includes("-") || part.length > 2);
+          commandSearchTerms.push(...usageParts);
+          
+          // Also add the full usage string
+          commandSearchTerms.push(cmd.usage);
+        }
+        
+        // Add category if available
+        if (cmd.category) {
+          commandSearchTerms.push(cmd.category);
+        }
+      });
+      
+      // Add all command names (including aliases) to a global search pool
+      commandSearchTerms.push(...allCommandNames);
+      
+      // Add command search terms to ALL sections for comprehensive search
+      Object.keys(index).forEach((sectionId) => {
+        index[sectionId] = [...(index[sectionId] || []), ...commandSearchTerms];
+      });
+      
+      // Also create a dedicated "all-commands" section for direct command search
+      index["all-commands"] = commandSearchTerms;
+    } catch (error) {
+      console.error("Failed to build command search index:", error);
+    }
+
     return index;
   }, []);
 
@@ -339,6 +421,23 @@ export function DashboardSidebar(): JSX.Element {
     } catch {}
     setExpandedSections(["quick", "news"]);
   }, []);
+
+  // Load saved section order from localStorage
+  useEffect(() => {
+    if (!isHydrated) return;
+
+    try {
+      const savedOrder = localStorage.getItem("omega-sidebar-section-order");
+      if (savedOrder) {
+        const parsed = JSON.parse(savedOrder) as string[];
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setSectionOrder(parsed);
+        }
+      }
+    } catch (error) {
+      console.error("Failed to load section order:", error);
+    }
+  }, [isHydrated]);
 
   const persistSections = useCallback((next: Set<string>) => {
     try {
@@ -615,7 +714,21 @@ export function DashboardSidebar(): JSX.Element {
             </button>
             <button
               className={styles.button}
+              draggable={true}
+              onDragStart={(e) => {
+                e.dataTransfer.effectAllowed = "copy";
+                e.dataTransfer.setData("text/plain", "subaction:faucet|Claim Faucet|Claim test tokens");
+                if (e.currentTarget instanceof HTMLElement) {
+                  e.currentTarget.style.opacity = "0.5";
+                }
+              }}
+              onDragEnd={(e) => {
+                if (e.currentTarget instanceof HTMLElement) {
+                  e.currentTarget.style.opacity = "1";
+                }
+              }}
               onClick={() => handleCommandClick("faucet")}
+              title="Drag to Quick Actions or click to execute"
             >
               <svg
                 className={styles.buttonIcon}
@@ -694,7 +807,21 @@ export function DashboardSidebar(): JSX.Element {
 
             <button
               className={styles.button}
+              draggable={true}
+              onDragStart={(e) => {
+                e.dataTransfer.effectAllowed = "copy";
+                e.dataTransfer.setData("text/plain", "subaction:clear|Clear Terminal|Clear terminal output");
+                if (e.currentTarget instanceof HTMLElement) {
+                  e.currentTarget.style.opacity = "0.5";
+                }
+              }}
+              onDragEnd={(e) => {
+                if (e.currentTarget instanceof HTMLElement) {
+                  e.currentTarget.style.opacity = "1";
+                }
+              }}
               onClick={() => handleCommandClick("clear")}
+              title="Drag to Quick Actions or click to execute"
             >
               <svg
                 className={styles.buttonIcon}
@@ -741,71 +868,160 @@ export function DashboardSidebar(): JSX.Element {
                 </button>
                 <button
                   className={styles.subButton}
-                  onClick={() => handleSetColorPalette("crimson")}
-                >
-                  <span>Crimson</span>
-                </button>
-                <button
-                  className={styles.subButton}
-                  onClick={() => handleSetColorPalette("anime")}
-                >
-                  <span>Anime</span>
-                </button>
-                <button
-                  className={styles.subButton}
-                  onClick={() => handleSetColorPalette("ocean")}
-                >
-                  <span>Ocean</span>
-                </button>
-                <button
-                  className={styles.subButton}
-                  onClick={() => handleSetColorPalette("forest")}
-                >
-                  <span>Forest</span>
-                </button>
-                <button
-                  className={styles.subButton}
-                  onClick={() => handleSetColorPalette("sunset")}
-                >
-                  <span>Sunset</span>
-                </button>
-                <button
-                  className={styles.subButton}
-                  onClick={() => handleSetColorPalette("purple")}
-                >
-                  <span>Purple</span>
-                </button>
-                <button
-                  className={styles.subButton}
-                  onClick={() => handleSetColorPalette("cyber")}
-                >
-                  <span>Cyber</span>
-                </button>
-                <button
-                  className={styles.subButton}
-                  onClick={() => handleSetColorPalette("gold")}
-                >
-                  <span>Gold</span>
-                </button>
-                <button
-                  className={styles.subButton}
-                  onClick={() => handleSetColorPalette("ice")}
-                >
-                  <span>Ice</span>
-                </button>
-                <button
-                  className={styles.subButton}
-                  onClick={() => handleSetColorPalette("fire")}
-                >
-                  <span>Fire</span>
-                </button>
-                <button
-                  className={styles.subButton}
                   onClick={() => customizer.resetPalette?.()}
                 >
                   {getSubActionIcon("Reset Default")}
                   <span>Reset Default</span>
                 </button>
+                
+                {/* Compact Grid Layout for Palettes */}
+                <div className={styles.paletteGrid}>
+                  {/* Vibrant & Energetic */}
+                  <button className={styles.paletteChip} onClick={() => handleSetColorPalette("red")} title="Red">
+                    <span className={styles.paletteSwatch} style={{ background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)' }}></span>
+                    <span>Red</span>
+                  </button>
+                  <button className={styles.paletteChip} onClick={() => handleSetColorPalette("crimson")} title="Crimson">
+                    <span className={styles.paletteSwatch} style={{ background: 'linear-gradient(135deg, #dc143c 0%, #b91c1c 100%)' }}></span>
+                    <span>Crimson</span>
+                  </button>
+                  <button className={styles.paletteChip} onClick={() => handleSetColorPalette("anime")} title="Anime">
+                    <span className={styles.paletteSwatch} style={{ background: 'linear-gradient(135deg, #ff6b9d 0%, #c471ed 50%, #12c2e9 100%)' }}></span>
+                    <span>Anime</span>
+                  </button>
+                  <button className={styles.paletteChip} onClick={() => handleSetColorPalette("cyber")} title="Cyber">
+                    <span className={styles.paletteSwatch} style={{ background: 'linear-gradient(135deg, #00ffff 0%, #ff00ff 100%)' }}></span>
+                    <span>Cyber</span>
+                  </button>
+                  <button className={styles.paletteChip} onClick={() => handleSetColorPalette("neon")} title="Neon">
+                    <span className={styles.paletteSwatch} style={{ background: 'linear-gradient(135deg, #00ffff 0%, #ff00ff 50%, #00ff00 100%)' }}></span>
+                    <span>Neon</span>
+                  </button>
+                  <button className={styles.paletteChip} onClick={() => handleSetColorPalette("fire")} title="Fire">
+                    <span className={styles.paletteSwatch} style={{ background: 'linear-gradient(135deg, #ff3300 0%, #ff6600 50%, #ff9900 100%)' }}></span>
+                    <span>Fire</span>
+                  </button>
+                  <button className={styles.paletteChip} onClick={() => handleSetColorPalette("flame")} title="Flame">
+                    <span className={styles.paletteSwatch} style={{ background: 'linear-gradient(135deg, #ff00ff 0%, #ff6600 100%)' }}></span>
+                    <span>Flame</span>
+                  </button>
+                  <button className={styles.paletteChip} onClick={() => handleSetColorPalette("toxic")} title="Toxic">
+                    <span className={styles.paletteSwatch} style={{ background: 'linear-gradient(135deg, #b7ff2f 0%, #00ffa6 50%, #ff2fe3 100%)' }}></span>
+                    <span>Toxic</span>
+                  </button>
+                  <button className={`${styles.paletteChip} ${styles.paletteChipLong}`} onClick={() => handleSetColorPalette("radioactive")} title="Radioactive">
+                    <span className={styles.paletteSwatch} style={{ background: 'linear-gradient(135deg, #7fff00 0%, #00ffff 50%, #ffff00 100%)' }}></span>
+                    <span>Radioactive</span>
+                  </button>
+                  <button className={`${styles.paletteChip} ${styles.paletteChipLong}`} onClick={() => handleSetColorPalette("infrared")} title="Infrared">
+                    <span className={styles.paletteSwatch} style={{ background: 'linear-gradient(135deg, #ffff00 0%, #ff6600 50%, #ff3300 100%)' }}></span>
+                    <span>Infrared</span>
+                  </button>
+                  
+                  {/* Seasonal */}
+                  <button className={styles.paletteChip} onClick={() => handleSetColorPalette("xmas")} title="Xmas">
+                    <span className={styles.paletteSwatch} style={{ background: 'linear-gradient(135deg, #dc2626 0%, #16a34a 50%, #fbbf24 100%)' }}></span>
+                    <span>Xmas</span>
+                  </button>
+                  
+                  {/* Cool Tones */}
+                  <button className={styles.paletteChip} onClick={() => handleSetColorPalette("ocean")} title="Ocean">
+                    <span className={styles.paletteSwatch} style={{ background: 'linear-gradient(135deg, #0ea5e9 0%, #06b6d4 50%, #0891b2 100%)' }}></span>
+                    <span>Ocean</span>
+                  </button>
+                  <button className={styles.paletteChip} onClick={() => handleSetColorPalette("blue")} title="Blue">
+                    <span className={styles.paletteSwatch} style={{ background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)' }}></span>
+                    <span>Blue</span>
+                  </button>
+                  <button className={styles.paletteChip} onClick={() => handleSetColorPalette("ice")} title="Ice">
+                    <span className={styles.paletteSwatch} style={{ background: 'linear-gradient(135deg, #e0f2fe 0%, #bae6fd 50%, #7dd3fc 100%)' }}></span>
+                    <span>Ice</span>
+                  </button>
+                  <button className={styles.paletteChip} onClick={() => handleSetColorPalette("frost")} title="Frost">
+                    <span className={styles.paletteSwatch} style={{ background: 'linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #bae6fd 100%)' }}></span>
+                    <span>Frost</span>
+                  </button>
+                  <button className={styles.paletteChip} onClick={() => handleSetColorPalette("mint")} title="Mint">
+                    <span className={styles.paletteSwatch} style={{ background: 'linear-gradient(135deg, #10b981 0%, #34d399 50%, #6ee7b7 100%)' }}></span>
+                    <span>Mint</span>
+                  </button>
+                  <button className={`${styles.paletteChip} ${styles.paletteChipLong}`} onClick={() => handleSetColorPalette("turquoise")} title="Turquoise">
+                    <span className={styles.paletteSwatch} style={{ background: 'linear-gradient(135deg, #14b8a6 0%, #2dd4bf 50%, #5eead4 100%)' }}></span>
+                    <span>Turquoise</span>
+                  </button>
+                  <button className={styles.paletteChip} onClick={() => handleSetColorPalette("slate")} title="Slate">
+                    <span className={styles.paletteSwatch} style={{ background: 'linear-gradient(135deg, #64748b 0%, #475569 50%, #334155 100%)' }}></span>
+                    <span>Slate</span>
+                  </button>
+                  <button className={styles.paletteChip} onClick={() => handleSetColorPalette("silver")} title="Silver">
+                    <span className={styles.paletteSwatch} style={{ background: 'linear-gradient(135deg, #cbd5e1 0%, #94a3b8 50%, #64748b 100%)' }}></span>
+                    <span>Silver</span>
+                  </button>
+                  
+                  {/* Warm Tones */}
+                  <button className={styles.paletteChip} onClick={() => handleSetColorPalette("sunset")} title="Sunset">
+                    <span className={styles.paletteSwatch} style={{ background: 'linear-gradient(135deg, #f97316 0%, #ec4899 50%, #a855f7 100%)' }}></span>
+                    <span>Sunset</span>
+                  </button>
+                  <button className={styles.paletteChip} onClick={() => handleSetColorPalette("rose")} title="Rose">
+                    <span className={styles.paletteSwatch} style={{ background: 'linear-gradient(135deg, #f43f5e 0%, #ec4899 50%, #f472b6 100%)' }}></span>
+                    <span>Rose</span>
+                  </button>
+                  <button className={styles.paletteChip} onClick={() => handleSetColorPalette("pink")} title="Pink">
+                    <span className={styles.paletteSwatch} style={{ background: 'linear-gradient(135deg, #ec4899 0%, #f472b6 50%, #f9a8d4 100%)' }}></span>
+                    <span>Pink</span>
+                  </button>
+                  <button className={styles.paletteChip} onClick={() => handleSetColorPalette("amber")} title="Amber">
+                    <span className={styles.paletteSwatch} style={{ background: 'linear-gradient(135deg, #f59e0b 0%, #fbbf24 50%, #fcd34d 100%)' }}></span>
+                    <span>Amber</span>
+                  </button>
+                  <button className={styles.paletteChip} onClick={() => handleSetColorPalette("honey")} title="Honey">
+                    <span className={styles.paletteSwatch} style={{ background: 'linear-gradient(135deg, #d97706 0%, #f59e0b 50%, #fbbf24 100%)' }}></span>
+                    <span>Honey</span>
+                  </button>
+                  <button className={styles.paletteChip} onClick={() => handleSetColorPalette("gold")} title="Gold">
+                    <span className={styles.paletteSwatch} style={{ background: 'linear-gradient(135deg, #fbbf24 0%, #fcd34d 50%, #fde047 100%)' }}></span>
+                    <span>Gold</span>
+                  </button>
+                  <button className={styles.paletteChip} onClick={() => handleSetColorPalette("luxury")} title="Luxury">
+                    <span className={styles.paletteSwatch} style={{ background: 'linear-gradient(135deg, #92400e 0%, #d97706 50%, #f59e0b 100%)' }}></span>
+                    <span>Luxury</span>
+                  </button>
+                  
+                  {/* Mystical */}
+                  <button className={styles.paletteChip} onClick={() => handleSetColorPalette("purple")} title="Purple">
+                    <span className={styles.paletteSwatch} style={{ background: 'linear-gradient(135deg, #a855f7 0%, #9333ea 50%, #7e22ce 100%)' }}></span>
+                    <span>Purple</span>
+                  </button>
+                  <button className={styles.paletteChip} onClick={() => handleSetColorPalette("violet")} title="Violet">
+                    <span className={styles.paletteSwatch} style={{ background: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 50%, #6d28d9 100%)' }}></span>
+                    <span>Violet</span>
+                  </button>
+                  <button className={`${styles.paletteChip} ${styles.paletteChipLong}`} onClick={() => handleSetColorPalette("lavender")} title="Lavender">
+                    <span className={styles.paletteSwatch} style={{ background: 'linear-gradient(135deg, #c4b5fd 0%, #a78bfa 50%, #8b5cf6 100%)' }}></span>
+                    <span>Lavender</span>
+                  </button>
+                  <button className={styles.paletteChip} onClick={() => handleSetColorPalette("lilac")} title="Lilac">
+                    <span className={styles.paletteSwatch} style={{ background: 'linear-gradient(135deg, #e9d5ff 0%, #ddd6fe 50%, #c4b5fd 100%)' }}></span>
+                    <span>Lilac</span>
+                  </button>
+                  
+                  {/* Nature */}
+                  <button className={styles.paletteChip} onClick={() => handleSetColorPalette("forest")} title="Forest">
+                    <span className={styles.paletteSwatch} style={{ background: 'linear-gradient(135deg, #166534 0%, #16a34a 50%, #22c55e 100%)' }}></span>
+                    <span>Forest</span>
+                  </button>
+                  <button className={styles.paletteChip} onClick={() => handleSetColorPalette("green")} title="Green">
+                    <span className={styles.paletteSwatch} style={{ background: 'linear-gradient(135deg, #22c55e 0%, #16a34a 50%, #15803d 100%)' }}></span>
+                    <span>Green</span>
+                  </button>
+                  
+                  {/* Light Mode */}
+                  <button className={styles.paletteChip} onClick={() => handleSetColorPalette("light")} title="Light">
+                    <span className={styles.paletteSwatch} style={{ background: 'linear-gradient(135deg, #ffffff 0%, #f3f4f6 50%, #e5e7eb 100%)' }}></span>
+                    <span>Light</span>
+                  </button>
+                </div>
 
                 {/* Themes Subsection */}
                 <div className={styles.subSectionHeader}>
@@ -815,48 +1031,22 @@ export function DashboardSidebar(): JSX.Element {
                   {getSubActionIcon("Cycle Theme")}
                   <span>Cycle Theme</span>
                 </button>
-                <button
-                  className={styles.subButton}
-                  onClick={() => handleSetTheme("executive")}
-                >
-                  <span>Executive</span>
-                </button>
-                <button
-                  className={styles.subButton}
-                  onClick={() => handleSetTheme("modern")}
-                >
-                  <span>Modern UI</span>
-                </button>
-                <button
-                  className={styles.subButton}
-                  onClick={() => handleSetTheme("dark")}
-                >
-                  <span>Dark</span>
-                </button>
-                <button
-                  className={styles.subButton}
-                  onClick={() => handleSetTheme("light")}
-                >
-                  <span>Light</span>
-                </button>
-                <button
-                  className={styles.subButton}
-                  onClick={() => handleSetTheme("matrix")}
-                >
-                  <span>Matrix</span>
-                </button>
-                <button
-                  className={styles.subButton}
-                  onClick={() => handleSetTheme("retro")}
-                >
-                  <span>Retro</span>
-                </button>
-                <button
-                  className={styles.subButton}
-                  onClick={() => handleSetTheme("powershell")}
-                >
-                  <span>PowerShell</span>
-                </button>
+                
+                {/* Compact Grid Layout for Themes */}
+                <div className={styles.themeGrid}>
+                  <button className={`${styles.themeChip} ${styles.themeDark}`} onClick={() => handleSetTheme("void")} title="Void - Deep void terminal">
+                    <span>🌑 Void</span>
+                  </button>
+                  <button className={`${styles.themeChip} ${styles.themeMatrix}`} onClick={() => handleSetTheme("neo")} title="Neo - Matrix digital rain">
+                    <span>💚 Neo</span>
+                  </button>
+                  <button className={`${styles.themeChip} ${styles.themeExecutive}`} onClick={() => handleSetTheme("elite")} title="Elite - Premium luxury">
+                    <span>👑 Elite</span>
+                  </button>
+                  <button className={`${styles.themeChip} ${styles.themeModern}`} onClick={() => handleSetTheme("neon")} title="Neon - Futuristic cyber">
+                    <span>⚡ Neon</span>
+                  </button>
+                </div>
               </div>
             </details>
           </div>
@@ -1418,11 +1608,9 @@ export function DashboardSidebar(): JSX.Element {
               </div>
             </details>
 
-            {/* Venues */}
-            <button
-              className={styles.button}
-              onClick={() => handleCommandClick("polymarket")}
-            >
+            {/* Polymarket */}
+            <details className={styles.expandable}>
+              <summary className={styles.expandableButton}>
               <svg
                 className={styles.buttonIcon}
                 viewBox="0 0 24 24"
@@ -1432,12 +1620,406 @@ export function DashboardSidebar(): JSX.Element {
                 <path d="M7,15H9C9,16.08 10.37,17 12,17C13.63,17 15,16.08 15,15C15,13.9 13.96,13.5 11.76,12.97C9.64,12.44 7,11.78 7,9C7,7.21 8.47,5.69 10.5,5.18V3H13.5V5.18C15.53,5.69 17,7.21 17,9H15C15,7.92 13.63,7 12,7C10.37,7 9,7.92 9,9C9,10.1 10.04,10.5 12.24,11.03C14.36,11.56 17,12.22 17,15C17,16.79 15.53,18.31 13.5,18.82V21H10.5V18.82C8.47,18.31 7,16.79 7,15Z" fill="currentColor" />
               </svg>
               <span>Polymarket</span>
+                <svg
+                  className={styles.expandIcon}
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="currentColor"
+                >
+                  <path d="M7.41,8.58L12,13.17L16.59,8.58L18,10L12,16L6,10L7.41,8.58Z" fill="currentColor" />
+                </svg>
+              </summary>
+              <div className={styles.subActions}>
+                <div className={styles.subSectionHeader}>
+                  <span>Main Commands</span>
+                </div>
+                <button
+                  className={styles.subButton}
+                  draggable={true}
+                  onDragStart={(e) => {
+                    e.dataTransfer.effectAllowed = "copy";
+                    e.dataTransfer.setData("text/plain", "subaction:polymarket markets|Markets|Get current active markets");
+                    if (e.currentTarget instanceof HTMLElement) {
+                      e.currentTarget.style.opacity = "0.5";
+                    }
+                  }}
+                  onDragEnd={(e) => {
+                    if (e.currentTarget instanceof HTMLElement) {
+                      e.currentTarget.style.opacity = "1";
+                    }
+                  }}
+                  onClick={() => handleCommandClick("polymarket markets")}
+                  title="Drag to Quick Actions or click to execute"
+                >
+                  {getSubActionIcon("Markets")}
+                  <span>Markets</span>
             </button>
-
             <button
-              className={styles.button}
-              onClick={() => handleCommandClick("kalshi")}
-            >
+                  className={styles.subButton}
+                  draggable={true}
+                  onDragStart={(e) => {
+                    e.dataTransfer.effectAllowed = "copy";
+                    e.dataTransfer.setData("text/plain", "subaction:polymarket trending|Trending|Get top volume markets");
+                    if (e.currentTarget instanceof HTMLElement) {
+                      e.currentTarget.style.opacity = "0.5";
+                    }
+                  }}
+                  onDragEnd={(e) => {
+                    if (e.currentTarget instanceof HTMLElement) {
+                      e.currentTarget.style.opacity = "1";
+                    }
+                  }}
+                  onClick={() => handleCommandClick("polymarket trending")}
+                  title="Drag to Quick Actions or click to execute"
+                >
+                  {getSubActionIcon("Trending")}
+                  <span>Trending</span>
+                </button>
+                <button
+                  className={styles.subButton}
+                  draggable={true}
+                  onDragStart={(e) => {
+                    e.dataTransfer.effectAllowed = "copy";
+                    e.dataTransfer.setData("text/plain", "subaction:polymarket events|Events|Get recent events");
+                    if (e.currentTarget instanceof HTMLElement) {
+                      e.currentTarget.style.opacity = "0.5";
+                    }
+                  }}
+                  onDragEnd={(e) => {
+                    if (e.currentTarget instanceof HTMLElement) {
+                      e.currentTarget.style.opacity = "1";
+                    }
+                  }}
+                  onClick={() => handleCommandClick("polymarket events")}
+                  title="Drag to Quick Actions or click to execute"
+                >
+                  {getSubActionIcon("Events")}
+                  <span>Events</span>
+                </button>
+                <button
+                  className={styles.subButton}
+                  draggable={true}
+                  onDragStart={(e) => {
+                    e.dataTransfer.effectAllowed = "copy";
+                    e.dataTransfer.setData("text/plain", "subaction:polymarket recent|Recent|Get very recent events");
+                    if (e.currentTarget instanceof HTMLElement) {
+                      e.currentTarget.style.opacity = "0.5";
+                    }
+                  }}
+                  onDragEnd={(e) => {
+                    if (e.currentTarget instanceof HTMLElement) {
+                      e.currentTarget.style.opacity = "1";
+                    }
+                  }}
+                  onClick={() => handleCommandClick("polymarket recent")}
+                  title="Drag to Quick Actions or click to execute"
+                >
+                  {getSubActionIcon("Recent")}
+                  <span>Recent</span>
+                </button>
+                <button
+                  className={styles.subButton}
+                  draggable={true}
+                  onDragStart={(e) => {
+                    e.dataTransfer.effectAllowed = "copy";
+                    e.dataTransfer.setData("text/plain", "subaction:polymarket new|New Markets|Newest markets");
+                    if (e.currentTarget instanceof HTMLElement) {
+                      e.currentTarget.style.opacity = "0.5";
+                    }
+                  }}
+                  onDragEnd={(e) => {
+                    if (e.currentTarget instanceof HTMLElement) {
+                      e.currentTarget.style.opacity = "1";
+                    }
+                  }}
+                  onClick={() => handleCommandClick("polymarket new")}
+                  title="Drag to Quick Actions or click to execute"
+                >
+                  {getSubActionIcon("New Markets")}
+                  <span>New Markets</span>
+                </button>
+                <button
+                  className={styles.subButton}
+                  draggable={true}
+                  onDragStart={(e) => {
+                    e.dataTransfer.effectAllowed = "copy";
+                    e.dataTransfer.setData("text/plain", "subaction:polymarket breaking|Breaking News|Breaking news markets");
+                    if (e.currentTarget instanceof HTMLElement) {
+                      e.currentTarget.style.opacity = "0.5";
+                    }
+                  }}
+                  onDragEnd={(e) => {
+                    if (e.currentTarget instanceof HTMLElement) {
+                      e.currentTarget.style.opacity = "1";
+                    }
+                  }}
+                  onClick={() => handleCommandClick("polymarket breaking")}
+                  title="Drag to Quick Actions or click to execute"
+                >
+                  {getSubActionIcon("Breaking News")}
+                  <span>Breaking News</span>
+                </button>
+                <div className={styles.subSectionHeader}>
+                  <span>Categories</span>
+                </div>
+                <button
+                  className={styles.subButton}
+                  draggable={true}
+                  onDragStart={(e) => {
+                    e.dataTransfer.effectAllowed = "copy";
+                    e.dataTransfer.setData("text/plain", "subaction:polymarket politics|Politics|Political markets");
+                    if (e.currentTarget instanceof HTMLElement) {
+                      e.currentTarget.style.opacity = "0.5";
+                    }
+                  }}
+                  onDragEnd={(e) => {
+                    if (e.currentTarget instanceof HTMLElement) {
+                      e.currentTarget.style.opacity = "1";
+                    }
+                  }}
+                  onClick={() => handleCommandClick("polymarket politics")}
+                  title="Drag to Quick Actions or click to execute"
+                >
+                  {getSubActionIcon("Politics")}
+                  <span>Politics</span>
+                </button>
+                <button
+                  className={styles.subButton}
+                  draggable={true}
+                  onDragStart={(e) => {
+                    e.dataTransfer.effectAllowed = "copy";
+                    e.dataTransfer.setData("text/plain", "subaction:polymarket sports|Sports|Sports markets");
+                    if (e.currentTarget instanceof HTMLElement) {
+                      e.currentTarget.style.opacity = "0.5";
+                    }
+                  }}
+                  onDragEnd={(e) => {
+                    if (e.currentTarget instanceof HTMLElement) {
+                      e.currentTarget.style.opacity = "1";
+                    }
+                  }}
+                  onClick={() => handleCommandClick("polymarket sports")}
+                  title="Drag to Quick Actions or click to execute"
+                >
+                  {getSubActionIcon("Sports")}
+                  <span>Sports</span>
+                </button>
+                <button
+                  className={styles.subButton}
+                  draggable={true}
+                  onDragStart={(e) => {
+                    e.dataTransfer.effectAllowed = "copy";
+                    e.dataTransfer.setData("text/plain", "subaction:polymarket crypto|Crypto|Crypto markets");
+                    if (e.currentTarget instanceof HTMLElement) {
+                      e.currentTarget.style.opacity = "0.5";
+                    }
+                  }}
+                  onDragEnd={(e) => {
+                    if (e.currentTarget instanceof HTMLElement) {
+                      e.currentTarget.style.opacity = "1";
+                    }
+                  }}
+                  onClick={() => handleCommandClick("polymarket crypto")}
+                  title="Drag to Quick Actions or click to execute"
+                >
+                  {getSubActionIcon("Crypto")}
+                  <span>Crypto</span>
+                </button>
+                <button
+                  className={styles.subButton}
+                  draggable={true}
+                  onDragStart={(e) => {
+                    e.dataTransfer.effectAllowed = "copy";
+                    e.dataTransfer.setData("text/plain", "subaction:polymarket earnings|Earnings|Earnings markets");
+                    if (e.currentTarget instanceof HTMLElement) {
+                      e.currentTarget.style.opacity = "0.5";
+                    }
+                  }}
+                  onDragEnd={(e) => {
+                    if (e.currentTarget instanceof HTMLElement) {
+                      e.currentTarget.style.opacity = "1";
+                    }
+                  }}
+                  onClick={() => handleCommandClick("polymarket earnings")}
+                  title="Drag to Quick Actions or click to execute"
+                >
+                  {getSubActionIcon("Earnings")}
+                  <span>Earnings</span>
+                </button>
+                <button
+                  className={styles.subButton}
+                  draggable={true}
+                  onDragStart={(e) => {
+                    e.dataTransfer.effectAllowed = "copy";
+                    e.dataTransfer.setData("text/plain", "subaction:polymarket geopolitics|Geopolitics|Geopolitical markets");
+                    if (e.currentTarget instanceof HTMLElement) {
+                      e.currentTarget.style.opacity = "0.5";
+                    }
+                  }}
+                  onDragEnd={(e) => {
+                    if (e.currentTarget instanceof HTMLElement) {
+                      e.currentTarget.style.opacity = "1";
+                    }
+                  }}
+                  onClick={() => handleCommandClick("polymarket geopolitics")}
+                  title="Drag to Quick Actions or click to execute"
+                >
+                  {getSubActionIcon("Geopolitics")}
+                  <span>Geopolitics</span>
+                </button>
+                <button
+                  className={styles.subButton}
+                  draggable={true}
+                  onDragStart={(e) => {
+                    e.dataTransfer.effectAllowed = "copy";
+                    e.dataTransfer.setData("text/plain", "subaction:polymarket tech|Tech|Technology markets");
+                    if (e.currentTarget instanceof HTMLElement) {
+                      e.currentTarget.style.opacity = "0.5";
+                    }
+                  }}
+                  onDragEnd={(e) => {
+                    if (e.currentTarget instanceof HTMLElement) {
+                      e.currentTarget.style.opacity = "1";
+                    }
+                  }}
+                  onClick={() => handleCommandClick("polymarket tech")}
+                  title="Drag to Quick Actions or click to execute"
+                >
+                  {getSubActionIcon("Tech")}
+                  <span>Tech</span>
+                </button>
+                <button
+                  className={styles.subButton}
+                  draggable={true}
+                  onDragStart={(e) => {
+                    e.dataTransfer.effectAllowed = "copy";
+                    e.dataTransfer.setData("text/plain", "subaction:polymarket culture|Culture|Culture markets");
+                    if (e.currentTarget instanceof HTMLElement) {
+                      e.currentTarget.style.opacity = "0.5";
+                    }
+                  }}
+                  onDragEnd={(e) => {
+                    if (e.currentTarget instanceof HTMLElement) {
+                      e.currentTarget.style.opacity = "1";
+                    }
+                  }}
+                  onClick={() => handleCommandClick("polymarket culture")}
+                  title="Drag to Quick Actions or click to execute"
+                >
+                  {getSubActionIcon("Culture")}
+                  <span>Culture</span>
+                </button>
+                <button
+                  className={styles.subButton}
+                  draggable={true}
+                  onDragStart={(e) => {
+                    e.dataTransfer.effectAllowed = "copy";
+                    e.dataTransfer.setData("text/plain", "subaction:polymarket world|World Events|World events markets");
+                    if (e.currentTarget instanceof HTMLElement) {
+                      e.currentTarget.style.opacity = "0.5";
+                    }
+                  }}
+                  onDragEnd={(e) => {
+                    if (e.currentTarget instanceof HTMLElement) {
+                      e.currentTarget.style.opacity = "1";
+                    }
+                  }}
+                  onClick={() => handleCommandClick("polymarket world")}
+                  title="Drag to Quick Actions or click to execute"
+                >
+                  {getSubActionIcon("World Events")}
+                  <span>World Events</span>
+                </button>
+                <button
+                  className={styles.subButton}
+                  draggable={true}
+                  onDragStart={(e) => {
+                    e.dataTransfer.effectAllowed = "copy";
+                    e.dataTransfer.setData("text/plain", "subaction:polymarket economy|Economy|Economic markets");
+                    if (e.currentTarget instanceof HTMLElement) {
+                      e.currentTarget.style.opacity = "0.5";
+                    }
+                  }}
+                  onDragEnd={(e) => {
+                    if (e.currentTarget instanceof HTMLElement) {
+                      e.currentTarget.style.opacity = "1";
+                    }
+                  }}
+                  onClick={() => handleCommandClick("polymarket economy")}
+                  title="Drag to Quick Actions or click to execute"
+                >
+                  {getSubActionIcon("Economy")}
+                  <span>Economy</span>
+                </button>
+                <button
+                  className={styles.subButton}
+                  draggable={true}
+                  onDragStart={(e) => {
+                    e.dataTransfer.effectAllowed = "copy";
+                    e.dataTransfer.setData("text/plain", "subaction:polymarket trump|Trump|Trump-related markets");
+                    if (e.currentTarget instanceof HTMLElement) {
+                      e.currentTarget.style.opacity = "0.5";
+                    }
+                  }}
+                  onDragEnd={(e) => {
+                    if (e.currentTarget instanceof HTMLElement) {
+                      e.currentTarget.style.opacity = "1";
+                    }
+                  }}
+                  onClick={() => handleCommandClick("polymarket trump")}
+                  title="Drag to Quick Actions or click to execute"
+                >
+                  {getSubActionIcon("Trump")}
+                  <span>Trump</span>
+                </button>
+                <button
+                  className={styles.subButton}
+                  draggable={true}
+                  onDragStart={(e) => {
+                    e.dataTransfer.effectAllowed = "copy";
+                    e.dataTransfer.setData("text/plain", "subaction:polymarket elections|Elections|Election markets");
+                    if (e.currentTarget instanceof HTMLElement) {
+                      e.currentTarget.style.opacity = "0.5";
+                    }
+                  }}
+                  onDragEnd={(e) => {
+                    if (e.currentTarget instanceof HTMLElement) {
+                      e.currentTarget.style.opacity = "1";
+                    }
+                  }}
+                  onClick={() => handleCommandClick("polymarket elections")}
+                  title="Drag to Quick Actions or click to execute"
+                >
+                  {getSubActionIcon("Elections")}
+                  <span>Elections</span>
+                </button>
+                <button
+                  className={styles.subButton}
+                  draggable={true}
+                  onDragStart={(e) => {
+                    e.dataTransfer.effectAllowed = "copy";
+                    e.dataTransfer.setData("text/plain", "subaction:polymarket|Polymarket Help|Polymarket command help");
+                    if (e.currentTarget instanceof HTMLElement) {
+                      e.currentTarget.style.opacity = "0.5";
+                    }
+                  }}
+                  onDragEnd={(e) => {
+                    if (e.currentTarget instanceof HTMLElement) {
+                      e.currentTarget.style.opacity = "1";
+                    }
+                  }}
+                  onClick={() => handleCommandClick("polymarket help")}
+                  title="Drag to Quick Actions or click to execute"
+                >
+                  {getSubActionIcon("Polymarket Help")}
+                  <span>Polymarket Help</span>
+                </button>
+              </div>
+            </details>
+
+            {/* Kalshi */}
+            <details className={styles.expandable}>
+              <summary className={styles.expandableButton}>
               <svg
                 className={styles.buttonIcon}
                 viewBox="0 0 24 24"
@@ -1447,7 +2029,430 @@ export function DashboardSidebar(): JSX.Element {
                 <path d="M7,15H9C9,16.08 10.37,17 12,17C13.63,17 15,16.08 15,15C15,13.9 13.96,13.5 11.76,12.97C9.64,12.44 7,11.78 7,9C7,7.21 8.47,5.69 10.5,5.18V3H13.5V5.18C15.53,5.69 17,7.21 17,9H15C15,7.92 13.63,7 12,7C10.37,7 9,7.92 9,9C9,10.1 10.04,10.5 12.24,11.03C14.36,11.56 17,12.22 17,15C17,16.79 15.53,18.31 13.5,18.82V21H10.5V18.82C8.47,18.31 7,16.79 7,15Z" fill="currentColor" />
               </svg>
               <span>Kalshi</span>
+                <svg
+                  className={styles.expandIcon}
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="currentColor"
+                >
+                  <path d="M7.41,8.58L12,13.17L16.59,8.58L18,10L12,16L6,10L7.41,8.58Z" fill="currentColor" />
+                </svg>
+              </summary>
+              <div className={styles.subActions}>
+                <div className={styles.subSectionHeader}>
+                  <span>Browse Markets</span>
+                </div>
+                <button
+                  className={styles.subButton}
+                  draggable={true}
+                  onDragStart={(e) => {
+                    e.dataTransfer.effectAllowed = "copy";
+                    e.dataTransfer.setData("text/plain", "subaction:kalshi markets|Markets|List active markets");
+                    if (e.currentTarget instanceof HTMLElement) {
+                      e.currentTarget.style.opacity = "0.5";
+                    }
+                  }}
+                  onDragEnd={(e) => {
+                    if (e.currentTarget instanceof HTMLElement) {
+                      e.currentTarget.style.opacity = "1";
+                    }
+                  }}
+                  onClick={() => handleCommandClick("kalshi markets")}
+                  title="Drag to Quick Actions or click to execute"
+                >
+                  {getSubActionIcon("Markets")}
+                  <span>Markets</span>
             </button>
+                <button
+                  className={styles.subButton}
+                  draggable={true}
+                  onDragStart={(e) => {
+                    e.dataTransfer.effectAllowed = "copy";
+                    e.dataTransfer.setData("text/plain", "subaction:kalshi trending|Trending|Top trending markets by volume");
+                    if (e.currentTarget instanceof HTMLElement) {
+                      e.currentTarget.style.opacity = "0.5";
+                    }
+                  }}
+                  onDragEnd={(e) => {
+                    if (e.currentTarget instanceof HTMLElement) {
+                      e.currentTarget.style.opacity = "1";
+                    }
+                  }}
+                  onClick={() => handleCommandClick("kalshi trending")}
+                  title="Drag to Quick Actions or click to execute"
+                >
+                  {getSubActionIcon("Trending")}
+                  <span>Trending</span>
+                </button>
+                <button
+                  className={styles.subButton}
+                  draggable={true}
+                  onDragStart={(e) => {
+                    e.dataTransfer.effectAllowed = "copy";
+                    e.dataTransfer.setData("text/plain", "subaction:kalshi new|New Markets|Newest markets");
+                    if (e.currentTarget instanceof HTMLElement) {
+                      e.currentTarget.style.opacity = "0.5";
+                    }
+                  }}
+                  onDragEnd={(e) => {
+                    if (e.currentTarget instanceof HTMLElement) {
+                      e.currentTarget.style.opacity = "1";
+                    }
+                  }}
+                  onClick={() => handleCommandClick("kalshi new")}
+                  title="Drag to Quick Actions or click to execute"
+                >
+                  {getSubActionIcon("New Markets")}
+                  <span>New Markets</span>
+                </button>
+                <div className={styles.subSectionHeader}>
+                  <span>Categories</span>
+                </div>
+                <button
+                  className={styles.subButton}
+                  draggable={true}
+                  onDragStart={(e) => {
+                    e.dataTransfer.effectAllowed = "copy";
+                    e.dataTransfer.setData("text/plain", "subaction:kalshi politics|Politics|Political markets");
+                    if (e.currentTarget instanceof HTMLElement) {
+                      e.currentTarget.style.opacity = "0.5";
+                    }
+                  }}
+                  onDragEnd={(e) => {
+                    if (e.currentTarget instanceof HTMLElement) {
+                      e.currentTarget.style.opacity = "1";
+                    }
+                  }}
+                  onClick={() => handleCommandClick("kalshi politics")}
+                  title="Drag to Quick Actions or click to execute"
+                >
+                  {getSubActionIcon("Politics")}
+                  <span>Politics</span>
+                </button>
+                <button
+                  className={styles.subButton}
+                  draggable={true}
+                  onDragStart={(e) => {
+                    e.dataTransfer.effectAllowed = "copy";
+                    e.dataTransfer.setData("text/plain", "subaction:kalshi sports|Sports|Sports markets");
+                    if (e.currentTarget instanceof HTMLElement) {
+                      e.currentTarget.style.opacity = "0.5";
+                    }
+                  }}
+                  onDragEnd={(e) => {
+                    if (e.currentTarget instanceof HTMLElement) {
+                      e.currentTarget.style.opacity = "1";
+                    }
+                  }}
+                  onClick={() => handleCommandClick("kalshi sports")}
+                  title="Drag to Quick Actions or click to execute"
+                >
+                  {getSubActionIcon("Sports")}
+                  <span>Sports</span>
+                </button>
+                <button
+                  className={styles.subButton}
+                  draggable={true}
+                  onDragStart={(e) => {
+                    e.dataTransfer.effectAllowed = "copy";
+                    e.dataTransfer.setData("text/plain", "subaction:kalshi culture|Culture|Culture & entertainment markets");
+                    if (e.currentTarget instanceof HTMLElement) {
+                      e.currentTarget.style.opacity = "0.5";
+                    }
+                  }}
+                  onDragEnd={(e) => {
+                    if (e.currentTarget instanceof HTMLElement) {
+                      e.currentTarget.style.opacity = "1";
+                    }
+                  }}
+                  onClick={() => handleCommandClick("kalshi culture")}
+                  title="Drag to Quick Actions or click to execute"
+                >
+                  {getSubActionIcon("Culture")}
+                  <span>Culture</span>
+                </button>
+                <button
+                  className={styles.subButton}
+                  draggable={true}
+                  onDragStart={(e) => {
+                    e.dataTransfer.effectAllowed = "copy";
+                    e.dataTransfer.setData("text/plain", "subaction:kalshi crypto|Crypto|Cryptocurrency markets");
+                    if (e.currentTarget instanceof HTMLElement) {
+                      e.currentTarget.style.opacity = "0.5";
+                    }
+                  }}
+                  onDragEnd={(e) => {
+                    if (e.currentTarget instanceof HTMLElement) {
+                      e.currentTarget.style.opacity = "1";
+                    }
+                  }}
+                  onClick={() => handleCommandClick("kalshi crypto")}
+                  title="Drag to Quick Actions or click to execute"
+                >
+                  {getSubActionIcon("Crypto")}
+                  <span>Crypto</span>
+                </button>
+                <button
+                  className={styles.subButton}
+                  draggable={true}
+                  onDragStart={(e) => {
+                    e.dataTransfer.effectAllowed = "copy";
+                    e.dataTransfer.setData("text/plain", "subaction:kalshi climate|Climate|Climate & environment markets");
+                    if (e.currentTarget instanceof HTMLElement) {
+                      e.currentTarget.style.opacity = "0.5";
+                    }
+                  }}
+                  onDragEnd={(e) => {
+                    if (e.currentTarget instanceof HTMLElement) {
+                      e.currentTarget.style.opacity = "1";
+                    }
+                  }}
+                  onClick={() => handleCommandClick("kalshi climate")}
+                  title="Drag to Quick Actions or click to execute"
+                >
+                  {getSubActionIcon("Climate")}
+                  <span>Climate</span>
+                </button>
+                <button
+                  className={styles.subButton}
+                  draggable={true}
+                  onDragStart={(e) => {
+                    e.dataTransfer.effectAllowed = "copy";
+                    e.dataTransfer.setData("text/plain", "subaction:kalshi economics|Economics|Economic markets");
+                    if (e.currentTarget instanceof HTMLElement) {
+                      e.currentTarget.style.opacity = "0.5";
+                    }
+                  }}
+                  onDragEnd={(e) => {
+                    if (e.currentTarget instanceof HTMLElement) {
+                      e.currentTarget.style.opacity = "1";
+                    }
+                  }}
+                  onClick={() => handleCommandClick("kalshi economics")}
+                  title="Drag to Quick Actions or click to execute"
+                >
+                  {getSubActionIcon("Economics")}
+                  <span>Economics</span>
+                </button>
+                <button
+                  className={styles.subButton}
+                  draggable={true}
+                  onDragStart={(e) => {
+                    e.dataTransfer.effectAllowed = "copy";
+                    e.dataTransfer.setData("text/plain", "subaction:kalshi tech|Tech|Technology markets");
+                    if (e.currentTarget instanceof HTMLElement) {
+                      e.currentTarget.style.opacity = "0.5";
+                    }
+                  }}
+                  onDragEnd={(e) => {
+                    if (e.currentTarget instanceof HTMLElement) {
+                      e.currentTarget.style.opacity = "1";
+                    }
+                  }}
+                  onClick={() => handleCommandClick("kalshi tech")}
+                  title="Drag to Quick Actions or click to execute"
+                >
+                  {getSubActionIcon("Tech")}
+                  <span>Tech</span>
+                </button>
+                <button
+                  className={styles.subButton}
+                  draggable={true}
+                  onDragStart={(e) => {
+                    e.dataTransfer.effectAllowed = "copy";
+                    e.dataTransfer.setData("text/plain", "subaction:kalshi world|World Events|World events & global markets");
+                    if (e.currentTarget instanceof HTMLElement) {
+                      e.currentTarget.style.opacity = "0.5";
+                    }
+                  }}
+                  onDragEnd={(e) => {
+                    if (e.currentTarget instanceof HTMLElement) {
+                      e.currentTarget.style.opacity = "1";
+                    }
+                  }}
+                  onClick={() => handleCommandClick("kalshi world")}
+                  title="Drag to Quick Actions or click to execute"
+                >
+                  {getSubActionIcon("World Events")}
+                  <span>World Events</span>
+                </button>
+                <div className={styles.subSectionHeader}>
+                  <span>Market Tools</span>
+                </div>
+                <button
+                  className={styles.subButton}
+                  draggable={true}
+                  onDragStart={(e) => {
+                    e.dataTransfer.effectAllowed = "copy";
+                    e.dataTransfer.setData("text/plain", "subaction:kalshi events|Events|List events");
+                    if (e.currentTarget instanceof HTMLElement) {
+                      e.currentTarget.style.opacity = "0.5";
+                    }
+                  }}
+                  onDragEnd={(e) => {
+                    if (e.currentTarget instanceof HTMLElement) {
+                      e.currentTarget.style.opacity = "1";
+                    }
+                  }}
+                  onClick={() => handleCommandClick("kalshi events")}
+                  title="Drag to Quick Actions or click to execute"
+                >
+                  {getSubActionIcon("Events")}
+                  <span>Events</span>
+                </button>
+                <button
+                  className={styles.subButton}
+                  draggable={true}
+                  onDragStart={(e) => {
+                    e.dataTransfer.effectAllowed = "copy";
+                    e.dataTransfer.setData("text/plain", "subaction:kalshi|Kalshi Help|Kalshi command help");
+                    if (e.currentTarget instanceof HTMLElement) {
+                      e.currentTarget.style.opacity = "0.5";
+                    }
+                  }}
+                  onDragEnd={(e) => {
+                    if (e.currentTarget instanceof HTMLElement) {
+                      e.currentTarget.style.opacity = "1";
+                    }
+                  }}
+                  onClick={() => handleCommandClick("kalshi help")}
+                  title="Drag to Quick Actions or click to execute"
+                >
+                  {getSubActionIcon("Kalshi Help")}
+                  <span>Kalshi Help</span>
+                </button>
+              </div>
+            </details>
+
+            {/* Trading Section */}
+            <details className={styles.expandable}>
+              <summary className={styles.expandableButton}>
+                <svg
+                  className={styles.buttonIcon}
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="currentColor"
+                >
+                  <path d="M16,6L18.29,8.29L13.41,13.17L9.41,9.17L2,16.59L3.41,18L9.41,12L13.41,16L19.71,9.71L22,12V6H16Z" fill="currentColor" />
+                </svg>
+                <span>Trading</span>
+                <svg
+                  className={styles.expandIcon}
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="currentColor"
+                >
+                  <path d="M7.41,8.58L12,13.17L16.59,8.58L18,10L12,16L6,10L7.41,8.58Z" fill="currentColor" />
+                </svg>
+              </summary>
+              <div className={styles.subActions}>
+                <button
+                  className={styles.subButton}
+                  draggable={true}
+                  onDragStart={(e) => {
+                    e.dataTransfer.effectAllowed = "copy";
+                    e.dataTransfer.setData("text/plain", "subaction:trade connect polymarket|Connect Polymarket|Connect to Polymarket (uses wallet)");
+                    if (e.currentTarget instanceof HTMLElement) {
+                      e.currentTarget.style.opacity = "0.5";
+                    }
+                  }}
+                  onDragEnd={(e) => {
+                    if (e.currentTarget instanceof HTMLElement) {
+                      e.currentTarget.style.opacity = "1";
+                    }
+                  }}
+                  onClick={() => handleCommandClick("trade connect polymarket")}
+                  title="Drag to Quick Actions or click to execute"
+                >
+                  {getSubActionIcon("Connect Polymarket")}
+                  <span>Connect Polymarket</span>
+                </button>
+                <button
+                  className={styles.subButton}
+                  draggable={true}
+                  onDragStart={(e) => {
+                    e.dataTransfer.effectAllowed = "copy";
+                    e.dataTransfer.setData("text/plain", "subaction:trade connect kalshi|Connect Kalshi|Connect to Kalshi (requires API keys)");
+                    if (e.currentTarget instanceof HTMLElement) {
+                      e.currentTarget.style.opacity = "0.5";
+                    }
+                  }}
+                  onDragEnd={(e) => {
+                    if (e.currentTarget instanceof HTMLElement) {
+                      e.currentTarget.style.opacity = "1";
+                    }
+                  }}
+                  onClick={() => handleCommandClick("trade connect kalshi")}
+                  title="Drag to Quick Actions or click to execute"
+                >
+                  {getSubActionIcon("Connect Kalshi")}
+                  <span>Connect Kalshi</span>
+                </button>
+                <button
+                  className={styles.subButton}
+                  draggable={true}
+                  onDragStart={(e) => {
+                    e.dataTransfer.effectAllowed = "copy";
+                    e.dataTransfer.setData("text/plain", "subaction:trade balance|Check Balance|Check your trading balance");
+                    if (e.currentTarget instanceof HTMLElement) {
+                      e.currentTarget.style.opacity = "0.5";
+                    }
+                  }}
+                  onDragEnd={(e) => {
+                    if (e.currentTarget instanceof HTMLElement) {
+                      e.currentTarget.style.opacity = "1";
+                    }
+                  }}
+                  onClick={() => handleCommandClick("trade balance")}
+                  title="Drag to Quick Actions or click to execute"
+                >
+                  {getSubActionIcon("Check Balance")}
+                  <span>Check Balance</span>
+                </button>
+                <button
+                  className={styles.subButton}
+                  draggable={true}
+                  onDragStart={(e) => {
+                    e.dataTransfer.effectAllowed = "copy";
+                    e.dataTransfer.setData("text/plain", "subaction:trade positions|View Positions|View your open positions");
+                    if (e.currentTarget instanceof HTMLElement) {
+                      e.currentTarget.style.opacity = "0.5";
+                    }
+                  }}
+                  onDragEnd={(e) => {
+                    if (e.currentTarget instanceof HTMLElement) {
+                      e.currentTarget.style.opacity = "1";
+                    }
+                  }}
+                  onClick={() => handleCommandClick("trade positions")}
+                  title="Drag to Quick Actions or click to execute"
+                >
+                  {getSubActionIcon("View Positions")}
+                  <span>View Positions</span>
+                </button>
+                <button
+                  className={styles.subButton}
+                  draggable={true}
+                  onDragStart={(e) => {
+                    e.dataTransfer.effectAllowed = "copy";
+                    e.dataTransfer.setData("text/plain", "subaction:trade help|Trading Help|Unified trading commands help");
+                    if (e.currentTarget instanceof HTMLElement) {
+                      e.currentTarget.style.opacity = "0.5";
+                    }
+                  }}
+                  onDragEnd={(e) => {
+                    if (e.currentTarget instanceof HTMLElement) {
+                      e.currentTarget.style.opacity = "1";
+                    }
+                  }}
+                  onClick={() => handleCommandClick("trade help")}
+                  title="Drag to Quick Actions or click to execute"
+                >
+                  {getSubActionIcon("Trading Help")}
+                  <span>Trading Help</span>
+                </button>
+              </div>
+            </details>
 
             <button
               className={styles.button}
@@ -1698,6 +2703,7 @@ export function DashboardSidebar(): JSX.Element {
   }, [sections, sectionOrder]);
 
   // Filter sections based on search query
+  // Enhanced to search through ALL commands and subcommands
   const filteredSections = useMemo(() => {
     const sectionsToFilter = orderedSections;
     
@@ -1706,7 +2712,11 @@ export function DashboardSidebar(): JSX.Element {
     }
 
     const query = searchQuery.toLowerCase().trim();
+    const queryWords = query.split(/\s+/).filter((w) => w.length > 0);
     const matching: typeof sectionsToFilter = [];
+
+    // Get all command search terms for comprehensive matching
+    const allCommandTerms = searchableIndex["all-commands"] || [];
 
     sectionsToFilter.forEach((section) => {
       // Check if section title matches
@@ -1717,9 +2727,29 @@ export function DashboardSidebar(): JSX.Element {
 
       // Check if any button in section matches using searchable index
       const sectionKeywords = searchableIndex[section.id] || [];
-      const hasMatch = sectionKeywords.some((keyword) =>
-        keyword.toLowerCase().includes(query)
-      );
+      
+      // Enhanced matching: check for partial matches, word matches, and command matches
+      const hasMatch = 
+        // Direct keyword match
+        sectionKeywords.some((keyword) =>
+          keyword.toLowerCase().includes(query)
+        ) ||
+        // Multi-word search (all words must match somewhere)
+        (queryWords.length > 1 && queryWords.every((word) =>
+          sectionKeywords.some((keyword) =>
+            keyword.toLowerCase().includes(word)
+          )
+        )) ||
+        // Command name match (exact or partial)
+        allCommandTerms.some((term) => {
+          const lowerTerm = term.toLowerCase();
+          return lowerTerm === query || 
+                 lowerTerm.includes(query) || 
+                 query.includes(lowerTerm) ||
+                 // Subcommand matching (e.g., "pgt track" matches "pgt" or "track")
+                 (lowerTerm.includes(":") && lowerTerm.split(":").some((part) => part.includes(query))) ||
+                 (lowerTerm.includes(" ") && lowerTerm.split(" ").some((part) => part.includes(query)));
+        });
 
       if (hasMatch) {
         matching.push(section);

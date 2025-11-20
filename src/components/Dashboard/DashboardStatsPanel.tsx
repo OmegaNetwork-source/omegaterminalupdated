@@ -195,17 +195,12 @@ export function DashboardStatsPanel(): JSX.Element | null {
         console.log(`[Chart] Container dimensions: ${containerElement.offsetWidth}x${containerElement.offsetHeight}`);
         
         // Use 'new' keyword to instantiate TradingView widget
-        // Use container's actual height to ensure iframe is fully visible
-        const containerHeight = containerElement.offsetHeight || 600;
-        const containerWidth = containerElement.offsetWidth || 320;
-        
+        // When using autosize, don't set explicit height/width - let it fill container
         tradingViewWidgetRef.current = new tv.widget({
           symbol: chartSymbol,
           container_id: chartContainerId,
           autosize: true,
           theme: "dark",
-          height: containerHeight,
-          width: containerWidth,
           interval: "D",
           locale: "en",
           toolbar_bg: "rgba(0, 0, 0, 0.3)", // Match panel background
@@ -215,6 +210,7 @@ export function DashboardStatsPanel(): JSX.Element | null {
           save_image: false,
           studies_overrides: {},
           backgroundColor: "rgba(0, 0, 0, 0.4)", // Match container background
+          // Don't set height/width when autosize is true - let it fill container naturally
         });
         
         console.log(`[Chart] TradingView widget created successfully for ${chartSymbol}`);
@@ -230,7 +226,19 @@ export function DashboardStatsPanel(): JSX.Element | null {
       if (isChartOpen && chartContainerRef.current) {
         // Force a reflow to ensure dimensions are calculated
         void chartContainerRef.current.offsetHeight;
-        createWidget();
+        const created = createWidget();
+        
+        // If widget was created, wait a bit more for it to fully initialize
+        if (created && tradingViewWidgetRef.current) {
+          // Additional delay to let TradingView widget fully render and size itself
+          setTimeout(() => {
+            // Force a resize event to ensure widget sizes correctly
+            if (chartContainerRef.current) {
+              const resizeEvent = new Event('resize');
+              window.dispatchEvent(resizeEvent);
+            }
+          }, 300);
+        }
       }
     }, 150);
 

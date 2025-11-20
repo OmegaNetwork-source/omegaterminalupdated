@@ -79,6 +79,11 @@ export interface CommandContext {
   executeCommand: (command: string) => Promise<void>;
 
   /**
+   * Command registry (optional, for enhanced AI agent)
+   */
+  commandRegistry?: any; // CommandRegistry type
+
+  /**
    * Theme management context
    */
   theme: {

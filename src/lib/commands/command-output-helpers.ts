@@ -248,3 +248,81 @@ export function createUsageError(usage: string, examples: string[]): string {
   `;
 }
 
+/**
+ * Options for creating a standardized swap status notice card
+ */
+interface SwapStatusNoticeOptions {
+  network: string;
+  status?: "coming-soon" | "maintenance" | "beta";
+  icon?: string;
+  title?: string;
+  description?: string[];
+  action?: {
+    href: string;
+    label: string;
+  };
+  note?: string;
+}
+
+/**
+ * Creates a consistent swap status notice card for terminal outputs
+ * @param options - Swap status configuration
+ * @returns HTML string for swap notice card
+ */
+export function createSwapStatusNotice({
+  network,
+  status = "coming-soon",
+  icon = "🚧",
+  title,
+  description = [],
+  action,
+  note,
+}: SwapStatusNoticeOptions): string {
+  const statusLabels: Record<string, string> = {
+    "coming-soon": "Coming Soon",
+    maintenance: "Maintenance",
+    beta: "Beta Release",
+  };
+
+  const safeIcon = escapeHtml(icon);
+  const safeTitle = escapeHtml(title || `${network} Swap Integration`);
+  const safeStatus = escapeHtml(statusLabels[status] || "Status");
+
+  const descriptionHtml = description
+    .map(
+      (line) => `<p>${escapeHtml(line)}</p>`
+    )
+    .join("");
+
+  const actionHtml = action
+    ? `<a class="omega-terminal-swap-card__link" href="${escapeHtml(
+        action.href
+      )}" target="_blank" rel="noopener noreferrer">
+          <span>↗</span>${escapeHtml(action.label)}
+        </a>`
+    : "";
+
+  const noteHtml = note
+    ? `<div class="omega-terminal-swap-card__footer">${escapeHtml(note)}</div>`
+    : "";
+
+  return `
+    <div class="omega-terminal-swap-card omega-terminal-swap-card--${escapeHtml(
+      status
+    )}">
+      <div class="omega-terminal-swap-card__header">
+        <span class="omega-terminal-swap-card__icon">${safeIcon}</span>
+        <div class="omega-terminal-swap-card__meta">
+          <div class="omega-terminal-swap-card__title">${safeTitle}</div>
+          <div class="omega-terminal-swap-card__status">${safeStatus}</div>
+        </div>
+      </div>
+      <div class="omega-terminal-swap-card__body">
+        ${descriptionHtml}
+      </div>
+      ${actionHtml}
+      ${noteHtml}
+    </div>
+  `;
+}
+

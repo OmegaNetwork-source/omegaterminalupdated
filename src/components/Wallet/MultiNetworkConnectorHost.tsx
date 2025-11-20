@@ -406,11 +406,14 @@ export function MultiNetworkConnectorHost(): JSX.Element | null {
 
       (window as typeof window & { ethereum?: any }).ethereum = ethereum;
 
+      // Generate unique ID for connecting message (outside try block so it's accessible in catch)
+      const connectingMessageId = `connecting-${network.key}-${Date.now()}`;
+
       try {
         // Show connecting message with uniform HTML output
         if (detail.logHtml) {
           const connectingHtml = `
-            <div style="
+            <div id="${connectingMessageId}" style="
               background: linear-gradient(135deg, color-mix(in srgb, var(--palette-primary, #00d4ff) 10%, transparent), color-mix(in srgb, var(--palette-secondary, #00ff88) 6%, transparent));
               border: 1px solid color-mix(in srgb, var(--palette-primary, #00d4ff) 25%, transparent);
               border-radius: 12px;
@@ -532,6 +535,20 @@ export function MultiNetworkConnectorHost(): JSX.Element | null {
         // Show connection success with uniform HTML output
         if (detail.logHtml) {
           const successHtml = `
+            <script>
+              (function() {
+                // Remove the connecting message if it exists
+                const connectingEl = document.getElementById('${connectingMessageId}');
+                if (connectingEl) {
+                  connectingEl.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+                  connectingEl.style.opacity = '0';
+                  connectingEl.style.transform = 'translateY(-10px)';
+                  setTimeout(function() {
+                    connectingEl.remove();
+                  }, 300);
+                }
+              })();
+            </script>
             <div style="
               background: linear-gradient(135deg, color-mix(in srgb, var(--palette-secondary, #00ff88) 12%, transparent), color-mix(in srgb, var(--palette-success, #00ff88) 8%, transparent));
               border: 1px solid color-mix(in srgb, var(--palette-secondary, #00ff88) 30%, transparent);
@@ -714,6 +731,25 @@ export function MultiNetworkConnectorHost(): JSX.Element | null {
 
         closeModal();
       } catch (error: any) {
+        // Remove connecting message on error
+        if (detail.logHtml && typeof window !== "undefined") {
+          const removeConnectingScript = `
+            <script>
+              (function() {
+                const connectingEl = document.getElementById('${connectingMessageId}');
+                if (connectingEl) {
+                  connectingEl.style.transition = 'opacity 0.3s ease';
+                  connectingEl.style.opacity = '0';
+                  setTimeout(function() {
+                    connectingEl.remove();
+                  }, 300);
+                }
+              })();
+            </script>
+          `;
+          detail.logHtml(removeConnectingScript);
+        }
+        
         log(`Connection failed: ${error?.message ?? error}`, "error");
         setState((prev) => ({ ...prev, isProcessing: false }));
 

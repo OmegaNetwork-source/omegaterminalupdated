@@ -30,6 +30,8 @@ import { useNewsReader } from "@/hooks/useNewsReader";
 import { useGames } from "@/hooks/useGames";
 import { createCommandLine } from "@/lib/commands/command-output-helpers";
 import { APP_VERSION } from "@/lib/constants";
+import { getQuickActions, groupQuickActionsByCategory, addQuickAction } from "@/lib/quick-actions";
+import { extractCommandsFromSection, getSectionCategory } from "@/lib/section-commands-extractor";
 import { usePGT } from "@/hooks/usePGT";
 import { useSoundEffects } from "@/hooks/useSoundEffects";
 import { useTelegram } from "@/providers/TelegramProvider";
@@ -127,142 +129,203 @@ export function useCommandExecution(): UseCommandExecutionReturn {
     const chartIcon = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-bottom: 4px;"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>`;
     const paletteIcon = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-bottom: 4px;"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"></circle><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"></circle><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"></circle><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"></circle><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"></path></svg>`;
 
+    // Additional icons for enhanced UI
+    const tradingIcon = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 8px;"><line x1="12" y1="2" x2="12" y2="22"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>`;
+    const defiIcon = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 8px;"><circle cx="12" cy="12" r="10"></circle><path d="M12 6v12"></path><path d="M6 12h12"></path></svg>`;
+    const nftIcon = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 8px;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><path d="M9 9h6v6H9z"></path></svg>`;
+    const walletIcon = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 8px;"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>`;
+    const mediaIcon = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 8px;"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>`;
+    const analyticsIcon = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 8px;"><path d="M3 3v18h18"></path><path d="M18 7l-5 5-4-4-6 6"></path></svg>`;
+
     const welcomeHtml = `
       <div style="
         font-family: 'Courier New', monospace;
         color: var(--palette-text, #e0e0e0);
-        padding: 20px 0;
+        padding: 24px 0;
         line-height: 1.6;
+        position: relative;
       ">
-        <!-- Header Section -->
+        <!-- Animated Background Pattern -->
         <div style="
-          text-align: center;
-          margin-bottom: 24px;
-          padding-bottom: 20px;
-          border-bottom: 2px solid color-mix(in srgb, var(--palette-primary, #00d4ff) 30%, transparent);
-        ">
-          <div style="
-            font-size: 14px;
-            color: color-mix(in srgb, var(--palette-text, #e0e0e0) 60%, transparent);
-            letter-spacing: 2px;
-            margin-bottom: 8px;
-            font-weight: 300;
-          ">01001111 01101101 01100101 01100111 01100001</div>
-          <div style="
-            font-size: 24px;
-            font-weight: 700;
-            color: var(--palette-primary, #00d4ff);
-            text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
-            margin-bottom: 8px;
-            letter-spacing: 1px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-          ">
-            ${lightningIcon}
-            WELCOME TO Ω OMEGA TERMINAL v${APP_VERSION}
-          </div>
-          <div style="
-            font-size: 14px;
-            color: var(--palette-secondary, #00ff88);
-            font-weight: 500;
-            margin-top: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-          ">
-            ${rocketIcon}
-            Your Gateway to Web3, DeFi, NFTs & Advanced Trading
-          </div>
-        </div>
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: 
+            repeating-linear-gradient(
+              0deg,
+              transparent,
+              transparent 2px,
+              color-mix(in srgb, var(--palette-primary, #00d4ff) 3%, transparent) 2px,
+              color-mix(in srgb, var(--palette-primary, #00d4ff) 3%, transparent) 4px
+            ),
+            repeating-linear-gradient(
+              90deg,
+              transparent,
+              transparent 2px,
+              color-mix(in srgb, var(--palette-primary, #00d4ff) 3%, transparent) 2px,
+              color-mix(in srgb, var(--palette-primary, #00d4ff) 3%, transparent) 4px
+            );
+          opacity: 0.3;
+          pointer-events: none;
+          z-index: 0;
+        "></div>
 
-        <!-- Quick Start Section -->
-        <div style="
-          background: linear-gradient(135deg, color-mix(in srgb, var(--palette-primary, #00d4ff) 8%, transparent), color-mix(in srgb, var(--palette-secondary, #00ff88) 5%, transparent));
-          border: 1px solid color-mix(in srgb, var(--palette-primary, #00d4ff) 20%, transparent);
-          border-radius: 12px;
-          padding: 20px;
-          margin-bottom: 20px;
-        ">
+        <div style="position: relative; z-index: 1;">
+          <!-- Header Section with Enhanced Design -->
           <div style="
-            font-size: 16px;
-            font-weight: 600;
-            color: var(--palette-primary, #00d4ff);
-            margin-bottom: 16px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            text-align: center;
+            margin-bottom: 32px;
+            padding: 24px 20px;
+            background: linear-gradient(135deg, 
+              color-mix(in srgb, var(--palette-primary, #00d4ff) 12%, transparent) 0%,
+              color-mix(in srgb, var(--palette-secondary, #00ff88) 8%, transparent) 50%,
+              color-mix(in srgb, var(--palette-primary, #00d4ff) 12%, transparent) 100%
+            );
+            border: 1px solid color-mix(in srgb, var(--palette-primary, #00d4ff) 25%, transparent);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px color-mix(in srgb, var(--palette-primary, #00d4ff) 15%, transparent);
           ">
-            ${lightbulbIcon}
-            Quick Start
+            <!-- Welcome Header with Typing Animation (React Component) -->
+            <div data-welcome-header-placeholder></div>
           </div>
-          <div style="display: flex; flex-direction: column; gap: 12px;">
-            ${createCommandLine("help", "See all available commands")}
-            ${createCommandLine("connect", "Connect your MetaMask wallet")}
-            ${createCommandLine("create", "Create a new session wallet")}
-            ${createCommandLine("pgt track <address>", "Track a wallet portfolio")}
-            ${createCommandLine("chart BTC", "View live crypto charts")}
-            ${createCommandLine("spotify", "Open music player")}
-          </div>
-        </div>
 
-        <!-- Features Section -->
-        <div style="
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-          gap: 12px;
-          margin-bottom: 20px;
-        ">
-          <div style="
-            background: color-mix(in srgb, var(--palette-primary, #00d4ff) 5%, transparent);
-            border: 1px solid color-mix(in srgb, var(--palette-primary, #00d4ff) 15%, transparent);
-            border-radius: 8px;
-            padding: 12px;
-            text-align: center;
-          ">
-            <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 8px; color: var(--palette-primary, #00d4ff);">${globeIcon}</div>
-            <div style="font-size: 12px; color: var(--palette-text, #e0e0e0); font-weight: 500;">Multi-Chain</div>
-            <div style="font-size: 11px; color: color-mix(in srgb, var(--palette-text, #e0e0e0) 70%, transparent); margin-top: 4px;">EVM • Solana • NEAR</div>
-          </div>
-          <div style="
-            background: color-mix(in srgb, var(--palette-secondary, #00ff88) 5%, transparent);
-            border: 1px solid color-mix(in srgb, var(--palette-secondary, #00ff88) 15%, transparent);
-            border-radius: 8px;
-            padding: 12px;
-            text-align: center;
-          ">
-            <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 8px; color: var(--palette-secondary, #00ff88);">${chartIcon}</div>
-            <div style="font-size: 12px; color: var(--palette-text, #e0e0e0); font-weight: 500;">DeFi Analytics</div>
-            <div style="font-size: 11px; color: color-mix(in srgb, var(--palette-text, #e0e0e0) 70%, transparent); margin-top: 4px;">Portfolio • Charts</div>
-          </div>
-          <div style="
-            background: color-mix(in srgb, var(--palette-warning, #ffa502) 5%, transparent);
-            border: 1px solid color-mix(in srgb, var(--palette-warning, #ffa502) 15%, transparent);
-            border-radius: 8px;
-            padding: 12px;
-            text-align: center;
-          ">
-            <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 8px; color: var(--palette-warning, #ffa502);">${paletteIcon}</div>
-            <div style="font-size: 12px; color: var(--palette-text, #e0e0e0); font-weight: 500;">NFT Trading</div>
-            <div style="font-size: 11px; color: color-mix(in srgb, var(--palette-text, #e0e0e0) 70%, transparent); margin-top: 4px;">OpenSea • MagicEden</div>
-          </div>
-        </div>
+          <!-- Custom Quick Actions Section with Drop Zone -->
+          <div 
+            id="omega-quick-actions-drop-zone"
+            style="
+              background: linear-gradient(135deg, 
+                color-mix(in srgb, var(--palette-primary, #00d4ff) 10%, transparent) 0%,
+                color-mix(in srgb, var(--palette-secondary, #00ff88) 6%, transparent) 100%
+              );
+              border: 2px dashed color-mix(in srgb, var(--palette-primary, #00d4ff) 30%, transparent);
+              border-radius: 16px;
+              padding: 24px;
+              margin-bottom: 24px;
+              box-shadow: 0 4px 20px color-mix(in srgb, var(--palette-primary, #00d4ff) 10%, transparent);
+              transition: all 0.3s ease;
+            "
+            onmouseenter="this.style.borderColor = 'color-mix(in srgb, var(--palette-primary, #00d4ff) 50%, transparent)'; this.style.background = 'linear-gradient(135deg, color-mix(in srgb, var(--palette-primary, #00d4ff) 15%, transparent) 0%, color-mix(in srgb, var(--palette-secondary, #00ff88) 10%, transparent) 100%)';"
+            onmouseleave="this.style.borderColor = 'color-mix(in srgb, var(--palette-primary, #00d4ff) 30%, transparent)'; this.style.background = 'linear-gradient(135deg, color-mix(in srgb, var(--palette-primary, #00d4ff) 10%, transparent) 0%, color-mix(in srgb, var(--palette-secondary, #00ff88) 6%, transparent) 100%)';"
+          >
+            <div style="
+              font-size: 18px;
+              font-weight: 700;
+              color: var(--palette-primary, #00d4ff);
+              margin-bottom: 20px;
+              display: flex;
+              align-items: center;
+              gap: 10px;
+              text-transform: uppercase;
+              letter-spacing: 1px;
+            ">
+              ${lightbulbIcon}
+              Your Quick Actions
+            </div>
+            
+            ${(() => {
+              const actions = getQuickActions();
+              const grouped = groupQuickActionsByCategory(actions);
+              const categoryIcons: Record<string, string> = {
+                "Wallet & Connection": walletIcon,
+                "Trading & Markets": tradingIcon,
+                "DeFi & Analytics": analyticsIcon,
+                "Ethereum & Uniswap": tradingIcon,
+                "Media & Entertainment": mediaIcon,
+                "Other": lightbulbIcon,
+              };
+              const categoryColors: Record<string, string> = {
+                "Wallet & Connection": "var(--palette-secondary, #00ff88)",
+                "Trading & Markets": "var(--palette-warning, #ffa502)",
+                "DeFi & Analytics": "var(--palette-secondary, #00ff88)",
+                "Ethereum & Uniswap": "var(--palette-primary, #00d4ff)",
+                "Media & Entertainment": "var(--palette-accent, #ff00ff)",
+                "Other": "var(--palette-primary, #00d4ff)",
+              };
 
-        <!-- Footer -->
-        <div style="
-          text-align: center;
-          padding-top: 16px;
-          border-top: 1px solid color-mix(in srgb, var(--palette-text, #e0e0e0) 15%, transparent);
-          font-size: 12px;
-          color: color-mix(in srgb, var(--palette-text, #e0e0e0) 60%, transparent);
-        ">
-          <div style="margin-bottom: 8px; display: flex; align-items: center; justify-content: center; gap: 6px;">
-            ${globeIcon}
-            <span>Access: Omega Network • Multi-Chain • DeFi Analytics</span>
+              let html = "";
+              const categories = Object.keys(grouped);
+              
+              categories.forEach((category, catIndex) => {
+                const categoryActions = grouped[category];
+                const icon = categoryIcons[category] || lightbulbIcon;
+                const color = categoryColors[category] || "var(--palette-primary, #00d4ff)";
+                
+                html += `
+                  <div style="margin-bottom: ${catIndex === categories.length - 1 ? '0' : '20px'};">
+                    <div style="
+                      font-size: 13px;
+                      font-weight: 600;
+                      color: ${color};
+                      margin-bottom: 12px;
+                      display: flex;
+                      align-items: center;
+                      gap: 8px;
+                      text-transform: uppercase;
+                      letter-spacing: 0.5px;
+                    ">
+                      ${icon}
+                      ${category}
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px;">
+                      ${categoryActions.map((action) => {
+                        const escapedCommand = action.command.replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+                        return `
+                          <div 
+                            class="omega-execute-command"
+                            data-command="${escapedCommand}"
+                            style="
+                              color: var(--palette-secondary, #00ff88);
+                              font-weight: bold;
+                              font-size: 1.05em;
+                              font-family: 'Courier New', monospace;
+                              text-shadow: 0 0 6px rgba(0, 255, 136, 0.3);
+                              cursor: pointer;
+                              display: inline-block;
+                              padding: 8px 12px;
+                              border-radius: 6px;
+                              background: color-mix(in srgb, var(--palette-primary, #00d4ff) 8%, transparent);
+                              border: 1px solid color-mix(in srgb, var(--palette-primary, #00d4ff) 25%, transparent);
+                              transition: all 0.2s ease;
+                              user-select: none;
+                            "
+                            onmouseover="this.style.background = 'color-mix(in srgb, var(--palette-primary, #00d4ff) 15%, transparent)'; this.style.transform = 'translateY(-2px)'; this.style.boxShadow = '0 4px 12px color-mix(in srgb, var(--palette-primary, #00d4ff) 20%, transparent)';"
+                            onmouseout="this.style.background = 'color-mix(in srgb, var(--palette-primary, #00d4ff) 8%, transparent)'; this.style.transform = 'translateY(0)'; this.style.boxShadow = 'none';"
+                            title="Click to execute: ${escapedCommand}"
+                          >
+                            ${action.label || action.command}
+                            ${action.description ? `<div style="font-size: 0.85em; color: color-mix(in srgb, var(--palette-text, #e0e0e0) 70%, transparent); margin-top: 4px; font-weight: normal;">${action.description}</div>` : ""}
+                          </div>
+                        `;
+                      }).join("")}
+                    </div>
+                  </div>
+                `;
+              });
+
+              if (categories.length === 0) {
+                html += `
+                  <div style="text-align: center; padding: 20px; color: color-mix(in srgb, var(--palette-text, #e0e0e0) 70%, transparent);">
+                    No quick actions set yet. Use 'quick-actions add' to customize your favorite commands!
+                  </div>
+                `;
+              }
+
+              return html;
+            })()}
+            
+            <div style="
+              margin-top: 20px;
+              padding-top: 16px;
+              border-top: 1px solid color-mix(in srgb, var(--palette-primary, #00d4ff) 20%, transparent);
+              text-align: center;
+              font-size: 12px;
+              color: color-mix(in srgb, var(--palette-text, #e0e0e0) 70%, transparent);
+            ">
+              💡 Drag sections from sidebar here to add commands | ${createCommandLine("quick-actions", "quick-actions")} to customize
+            </div>
           </div>
-          <div>Type ${createCommandLine("help", "help")} for full command list or ${createCommandLine("help <category>", "help <category>")} for category-specific commands</div>
         </div>
       </div>
     `;
@@ -270,8 +333,9 @@ export function useCommandExecution(): UseCommandExecutionReturn {
     return [
       {
         id: "welcome-1",
-        type: "html",
+        type: "html" as const,
         htmlContent: welcomeHtml,
+        content: "", // Empty content for html type
         timestamp: 0,
       },
     ];
@@ -316,6 +380,434 @@ export function useCommandExecution(): UseCommandExecutionReturn {
         line.timestamp === 0 ? { ...line, timestamp: Date.now() + idx } : line
       )
     );
+  }, []);
+
+  // Update welcome message when quick actions change
+  useEffect(() => {
+    // Only update if the first line is the welcome message
+    setTerminalLines((prev) => {
+      if (prev.length === 0 || prev[0].id !== "welcome-1") {
+        return prev;
+      }
+
+      // Regenerate welcome message with current quick actions
+      const actions = getQuickActions();
+      const grouped = groupQuickActionsByCategory(actions);
+      
+      // SVG Icons
+      const lightningIcon = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 6px;"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>`;
+      const rocketIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 6px;"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"></path><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"></path><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"></path><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"></path></svg>`;
+      const lightbulbIcon = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 8px;"><path d="M9 21h6"></path><path d="M12 3a6 6 0 0 0 6 6c0 2.5-1.5 4.5-3 6H9c-1.5-1.5-3-3.5-3-6a6 6 0 0 1 6-6z"></path><line x1="12" y1="9" x2="12" y2="15"></line></svg>`;
+      const walletIcon = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 8px;"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>`;
+      const tradingIcon = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 8px;"><line x1="12" y1="2" x2="12" y2="22"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>`;
+      const analyticsIcon = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 8px;"><path d="M3 3v18h18"></path><path d="M18 7l-5 5-4-4-6 6"></path></svg>`;
+      const mediaIcon = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 8px;"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>`;
+      const globeIcon = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-bottom: 4px;"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>`;
+
+      const categoryIcons: Record<string, string> = {
+        "Wallet & Connection": walletIcon,
+        "Trading & Markets": tradingIcon,
+        "DeFi & Analytics": analyticsIcon,
+        "Ethereum & Uniswap": tradingIcon,
+        "Media & Entertainment": mediaIcon,
+        "Other": lightbulbIcon,
+      };
+      const categoryColors: Record<string, string> = {
+        "Wallet & Connection": "var(--palette-secondary, #00ff88)",
+        "Trading & Markets": "var(--palette-warning, #ffa502)",
+        "DeFi & Analytics": "var(--palette-secondary, #00ff88)",
+        "Ethereum & Uniswap": "var(--palette-primary, #00d4ff)",
+        "Media & Entertainment": "var(--palette-accent, #ff00ff)",
+        "Other": "var(--palette-primary, #00d4ff)",
+      };
+
+      let quickActionsHtml = "";
+      const categories = Object.keys(grouped);
+      
+      categories.forEach((category, catIndex) => {
+        const categoryActions = grouped[category];
+        const icon = categoryIcons[category] || lightbulbIcon;
+        const color = categoryColors[category] || "var(--palette-primary, #00d4ff)";
+        
+        quickActionsHtml += `
+          <div style="margin-bottom: ${catIndex === categories.length - 1 ? '0' : '20px'};">
+            <div style="
+              font-size: 13px;
+              font-weight: 600;
+              color: ${color};
+              margin-bottom: 12px;
+              display: flex;
+              align-items: center;
+              gap: 8px;
+              text-transform: uppercase;
+              letter-spacing: 0.5px;
+            ">
+              ${icon}
+              ${category}
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px;">
+              ${categoryActions.map((action) => {
+                const escapedCommand = action.command.replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+                return `
+                  <div 
+                    class="omega-execute-command"
+                    data-command="${escapedCommand}"
+                    style="
+                      color: var(--palette-secondary, #00ff88);
+                      font-weight: bold;
+                      font-size: 1.05em;
+                      font-family: 'Courier New', monospace;
+                      text-shadow: 0 0 6px rgba(0, 255, 136, 0.3);
+                      cursor: pointer;
+                      display: inline-block;
+                      padding: 8px 12px;
+                      border-radius: 6px;
+                      background: color-mix(in srgb, var(--palette-primary, #00d4ff) 8%, transparent);
+                      border: 1px solid color-mix(in srgb, var(--palette-primary, #00d4ff) 25%, transparent);
+                      transition: all 0.2s ease;
+                      user-select: none;
+                    "
+                    onmouseover="this.style.background = 'color-mix(in srgb, var(--palette-primary, #00d4ff) 15%, transparent)'; this.style.transform = 'translateY(-2px)'; this.style.boxShadow = '0 4px 12px color-mix(in srgb, var(--palette-primary, #00d4ff) 20%, transparent)';"
+                    onmouseout="this.style.background = 'color-mix(in srgb, var(--palette-primary, #00d4ff) 8%, transparent)'; this.style.transform = 'translateY(0)'; this.style.boxShadow = 'none';"
+                    title="Click to execute: ${escapedCommand}"
+                  >
+                    ${action.label || action.command}
+                    ${action.description ? `<div style="font-size: 0.85em; color: color-mix(in srgb, var(--palette-text, #e0e0e0) 70%, transparent); margin-top: 4px; font-weight: normal;">${action.description}</div>` : ""}
+                  </div>
+                `;
+              }).join("")}
+            </div>
+          </div>
+        `;
+      });
+
+      if (categories.length === 0) {
+        quickActionsHtml = `
+          <div style="text-align: center; padding: 20px; color: color-mix(in srgb, var(--palette-text, #e0e0e0) 70%, transparent);">
+            No quick actions set yet. Drag sections from the sidebar here or use 'quick-actions add' to customize!
+          </div>
+        `;
+      }
+
+      // Regenerate full welcome HTML
+      const welcomeHtml = `
+        <div style="
+          font-family: 'Courier New', monospace;
+          color: var(--palette-text, #e0e0e0);
+          padding: 24px 0;
+          line-height: 1.6;
+          position: relative;
+        ">
+          <!-- Animated Background Pattern -->
+          <div style="
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+              repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                color-mix(in srgb, var(--palette-primary, #00d4ff) 3%, transparent) 2px,
+                color-mix(in srgb, var(--palette-primary, #00d4ff) 3%, transparent) 4px
+              ),
+              repeating-linear-gradient(
+                90deg,
+                transparent,
+                transparent 2px,
+                color-mix(in srgb, var(--palette-primary, #00d4ff) 3%, transparent) 2px,
+                color-mix(in srgb, var(--palette-primary, #00d4ff) 3%, transparent) 4px
+              );
+            opacity: 0.3;
+            pointer-events: none;
+            z-index: 0;
+          "></div>
+
+          <div style="position: relative; z-index: 1;">
+            <!-- Header Section with Typing Animation (React Component) -->
+            <div style="
+              text-align: center;
+              margin-bottom: 32px;
+              padding: 24px 20px;
+              background: linear-gradient(135deg, 
+                color-mix(in srgb, var(--palette-primary, #00d4ff) 12%, transparent) 0%,
+                color-mix(in srgb, var(--palette-secondary, #00ff88) 8%, transparent) 50%,
+                color-mix(in srgb, var(--palette-primary, #00d4ff) 12%, transparent) 100%
+              );
+              border: 1px solid color-mix(in srgb, var(--palette-primary, #00d4ff) 25%, transparent);
+              border-radius: 16px;
+              box-shadow: 0 8px 32px color-mix(in srgb, var(--palette-primary, #00d4ff) 15%, transparent);
+            ">
+              <!-- Welcome Header with Typing Animation (React Component) -->
+              <div data-welcome-header-placeholder></div>
+            </div>
+
+            <!-- Custom Quick Actions Section with Drop Zone -->
+            <div 
+              id="omega-quick-actions-drop-zone"
+              style="
+                background: linear-gradient(135deg, 
+                  color-mix(in srgb, var(--palette-primary, #00d4ff) 10%, transparent) 0%,
+                  color-mix(in srgb, var(--palette-secondary, #00ff88) 6%, transparent) 100%
+                );
+                border: 2px dashed color-mix(in srgb, var(--palette-primary, #00d4ff) 30%, transparent);
+                border-radius: 16px;
+                padding: 24px;
+                margin-bottom: 24px;
+                box-shadow: 0 4px 20px color-mix(in srgb, var(--palette-primary, #00d4ff) 10%, transparent);
+                transition: all 0.3s ease;
+              "
+              onmouseenter="this.style.borderColor = 'color-mix(in srgb, var(--palette-primary, #00d4ff) 50%, transparent)'; this.style.background = 'linear-gradient(135deg, color-mix(in srgb, var(--palette-primary, #00d4ff) 15%, transparent) 0%, color-mix(in srgb, var(--palette-secondary, #00ff88) 10%, transparent) 100%)';"
+              onmouseleave="this.style.borderColor = 'color-mix(in srgb, var(--palette-primary, #00d4ff) 30%, transparent)'; this.style.background = 'linear-gradient(135deg, color-mix(in srgb, var(--palette-primary, #00d4ff) 10%, transparent) 0%, color-mix(in srgb, var(--palette-secondary, #00ff88) 6%, transparent) 100%)';"
+            >
+              <div style="
+                font-size: 18px;
+                font-weight: 700;
+                color: var(--palette-primary, #00d4ff);
+                margin-bottom: 20px;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+              ">
+                ${lightbulbIcon}
+                Your Quick Actions
+              </div>
+              
+              ${quickActionsHtml}
+              
+              <div style="
+                margin-top: 20px;
+                padding-top: 16px;
+                border-top: 1px solid color-mix(in srgb, var(--palette-primary, #00d4ff) 20%, transparent);
+                text-align: center;
+                font-size: 12px;
+                color: color-mix(in srgb, var(--palette-text, #e0e0e0) 70%, transparent);
+              ">
+                💡 Drag sections from sidebar here to add commands | ${createCommandLine("quick-actions", "quick-actions")} to customize
+              </div>
+            </div>
+
+          </div>
+        </div>
+      `;
+
+      return prev.map((line) =>
+        line.id === "welcome-1"
+          ? { ...line, htmlContent: welcomeHtml }
+          : line
+      );
+    });
+  }, []); // Empty deps - we'll trigger this manually via event
+
+  // Listen for quick actions changes to update welcome message
+  useEffect(() => {
+    const handleQuickActionsChange = () => {
+      setTerminalLines((prev) => {
+        if (prev.length === 0 || prev[0].id !== "welcome-1") {
+          return prev;
+        }
+        // Trigger re-render by updating the welcome line
+        const actions = getQuickActions();
+        const grouped = groupQuickActionsByCategory(actions);
+        
+        // Regenerate quick actions HTML (same logic as above)
+        const lightbulbIcon = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 8px;"><path d="M9 21h6"></path><path d="M12 3a6 6 0 0 0 6 6c0 2.5-1.5 4.5-3 6H9c-1.5-1.5-3-3.5-3-6a6 6 0 0 1 6-6z"></path><line x1="12" y1="9" x2="12" y2="15"></line></svg>`;
+        const walletIcon = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 8px;"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>`;
+        const tradingIcon = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 8px;"><line x1="12" y1="2" x2="12" y2="22"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>`;
+        const analyticsIcon = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 8px;"><path d="M3 3v18h18"></path><path d="M18 7l-5 5-4-4-6 6"></path></svg>`;
+        const mediaIcon = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 8px;"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>`;
+        const lightningIcon = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 6px;"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>`;
+        const rocketIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 6px;"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"></path><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"></path><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"></path><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"></path></svg>`;
+        const globeIcon = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-bottom: 4px;"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>`;
+
+        const categoryIcons: Record<string, string> = {
+          "Wallet & Connection": walletIcon,
+          "Trading & Markets": tradingIcon,
+          "DeFi & Analytics": analyticsIcon,
+          "Ethereum & Uniswap": tradingIcon,
+          "Media & Entertainment": mediaIcon,
+          "Other": lightbulbIcon,
+        };
+        const categoryColors: Record<string, string> = {
+          "Wallet & Connection": "var(--palette-secondary, #00ff88)",
+          "Trading & Markets": "var(--palette-warning, #ffa502)",
+          "DeFi & Analytics": "var(--palette-secondary, #00ff88)",
+          "Ethereum & Uniswap": "var(--palette-primary, #00d4ff)",
+          "Media & Entertainment": "var(--palette-accent, #ff00ff)",
+          "Other": "var(--palette-primary, #00d4ff)",
+        };
+
+        let quickActionsHtml = "";
+        const categories = Object.keys(grouped);
+        
+        categories.forEach((category, catIndex) => {
+          const categoryActions = grouped[category];
+          const icon = categoryIcons[category] || lightbulbIcon;
+          const color = categoryColors[category] || "var(--palette-primary, #00d4ff)";
+          
+          quickActionsHtml += `
+            <div style="margin-bottom: ${catIndex === categories.length - 1 ? '0' : '20px'};">
+              <div style="
+                font-size: 13px;
+                font-weight: 600;
+                color: ${color};
+                margin-bottom: 12px;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+              ">
+                ${icon}
+                ${category}
+              </div>
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px;">
+                ${categoryActions.map((action) => {
+                  const escapedCommand = action.command.replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+                  return `
+                    <div 
+                      class="omega-execute-command"
+                      data-command="${escapedCommand}"
+                      style="
+                        color: var(--palette-secondary, #00ff88);
+                        font-weight: bold;
+                        font-size: 1.05em;
+                        font-family: 'Courier New', monospace;
+                        text-shadow: 0 0 6px rgba(0, 255, 136, 0.3);
+                        cursor: pointer;
+                        display: inline-block;
+                        padding: 8px 12px;
+                        border-radius: 6px;
+                        background: color-mix(in srgb, var(--palette-primary, #00d4ff) 8%, transparent);
+                        border: 1px solid color-mix(in srgb, var(--palette-primary, #00d4ff) 25%, transparent);
+                        transition: all 0.2s ease;
+                        user-select: none;
+                      "
+                      onmouseover="this.style.background = 'color-mix(in srgb, var(--palette-primary, #00d4ff) 15%, transparent)'; this.style.transform = 'translateY(-2px)'; this.style.boxShadow = '0 4px 12px color-mix(in srgb, var(--palette-primary, #00d4ff) 20%, transparent)';"
+                      onmouseout="this.style.background = 'color-mix(in srgb, var(--palette-primary, #00d4ff) 8%, transparent)'; this.style.transform = 'translateY(0)'; this.style.boxShadow = 'none';"
+                      title="Click to execute: ${escapedCommand}"
+                    >
+                      ${action.label || action.command}
+                      ${action.description ? `<div style="font-size: 0.85em; color: color-mix(in srgb, var(--palette-text, #e0e0e0) 70%, transparent); margin-top: 4px; font-weight: normal;">${action.description}</div>` : ""}
+                    </div>
+                  `;
+                }).join("")}
+              </div>
+            </div>
+          `;
+        });
+
+        if (categories.length === 0) {
+          quickActionsHtml = `
+            <div style="text-align: center; padding: 20px; color: color-mix(in srgb, var(--palette-text, #e0e0e0) 70%, transparent);">
+              No quick actions set yet. Drag sections from the sidebar here or use 'quick-actions add' to customize!
+            </div>
+          `;
+        }
+
+        // Get the existing welcome HTML and replace just the quick actions part
+        const existingWelcome = prev[0]?.htmlContent || "";
+        const quickActionsStart = existingWelcome.indexOf('<!-- Custom Quick Actions Section');
+        
+        // Find the end of the quick actions section
+        // Look for the closing </div> after the tip text "💡 Drag sections from sidebar"
+        let quickActionsEnd = -1;
+        if (quickActionsStart !== -1) {
+          const tipText = '💡 Drag sections from sidebar';
+          const tipIndex = existingWelcome.indexOf(tipText, quickActionsStart);
+          if (tipIndex !== -1) {
+            // Find the closing </div> tag that closes the drop zone div (after the tip div)
+            // The structure is: tip div closes, then drop zone div closes
+            let closeCount = 0;
+            let searchIndex = tipIndex + tipText.length;
+            // Find the closing </div> for the tip div first
+            const tipClose = existingWelcome.indexOf('</div>', searchIndex);
+            if (tipClose !== -1) {
+              // Then find the closing </div> for the drop zone div
+              quickActionsEnd = existingWelcome.indexOf('</div>', tipClose + 6);
+              if (quickActionsEnd !== -1) {
+                quickActionsEnd += 6; // Include the </div> tag
+              }
+            }
+          }
+        }
+        
+        if (quickActionsStart !== -1 && quickActionsEnd !== -1) {
+          const before = existingWelcome.substring(0, quickActionsStart);
+          const after = existingWelcome.substring(quickActionsEnd);
+          
+          const newQuickActionsSection = `
+            <!-- Custom Quick Actions Section with Drop Zone -->
+            <div 
+              id="omega-quick-actions-drop-zone"
+              style="
+                background: linear-gradient(135deg, 
+                  color-mix(in srgb, var(--palette-primary, #00d4ff) 10%, transparent) 0%,
+                  color-mix(in srgb, var(--palette-secondary, #00ff88) 6%, transparent) 100%
+                );
+                border: 2px dashed color-mix(in srgb, var(--palette-primary, #00d4ff) 30%, transparent);
+                border-radius: 16px;
+                padding: 24px;
+                margin-bottom: 24px;
+                box-shadow: 0 4px 20px color-mix(in srgb, var(--palette-primary, #00d4ff) 10%, transparent);
+                transition: all 0.3s ease;
+              "
+              onmouseenter="this.style.borderColor = 'color-mix(in srgb, var(--palette-primary, #00d4ff) 50%, transparent)'; this.style.background = 'linear-gradient(135deg, color-mix(in srgb, var(--palette-primary, #00d4ff) 15%, transparent) 0%, color-mix(in srgb, var(--palette-secondary, #00ff88) 10%, transparent) 100%)';"
+              onmouseleave="this.style.borderColor = 'color-mix(in srgb, var(--palette-primary, #00d4ff) 30%, transparent)'; this.style.background = 'linear-gradient(135deg, color-mix(in srgb, var(--palette-primary, #00d4ff) 10%, transparent) 0%, color-mix(in srgb, var(--palette-secondary, #00ff88) 6%, transparent) 100%)';"
+            >
+              <div style="
+                font-size: 18px;
+                font-weight: 700;
+                color: var(--palette-primary, #00d4ff);
+                margin-bottom: 20px;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+              ">
+                ${lightbulbIcon}
+                Your Quick Actions
+              </div>
+              
+              ${quickActionsHtml}
+              
+              <div style="
+                margin-top: 20px;
+                padding-top: 16px;
+                border-top: 1px solid color-mix(in srgb, var(--palette-primary, #00d4ff) 20%, transparent);
+                text-align: center;
+                font-size: 12px;
+                color: color-mix(in srgb, var(--palette-text, #e0e0e0) 70%, transparent);
+              ">
+                💡 Drag sections from sidebar here to add commands | ${createCommandLine("quick-actions", "quick-actions")} to customize
+              </div>
+            </div>
+          `;
+          
+          const newHtml = before + newQuickActionsSection + after;
+          
+          return prev.map((line) =>
+            line.id === "welcome-1"
+              ? { ...line, htmlContent: newHtml }
+              : line
+          );
+        }
+        
+        return prev;
+      });
+    };
+
+    // Listen for quick actions updates
+    window.addEventListener("omega-quick-actions-updated", handleQuickActionsChange);
+    
+    return () => {
+      window.removeEventListener("omega-quick-actions-updated", handleQuickActionsChange);
+    };
   }, []);
 
   // Mining state management
@@ -994,7 +1486,13 @@ export function useCommandExecution(): UseCommandExecutionReturn {
 
         try {
           // Pass fromAI flag to registry (matches vanilla terminal.html line 4814)
-          await commandRegistry.execute(trimmedCommand, context, fromAI);
+          // Add command registry to context for enhanced agent
+          const enhancedContext = {
+            ...context,
+            commandRegistry: commandRegistry,
+          };
+          
+          await commandRegistry.execute(trimmedCommand, enhancedContext, fromAI);
         } catch (error) {
           const errorMessage =
             error instanceof Error ? error.message : String(error);

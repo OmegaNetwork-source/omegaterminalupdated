@@ -28,17 +28,17 @@
 }
 
 .modal {
-  width: 90vw;
-  height: 90vh;
-  max-width: 1200px;
-  max-height: 900px;
+  width: 95vw;
+  height: 95vh;
+  max-width: 1600px;
+  max-height: 1200px;
   background: linear-gradient(
     135deg,
     rgba(0, 0, 0, 0.95),
     rgba(26, 26, 46, 0.95)
   );
   border: 2px solid rgba(0, 255, 153, 0.3);
-  border-radius: 16px;
+  border-radius: 12px;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(0, 255, 153, 0.2);
   display: flex;
   flex-direction: column;
@@ -49,17 +49,18 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 15px 20px;
-  background: rgba(0, 0, 0, 0.5);
+  padding: 8px 12px;
+  background: rgba(0, 0, 0, 0.7);
   border-bottom: 1px solid rgba(0, 255, 153, 0.2);
 }
 
 .title {
-  font-size: 24px;
+  font-size: 14px;
   font-weight: bold;
   color: #00ff99;
-  text-shadow: 0 0 10px #00ff99;
+  text-shadow: 0 0 8px #00ff99;
   margin: 0;
+  letter-spacing: 1px;
 }
 
 .headerButtons {
@@ -68,16 +69,20 @@
 }
 
 .headerBtn {
-  background: rgba(0, 255, 153, 0.2);
-  border: 1px solid #00ff99;
+  background: rgba(0, 255, 153, 0.15);
+  border: 1px solid rgba(0, 255, 153, 0.4);
   color: #00ff99;
-  padding: 8px 16px;
-  border-radius: 6px;
+  padding: 4px 8px;
+  border-radius: 4px;
   cursor: pointer;
   transition: all 0.2s ease;
   font-family: "Courier New", monospace;
-  font-size: 16px;
-  min-width: 40px;
+  font-size: 14px;
+  min-width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .headerBtn:hover {
@@ -101,12 +106,7 @@
 }
 
 .footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 15px 20px;
-  background: rgba(0, 0, 0, 0.5);
-  border-top: 1px solid rgba(0, 255, 153, 0.2);
+  display: none; /* Hidden - all UI in left sidebar now */
 }
 
 .scoreDisplay {
@@ -147,32 +147,23 @@
 /* Mobile responsive */
 @media (max-width: 768px) {
   .modal {
-    width: 95vw;
-    height: 95vh;
-    border-radius: 12px;
+    width: 98vw;
+    height: 98vh;
+    border-radius: 8px;
   }
 
   .header {
-    padding: 12px 15px;
+    padding: 6px 10px;
   }
 
   .title {
-    font-size: 18px;
+    font-size: 12px;
   }
 
   .headerBtn {
-    padding: 6px 12px;
-    font-size: 14px;
-    min-width: 36px;
-  }
-
-  .footer {
-    padding: 12px 15px;
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  .submitBtn {
-    width: 100%;
+    padding: 3px 6px;
+    font-size: 12px;
+    min-width: 24px;
+    height: 24px;
   }
 }

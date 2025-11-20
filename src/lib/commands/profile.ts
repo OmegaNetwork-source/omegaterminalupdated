@@ -17,7 +17,7 @@ function defaultProfile(address: string | null): ProfileData {
     apiKeys: [],
     scripts: [],
     preferences: {
-      theme: "dark",
+      theme: "void",
       chatEnabled: true,
       fullscreenMode: false,
       notifications: true,

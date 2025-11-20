@@ -6,7 +6,7 @@
 import type { Command, CommandContext } from "@/types/commands";
 import { config } from "@/lib/config";
 import * as near from "@/lib/multichain/near";
-import { createCommandLine, createUsageError } from "./command-output-helpers";
+import { createCommandLine, createUsageError, createSwapStatusNotice } from "./command-output-helpers";
 
 /**
  * NEAR command - Main entry point for all NEAR Protocol operations
@@ -267,22 +267,22 @@ async function swapTokens(
     }
 
     // Placeholder message for swap execution
-    context.logHtml(`
-      <div style="background: #2a2a2a; padding: 15px; border-radius: 6px; border-left: 3px solid #ff9800; margin: 10px 0;">
-        <div style="color: #ff9800; font-weight: bold; margin-bottom: 10px;">
-          ⚠️ NEAR Swap Integration Status
-        </div>
-        <p style="color: #cccccc; margin: 5px 0;">
-          NEAR token swap functionality is currently in development.
-        </p>
-        <p style="color: #cccccc; margin: 5px 0;">
-          For now, please use <a href="https://ref.finance" target="_blank" style="color: #00bfff;">Ref Finance</a> directly for NEAR token swaps.
-        </p>
-        <p style="color: #cccccc; margin: 5px 0;">
-          Full integration coming in future updates! 🚀
-        </p>
-      </div>
-    `);
+    context.logHtml(
+      createSwapStatusNotice({
+        network: "NEAR",
+        status: "coming-soon",
+        icon: "💱",
+        description: [
+          "NEAR token swap functionality is currently in development.",
+          "For now, please use Ref Finance directly for NEAR token swaps.",
+        ],
+        action: {
+          href: "https://ref.finance",
+          label: "Open Ref Finance",
+        },
+        note: "Full integration coming in future updates! 🚀",
+      })
+    );
   } catch (error: any) {
     context.log(`❌ Error: ${error.message}`, "error");
   }

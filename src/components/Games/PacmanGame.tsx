@@ -380,3 +380,8 @@ export function PacmanGame({ onScoreUpdate, onGameEnd }: PacmanGameProps) {
 
 
 
+
+
+
+
+

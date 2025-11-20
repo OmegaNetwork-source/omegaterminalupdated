@@ -17,7 +17,8 @@ import * as weatherEffects from './weatherEffects.js';
 import * as levelManager from './levelManager.js';
 import {loadAllSprites, getSpriteFrame, updateSpriteAnimation} from '../spriteLoader.js';
 import {SpriteEntityManager} from '../spriteEntities.js';
-import {PlayerCharacterManager} from './playerCharacters.js';
+// PlayerCharacterManager removed - was causing game freezing issues
+import {perfMon} from './performanceMonitor.js';
 
 let state = 'menu';
 let players = [];
@@ -43,20 +44,40 @@ let myPlayerId = null;
 // Sprite system
 let spriteSheets = null;
 let spriteEntityManager = null;
-let playerCharacterManager = null;
+// playerCharacterManager removed - was causing game freezing issues
 let mouseX = 0;
 let mouseY = 0;
 
 // Canvas layers
 let sky, traces, terrain, foreground, framebuffer;
 
+// OPTIMIZATION: Track which layers need redrawing
+let layersDirty = {
+  sky: true,
+  terrain: true,
+  traces: true,
+  foreground: true,
+  all: true
+};
+
 // State update throttling - only update React state when necessary
 let lastStateUpdate = 0;
-const STATE_UPDATE_INTERVAL = 100; // Update React state at most every 100ms
+const STATE_UPDATE_INTERVAL = 50; // UPDATED: 50ms for more responsive UI updates (was 100ms)
+let lastGameState = null; // Cache last state for change detection
 
-function notifyReactState() {
+/**
+ * OPTIMIZED: Smart state update with change detection
+ * Only notifies React when game state actually changes
+ * UPDATED: Better real-time updates for aim/power during gameplay
+ */
+function notifyReactState(forceUpdate = false) {
   const now = Date.now();
-  if (now - lastStateUpdate < STATE_UPDATE_INTERVAL && !idle) {
+  
+  // UPDATED: During aim state, allow more frequent updates for real-time feedback
+  const isAimingState = state === 'aim';
+  const throttleInterval = isAimingState ? 30 : STATE_UPDATE_INTERVAL; // 30ms during aim for smoother updates
+  
+  if (!forceUpdate && now - lastStateUpdate < throttleInterval && !idle) {
     return;
   }
   lastStateUpdate = now;
@@ -69,6 +90,43 @@ function notifyReactState() {
     menuVisible: isMenuVisible()
   };
   
+  // OPTIMIZATION: Change detection - only update if state actually changed
+  // Skip change detection if forced or during aim state (for real-time feel)
+  if (!forceUpdate && !isAimingState && lastGameState) {
+    const stateChanged = (
+      lastGameState.currentPlayer !== currentPlayer ||
+      lastGameState.wind !== wind ||
+      lastGameState.state !== state ||
+      lastGameState.menuVisible !== gameState.menuVisible ||
+      lastGameState.players.length !== players.length ||
+      hasPlayerChanges(lastGameState.players, players)
+    );
+    
+    if (!stateChanged) {
+      return; // No meaningful changes, skip update
+    }
+  }
+  
+  // During aim state, always update if player stats changed (less strict)
+  if (isAimingState && lastGameState) {
+    const currentP = players[currentPlayer];
+    const oldCurrentP = lastGameState.players[currentPlayer];
+    
+    if (currentP && oldCurrentP) {
+      const statsChanged = (
+        oldCurrentP.a !== currentP.a ||
+        oldCurrentP.p !== currentP.p ||
+        oldCurrentP.movesRemaining !== currentP.movesRemaining ||
+        oldCurrentP.currentWeapon !== currentP.currentWeapon
+      );
+      
+      if (!statsChanged && !forceUpdate) {
+        return; // No stat changes during aim, skip
+      }
+    }
+  }
+  
+  lastGameState = gameState;
   updateGameState(gameState);
   
   // Store on window for debugging/other access
@@ -83,6 +141,69 @@ function notifyReactState() {
     if (canvasContainer) {
       canvasContainer.focus();
     }
+  }
+}
+
+/**
+ * OPTIMIZATION: Detect if player state has meaningfully changed
+ * UPDATED: Now includes aim, power, and other real-time stats for HUD
+ */
+function hasPlayerChanges(oldPlayers, newPlayers) {
+  // Quick check for current player - always check their aim/power/moves in real-time
+  const currentP = newPlayers[currentPlayer];
+  const oldCurrentP = oldPlayers[currentPlayer];
+  
+  if (currentP && oldCurrentP) {
+    // CRITICAL: Check real-time stats for current player (aim, power, moves)
+    if (
+      oldCurrentP.a !== currentP.a ||           // Angle changed
+      oldCurrentP.p !== currentP.p ||           // Power changed
+      oldCurrentP.movesRemaining !== currentP.movesRemaining ||  // Moves changed
+      oldCurrentP.currentWeapon !== currentP.currentWeapon ||    // Weapon switched
+      oldCurrentP.energy !== currentP.energy || // Health changed
+      oldCurrentP.score !== currentP.score ||   // Score changed
+      oldCurrentP.dead !== currentP.dead ||     // Death status
+      oldCurrentP.kills !== currentP.kills ||   // Kills changed
+      oldCurrentP.hitsTaken !== currentP.hitsTaken ||     // Hits taken
+      oldCurrentP.hitsLanded !== currentP.hitsLanded ||   // Hits landed
+      (oldCurrentP.shield?.energy || 0) !== (currentP.shield?.energy || 0) // Shield changed
+    ) {
+      return true; // Current player stats changed - update immediately
+    }
+  }
+  
+  // Check all players for significant changes (health, death, score, position)
+  for (let i = 0; i < newPlayers.length; i++) {
+    const oldP = oldPlayers[i];
+    const newP = newPlayers[i];
+    if (!oldP) return true;
+    
+    // Check significant properties for all players
+    if (
+      oldP.dead !== newP.dead ||
+      oldP.energy !== newP.energy ||
+      Math.abs(oldP.x - newP.x) > 5 || // Only if moved significantly
+      oldP.score !== newP.score ||
+      oldP.kills !== newP.kills
+    ) {
+      return true;
+    }
+  }
+  return false;
+}
+
+/**
+ * OPTIMIZATION: Mark specific layers as dirty for redrawing
+ */
+function markLayerDirty(layer) {
+  if (layer === 'all') {
+    layersDirty.sky = true;
+    layersDirty.terrain = true;
+    layersDirty.traces = true;
+    layersDirty.foreground = true;
+    layersDirty.all = true;
+  } else {
+    layersDirty[layer] = true;
   }
 }
 
@@ -194,10 +315,7 @@ export function initGameEngine(containerElement) {
     spriteSheets = sheets;
     console.log('Loaded sprite sheets:', Array.from(sheets.keys()));
     
-    // Initialize player character manager after terrain is ready
-    if (terrain) {
-      playerCharacterManager = new PlayerCharacterManager(terrain, sheets);
-    }
+    // Player character manager removed - was causing game freezing issues
   }).catch(err => {
     console.error('Failed to load sprite sheets:', err);
   });
@@ -207,6 +325,12 @@ export function initGameEngine(containerElement) {
   
   // Initialize preview terrain and tanks for menu background
   tankSprites = initTankSprites(PLAYER_COLORS);
+  
+  // OPTIMIZATION: Initialize particle pool
+  if (particlePool.length === 0) {
+    initParticlePool();
+  }
+  
   initLevel();
   initPreviewPlayers();
   
@@ -248,11 +372,33 @@ export function initGameEngine(containerElement) {
     });
   }
   
+  // OPTIMIZATION: Enable performance monitoring in development
+  if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
+    perfMon.setEnabled(true);
+    
+    // Create HUD if in development
+    const perfHUD = perfMon.createHUD();
+    if (perfHUD) {
+      // Update HUD every second
+      setInterval(() => {
+        perfMon.updateHUD(perfHUD);
+      }, 1000);
+    }
+    
+    // Log summary every 30 seconds
+    setInterval(() => {
+      perfMon.logSummary();
+    }, 30000);
+  }
+  
   // Start game loop
   console.log('Starting game loop...');
   let lastFrameTime = 0;
   loop(() => {
     try {
+      // OPTIMIZATION: Track frame timing
+      perfMon.beginFrame();
+      
       // Check if document is hidden - still update but throttle drawing
       const isHidden = typeof document !== 'undefined' && document.hidden;
       
@@ -269,6 +415,11 @@ export function initGameEngine(containerElement) {
           lastFrameTime = now;
         }
       }
+      
+      // OPTIMIZATION: Track performance metrics
+      perfMon.setParticleCount(particles.length);
+      perfMon.setProjectileCount(projectiles.length);
+      perfMon.endFrame();
     } catch (error) {
       console.error('Error in game loop:', error);
       // Ensure canvas is still visible even on error
@@ -406,10 +557,7 @@ function initGame(resetLevels = false) {
   idle = false;
   winner = null;
   
-  // Clear player characters
-  if (playerCharacterManager) {
-    playerCharacterManager.clear();
-  }
+  // Player character manager removed - was causing game freezing issues
   
   // Wind is set in initLevel() to handle multiplayer wind sync
   animationFrame = 0;
@@ -440,18 +588,7 @@ function initGame(resetLevels = false) {
 
   initPlayers();
   
-  // Initialize player characters after players are created and terrain is ready
-  // Do this after a short delay to ensure spriteSheets are loaded
-  setTimeout(() => {
-    if (spriteSheets && terrain) {
-      if (!playerCharacterManager) {
-        playerCharacterManager = new PlayerCharacterManager(terrain, spriteSheets);
-      }
-      if (players.length > 0) {
-        playerCharacterManager.initCharacters(players);
-      }
-    }
-  }, 200);
+  // Player character initialization removed - was causing game freezing issues
   
   // Initialize or restore scores for all players
   for (let i = 0; i < players.length; i++) {
@@ -531,24 +668,17 @@ function initPlayers() {
   const playerCount = gameConfig.playerCount || 6;
   const count = Math.min(playerCount, PLAYER_COLORS.length);
   
-  // Get selected character from localStorage (default to simple-character)
-  const selectedCharacter = typeof window !== 'undefined' 
-    ? (localStorage.getItem('selectedCharacter') || 'simple-character')
-    : 'simple-character';
+  // Check if draft system is active
+  const draftSummary = typeof window !== 'undefined' ? window.draftSummary : null;
+  const usingDraft = draftSummary && Array.isArray(draftSummary) && draftSummary.length > 0;
   
-  // Available character sprites for AI randomization
-  const availableCharacters = [
-    'character-blue-hair',
-    'warrior-cyan',
-    'ninja-blue',
-    'warrior-red',
-    'warrior-yellow',
-    'lizard-blue',
-    'robot-orange',
-    'dragon-red',
-    'character-angular',
-    'simple-character',
-  ];
+  if (usingDraft) {
+    console.log('[GameEngine] Initializing players with drafted weapons');
+  } else {
+    console.log('[GameEngine] Initializing players with classic loadout');
+  }
+  
+  // Character sprite system removed - was causing game freezing issues
   
   // In multiplayer 1v1, player 0 is local player, player 1 is opponent (no AI)
   const isMultiplayer1v1 = isMultiplayerMode && gameConfig.gameMode === '1v1-multiplayer';
@@ -561,15 +691,18 @@ function initPlayers() {
     
     const isHumanPlayer = i === 0; // First player is always human
     
-    // Assign character sprite: human player uses selected character, AI gets random
-    let characterSprite = selectedCharacter;
-    if (!isHumanPlayer && spriteSheets) {
-      // Randomize AI character sprites
-      const aiCharacters = availableCharacters.filter(c => c !== selectedCharacter);
-      if (aiCharacters.length > 0) {
-        characterSprite = sample(aiCharacters);
-      }
+    // Get weapons for this player (drafted or classic)
+    let playerWeapons;
+    if (usingDraft && draftSummary[i]) {
+      // Use drafted weapons
+      playerWeapons = draftSummary[i].weapons || PLAYER_STARTING_WEAPONS.map(x => ({...x}));
+      console.log(`[GameEngine] Player ${i + 1} using drafted weapons:`, playerWeapons.length, 'types');
+    } else {
+      // Use classic starting weapons
+      playerWeapons = PLAYER_STARTING_WEAPONS.map(x => ({...x}));
     }
+    
+    // Character sprite assignment removed - was causing game freezing issues
     
     players.push({
       name: playerName,
@@ -579,14 +712,14 @@ function initPlayers() {
       colorIndex: i,
       p: PLAYER_INITIAL_POWER,
       tools: PLAYER_STARTING_TOOLS.map(x => ({...x})),
-      weapons: PLAYER_STARTING_WEAPONS.map(x => ({...x})),
+      weapons: playerWeapons, // UPDATED: Use drafted or classic weapons
       currentWeapon: 0,
       energy: PLAYER_MAX_ENERGY,
       shield: {type:'springShield', energy:SHIELD_TYPES.springShield.energy},
       // In multiplayer, don't assign AI (opponent is remote player)
       ai: isMultiplayer1v1 ? undefined : (i !== 0 ? sample(Object.keys(AI_TYPES)) : undefined),
       isPlayer: isHumanPlayer, // Mark human player for level reset logic
-      characterSprite: characterSprite, // Store character sprite name
+      // characterSprite removed - was causing game freezing issues
       parachute: null,
       fallHeight: 0,
       score: 0,
@@ -595,6 +728,7 @@ function initPlayers() {
       hitsTaken: 0,
       hitsLanded: 0,
       maxHealth: PLAYER_MAX_ENERGY,
+      draftedWeapons: usingDraft, // Flag to indicate if using draft
     });
   }
 
@@ -614,6 +748,7 @@ function initPlayers() {
 
 function initLevel() {
   generateSky(sky);
+  markLayerDirty('sky'); // Mark sky as dirty after generation
   
   // In multiplayer, use provided wind value if available
   if (isMultiplayerMode && gameConfig.wind !== undefined) {
@@ -655,6 +790,7 @@ function initLevel() {
   // Generate terrain (will use custom map if available, otherwise level-based)
   // Each level gets a fresh terrain generation - terrain generators are random
   generateTerrain(terrain, terrainType, customMapData);
+  markLayerDirty('terrain'); // Mark terrain as dirty after generation
 }
 
 // Pre-initialize asset system when game engine loads
@@ -702,11 +838,7 @@ function update() {
     spriteEntityManager.update();
   }
   
-  // Update player characters
-  if (playerCharacterManager) {
-    const isPlayerTurn = state === 'aim' && players[currentPlayer] && players[currentPlayer].isPlayer;
-    playerCharacterManager.update(explosions, projectiles, isPlayerTurn, currentPlayer, players);
-  }
+  // Player character update removed - was causing game freezing issues
 
   if (state === 'start-game') {
     initGame();
@@ -763,10 +895,7 @@ function update() {
       return;
     }
 
-    // Character movement (WASD/Arrow keys) - always available during player turn
-    if (playerCharacterManager && player.isPlayer) {
-      playerCharacterManager.handleMovementInput(player, getInput());
-    }
+    // Character movement removed - was causing game freezing issues
     
     // Tank movement (A/D keys) - only if moves remaining
     if ((key('a') || key('A')) && movesRemaining > 0) {
@@ -1108,24 +1237,14 @@ function update() {
 
     fadeTrajectories();
     
-    // Award survival points to characters at end of turn
-    if (playerCharacterManager) {
-      for (const character of playerCharacterManager.characters) {
-        if (character.alive) {
-          character.awardSurvivalPoints();
-        }
-      }
-    }
+    // Character survival points removed - was causing game freezing issues
     
     state = 'start-turn';
     notifyReactState();
   }
 
   else if (state === 'player-win') {
-    // Award end-game bonuses for surviving characters
-    if (playerCharacterManager) {
-      playerCharacterManager.awardEndGameBonuses();
-    }
+    // Character end-game bonuses removed - was causing game freezing issues
     // Victory screen now handles input via buttons, but keep Enter for menu
     if (key('Enter')) {
       // Default to menu on Enter (optional)
@@ -1152,30 +1271,111 @@ function update() {
   }
 }
 
-export function createParticles(x, y, p, c) {
-  for (let i = 0; i < PARTICLE_AMOUNT; i++) {
-    particles.push({
+// OPTIMIZATION: Particle pool for object reuse
+const PARTICLE_POOL_SIZE = 500;
+const particlePool = [];
+let particlePoolIndex = 0;
+
+// Initialize particle pool
+function initParticlePool() {
+  for (let i = 0; i < PARTICLE_POOL_SIZE; i++) {
+    particlePool.push({
       t: 0,
-      ox: x, x: x,
-      oy: y, y: y,
-      a: randomInt(0, 359),
-      p: p * random(PARTICLE_MIN_POWER_FACTOR, PARTICLE_MAX_POWER_FACTOR),
-      c, 
-      alpha: 255,
-      size: random(0.8, 2.0), // Vary particle size for visual interest
+      ox: 0, x: 0,
+      oy: 0, y: 0,
+      a: 0,
+      p: 0,
+      c: 'white', 
+      alpha: 0,
+      size: 1,
+      active: false
     });
   }
 }
 
+/**
+ * OPTIMIZED: Get particle from pool or create new one
+ */
+function getParticleFromPool() {
+  // Try to find inactive particle in pool
+  for (let i = 0; i < particlePool.length; i++) {
+    particlePoolIndex = (particlePoolIndex + 1) % particlePool.length;
+    const particle = particlePool[particlePoolIndex];
+    if (!particle.active) {
+      particle.active = true;
+      return particle;
+    }
+  }
+  
+  // Pool exhausted, create new particle (fallback)
+  const newParticle = {
+    t: 0,
+    ox: 0, x: 0,
+    oy: 0, y: 0,
+    a: 0,
+    p: 0,
+    c: 'white', 
+    alpha: 0,
+    size: 1,
+    active: true
+  };
+  particlePool.push(newParticle);
+  return newParticle;
+}
+
+/**
+ * OPTIMIZED: Create particles using object pool
+ */
+export function createParticles(x, y, p, c) {
+  // OPTIMIZATION: Reduce particle count for distant/small explosions
+  const baseAmount = PARTICLE_AMOUNT;
+  const adjustedAmount = Math.max(
+    Math.floor(baseAmount * 0.6), // Minimum 60% of particles
+    Math.min(baseAmount, Math.floor(p / 10)) // Scale with power
+  );
+  
+  for (let i = 0; i < adjustedAmount; i++) {
+    const particle = getParticleFromPool();
+    
+    particle.t = 0;
+    particle.ox = x;
+    particle.x = x;
+    particle.oy = y;
+    particle.y = y;
+    particle.a = randomInt(0, 359);
+    particle.p = p * random(PARTICLE_MIN_POWER_FACTOR, PARTICLE_MAX_POWER_FACTOR);
+    particle.c = c;
+    particle.alpha = 255;
+    particle.size = random(0.8, 2.0);
+    particle.active = true;
+    
+    // Only add to particles array if not already there
+    if (!particles.includes(particle)) {
+      particles.push(particle);
+    }
+  }
+}
+
+/**
+ * OPTIMIZED: Update particles with pooling and spatial culling
+ */
 function updateParticles() {
-  for (let i=particles.length-1; i>=0; i--) {
+  for (let i = particles.length - 1; i >= 0; i--) {
     const particle = particles[i];
 
-    if (
-      particle.y > H ||
-      particle.alpha <= 0 ||
-      particle.t > PARTICLE_MIN_LIFETIME && isTerrain(terrain, particle.x, particle.y)
-    ) {
+    // OPTIMIZATION: Check active flag first
+    if (!particle.active) {
+      particles.splice(i, 1);
+      continue;
+    }
+
+    // OPTIMIZATION: Early exit conditions
+    const isOffScreen = particle.y > H || particle.y < 0 || particle.x < 0 || particle.x > W;
+    const isFaded = particle.alpha <= 0;
+    const hasHitTerrain = particle.t > PARTICLE_MIN_LIFETIME && isTerrain(terrain, particle.x, particle.y);
+    
+    if (isOffScreen || isFaded || hasHitTerrain) {
+      particle.active = false; // Return to pool
       particles.splice(i, 1);
       continue;
     }
@@ -1184,7 +1384,7 @@ function updateParticles() {
 
     const [tx, ty] = parable(
       t / PARTICLE_TIME_FACTOR,
-      ox, oy, deg2rad(180+a),
+      ox, oy, deg2rad(180 + a),
       p / PARTICLE_POWER_REDUCTION_FACTOR,
       wind / PARTICLE_WIND_REDUCTION_FACTOR,
     );
@@ -1340,6 +1540,10 @@ function addInteractiveSprites() {
   }
 }
 
+/**
+ * OPTIMIZED: Smart draw function with dirty flag checking
+ * Only redraws layers that have changed
+ */
 function draw() {
   // Ensure framebuffer canvas is visible
   if (framebuffer && framebuffer.canvas) {
@@ -1357,21 +1561,42 @@ function draw() {
   // Always draw the game layers first (sky, terrain are static)
   if (!framebuffer) return; // Safety check
   
-  framebuffer.clearRect(0, 0, W, H);
+  // OPTIMIZATION: Only clear and redraw if needed
+  // For static screens (menu, game-over), we can skip redraws
+  const isStaticScreen = (state === 'menu' || (state === 'game-over' && idle) || (state === 'player-win' && idle));
+  
+  if (!isStaticScreen || layersDirty.all) {
+    framebuffer.clearRect(0, 0, W, H);
+  }
   
   // Ensure sky and terrain are initialized
   if (!sky || !terrain) {
     // Re-initialize if missing
-    if (!sky) sky = createCanvas(W, H);
+    if (!sky) {
+      sky = createCanvas(W, H);
+      markLayerDirty('sky');
+    }
     if (!terrain) {
       terrain = createCanvas(W, H);
       initLevel();
+      markLayerDirty('terrain');
     }
   }
   
-  // Draw static layers
-  framebuffer.drawImage(sky.canvas, 0, 0);
-  framebuffer.drawImage(terrain.canvas, 0, 0);
+  // OPTIMIZATION: Only redraw static layers if dirty or first draw
+  if (layersDirty.sky || layersDirty.all) {
+    framebuffer.drawImage(sky.canvas, 0, 0);
+    layersDirty.sky = false;
+  } else if (!isStaticScreen) {
+    framebuffer.drawImage(sky.canvas, 0, 0);
+  }
+  
+  if (layersDirty.terrain || layersDirty.all) {
+    framebuffer.drawImage(terrain.canvas, 0, 0);
+    layersDirty.terrain = false;
+  } else if (!isStaticScreen) {
+    framebuffer.drawImage(terrain.canvas, 0, 0);
+  }
   
   // Draw weather effects on background
   if (weatherEffects) {
@@ -1385,7 +1610,7 @@ function draw() {
       foreground = createCanvas(W, H);
     }
     
-    // Clear and draw dynamic layers
+    // OPTIMIZATION: Clear and draw dynamic layers (always dirty during gameplay)
     foreground.clearRect(0, 0, W, H);
     drawTrajectories();
     drawPlayers();
@@ -1393,15 +1618,15 @@ function draw() {
     drawExplosions();
     drawParticles();
     
+    // Mark foreground as dirty during active gameplay
+    markLayerDirty('foreground');
+    
     // Draw sprite entities
     if (spriteEntityManager) {
       spriteEntityManager.draw(foreground);
     }
     
-    // Draw player characters
-    if (playerCharacterManager) {
-      playerCharacterManager.draw(foreground);
-    }
+    // Player character drawing removed - was causing game freezing issues
     
     drawStatus();
     
@@ -1634,21 +1859,7 @@ function drawStatus() {
     return;
   }
 
-  // Draw Scoreboard HUD
-  const player = players[currentPlayer];
-  if (!player) return;
-  
-  const {currentWeapon, name, energy, a, p, shield, score, c} = player;
-  const weapon = player.weapons[currentWeapon];
-  const weaponType = WEAPON_TYPES[weapon.type];
-  
-  foreground.globalAlpha = 0.85;
-  drawRect(foreground, 0, 0, W, 18, 'black');
-  foreground.globalAlpha = 1;
-  
-  const statusText = `${name.toUpperCase()}   NRG:${Math.max(0, Math.floor(energy))}   SCORE:${score}   AIM:${a}   PWR:${p}   SHD:${shield?Math.floor(shield.energy):0}   ${clamp(0, weapon.ammo, 99)} ${weaponType.name.toUpperCase()}`;
-  drawText(foreground, statusText, 8, 6, c, 'left');
-  
-  drawText(foreground, `WIND: ${wind<=0?'<':''}${Math.abs(wind)}${wind>=0?'>':''}`, W-8, 6, 'white', 'right');
+  // Canvas status overlay removed - all UI now handled by React GameHUD component in left sidebar
+  // This keeps the gameplay canvas clean and unobstructed
 }
 

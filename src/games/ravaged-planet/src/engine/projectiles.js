@@ -6,6 +6,54 @@ import {audio, createOsc} from './sound.js';
 import {isTerrain, landHeight} from './terrain.js';
 import {EXPLOSION_TYPES} from './weapons.js';
 
+/**
+ * OPTIMIZATION: Adaptive iteration count based on projectile speed
+ * Slower projectiles near impact need fewer iterations
+ */
+function getAdaptiveIterationCount(projectile, baseIterations) {
+  // Calculate projectile speed (distance from last position)
+  const speed = Math.abs(projectile.t);
+  
+  // High speed = more iterations, low speed = fewer iterations
+  if (speed > 2) {
+    return baseIterations;
+  } else if (speed > 1) {
+    return Math.max(2, Math.floor(baseIterations * 0.7));
+  } else {
+    return Math.max(1, Math.floor(baseIterations * 0.5));
+  }
+}
+
+/**
+ * OPTIMIZATION: Predictive collision detection
+ * Check if projectile will hit terrain along its path
+ */
+function predictCollision(x1, y1, x2, y2, terrain) {
+  // Sample along the path (coarse check first)
+  const dx = x2 - x1;
+  const dy = y2 - y1;
+  const steps = Math.max(Math.abs(dx), Math.abs(dy));
+  
+  if (steps <= 2) {
+    // Short path, check directly
+    return isTerrain(terrain, Math.round(x2), Math.round(y2));
+  }
+  
+  // Sample at intervals
+  const sampleCount = Math.min(5, Math.ceil(steps / 4));
+  for (let i = 1; i <= sampleCount; i++) {
+    const t = i / sampleCount;
+    const x = Math.round(x1 + dx * t);
+    const y = Math.round(y1 + dy * t);
+    
+    if (isTerrain(terrain, x, y)) {
+      return true; // Collision detected along path
+    }
+  }
+  
+  return false;
+}
+
 
 export const PROJECTILE_TYPES = {
   normal: {
@@ -29,7 +77,10 @@ export const PROJECTILE_TYPES = {
       const weaponType = WEAPON_TYPES[weapon.type];
       let exploded = false;
 
-      for (let i=0; i<PROJECTILE_ITERATIONS_PER_FRAME; i++) {
+      // OPTIMIZATION: Adaptive iteration count
+      const iterationCount = getAdaptiveIterationCount(projectile, PROJECTILE_ITERATIONS_PER_FRAME);
+
+      for (let i = 0; i < iterationCount; i++) {
         const {ox, oy, a, p, t} = projectile;
 
         const [x, y] = parable(
@@ -37,16 +88,32 @@ export const PROJECTILE_TYPES = {
           p / PROJECTILE_POWER_REDUCTION_FACTOR,
           wind / PROJECTILE_WIND_REDUCTION_FACTOR,
         );
+        
+        // OPTIMIZATION: Bounds check before expensive operations
+        if (y > H) {
+          projectile.x = x;
+          projectile.y = y;
+          const explosionSpec = weaponType.explosion;
+          const explosionType = EXPLOSION_TYPES[explosionSpec.type];
+          explosions.push(explosionType.create(explosionSpec, x, y));
+          createParticles(x, y, p, terrain.color);
+          exploded = true;
+          break;
+        }
+        
         projectile.x = x;
         projectile.y = y;
         projectile.t += PROJECTILE_ITERATION_PROGRESS;
 
-        const f = (
-          (1 - (1 / H * y)) *
-          (PROJECTILE_MAX_SOUND_FREQUENCY - PROJECTILE_MIN_SOUND_FREQUENCY) +
-          PROJECTILE_MIN_SOUND_FREQUENCY
-        );
-        projectile.osc.frequency.setValueAtTime(f, audio.currentTime);
+        // OPTIMIZATION: Update sound less frequently (every other iteration)
+        if (i % 2 === 0) {
+          const f = (
+            (1 - (1 / H * y)) *
+            (PROJECTILE_MAX_SOUND_FREQUENCY - PROJECTILE_MIN_SOUND_FREQUENCY) +
+            PROJECTILE_MIN_SOUND_FREQUENCY
+          );
+          projectile.osc.frequency.setValueAtTime(f, audio.currentTime);
+        }
 
         // FIXME: Better detection of player's own shield
         const shieldHit = isTankShield(x, y);
@@ -56,17 +123,24 @@ export const PROJECTILE_TYPES = {
             break;
           } else if (shieldHit.shieldType.projectileEffect === 'spring') {
             projectile.ox = projectile.x;
-            projectile.oy = projectile.y -1;
+            projectile.oy = projectile.y - 1;
             projectile.t = 0;
             break;
           }
         }
 
-        if (
-          y > H ||
-          isTank(x, y) ||
-          isTerrain(terrain, x, y)
-        ) {
+        // OPTIMIZATION: Check tank collision first (cheaper than terrain)
+        if (isTank(x, y)) {
+          const explosionSpec = weaponType.explosion;
+          const explosionType = EXPLOSION_TYPES[explosionSpec.type];
+          explosions.push(explosionType.create(explosionSpec, x, y));
+          createParticles(x, y, p, terrain.color);
+          exploded = true;
+          break;
+        }
+        
+        // OPTIMIZATION: Use optimized terrain collision check
+        if (isTerrain(terrain, x, y)) {
           const explosionSpec = weaponType.explosion;
           const explosionType = EXPLOSION_TYPES[explosionSpec.type];
           explosions.push(explosionType.create(explosionSpec, x, y));
@@ -77,15 +151,20 @@ export const PROJECTILE_TYPES = {
         }
       }
 
-      let trajectory = drawLineVirtual(
-        prevProjectile.x, prevProjectile.y,
-        projectile.x, projectile.y, player.c,
-      );
+      // OPTIMIZATION: Only draw trajectory if projectile moved significantly
+      const dx = projectile.x - prevProjectile.x;
+      const dy = projectile.y - prevProjectile.y;
+      if (Math.abs(dx) > 0.5 || Math.abs(dy) > 0.5) {
+        let trajectory = drawLineVirtual(
+          prevProjectile.x, prevProjectile.y,
+          projectile.x, projectile.y, player.c,
+        );
 
-      trajectory
-        .slice(0, trajectory.length-1) // Cut last pixel to prevent overlap
-        .map(x => ({...x, a:255}))     // Add alpha to all lines
-        .forEach(x => trajectories.push(x));
+        trajectory
+          .slice(0, trajectory.length - 1) // Cut last pixel to prevent overlap
+          .map(x => ({...x, a: 255}))     // Add alpha to all lines
+          .forEach(x => trajectories.push(x));
+      }
 
       return !exploded;
     },

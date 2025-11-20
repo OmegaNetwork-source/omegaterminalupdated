@@ -10,6 +10,16 @@ import { AVAILABLE_THEMES, APP_TITLE, APP_VERSION } from "@/lib/constants";
 import type { Theme } from "@/types";
 import { commandRegistry } from "./CommandRegistry";
 import { createCommandLine, createUsageError } from "./command-output-helpers";
+import {
+  getQuickActions,
+  saveQuickActions,
+  addQuickAction,
+  removeQuickAction,
+  updateQuickAction,
+  resetQuickActions,
+  groupQuickActionsByCategory,
+  type QuickAction,
+} from "@/lib/quick-actions";
 
 // Helper functions for GUI transformations
 function createChatGptInterface(context: CommandContext): void {
@@ -626,7 +636,7 @@ const CATEGORY_HELP: Record<string, () => string[]> = {
   ],
   theme: () => [
     "🎨 INTERFACE & THEMES:",
-    "  theme [light|dark]   → Toggle light/dark mode",
+    "  theme <name>         → Switch theme (void, neo, elite, neon)",
     "  gui <style>          → Transform UI (chatgpt, discord, aol, windows95, limewire)",
     "  view [basic|futuristic] → Toggle view mode",
     "  clear                → Clear terminal",
@@ -634,10 +644,22 @@ const CATEGORY_HELP: Record<string, () => string[]> = {
 };
 
 function listAvailableThemes(context: CommandContext): void {
-  context.log("Available themes:", "info");
+  context.log("🎨 Available Themes:", "info");
+  context.log("", "output");
+  
+  const themeDescriptions: Record<string, string> = {
+    void: "🌑 Deep void terminal - Pure darkness with vibrant accents",
+    neo: "💚 Neo Matrix - Digital rain with cyberpunk green glow",
+    elite: "👑 Elite Prestige - Luxury gold and premium serif typography",
+    neon: "⚡ Neon Cyber - Futuristic glassmorphism with electric neon",
+  };
+  
   AVAILABLE_THEMES.forEach((theme) => {
-    context.log(` • ${theme}`, "output");
+    const description = themeDescriptions[theme] || theme;
+    context.log(`  theme ${theme.padEnd(10)} → ${description}`, "output");
   });
+  context.log("", "output");
+  context.log("💡 Try: theme void", "success");
 }
 
 function ensureTheme(value: string): Theme | null {
@@ -1060,7 +1082,7 @@ export const helpCommand: Command = {
             font-size: 0.85em;
                font-family: 'Courier New', monospace;
           ">
-            Ω Terminal v2.0.1 - Modern Apple UI • Enhanced Analytics • DeFi Integration • NFT Trading
+            Ω Terminal v3.0.0 - Modern Apple UI • Enhanced Analytics • DeFi Integration • NFT Trading
            </div>
          </div>
        </div>
@@ -1234,8 +1256,8 @@ export const guiCommand: Command = {
           : "terminal";
       const currentTheme =
         typeof localStorage !== "undefined"
-          ? localStorage.getItem("omega-theme-mode") || "dark"
-          : "dark";
+          ? localStorage.getItem("omega-theme-mode") || "void"
+          : "void";
 
       context.log("🎮 GUI Interface Styles", "info");
       context.log("═══════════════════════════════════════", "output");
@@ -1277,10 +1299,21 @@ export const guiCommand: Command = {
 
       context.log("🎯 CURRENT:", "info");
       context.log(`  GUI Style: ${currentStyle}`, "output");
-      context.log(
-        `  Theme: ${currentTheme === "light" ? "🌞 Light" : "🌙 Dark"}`,
-        "output"
-      );
+      const themeEmoji: Record<string, string> = {
+        void: "🌑",
+        neo: "💚",
+        elite: "👑",
+        neon: "⚡",
+      };
+      const themeName: Record<string, string> = {
+        void: "Void",
+        neo: "Neo",
+        elite: "Elite",
+        neon: "Neon",
+      };
+      const emoji = themeEmoji[currentTheme] || "🌑";
+      const name = themeName[currentTheme] || "Void";
+      context.log(`  Theme: ${emoji} ${name}`, "output");
       context.log("", "info");
       context.log("💡 Try: gui chatgpt", "success");
       return;
@@ -1449,8 +1482,26 @@ async function callAI(
   }
 
   try {
+    // Try enhanced agent first (if available)
+    try {
+      const { handleEnhancedAI } = await import("@/lib/ai/command-enhancer");
+      const { CommandRegistry } = await import("@/lib/commands/CommandRegistry");
+      
+      // Get command registry from context if available
+      const registry = (context as any).commandRegistry as InstanceType<typeof CommandRegistry> | undefined;
+      
+      if (registry) {
+        // Use enhanced agent for better command recognition
+        await handleEnhancedAI(prompt, context, registry);
+        return;
+      }
+    } catch (error) {
+      // Enhanced agent not available, fall back to standard AI
+      console.log("[DEBUG] Enhanced agent not available, using standard AI");
+    }
+
     // Matches vanilla terminal.html lines 4763-4841
-    const url = "https://ai.omeganetwork.co/chat";
+    const url = process.env.NEXT_PUBLIC_AI_CHAT_URL || "https://ai.omeganetwork.co/chat";
     const evm = context.wallet?.address || null;
     const solana = context.wallet?.solana?.address || null;
 
@@ -1475,9 +1526,37 @@ async function callAI(
       throw new Error(`HTTP ${response.status}`);
     }
 
-    const data = await response.json();
+    let data;
+    try {
+      data = await response.json();
+    } catch (parseError) {
+      const textResponse = await response.text();
+      console.error("[DEBUG] Failed to parse JSON response. Raw response:", textResponse.substring(0, 500));
+      throw new Error(`Invalid JSON response from AI endpoint. Server returned: ${textResponse.substring(0, 200)}`);
+    }
+    
     console.log("[DEBUG] AI Response:", data);
+    
+    // Enhance response if possible
+    try {
+      const { enhanceAIResponse } = await import("@/lib/ai/command-enhancer");
+      const enhanced = enhanceAIResponse(data, context);
+      
+      // Use enhanced response if it has better structure
+      if (enhanced.type === "command" && enhanced.commands) {
+        if (!data.data) data.data = {};
+        data.data = {
+          ...data.data,
+          commands: enhanced.commands,
+          answer: enhanced.answer,
+        };
+      }
+    } catch (error) {
+      // Enhancement failed, use original response
+      console.log("[DEBUG] Response enhancement failed, using original");
+    }
 
+    // Handle different response structures
     if (data && data.data) {
       const d = data.data;
 
@@ -1535,15 +1614,157 @@ async function callAI(
           }
         }
       } else if (!d.additionalInfoRequired) {
+        // Show helpful suggestions
         context.log("Can't perform this action", "error");
+        context.log("", "output");
+        
+        // Try to provide helpful suggestions
+        try {
+          const { getQuickActions } = await import("@/lib/ai/command-enhancer");
+          const suggestions = getQuickActions(context);
+          if (suggestions.length > 0) {
+            context.log("💡 Try these commands:", "info");
+            suggestions.slice(0, 5).forEach((action) => {
+              context.log(`   • ${action}`, "output");
+            });
+          }
+        } catch (error) {
+          // Suggestions not available
+        }
+      }
+    } else if (data && (data.answer || data.message || data.response)) {
+      // Handle alternative response structures
+      const answer = data.answer || data.message || data.response || "No response generated";
+      context.log(`🤖 AI: ${answer}`, "info");
+      
+      // Track in chat history
+      if (context.chatHistory) {
+        context.chatHistory.push({
+          type: "ai",
+          message: answer,
+        });
       }
     } else {
-      context.log("AI agent error: Invalid response.", "error");
+      // Log the actual response for debugging
+      console.error("[DEBUG] Invalid AI response structure:", JSON.stringify(data, null, 2));
+      context.log("AI agent error: Invalid response format.", "error");
+      context.log("", "output");
+      context.log("💡 The AI endpoint returned an unexpected response format", "info");
+      context.log("💡 Try rephrasing your question or use 'help' for available commands", "info");
+      if (data) {
+        context.log("", "output");
+        context.log(`📊 Response preview: ${JSON.stringify(data).substring(0, 200)}...`, "output");
+      }
     }
   } catch (error: any) {
     context.log("AI agent error: " + error.message, "error");
+    context.log("", "output");
+    context.log("💡 Check your connection or try again later", "info");
   }
 }
+
+/**
+ * Quick Actions Command
+ * Manage custom quick actions that appear in the welcome message
+ */
+export const quickActionsCommand: Command = {
+  name: "quick-actions",
+  aliases: ["qa", "favorites", "favs"],
+  description: "Manage your custom quick actions (favorite commands)",
+  usage: "quick-actions [list|add|remove|edit|reset]",
+  handler: (context: CommandContext, args: string[]) => {
+    const subcommand = args[1]?.toLowerCase() || "list";
+
+    if (subcommand === "list" || subcommand === "show") {
+      const actions = getQuickActions();
+      const grouped = groupQuickActionsByCategory(actions);
+
+      context.log("⭐ Your Custom Quick Actions:", "info");
+      context.log("", "output");
+
+      if (actions.length === 0) {
+        context.log("No custom quick actions set. Use 'quick-actions add' to add some!", "info");
+        return;
+      }
+
+      Object.entries(grouped).forEach(([category, categoryActions]) => {
+        context.log(`📁 ${category}:`, "output");
+        categoryActions.forEach((action) => {
+          context.logHtml(
+            `  • ${createCommandLine(action.command, action.label)} ${action.description ? `→ ${action.description}` : ""}`
+          );
+        });
+        context.log("", "output");
+      });
+
+      context.log("💡 Click any command above to execute it", "info");
+      context.log("💡 Use 'quick-actions add <command> <label> [description]' to add more", "info");
+    } else if (subcommand === "add") {
+      const command = args[2];
+      if (!command) {
+        context.log("❌ Usage: quick-actions add <command> <label> [description] [category:<name>]", "error");
+        context.log("Example: quick-actions add 'chart ETH' 'Chart Ethereum' 'View ETH chart' category:'Trading'", "info");
+        return;
+      }
+
+      const label = args[3] || command;
+      const description = args.slice(4).join(" ") || undefined;
+      const category = args.find((a) => a.startsWith("category:"))?.split(":")[1] || "Other";
+
+      const newAction = addQuickAction({
+        command,
+        label: label || command,
+        description,
+        category,
+      });
+
+      context.log(`✅ Added quick action: ${newAction.label}`, "success");
+      context.log(`   Command: ${newAction.command}`, "output");
+      if (newAction.description) {
+        context.log(`   Description: ${newAction.description}`, "output");
+      }
+      context.log("💡 Your quick actions will appear in the welcome message on next load", "info");
+    } else if (subcommand === "remove" || subcommand === "delete") {
+      const id = args[2];
+      if (!id) {
+        context.log("❌ Usage: quick-actions remove <id>", "error");
+        context.log("💡 Use 'quick-actions list' to see IDs", "info");
+        return;
+      }
+
+      const removed = removeQuickAction(id);
+      if (removed) {
+        context.log(`✅ Removed quick action with ID: ${id}`, "success");
+      } else {
+        context.log(`❌ Quick action with ID '${id}' not found`, "error");
+      }
+    } else if (subcommand === "edit" || subcommand === "update") {
+      const id = args[2];
+      if (!id) {
+        context.log("❌ Usage: quick-actions edit <id> [command] [label] [description]", "error");
+        return;
+      }
+
+      const updates: Partial<QuickAction> = {};
+      if (args[3]) updates.command = args[3];
+      if (args[4]) updates.label = args[4];
+      if (args[5]) updates.description = args.slice(5).join(" ");
+
+      const updated = updateQuickAction(id, updates);
+      if (updated) {
+        context.log(`✅ Updated quick action with ID: ${id}`, "success");
+      } else {
+        context.log(`❌ Quick action with ID '${id}' not found`, "error");
+      }
+    } else if (subcommand === "reset") {
+      resetQuickActions();
+      context.log("✅ Reset quick actions to defaults", "success");
+    } else {
+      context.log("❌ Unknown subcommand. Use: list, add, remove, edit, or reset", "error");
+      context.log("💡 Type 'quick-actions list' to see your current quick actions", "info");
+    }
+  },
+};
 
 /**
  * URL Command
@@ -1584,6 +1805,7 @@ export const basicCommands: Command[] = [
   aiCommand,
   tabCommand,
   stopCommand,
+  quickActionsCommand,
   urlCommand,
 ];
 

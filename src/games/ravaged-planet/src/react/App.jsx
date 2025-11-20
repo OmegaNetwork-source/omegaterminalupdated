@@ -15,9 +15,11 @@ import { VictoryScreen } from './components/VictoryScreen';
 import { Matchmaking } from './components/Matchmaking';
 import { MultiplayerGame } from './components/MultiplayerGame';
 import { MatchResult } from './components/MatchResult';
-import { CharacterSelector } from './components/CharacterSelector';
+import { WeaponDraft } from './components/WeaponDraft';
+// CharacterSelector removed - was causing game freezing issues
 import { multiplayerManager } from '../utils/multiplayer';
 import { setGameConfig, startGame, restartGame, startNextLevel } from '../engine/gameEngine';
+import { initDraftSession, getDraftSession } from '../engine/weaponDraft.js';
 
 // Expose restart functions globally for VictoryScreen
 if (typeof window !== 'undefined') {
@@ -43,13 +45,10 @@ function GameContainer() {
   const [showMatchmaking, setShowMatchmaking] = useState(false);
   const [activeMatch, setActiveMatch] = useState(null);
   const [matchResult, setMatchResult] = useState(null);
-  const [showCharacterSelector, setShowCharacterSelector] = useState(false);
-  const [selectedCharacter, setSelectedCharacter] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem('selectedCharacter') || 'simple-character';
-    }
-    return 'simple-character';
-  });
+  const [showWeaponDraft, setShowWeaponDraft] = useState(false);
+  const [draftEnabled, setDraftEnabled] = useState(true); // Enable draft by default
+  const [draftSummary, setDraftSummary] = useState(null);
+  // Character selector removed - was causing game freezing issues
 
   // Note: Game engine is initialized by GameCanvas component
   // We don't need useGameEngine hook here to avoid duplicate initialization
@@ -85,9 +84,17 @@ function GameContainer() {
     setGameConfig(config);
     configureGame(config);
     setShowModeSelector(false);
-    // Directly start the game via game engine
-    startGame();
-  }, [selectedMode, playerCount, configureGame]);
+    
+    // If draft is enabled, show draft screen first
+    if (draftEnabled) {
+      console.log('[App] Starting weapon draft...');
+      setShowWeaponDraft(true);
+    } else {
+      // Directly start the game via game engine (classic mode)
+      console.log('[App] Starting game (classic mode)...');
+      startGame();
+    }
+  }, [selectedMode, playerCount, configureGame, draftEnabled]);
 
   const handleMenuStartGame = useCallback(() => {
     // If mode selector is shown, configure first
@@ -97,9 +104,30 @@ function GameContainer() {
       configureGame(config);
       setShowModeSelector(false);
     }
-    // Start the game
+    
+    // If draft enabled, show draft screen
+    if (draftEnabled) {
+      console.log('[App] Starting weapon draft...');
+      setShowWeaponDraft(true);
+    } else {
+      // Start the game (classic mode)
+      startGame();
+    }
+  }, [selectedMode, playerCount, configureGame, showModeSelector, draftEnabled]);
+
+  const handleDraftComplete = useCallback((summary) => {
+    console.log('[App] Draft complete, starting game with drafted weapons');
+    console.log('[App] Draft summary:', summary);
+    
+    setDraftSummary(summary);
+    setShowWeaponDraft(false);
+    
+    // Store draft summary for game initialization
+    window.draftSummary = summary;
+    
+    // Start the game with drafted weapons
     startGame();
-  }, [selectedMode, playerCount, configureGame, showModeSelector]);
+  }, []);
 
   // Update leaderboard when game ends
   useEffect(() => {
@@ -121,6 +149,18 @@ function GameContainer() {
       delete window.resetTurnTimer;
     };
   }, []);
+
+  // Show weapon draft screen
+  if (showWeaponDraft) {
+    return (
+      <div id="game-container" ref={gameContainerRef}>
+        <WeaponDraft
+          playerCount={playerCount}
+          onDraftComplete={handleDraftComplete}
+        />
+      </div>
+    );
+  }
 
   if (showLeaderboard) {
     return (
@@ -165,6 +205,8 @@ function GameContainer() {
               selectedMode={selectedMode}
               playerCount={playerCount}
               onPlayerCountChange={setPlayerCount}
+              draftEnabled={draftEnabled}
+              onDraftToggle={setDraftEnabled}
             />
             <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
               <button 
@@ -198,16 +240,16 @@ function GameContainer() {
 
   return (
     <>
-      <Menu
-        onStartGame={handleMenuStartGame}
-        onOpenGameModes={() => setShowModeSelector(true)}
-        onOpenLeaderboard={() => setShowLeaderboard(true)}
-        onOpenMapEditor={() => setShowMapEditor(true)}
-        onOpenMapSelector={() => setShowMapSelector(true)}
-        onOpenMultiplayer={() => setShowMatchmaking(true)}
-        onOpenCharacterSelector={() => setShowCharacterSelector(true)}
-      />
+        <Menu
+          onStartGame={handleMenuStartGame}
+          onOpenGameModes={() => setShowModeSelector(true)}
+          onOpenLeaderboard={() => setShowLeaderboard(true)}
+          onOpenMapEditor={() => setShowMapEditor(true)}
+          onOpenMapSelector={() => setShowMapSelector(true)}
+          onOpenMultiplayer={() => setShowMatchmaking(true)}
+        />
       <div id="game-container" ref={gameContainerRef}>
+        {/* Top action buttons only visible when menu is active and no other overlay is shown */}
         {menuVisible && !showModeSelector && !showLeaderboard && !showAssetSettings && !showMapEditor && !showMapSelector && (
           <div 
             className="menu-action-buttons"
@@ -218,8 +260,9 @@ function GameContainer() {
               zIndex: 2001, 
               pointerEvents: 'auto', 
               display: 'flex', 
-              gap: '10px', 
-              flexWrap: 'wrap' 
+              gap: '12px', 
+              flexWrap: 'wrap',
+              maxWidth: '600px'
             }}
           >
             <button 
@@ -227,42 +270,22 @@ function GameContainer() {
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                setShowModeSelector(true);
-              }}
-              style={{ padding: '8px 16px', background: 'rgba(255,215,0,0.3)', border: '2px solid #ffd700', color: '#ffd700', cursor: 'pointer', fontWeight: 'bold', borderRadius: '4px', boxShadow: '0 0 10px rgba(255,215,0,0.5)' }}
-            >
-              GAME MODES
-            </button>
-            <button 
-              type="button"
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                setShowLeaderboard(true);
-              }}
-              style={{ padding: '8px 16px', background: 'rgba(255,255,255,0.2)', border: '2px solid rgba(255,255,255,0.4)', color: '#fff', cursor: 'pointer', borderRadius: '4px', fontWeight: 'bold' }}
-            >
-              LEADERBOARD
-            </button>
-            <button 
-              type="button"
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                setShowAssetSettings(true);
-              }}
-              style={{ padding: '8px 16px', background: 'rgba(100,200,255,0.2)', border: '2px solid rgba(100,200,255,0.4)', color: '#64C8FF', cursor: 'pointer', borderRadius: '4px', fontWeight: 'bold' }}
-            >
-              ENHANCE ASSETS
-            </button>
-            <button 
-              type="button"
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
                 setShowMapEditor(true);
               }}
-              style={{ padding: '8px 16px', background: 'rgba(255,100,200,0.2)', border: '2px solid rgba(255,100,200,0.4)', color: '#ff64c8', cursor: 'pointer', borderRadius: '4px', fontWeight: 'bold' }}
+              style={{ 
+                padding: '10px 18px', 
+                background: 'rgba(255,100,200,0.25)', 
+                border: '2px solid rgba(255,100,200,0.5)', 
+                color: '#ff64c8', 
+                cursor: 'pointer', 
+                borderRadius: '6px', 
+                fontWeight: 'bold',
+                fontFamily: 'Courier New, monospace',
+                fontSize: '14px',
+                letterSpacing: '1px',
+                transition: 'all 0.2s ease',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.3)'
+              }}
             >
               MAP EDITOR
             </button>
@@ -273,9 +296,46 @@ function GameContainer() {
                 e.stopPropagation();
                 setShowMapSelector(true);
               }}
-              style={{ padding: '8px 16px', background: 'rgba(100,255,150,0.2)', border: '2px solid rgba(100,255,150,0.4)', color: '#64ff96', cursor: 'pointer', borderRadius: '4px', fontWeight: 'bold' }}
+              style={{ 
+                padding: '10px 18px', 
+                background: 'rgba(100,255,150,0.25)', 
+                border: '2px solid rgba(100,255,150,0.5)', 
+                color: '#64ff96', 
+                cursor: 'pointer', 
+                borderRadius: '6px', 
+                fontWeight: 'bold',
+                fontFamily: 'Courier New, monospace',
+                fontSize: '14px',
+                letterSpacing: '1px',
+                transition: 'all 0.2s ease',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.3)'
+              }}
             >
               SELECT MAP
+            </button>
+            <button 
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setShowAssetSettings(true);
+              }}
+              style={{ 
+                padding: '10px 18px', 
+                background: 'rgba(100,200,255,0.25)', 
+                border: '2px solid rgba(100,200,255,0.5)', 
+                color: '#64C8FF', 
+                cursor: 'pointer', 
+                borderRadius: '6px', 
+                fontWeight: 'bold',
+                fontFamily: 'Courier New, monospace',
+                fontSize: '14px',
+                letterSpacing: '1px',
+                transition: 'all 0.2s ease',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.3)'
+              }}
+            >
+              ENHANCE ASSETS
             </button>
           </div>
         )}
@@ -322,27 +382,7 @@ function GameContainer() {
             }}
           />
         )}
-        {showCharacterSelector && (
-          <CharacterSelector
-            onClose={() => {
-              setShowCharacterSelector(false);
-              // Show menu after closing character selector
-              setTimeout(() => {
-                if (typeof window !== 'undefined' && window.showMenu) {
-                  window.showMenu();
-                }
-              }, 100);
-            }}
-            onSelect={(character) => {
-              setSelectedCharacter(character);
-              if (typeof window !== 'undefined') {
-                localStorage.setItem('selectedCharacter', character);
-                // Dispatch event to update menu character display
-                window.dispatchEvent(new CustomEvent('characterSelected', { detail: character }));
-              }
-            }}
-          />
-        )}
+        {/* Character selector removed - was causing game freezing issues */}
         <GameCanvas />
         <GameHUD />
         <DamageNumbers />

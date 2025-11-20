@@ -123,12 +123,20 @@ async function handleAsk(
       botResponse = response.data.bot;
     } else if (response.success && response.data && response.data.answer) {
       botResponse = response.data.answer;
+    } else if (response.data && response.data.bot) {
+      botResponse = response.data.bot;
+    } else if (response.data && response.data.answer) {
+      botResponse = response.data.answer;
     } else if (response.answer) {
       botResponse = response.answer;
+    } else if (response.bot) {
+      botResponse = response.bot;
     } else if (typeof response === "string") {
       botResponse = response;
     } else {
-      throw new Error("Unknown response format");
+      // Log the actual response structure for debugging
+      console.error("[DEBUG] Unknown response format. Response structure:", JSON.stringify(response, null, 2));
+      throw new Error(`Unknown response format. Received: ${JSON.stringify(response).substring(0, 200)}`);
     }
 
     // Display response with uniform styling
@@ -153,6 +161,12 @@ async function handleAsk(
       context.log("", "output");
       context.log("Option 2: Server keys may be configured by admin", "output");
       context.log("   Contact the administrator if server keys are expected", "info");
+    } else if (errorMsg.includes("Unknown response format")) {
+      context.log(`❌ Error: ${errorMsg}`, "error");
+      context.log("", "output");
+      context.log("💡 The API returned an unexpected response format", "info");
+      context.log("💡 This might be a temporary API issue", "info");
+      context.log("💡 Try again in a moment or check: chat test", "info");
     } else {
       context.log(`❌ Error: ${errorMsg}`, "error");
       context.log("", "output");
@@ -301,10 +315,20 @@ async function handleContext(
 
     if (response.status && response.data && response.data.bot) {
       botResponse = response.data.bot;
+    } else if (response.data && response.data.bot) {
+      botResponse = response.data.bot;
+    } else if (response.data && response.data.answer) {
+      botResponse = response.data.answer;
     } else if (response.answer) {
       botResponse = response.answer;
+    } else if (response.bot) {
+      botResponse = response.bot;
+    } else if (typeof response === "string") {
+      botResponse = response;
     } else {
-      throw new Error("Unknown response format");
+      // Log the actual response structure for debugging
+      console.error("[DEBUG] Unknown response format. Response structure:", JSON.stringify(response, null, 2));
+      throw new Error(`Unknown response format. Received: ${JSON.stringify(response).substring(0, 200)}`);
     }
 
     // Display response with uniform context styling
@@ -362,10 +386,20 @@ async function handleHistory(
 
     if (response.status && response.data && response.data.bot) {
       botResponse = response.data.bot;
+    } else if (response.data && response.data.bot) {
+      botResponse = response.data.bot;
+    } else if (response.data && response.data.answer) {
+      botResponse = response.data.answer;
     } else if (response.answer) {
       botResponse = response.answer;
+    } else if (response.bot) {
+      botResponse = response.bot;
+    } else if (typeof response === "string") {
+      botResponse = response;
     } else {
-      throw new Error("Unknown response format");
+      // Log the actual response structure for debugging
+      console.error("[DEBUG] Unknown response format. Response structure:", JSON.stringify(response, null, 2));
+      throw new Error(`Unknown response format. Received: ${JSON.stringify(response).substring(0, 200)}`);
     }
 
     // Display response with uniform memory styling

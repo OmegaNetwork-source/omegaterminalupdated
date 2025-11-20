@@ -34,9 +34,41 @@ export async function getMarkets(
   }`;
   try {
     const res = await fetch(url, { next: { revalidate: 60 } });
-    if (!res.ok) throw new Error(`Kalshi markets failed: ${res.status}`);
-    return (await res.json()) as KalshiApiResponse<KalshiMarket>;
+    if (!res.ok) {
+      const errorText = await res.text();
+      throw new Error(`Kalshi markets failed: ${res.status} - ${errorText}`);
+    }
+    const json = await res.json();
+    
+    // Handle different response structures:
+    // 1. Wrapped: { success: true, data: { markets: [...] } }
+    // 2. Direct: { markets: [...] }
+    // 3. Direct array: [...]
+    let data: any;
+    if (json.success !== undefined) {
+      data = json.data;
+    } else {
+      data = json;
+    }
+    
+    // If data is an array, wrap it in markets property
+    if (Array.isArray(data)) {
+      return { markets: data, cursor: undefined };
+    }
+    
+    // Ensure markets property exists
+    if (!data.markets && data.market) {
+      // Single market response
+      return { market: data.market, cursor: undefined };
+    }
+    
+    // Return with markets array (default to empty if missing)
+    return {
+      markets: data.markets || [],
+      cursor: data.cursor,
+    } as KalshiApiResponse<KalshiMarket>;
   } catch (e: any) {
+    console.error("Kalshi getMarkets error:", e);
     return { markets: [], cursor: undefined };
   }
 }
@@ -50,8 +82,12 @@ export async function getMarket(
   try {
     const res = await fetch(url, { next: { revalidate: 60 } });
     if (!res.ok) throw new Error(`Kalshi market failed: ${res.status}`);
-    return (await res.json()) as KalshiApiResponse<KalshiMarket>;
-  } catch (_) {
+    const json = await res.json();
+    // Handle both wrapped ({ success, data }) and direct responses
+    const data = json.success !== undefined ? json.data : json;
+    return data as KalshiApiResponse<KalshiMarket>;
+  } catch (e: any) {
+    console.error("Kalshi getMarket error:", e);
     return { market: undefined };
   }
 }
@@ -69,8 +105,12 @@ export async function getMarketOrderbook(
   try {
     const res = await fetch(url, { next: { revalidate: 60 } });
     if (!res.ok) throw new Error(`Kalshi orderbook failed: ${res.status}`);
-    return (await res.json()) as KalshiApiResponse<KalshiOrderbook>;
-  } catch (_) {
+    const json = await res.json();
+    // Handle both wrapped ({ success, data }) and direct responses
+    const data = json.success !== undefined ? json.data : json;
+    return data as KalshiApiResponse<KalshiOrderbook>;
+  } catch (e: any) {
+    console.error("Kalshi getMarketOrderbook error:", e);
     return { orderbook: { yes_dollars: [], no_dollars: [] } };
   }
 }
@@ -91,8 +131,12 @@ export async function getMarketTrades(
   try {
     const res = await fetch(url, { next: { revalidate: 60 } });
     if (!res.ok) throw new Error(`Kalshi trades failed: ${res.status}`);
-    return (await res.json()) as KalshiApiResponse<KalshiTrade>;
-  } catch (_) {
+    const json = await res.json();
+    // Handle both wrapped ({ success, data }) and direct responses
+    const data = json.success !== undefined ? json.data : json;
+    return data as KalshiApiResponse<KalshiTrade>;
+  } catch (e: any) {
+    console.error("Kalshi getMarketTrades error:", e);
     return { trades: [], cursor: undefined };
   }
 }
@@ -113,8 +157,12 @@ export async function getEvents(
   try {
     const res = await fetch(url, { next: { revalidate: 120 } });
     if (!res.ok) throw new Error(`Kalshi events failed: ${res.status}`);
-    return (await res.json()) as KalshiApiResponse<KalshiEvent>;
-  } catch (_) {
+    const json = await res.json();
+    // Handle both wrapped ({ success, data }) and direct responses
+    const data = json.success !== undefined ? json.data : json;
+    return data as KalshiApiResponse<KalshiEvent>;
+  } catch (e: any) {
+    console.error("Kalshi getEvents error:", e);
     return { events: [], cursor: undefined };
   }
 }
@@ -128,8 +176,12 @@ export async function getEvent(
   try {
     const res = await fetch(url, { next: { revalidate: 120 } });
     if (!res.ok) throw new Error(`Kalshi event failed: ${res.status}`);
-    return (await res.json()) as KalshiApiResponse<KalshiEvent>;
-  } catch (_) {
+    const json = await res.json();
+    // Handle both wrapped ({ success, data }) and direct responses
+    const data = json.success !== undefined ? json.data : json;
+    return data as KalshiApiResponse<KalshiEvent>;
+  } catch (e: any) {
+    console.error("Kalshi getEvent error:", e);
     return { event: undefined };
   }
 }
@@ -143,8 +195,12 @@ export async function getSeries(
   try {
     const res = await fetch(url, { next: { revalidate: 120 } });
     if (!res.ok) throw new Error(`Kalshi series failed: ${res.status}`);
-    return (await res.json()) as KalshiApiResponse<KalshiSeries>;
-  } catch (_) {
+    const json = await res.json();
+    // Handle both wrapped ({ success, data }) and direct responses
+    const data = json.success !== undefined ? json.data : json;
+    return data as KalshiApiResponse<KalshiSeries>;
+  } catch (e: any) {
+    console.error("Kalshi getSeries error:", e);
     return { series: undefined };
   }
 }

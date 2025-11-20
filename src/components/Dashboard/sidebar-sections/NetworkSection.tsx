@@ -20,89 +20,26 @@ export function NetworkSection(): JSX.Element {
 
   return (
     <div className={styles.sectionContent}>
-      {/* EVM Networks Subsection */}
-      <details className={styles.expandable}>
-        <summary className={styles.expandableButton}>
-          <svg
-            className={styles.buttonIcon}
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path d="M12,8A4,4 0 0,1 16,12A4,4 0 0,1 12,16A4,4 0 0,1 8,12A4,4 0 0,1 12,8M12,10A2,2 0 0,0 10,12A2,2 0 0,0 12,14A2,2 0 0,0 14,12A2,2 0 0,0 12,10M10,22C9.75,22 9.54,21.82 9.5,21.58L9.13,18.93C8.5,18.68 7.96,18.34 7.44,17.94L4.95,18.95C4.73,19.03 4.46,18.95 4.34,18.73L2.34,15.27C2.21,15.05 2.27,14.78 2.46,14.63L4.57,12.97L4.5,12L4.57,11L2.46,9.37C2.27,9.22 2.21,8.95 2.34,8.73L4.34,5.27C4.46,5.05 4.73,4.96 4.95,5.05L7.44,6.05C7.96,5.66 8.5,5.32 9.13,5.07L9.5,2.42C9.54,2.18 9.75,2 10,2H14C14.25,2 14.46,2.18 14.5,2.42L14.87,5.07C15.5,5.32 16.04,5.66 16.56,6.05L19.05,5.05C19.27,4.96 19.54,5.05 19.66,5.27L21.66,8.73C21.79,8.95 21.73,9.22 21.54,9.37L19.43,11L19.5,12L19.43,13L21.54,14.63C21.73,14.78 21.79,15.05 21.66,15.27L19.66,18.73C19.54,18.95 19.27,19.04 19.05,18.95L16.56,17.95C16.04,18.34 15.5,18.68 14.87,18.93L14.5,21.58C14.46,21.82 14.25,22 14,22H10M11.25,4L10.88,6.61C9.68,6.86 8.62,7.5 7.85,8.39L5.44,7.35L4.69,8.65L6.8,10.2C6.4,11.37 6.4,12.64 6.8,13.8L4.68,15.36L5.43,16.66L7.86,15.62C8.63,16.5 9.68,17.14 10.87,17.38L11.24,20H12.76L13.13,17.39C14.32,17.14 15.37,16.5 16.14,15.62L18.57,16.66L19.32,15.36L17.2,13.81C17.6,12.64 17.6,11.37 17.2,10.2L19.31,8.65L18.56,7.35L16.15,8.39C15.38,7.5 14.32,6.86 13.12,6.62L12.75,4H11.25Z" />
-          </svg>
-          <span>EVM Networks</span>
-          <svg
-            className={styles.expandIcon}
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path d="M7.41,8.58L12,13.17L16.59,8.58L18,10L12,16L6,10L7.41,8.58Z" />
-          </svg>
-        </summary>
-        <div className={styles.subActions}>
-          <button
-            className={styles.subButton}
-            onClick={() => handleCommand("connect")}
-          >
-            <svg className={styles.subButtonIcon} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
-              <path d="M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4M12,6A6,6 0 0,1 18,12A6,6 0 0,1 12,18A6,6 0 0,1 6,12A6,6 0 0,1 12,6M12,8A4,4 0 0,0 8,12A4,4 0 0,0 12,16A4,4 0 0,0 16,12A4,4 0 0,0 12,8M12,10A2,2 0 0,1 14,12A2,2 0 0,1 12,14A2,2 0 0,1 10,12A2,2 0 0,1 12,10Z" />
-            </svg>
-            <span>→ Connect Wallet</span>
-          </button>
-          <button
-            className={styles.subButton}
-            onClick={() => handleCommand("disconnect")}
-          >
-            <svg className={styles.subButtonIcon} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
-              <path d="M16,17V14H9V10H16V7L21,12L16,17M14,2A2,2 0 0,1 16,4V6H14V4H5V20H14V18H16V20A2,2 0 0,1 14,22H5A2,2 0 0,1 3,20V4A2,2 0 0,1 5,2H14Z" />
-            </svg>
-            <span>→ Disconnect</span>
-          </button>
-          <button
-            className={styles.subButton}
-            onClick={() => handleCommand("balance")}
-          >
-            <svg className={styles.subButtonIcon} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
-              <path d="M7,15H9C9,16.08 10.37,17 12,17C13.63,17 15,16.08 15,15C15,13.9 13.96,13.5 11.76,12.97C9.64,12.44 7,11.78 7,9C7,7.21 8.47,5.69 10.5,5.18V3H13.5V5.18C15.53,5.69 17,7.21 17,9H15C15,7.92 13.63,7 12,7C10.37,7 9,7.92 9,9C9,10.1 10.04,10.5 12.24,11.03C14.36,11.56 17,12.22 17,15C17,16.79 15.53,18.31 13.5,18.82V21H10.5V18.82C8.47,18.31 7,16.79 7,15Z" />
-            </svg>
-            <span>→ Check Balance</span>
-          </button>
-          <button
-            className={styles.subButton}
-            onClick={() => handleCommand("send")}
-          >
-            <svg className={styles.subButtonIcon} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
-              <path d="M2,21L23,12L2,3V10L17,12L2,14V21Z" />
-            </svg>
-            <span>→ Send Tokens</span>
-          </button>
-          <div
-            style={{
-              borderTop: "1px solid rgba(0, 212, 255, 0.2)",
-              margin: "8px 0",
-              paddingTop: "4px",
-            }}
-          />
-          <button
-            className={styles.subButton}
-            style={{ fontSize: "0.85em", color: "rgba(255,255,255,0.7)" }}
-            disabled
-          >
-            <span>Ethereum • BSC • Polygon</span>
-          </button>
-          <button
-            className={styles.subButton}
-            style={{ fontSize: "0.85em", color: "rgba(255,255,255,0.7)" }}
-            disabled
-          >
-            <span>Arbitrum • Optimism • Base</span>
-          </button>
-        </div>
-      </details>
-
       {/* Omega Network Subsection */}
       <details className={styles.expandable}>
-        <summary className={styles.expandableButton}>
+        <summary 
+          className={styles.expandableButton}
+          draggable={true}
+          onDragStart={(e) => {
+            e.dataTransfer.effectAllowed = "copy";
+            e.dataTransfer.setData("text/plain", "section:network-omega");
+            if (e.currentTarget instanceof HTMLElement) {
+              e.currentTarget.style.opacity = "0.5";
+            }
+          }}
+          onDragEnd={(e) => {
+            if (e.currentTarget instanceof HTMLElement) {
+              e.currentTarget.style.opacity = "1";
+            }
+          }}
+          style={{ cursor: "grab" }}
+          title="Drag to Quick Actions to add all Omega Network commands"
+        >
           <svg
             className={styles.buttonIcon}
             viewBox="0 0 24 24"
@@ -296,7 +233,24 @@ export function NetworkSection(): JSX.Element {
 
       {/* Solana Network Subsection */}
       <details className={styles.expandable}>
-        <summary className={styles.expandableButton}>
+        <summary 
+          className={styles.expandableButton}
+          draggable={true}
+          onDragStart={(e) => {
+            e.dataTransfer.effectAllowed = "copy";
+            e.dataTransfer.setData("text/plain", "section:network-solana");
+            if (e.currentTarget instanceof HTMLElement) {
+              e.currentTarget.style.opacity = "0.5";
+            }
+          }}
+          onDragEnd={(e) => {
+            if (e.currentTarget instanceof HTMLElement) {
+              e.currentTarget.style.opacity = "1";
+            }
+          }}
+          style={{ cursor: "grab" }}
+          title="Drag to Quick Actions to add all Solana commands"
+        >
           <svg
             className={styles.buttonIcon}
             viewBox="0 0 24 24"
@@ -364,7 +318,24 @@ export function NetworkSection(): JSX.Element {
 
       {/* NEAR Protocol Subsection */}
       <details className={styles.expandable}>
-        <summary className={styles.expandableButton}>
+        <summary 
+          className={styles.expandableButton}
+          draggable={true}
+          onDragStart={(e) => {
+            e.dataTransfer.effectAllowed = "copy";
+            e.dataTransfer.setData("text/plain", "section:network-near");
+            if (e.currentTarget instanceof HTMLElement) {
+              e.currentTarget.style.opacity = "0.5";
+            }
+          }}
+          onDragEnd={(e) => {
+            if (e.currentTarget instanceof HTMLElement) {
+              e.currentTarget.style.opacity = "1";
+            }
+          }}
+          style={{ cursor: "grab" }}
+          title="Drag to Quick Actions to add all NEAR commands"
+        >
           <svg
             className={styles.buttonIcon}
             viewBox="0 0 24 24"
@@ -448,9 +419,697 @@ export function NetworkSection(): JSX.Element {
         </div>
       </details>
 
+      {/* Ethereum Network Subsection */}
+      <details className={styles.expandable}>
+        <summary 
+          className={styles.expandableButton}
+          draggable={true}
+          onDragStart={(e) => {
+            e.dataTransfer.effectAllowed = "copy";
+            e.dataTransfer.setData("text/plain", "section:network-ethereum");
+            if (e.currentTarget instanceof HTMLElement) {
+              e.currentTarget.style.opacity = "0.5";
+            }
+          }}
+          onDragEnd={(e) => {
+            if (e.currentTarget instanceof HTMLElement) {
+              e.currentTarget.style.opacity = "1";
+            }
+          }}
+          style={{ cursor: "grab" }}
+          title="Drag to Quick Actions to add all Ethereum commands"
+        >
+          <svg
+            className={styles.buttonIcon}
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path d="M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4M12,6A6,6 0 0,1 18,12A6,6 0 0,1 12,18A6,6 0 0,1 6,12A6,6 0 0,1 12,6M12,8A4,4 0 0,0 8,12A4,4 0 0,0 12,16A4,4 0 0,0 16,12A4,4 0 0,0 12,8Z" />
+          </svg>
+          <span>Ethereum</span>
+          <svg
+            className={styles.expandIcon}
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path d="M7.41,8.58L12,13.17L16.59,8.58L18,10L12,16L6,10L7.41,8.58Z" />
+          </svg>
+        </summary>
+        <div className={styles.subActions}>
+          <button
+            className={styles.subButton}
+            onClick={() => handleCommand("connect")}
+          >
+            <svg className={styles.subButtonIcon} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+              <path d="M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4M12,6A6,6 0 0,1 18,12A6,6 0 0,1 12,18A6,6 0 0,1 6,12A6,6 0 0,1 12,6M12,8A4,4 0 0,0 8,12A4,4 0 0,0 12,16A4,4 0 0,0 16,12A4,4 0 0,0 12,8Z" />
+            </svg>
+            <span>→ Connect Wallet</span>
+          </button>
+          <button
+            className={styles.subButton}
+            onClick={() => handleCommand("ethereum balance")}
+          >
+            <svg className={styles.subButtonIcon} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+              <path d="M7,15H9C9,16.08 10.37,17 12,17C13.63,17 15,16.08 15,15C15,13.9 13.96,13.5 11.76,12.97C9.64,12.44 7,11.78 7,9C7,7.21 8.47,5.69 10.5,5.18V3H13.5V5.18C15.53,5.69 17,7.21 17,9H15C15,7.92 13.63,7 12,7C10.37,7 9,7.92 9,9C9,10.1 10.04,10.5 12.24,11.03C14.36,11.56 17,12.22 17,15C17,16.79 15.53,18.31 13.5,18.82V21H10.5V18.82C8.47,18.31 7,16.79 7,15Z" />
+            </svg>
+            <span>→ Check Balance</span>
+          </button>
+          <button
+            className={styles.subButton}
+            onClick={() => handleCommand("ethereum swap")}
+          >
+            <svg className={styles.subButtonIcon} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+              <path d="M17.65,6.35C16.2,4.9 14.21,4 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20C15.73,20 18.84,17.45 19.73,14H17.65C16.83,16.33 14.61,18 12,18A6,6 0 0,1 6,12A6,6 0 0,1 12,6C13.66,6 15.14,6.69 16.22,7.78L13,11H20V4L17.65,6.35Z" />
+            </svg>
+            <span>→ Token Swap (CowSwap)</span>
+          </button>
+          <button
+            className={styles.subButton}
+            onClick={() => handleCommand("ethereum help")}
+          >
+            <svg className={styles.subButtonIcon} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+              <path d="M11,18H13V16H11V18M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,6A4,4 0 0,0 8,10H10A2,2 0 0,1 12,8A2,2 0 0,1 14,10C14,12 11,11.75 11,15H13C13,12.75 16,12.5 16,10A4,4 0 0,0 12,6Z" />
+            </svg>
+            <span>→ Ethereum Help</span>
+          </button>
+        </div>
+      </details>
+
+      {/* Arbitrum Network Subsection */}
+      <details className={styles.expandable}>
+        <summary 
+          className={styles.expandableButton}
+          draggable={true}
+          onDragStart={(e) => {
+            e.dataTransfer.effectAllowed = "copy";
+            e.dataTransfer.setData("text/plain", "section:network-arbitrum");
+            if (e.currentTarget instanceof HTMLElement) {
+              e.currentTarget.style.opacity = "0.5";
+            }
+          }}
+          onDragEnd={(e) => {
+            if (e.currentTarget instanceof HTMLElement) {
+              e.currentTarget.style.opacity = "1";
+            }
+          }}
+          style={{ cursor: "grab" }}
+          title="Drag to Quick Actions to add all Arbitrum commands"
+        >
+          <svg
+            className={styles.buttonIcon}
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path d="M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4M12,6A6,6 0 0,1 18,12A6,6 0 0,1 12,18A6,6 0 0,1 6,12A6,6 0 0,1 12,6M12,8A4,4 0 0,0 8,12A4,4 0 0,0 12,16A4,4 0 0,0 16,12A4,4 0 0,0 12,8Z" />
+          </svg>
+          <span>Arbitrum</span>
+          <svg
+            className={styles.expandIcon}
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path d="M7.41,8.58L12,13.17L16.59,8.58L18,10L12,16L6,10L7.41,8.58Z" />
+          </svg>
+        </summary>
+        <div className={styles.subActions}>
+          <button
+            className={styles.subButton}
+            onClick={() => handleCommand("connect")}
+          >
+            <svg className={styles.subButtonIcon} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+              <path d="M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4M12,6A6,6 0 0,1 18,12A6,6 0 0,1 12,18A6,6 0 0,1 6,12A6,6 0 0,1 12,6M12,8A4,4 0 0,0 8,12A4,4 0 0,0 12,16A4,4 0 0,0 16,12A4,4 0 0,0 12,8Z" />
+            </svg>
+            <span>→ Connect Wallet</span>
+          </button>
+          <button
+            className={styles.subButton}
+            onClick={() => handleCommand("arbitrum balance")}
+          >
+            <svg className={styles.subButtonIcon} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+              <path d="M7,15H9C9,16.08 10.37,17 12,17C13.63,17 15,16.08 15,15C15,13.9 13.96,13.5 11.76,12.97C9.64,12.44 7,11.78 7,9C7,7.21 8.47,5.69 10.5,5.18V3H13.5V5.18C15.53,5.69 17,7.21 17,9H15C15,7.92 13.63,7 12,7C10.37,7 9,7.92 9,9C9,10.1 10.04,10.5 12.24,11.03C14.36,11.56 17,12.22 17,15C17,16.79 15.53,18.31 13.5,18.82V21H10.5V18.82C8.47,18.31 7,16.79 7,15Z" />
+            </svg>
+            <span>→ Check Balance</span>
+          </button>
+          <button
+            className={styles.subButton}
+            onClick={() => handleCommand("arbitrum swap")}
+          >
+            <svg className={styles.subButtonIcon} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+              <path d="M17.65,6.35C16.2,4.9 14.21,4 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20C15.73,20 18.84,17.45 19.73,14H17.65C16.83,16.33 14.61,18 12,18A6,6 0 0,1 6,12A6,6 0 0,1 12,6C13.66,6 15.14,6.69 16.22,7.78L13,11H20V4L17.65,6.35Z" />
+            </svg>
+            <span>→ Token Swap</span>
+          </button>
+          <button
+            className={styles.subButton}
+            onClick={() => handleCommand("arbitrum help")}
+          >
+            <svg className={styles.subButtonIcon} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+              <path d="M11,18H13V16H11V18M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,6A4,4 0 0,0 8,10H10A2,2 0 0,1 12,8A2,2 0 0,1 14,10C14,12 11,11.75 11,15H13C13,12.75 16,12.5 16,10A4,4 0 0,0 12,6Z" />
+            </svg>
+            <span>→ Arbitrum Help</span>
+          </button>
+        </div>
+      </details>
+
+      {/* Optimism Network Subsection */}
+      <details className={styles.expandable}>
+        <summary 
+          className={styles.expandableButton}
+          draggable={true}
+          onDragStart={(e) => {
+            e.dataTransfer.effectAllowed = "copy";
+            e.dataTransfer.setData("text/plain", "section:network-optimism");
+            if (e.currentTarget instanceof HTMLElement) {
+              e.currentTarget.style.opacity = "0.5";
+            }
+          }}
+          onDragEnd={(e) => {
+            if (e.currentTarget instanceof HTMLElement) {
+              e.currentTarget.style.opacity = "1";
+            }
+          }}
+          style={{ cursor: "grab" }}
+          title="Drag to Quick Actions to add all Optimism commands"
+        >
+          <svg
+            className={styles.buttonIcon}
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path d="M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4M12,6A6,6 0 0,1 18,12A6,6 0 0,1 12,18A6,6 0 0,1 6,12A6,6 0 0,1 12,6M12,8A4,4 0 0,0 8,12A4,4 0 0,0 12,16A4,4 0 0,0 16,12A4,4 0 0,0 12,8Z" />
+          </svg>
+          <span>Optimism</span>
+          <svg
+            className={styles.expandIcon}
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path d="M7.41,8.58L12,13.17L16.59,8.58L18,10L12,16L6,10L7.41,8.58Z" />
+          </svg>
+        </summary>
+        <div className={styles.subActions}>
+          <button
+            className={styles.subButton}
+            onClick={() => handleCommand("connect")}
+          >
+            <svg className={styles.subButtonIcon} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+              <path d="M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4M12,6A6,6 0 0,1 18,12A6,6 0 0,1 12,18A6,6 0 0,1 6,12A6,6 0 0,1 12,6M12,8A4,4 0 0,0 8,12A4,4 0 0,0 12,16A4,4 0 0,0 16,12A4,4 0 0,0 12,8Z" />
+            </svg>
+            <span>→ Connect Wallet</span>
+          </button>
+          <button
+            className={styles.subButton}
+            onClick={() => handleCommand("optimism balance")}
+          >
+            <svg className={styles.subButtonIcon} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+              <path d="M7,15H9C9,16.08 10.37,17 12,17C13.63,17 15,16.08 15,15C15,13.9 13.96,13.5 11.76,12.97C9.64,12.44 7,11.78 7,9C7,7.21 8.47,5.69 10.5,5.18V3H13.5V5.18C15.53,5.69 17,7.21 17,9H15C15,7.92 13.63,7 12,7C10.37,7 9,7.92 9,9C9,10.1 10.04,10.5 12.24,11.03C14.36,11.56 17,12.22 17,15C17,16.79 15.53,18.31 13.5,18.82V21H10.5V18.82C8.47,18.31 7,16.79 7,15Z" />
+            </svg>
+            <span>→ Check Balance</span>
+          </button>
+          <button
+            className={styles.subButton}
+            onClick={() => handleCommand("optimism swap")}
+          >
+            <svg className={styles.subButtonIcon} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+              <path d="M17.65,6.35C16.2,4.9 14.21,4 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20C15.73,20 18.84,17.45 19.73,14H17.65C16.83,16.33 14.61,18 12,18A6,6 0 0,1 6,12A6,6 0 0,1 12,6C13.66,6 15.14,6.69 16.22,7.78L13,11H20V4L17.65,6.35Z" />
+            </svg>
+            <span>→ Token Swap</span>
+          </button>
+          <button
+            className={styles.subButton}
+            onClick={() => handleCommand("optimism help")}
+          >
+            <svg className={styles.subButtonIcon} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+              <path d="M11,18H13V16H11V18M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,6A4,4 0 0,0 8,10H10A2,2 0 0,1 12,8A2,2 0 0,1 14,10C14,12 11,11.75 11,15H13C13,12.75 16,12.5 16,10A4,4 0 0,0 12,6Z" />
+            </svg>
+            <span>→ Optimism Help</span>
+          </button>
+        </div>
+      </details>
+
+      {/* Base Network Subsection */}
+      <details className={styles.expandable}>
+        <summary 
+          className={styles.expandableButton}
+          draggable={true}
+          onDragStart={(e) => {
+            e.dataTransfer.effectAllowed = "copy";
+            e.dataTransfer.setData("text/plain", "section:network-base");
+            if (e.currentTarget instanceof HTMLElement) {
+              e.currentTarget.style.opacity = "0.5";
+            }
+          }}
+          onDragEnd={(e) => {
+            if (e.currentTarget instanceof HTMLElement) {
+              e.currentTarget.style.opacity = "1";
+            }
+          }}
+          style={{ cursor: "grab" }}
+          title="Drag to Quick Actions to add all Base commands"
+        >
+          <svg
+            className={styles.buttonIcon}
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path d="M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4M12,6A6,6 0 0,1 18,12A6,6 0 0,1 12,18A6,6 0 0,1 6,12A6,6 0 0,1 12,6M12,8A4,4 0 0,0 8,12A4,4 0 0,0 12,16A4,4 0 0,0 16,12A4,4 0 0,0 12,8Z" />
+          </svg>
+          <span>Base</span>
+          <svg
+            className={styles.expandIcon}
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path d="M7.41,8.58L12,13.17L16.59,8.58L18,10L12,16L6,10L7.41,8.58Z" />
+          </svg>
+        </summary>
+        <div className={styles.subActions}>
+          <button
+            className={styles.subButton}
+            onClick={() => handleCommand("connect")}
+          >
+            <svg className={styles.subButtonIcon} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+              <path d="M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4M12,6A6,6 0 0,1 18,12A6,6 0 0,1 12,18A6,6 0 0,1 6,12A6,6 0 0,1 12,6M12,8A4,4 0 0,0 8,12A4,4 0 0,0 12,16A4,4 0 0,0 16,12A4,4 0 0,0 12,8Z" />
+            </svg>
+            <span>→ Connect Wallet</span>
+          </button>
+          <button
+            className={styles.subButton}
+            onClick={() => handleCommand("base balance")}
+          >
+            <svg className={styles.subButtonIcon} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+              <path d="M7,15H9C9,16.08 10.37,17 12,17C13.63,17 15,16.08 15,15C15,13.9 13.96,13.5 11.76,12.97C9.64,12.44 7,11.78 7,9C7,7.21 8.47,5.69 10.5,5.18V3H13.5V5.18C15.53,5.69 17,7.21 17,9H15C15,7.92 13.63,7 12,7C10.37,7 9,7.92 9,9C9,10.1 10.04,10.5 12.24,11.03C14.36,11.56 17,12.22 17,15C17,16.79 15.53,18.31 13.5,18.82V21H10.5V18.82C8.47,18.31 7,16.79 7,15Z" />
+            </svg>
+            <span>→ Check Balance</span>
+          </button>
+          <button
+            className={styles.subButton}
+            onClick={() => handleCommand("base swap")}
+          >
+            <svg className={styles.subButtonIcon} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+              <path d="M17.65,6.35C16.2,4.9 14.21,4 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20C15.73,20 18.84,17.45 19.73,14H17.65C16.83,16.33 14.61,18 12,18A6,6 0 0,1 6,12A6,6 0 0,1 12,6C13.66,6 15.14,6.69 16.22,7.78L13,11H20V4L17.65,6.35Z" />
+            </svg>
+            <span>→ Token Swap</span>
+          </button>
+          <button
+            className={styles.subButton}
+            onClick={() => handleCommand("base help")}
+          >
+            <svg className={styles.subButtonIcon} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+              <path d="M11,18H13V16H11V18M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,6A4,4 0 0,0 8,10H10A2,2 0 0,1 12,8A2,2 0 0,1 14,10C14,12 11,11.75 11,15H13C13,12.75 16,12.5 16,10A4,4 0 0,0 12,6Z" />
+            </svg>
+            <span>→ Base Help</span>
+          </button>
+        </div>
+      </details>
+
+      {/* BNB Smart Chain Subsection */}
+      <details className={styles.expandable}>
+        <summary 
+          className={styles.expandableButton}
+          draggable={true}
+          onDragStart={(e) => {
+            e.dataTransfer.effectAllowed = "copy";
+            e.dataTransfer.setData("text/plain", "section:network-bnb");
+            if (e.currentTarget instanceof HTMLElement) {
+              e.currentTarget.style.opacity = "0.5";
+            }
+          }}
+          onDragEnd={(e) => {
+            if (e.currentTarget instanceof HTMLElement) {
+              e.currentTarget.style.opacity = "1";
+            }
+          }}
+          style={{ cursor: "grab" }}
+          title="Drag to Quick Actions to add all BNB commands"
+        >
+          <svg
+            className={styles.buttonIcon}
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path d="M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4M12,6A6,6 0 0,1 18,12A6,6 0 0,1 12,18A6,6 0 0,1 6,12A6,6 0 0,1 12,6M12,8A4,4 0 0,0 8,12A4,4 0 0,0 12,16A4,4 0 0,0 16,12A4,4 0 0,0 12,8Z" />
+          </svg>
+          <span>BNB Smart Chain</span>
+          <svg
+            className={styles.expandIcon}
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path d="M7.41,8.58L12,13.17L16.59,8.58L18,10L12,16L6,10L7.41,8.58Z" />
+          </svg>
+        </summary>
+        <div className={styles.subActions}>
+          <button
+            className={styles.subButton}
+            onClick={() => handleCommand("connect")}
+          >
+            <svg className={styles.subButtonIcon} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+              <path d="M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4M12,6A6,6 0 0,1 18,12A6,6 0 0,1 12,18A6,6 0 0,1 6,12A6,6 0 0,1 12,6M12,8A4,4 0 0,0 8,12A4,4 0 0,0 12,16A4,4 0 0,0 16,12A4,4 0 0,0 12,8Z" />
+            </svg>
+            <span>→ Connect Wallet</span>
+          </button>
+          <button
+            className={styles.subButton}
+            onClick={() => handleCommand("bnb balance")}
+          >
+            <svg className={styles.subButtonIcon} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+              <path d="M7,15H9C9,16.08 10.37,17 12,17C13.63,17 15,16.08 15,15C15,13.9 13.96,13.5 11.76,12.97C9.64,12.44 7,11.78 7,9C7,7.21 8.47,5.69 10.5,5.18V3H13.5V5.18C15.53,5.69 17,7.21 17,9H15C15,7.92 13.63,7 12,7C10.37,7 9,7.92 9,9C9,10.1 10.04,10.5 12.24,11.03C14.36,11.56 17,12.22 17,15C17,16.79 15.53,18.31 13.5,18.82V21H10.5V18.82C8.47,18.31 7,16.79 7,15Z" />
+            </svg>
+            <span>→ Check Balance</span>
+          </button>
+          <button
+            className={styles.subButton}
+            onClick={() => handleCommand("bnb swap")}
+          >
+            <svg className={styles.subButtonIcon} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+              <path d="M17.65,6.35C16.2,4.9 14.21,4 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20C15.73,20 18.84,17.45 19.73,14H17.65C16.83,16.33 14.61,18 12,18A6,6 0 0,1 6,12A6,6 0 0,1 12,6C13.66,6 15.14,6.69 16.22,7.78L13,11H20V4L17.65,6.35Z" />
+            </svg>
+            <span>→ Token Swap</span>
+          </button>
+          <button
+            className={styles.subButton}
+            onClick={() => handleCommand("bnb help")}
+          >
+            <svg className={styles.subButtonIcon} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+              <path d="M11,18H13V16H11V18M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,6A4,4 0 0,0 8,10H10A2,2 0 0,1 12,8A2,2 0 0,1 14,10C14,12 11,11.75 11,15H13C13,12.75 16,12.5 16,10A4,4 0 0,0 12,6Z" />
+            </svg>
+            <span>→ BNB Help</span>
+          </button>
+        </div>
+      </details>
+
+      {/* Uniswap DEX Subsection */}
+      <details className={styles.expandable}>
+        <summary 
+          className={styles.expandableButton}
+          draggable={true}
+          onDragStart={(e) => {
+            e.dataTransfer.effectAllowed = "copy";
+            e.dataTransfer.setData("text/plain", "section:network-uniswap");
+            if (e.currentTarget instanceof HTMLElement) {
+              e.currentTarget.style.opacity = "0.5";
+            }
+          }}
+          onDragEnd={(e) => {
+            if (e.currentTarget instanceof HTMLElement) {
+              e.currentTarget.style.opacity = "1";
+            }
+          }}
+          style={{ cursor: "grab" }}
+          title="Drag to Quick Actions to add all Uniswap commands"
+        >
+          <svg
+            className={styles.buttonIcon}
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path d="M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4M12,6A6,6 0 0,1 18,12A6,6 0 0,1 12,18A6,6 0 0,1 6,12A6,6 0 0,1 12,6M12,8A4,4 0 0,0 8,12A4,4 0 0,0 12,16A4,4 0 0,0 16,12A4,4 0 0,0 12,8Z" />
+          </svg>
+          <span>🦄 Uniswap</span>
+          <svg
+            className={styles.expandIcon}
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path d="M7.41,8.58L12,13.17L16.59,8.58L18,10L12,16L6,10L7.41,8.58Z" />
+          </svg>
+        </summary>
+        <div className={styles.subActions}>
+          <button
+            className={styles.subButton}
+            onClick={() => handleCommand("uniswap ethereum swap")}
+          >
+            <svg className={styles.subButtonIcon} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+              <path d="M17.65,6.35C16.2,4.9 14.21,4 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20C15.73,20 18.84,17.45 19.73,14H17.65C16.83,16.33 14.61,18 12,18A6,6 0 0,1 6,12A6,6 0 0,1 12,6C13.66,6 15.14,6.69 16.22,7.78L13,11H20V4L17.65,6.35Z" />
+            </svg>
+            <span>→ Ethereum Swap</span>
+          </button>
+          <button
+            className={styles.subButton}
+            onClick={() => handleCommand("uniswap arbitrum swap")}
+          >
+            <svg className={styles.subButtonIcon} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+              <path d="M17.65,6.35C16.2,4.9 14.21,4 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20C15.73,20 18.84,17.45 19.73,14H17.65C16.83,16.33 14.61,18 12,18A6,6 0 0,1 6,12A6,6 0 0,1 12,6C13.66,6 15.14,6.69 16.22,7.78L13,11H20V4L17.65,6.35Z" />
+            </svg>
+            <span>→ Arbitrum Swap</span>
+          </button>
+          <button
+            className={styles.subButton}
+            onClick={() => handleCommand("uniswap optimism swap")}
+          >
+            <svg className={styles.subButtonIcon} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+              <path d="M17.65,6.35C16.2,4.9 14.21,4 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20C15.73,20 18.84,17.45 19.73,14H17.65C16.83,16.33 14.61,18 12,18A6,6 0 0,1 6,12A6,6 0 0,1 12,6C13.66,6 15.14,6.69 16.22,7.78L13,11H20V4L17.65,6.35Z" />
+            </svg>
+            <span>→ Optimism Swap</span>
+          </button>
+          <button
+            className={styles.subButton}
+            onClick={() => handleCommand("uniswap base swap")}
+          >
+            <svg className={styles.subButtonIcon} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+              <path d="M17.65,6.35C16.2,4.9 14.21,4 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20C15.73,20 18.84,17.45 19.73,14H17.65C16.83,16.33 14.61,18 12,18A6,6 0 0,1 6,12A6,6 0 0,1 12,6C13.66,6 15.14,6.69 16.22,7.78L13,11H20V4L17.65,6.35Z" />
+            </svg>
+            <span>→ Base Swap</span>
+          </button>
+          <button
+            className={styles.subButton}
+            onClick={() => handleCommand("uniswap polygon swap")}
+          >
+            <svg className={styles.subButtonIcon} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+              <path d="M17.65,6.35C16.2,4.9 14.21,4 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20C15.73,20 18.84,17.45 19.73,14H17.65C16.83,16.33 14.61,18 12,18A6,6 0 0,1 6,12A6,6 0 0,1 12,6C13.66,6 15.14,6.69 16.22,7.78L13,11H20V4L17.65,6.35Z" />
+            </svg>
+            <span>→ Polygon Swap</span>
+          </button>
+          <button
+            className={styles.subButton}
+            onClick={() => handleCommand("uniswap bnb swap")}
+          >
+            <svg className={styles.subButtonIcon} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+              <path d="M17.65,6.35C16.2,4.9 14.21,4 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20C15.73,20 18.84,17.45 19.73,14H17.65C16.83,16.33 14.61,18 12,18A6,6 0 0,1 6,12A6,6 0 0,1 12,6C13.66,6 15.14,6.69 16.22,7.78L13,11H20V4L17.65,6.35Z" />
+            </svg>
+            <span>→ BNB Swap</span>
+          </button>
+          <button
+            className={styles.subButton}
+            onClick={() => handleCommand("uniswap help")}
+          >
+            <svg className={styles.subButtonIcon} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+              <path d="M11,18H13V16H11V18M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,6A4,4 0 0,0 8,10H10A2,2 0 0,1 12,8A2,2 0 0,1 14,10C14,12 11,11.75 11,15H13C13,12.75 16,12.5 16,10A4,4 0 0,0 12,6Z" />
+            </svg>
+            <span>→ Uniswap Help</span>
+          </button>
+        </div>
+      </details>
+
+      {/* PancakeSwap DEX Subsection */}
+      <details className={styles.expandable}>
+        <summary 
+          className={styles.expandableButton}
+          draggable={true}
+          onDragStart={(e) => {
+            e.dataTransfer.effectAllowed = "copy";
+            e.dataTransfer.setData("text/plain", "section:network-pancakeswap");
+            if (e.currentTarget instanceof HTMLElement) {
+              e.currentTarget.style.opacity = "0.5";
+            }
+          }}
+          onDragEnd={(e) => {
+            if (e.currentTarget instanceof HTMLElement) {
+              e.currentTarget.style.opacity = "1";
+            }
+          }}
+          style={{ cursor: "grab" }}
+          title="Drag to Quick Actions to add all PancakeSwap commands"
+        >
+          <svg
+            className={styles.buttonIcon}
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path d="M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4M12,6A6,6 0 0,1 18,12A6,6 0 0,1 12,18A6,6 0 0,1 6,12A6,6 0 0,1 12,6M12,8A4,4 0 0,0 8,12A4,4 0 0,0 12,16A4,4 0 0,0 16,12A4,4 0 0,0 12,8Z" />
+          </svg>
+          <span>🥞 PancakeSwap</span>
+          <svg
+            className={styles.expandIcon}
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path d="M7.41,8.58L12,13.17L16.59,8.58L18,10L12,16L6,10L7.41,8.58Z" />
+          </svg>
+        </summary>
+        <div className={styles.subActions}>
+          <button
+            className={styles.subButton}
+            onClick={() => handleCommand("pancakeswap bnb swap")}
+          >
+            <svg className={styles.subButtonIcon} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+              <path d="M17.65,6.35C16.2,4.9 14.21,4 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20C15.73,20 18.84,17.45 19.73,14H17.65C16.83,16.33 14.61,18 12,18A6,6 0 0,1 6,12A6,6 0 0,1 12,6C13.66,6 15.14,6.69 16.22,7.78L13,11H20V4L17.65,6.35Z" />
+            </svg>
+            <span>→ BNB Swap</span>
+          </button>
+          <button
+            className={styles.subButton}
+            onClick={() => handleCommand("pancakeswap ethereum swap")}
+          >
+            <svg className={styles.subButtonIcon} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+              <path d="M17.65,6.35C16.2,4.9 14.21,4 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20C15.73,20 18.84,17.45 19.73,14H17.65C16.83,16.33 14.61,18 12,18A6,6 0 0,1 6,12A6,6 0 0,1 12,6C13.66,6 15.14,6.69 16.22,7.78L13,11H20V4L17.65,6.35Z" />
+            </svg>
+            <span>→ Ethereum Swap</span>
+          </button>
+          <button
+            className={styles.subButton}
+            onClick={() => handleCommand("pancakeswap arbitrum swap")}
+          >
+            <svg className={styles.subButtonIcon} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+              <path d="M17.65,6.35C16.2,4.9 14.21,4 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20C15.73,20 18.84,17.45 19.73,14H17.65C16.83,16.33 14.61,18 12,18A6,6 0 0,1 6,12A6,6 0 0,1 12,6C13.66,6 15.14,6.69 16.22,7.78L13,11H20V4L17.65,6.35Z" />
+            </svg>
+            <span>→ Arbitrum Swap</span>
+          </button>
+          <button
+            className={styles.subButton}
+            onClick={() => handleCommand("pancakeswap base swap")}
+          >
+            <svg className={styles.subButtonIcon} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+              <path d="M17.65,6.35C16.2,4.9 14.21,4 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20C15.73,20 18.84,17.45 19.73,14H17.65C16.83,16.33 14.61,18 12,18A6,6 0 0,1 6,12A6,6 0 0,1 12,6C13.66,6 15.14,6.69 16.22,7.78L13,11H20V4L17.65,6.35Z" />
+            </svg>
+            <span>→ Base Swap</span>
+          </button>
+          <button
+            className={styles.subButton}
+            onClick={() => handleCommand("pancakeswap polygon swap")}
+          >
+            <svg className={styles.subButtonIcon} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+              <path d="M17.65,6.35C16.2,4.9 14.21,4 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20C15.73,20 18.84,17.45 19.73,14H17.65C16.83,16.33 14.61,18 12,18A6,6 0 0,1 6,12A6,6 0 0,1 12,6C13.66,6 15.14,6.69 16.22,7.78L13,11H20V4L17.65,6.35Z" />
+            </svg>
+            <span>→ Polygon Swap</span>
+          </button>
+          <button
+            className={styles.subButton}
+            onClick={() => handleCommand("pancakeswap optimism swap")}
+          >
+            <svg className={styles.subButtonIcon} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+              <path d="M17.65,6.35C16.2,4.9 14.21,4 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20C15.73,20 18.84,17.45 19.73,14H17.65C16.83,16.33 14.61,18 12,18A6,6 0 0,1 6,12A6,6 0 0,1 12,6C13.66,6 15.14,6.69 16.22,7.78L13,11H20V4L17.65,6.35Z" />
+            </svg>
+            <span>→ Optimism Swap</span>
+          </button>
+          <button
+            className={styles.subButton}
+            onClick={() => handleCommand("pancakeswap help")}
+          >
+            <svg className={styles.subButtonIcon} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+              <path d="M11,18H13V16H11V18M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,6A4,4 0 0,0 8,10H10A2,2 0 0,1 12,8A2,2 0 0,1 14,10C14,12 11,11.75 11,15H13C13,12.75 16,12.5 16,10A4,4 0 0,0 12,6Z" />
+            </svg>
+            <span>→ PancakeSwap Help</span>
+          </button>
+        </div>
+      </details>
+
+      {/* Polygon Network Subsection */}
+      <details className={styles.expandable}>
+        <summary 
+          className={styles.expandableButton}
+          draggable={true}
+          onDragStart={(e) => {
+            e.dataTransfer.effectAllowed = "copy";
+            e.dataTransfer.setData("text/plain", "section:network-polygon");
+            if (e.currentTarget instanceof HTMLElement) {
+              e.currentTarget.style.opacity = "0.5";
+            }
+          }}
+          onDragEnd={(e) => {
+            if (e.currentTarget instanceof HTMLElement) {
+              e.currentTarget.style.opacity = "1";
+            }
+          }}
+          style={{ cursor: "grab" }}
+          title="Drag to Quick Actions to add all Polygon commands"
+        >
+          <svg
+            className={styles.buttonIcon}
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path d="M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4M12,6A6,6 0 0,1 18,12A6,6 0 0,1 12,18A6,6 0 0,1 6,12A6,6 0 0,1 12,6M12,8A4,4 0 0,0 8,12A4,4 0 0,0 12,16A4,4 0 0,0 16,12A4,4 0 0,0 12,8Z" />
+          </svg>
+          <span>Polygon</span>
+          <svg
+            className={styles.expandIcon}
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path d="M7.41,8.58L12,13.17L16.59,8.58L18,10L12,16L6,10L7.41,8.58Z" />
+          </svg>
+        </summary>
+        <div className={styles.subActions}>
+          <button
+            className={styles.subButton}
+            onClick={() => handleCommand("connect")}
+          >
+            <svg className={styles.subButtonIcon} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+              <path d="M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4M12,6A6,6 0 0,1 18,12A6,6 0 0,1 12,18A6,6 0 0,1 6,12A6,6 0 0,1 12,6M12,8A4,4 0 0,0 8,12A4,4 0 0,0 12,16A4,4 0 0,0 16,12A4,4 0 0,0 12,8Z" />
+            </svg>
+            <span>→ Connect Wallet</span>
+          </button>
+          <button
+            className={styles.subButton}
+            onClick={() => handleCommand("polygon balance")}
+          >
+            <svg className={styles.subButtonIcon} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+              <path d="M7,15H9C9,16.08 10.37,17 12,17C13.63,17 15,16.08 15,15C15,13.9 13.96,13.5 11.76,12.97C9.64,12.44 7,11.78 7,9C7,7.21 8.47,5.69 10.5,5.18V3H13.5V5.18C15.53,5.69 17,7.21 17,9H15C15,7.92 13.63,7 12,7C10.37,7 9,7.92 9,9C9,10.1 10.04,10.5 12.24,11.03C14.36,11.56 17,12.22 17,15C17,16.79 15.53,18.31 13.5,18.82V21H10.5V18.82C8.47,18.31 7,16.79 7,15Z" />
+            </svg>
+            <span>→ Check Balance</span>
+          </button>
+          <button
+            className={styles.subButton}
+            onClick={() => handleCommand("polygon bridge")}
+          >
+            <svg className={styles.subButtonIcon} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+              <path d="M17.65,6.35C16.2,4.9 14.21,4 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20C15.73,20 18.84,17.45 19.73,14H17.65C16.83,16.33 14.61,18 12,18A6,6 0 0,1 6,12A6,6 0 0,1 12,6C13.66,6 15.14,6.69 16.22,7.78L13,11H20V4L17.65,6.35Z" />
+            </svg>
+            <span>→ Bridge Assets</span>
+          </button>
+          <button
+            className={styles.subButton}
+            onClick={() => handleCommand("polygon swap")}
+          >
+            <svg className={styles.subButtonIcon} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+              <path d="M17.65,6.35C16.2,4.9 14.21,4 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20C15.73,20 18.84,17.45 19.73,14H17.65C16.83,16.33 14.61,18 12,18A6,6 0 0,1 6,12A6,6 0 0,1 12,6C13.66,6 15.14,6.69 16.22,7.78L13,11H20V4L17.65,6.35Z" />
+            </svg>
+            <span>→ Token Swap</span>
+          </button>
+          <button
+            className={styles.subButton}
+            onClick={() => handleCommand("polygon help")}
+          >
+            <svg className={styles.subButtonIcon} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+              <path d="M11,18H13V16H11V18M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,6A4,4 0 0,0 8,10H10A2,2 0 0,1 12,8A2,2 0 0,1 14,10C14,12 11,11.75 11,15H13C13,12.75 16,12.5 16,10A4,4 0 0,0 12,6Z" />
+            </svg>
+            <span>→ Polygon Help</span>
+          </button>
+        </div>
+      </details>
+
       {/* Aptos Network Subsection */}
       <details className={styles.expandable}>
-        <summary className={styles.expandableButton}>
+        <summary 
+          className={styles.expandableButton}
+          draggable={true}
+          onDragStart={(e) => {
+            e.dataTransfer.effectAllowed = "copy";
+            e.dataTransfer.setData("text/plain", "section:network-aptos");
+            if (e.currentTarget instanceof HTMLElement) {
+              e.currentTarget.style.opacity = "0.5";
+            }
+          }}
+          onDragEnd={(e) => {
+            if (e.currentTarget instanceof HTMLElement) {
+              e.currentTarget.style.opacity = "1";
+            }
+          }}
+          style={{ cursor: "grab" }}
+          title="Drag to Quick Actions to add all Aptos commands"
+        >
           <svg
             className={styles.buttonIcon}
             viewBox="0 0 24 24"
@@ -509,7 +1168,24 @@ export function NetworkSection(): JSX.Element {
 
       {/* ROME Network Subsection */}
       <details className={styles.expandable}>
-        <summary className={styles.expandableButton}>
+        <summary 
+          className={styles.expandableButton}
+          draggable={true}
+          onDragStart={(e) => {
+            e.dataTransfer.effectAllowed = "copy";
+            e.dataTransfer.setData("text/plain", "section:network-rome");
+            if (e.currentTarget instanceof HTMLElement) {
+              e.currentTarget.style.opacity = "0.5";
+            }
+          }}
+          onDragEnd={(e) => {
+            if (e.currentTarget instanceof HTMLElement) {
+              e.currentTarget.style.opacity = "1";
+            }
+          }}
+          style={{ cursor: "grab" }}
+          title="Drag to Quick Actions to add all ROME commands"
+        >
           <svg
             className={styles.buttonIcon}
             viewBox="0 0 24 24"
@@ -604,7 +1280,24 @@ export function NetworkSection(): JSX.Element {
 
       {/* FAIR Blockchain Subsection */}
       <details className={styles.expandable}>
-        <summary className={styles.expandableButton}>
+        <summary 
+          className={styles.expandableButton}
+          draggable={true}
+          onDragStart={(e) => {
+            e.dataTransfer.effectAllowed = "copy";
+            e.dataTransfer.setData("text/plain", "section:network-fair");
+            if (e.currentTarget instanceof HTMLElement) {
+              e.currentTarget.style.opacity = "0.5";
+            }
+          }}
+          onDragEnd={(e) => {
+            if (e.currentTarget instanceof HTMLElement) {
+              e.currentTarget.style.opacity = "1";
+            }
+          }}
+          style={{ cursor: "grab" }}
+          title="Drag to Quick Actions to add all FAIR commands"
+        >
           <svg
             className={styles.buttonIcon}
             viewBox="0 0 24 24"
@@ -699,7 +1392,24 @@ export function NetworkSection(): JSX.Element {
 
       {/* MONAD Network Subsection */}
       <details className={styles.expandable}>
-        <summary className={styles.expandableButton}>
+        <summary 
+          className={styles.expandableButton}
+          draggable={true}
+          onDragStart={(e) => {
+            e.dataTransfer.effectAllowed = "copy";
+            e.dataTransfer.setData("text/plain", "section:network-monad");
+            if (e.currentTarget instanceof HTMLElement) {
+              e.currentTarget.style.opacity = "0.5";
+            }
+          }}
+          onDragEnd={(e) => {
+            if (e.currentTarget instanceof HTMLElement) {
+              e.currentTarget.style.opacity = "1";
+            }
+          }}
+          style={{ cursor: "grab" }}
+          title="Drag to Quick Actions to add all MONAD commands"
+        >
           <svg
             className={styles.buttonIcon}
             viewBox="0 0 24 24"

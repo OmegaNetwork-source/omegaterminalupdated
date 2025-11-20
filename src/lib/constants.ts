@@ -10,7 +10,7 @@ import type { Theme, AIProvider } from "@/types";
  * Application version number
  * Displayed in boot animation and header
  */
-export const APP_VERSION = "2.0.1";
+export const APP_VERSION = "3.0.0";
 
 /**
  * Application title - short form
@@ -23,7 +23,7 @@ export const APP_TITLE = "OMEGA TERMINAL";
  * Used in boot animation and page metadata
  */
 export const APP_FULL_TITLE =
-  "OMEGA TERMINAL - CLASSIFIED ACCESS SYSTEM v2.0.1";
+  "OMEGA TERMINAL - CLASSIFIED ACCESS SYSTEM v3.0.0";
 
 /**
  * Application description
@@ -65,7 +65,7 @@ export const SOCIAL_LINKS = {
  * Default theme on first load
  * Can be overridden by localStorage
  */
-export const DEFAULT_THEME: Theme = "dark";
+export const DEFAULT_THEME: Theme = "void";
 
 /**
  * Default AI provider on first load
@@ -78,13 +78,10 @@ export const DEFAULT_AI_PROVIDER: AIProvider = "off";
  * Each theme has corresponding CSS styles
  */
 export const AVAILABLE_THEMES = [
-  "dark",
-  "light",
-  "matrix",
-  "retro",
-  "powershell",
-  "executive",
-  "modern",
+  "void",
+  "neo",
+  "elite",
+  "neon",
 ] as const;
 
 /**

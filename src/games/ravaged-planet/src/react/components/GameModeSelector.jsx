@@ -8,7 +8,7 @@ const GAME_MODES = [
   { id: 'ffa', name: 'Free For All', players: 'custom', description: 'Choose 2-8 tanks' },
 ];
 
-export const GameModeSelector = memo(({ onModeSelect, selectedMode, playerCount, onPlayerCountChange }) => {
+export const GameModeSelector = memo(({ onModeSelect, selectedMode, playerCount, onPlayerCountChange, draftEnabled = true, onDraftToggle }) => {
   const [customCount, setCustomCount] = useState(playerCount || 6);
 
   const handleModeClick = (mode) => {
@@ -67,6 +67,31 @@ export const GameModeSelector = memo(({ onModeSelect, selectedMode, playerCount,
           </div>
         </div>
       )}
+      
+      {/* Weapon Draft Toggle */}
+      <div className="draft-toggle-container">
+        <div className="draft-toggle-label">
+          <span className="draft-icon">⚔️</span>
+          WEAPON DRAFT MODE
+        </div>
+        <div className="draft-toggle-description">
+          {draftEnabled 
+            ? 'Choose weapons before battle (Strategic)'
+            : 'Classic loadout for all players'
+          }
+        </div>
+        <label className="draft-toggle-switch">
+          <input 
+            type="checkbox" 
+            checked={draftEnabled}
+            onChange={(e) => onDraftToggle && onDraftToggle(e.target.checked)}
+          />
+          <span className="draft-slider"></span>
+          <span className="draft-toggle-text">
+            {draftEnabled ? 'ENABLED' : 'DISABLED'}
+          </span>
+        </label>
+      </div>
     </div>
   );
 });

@@ -2,10 +2,37 @@ import {splitWords} from './utils.js';
 import {parable} from './math.js';
 import {FONT_HEIGHT, FONT_WIDTH} from './constants.js';
 
-export function createCanvas(width, height) {
+// OPTIMIZATION: Cache for canvas contexts to avoid repeated setup
+const canvasCache = new Map();
+
+/**
+ * OPTIMIZED: Create canvas with optional caching
+ */
+export function createCanvas(width, height, cache = false) {
+  if (cache) {
+    const key = `${width}x${height}`;
+    if (canvasCache.has(key)) {
+      const cached = canvasCache.get(key);
+      // Clear cached canvas for reuse
+      cached.clearRect(0, 0, width, height);
+      return cached;
+    }
+  }
+  
   const canvas = document.createElement('canvas');
-  const ctx = canvas.getContext('2d');
-  canvas.width = width; canvas.height = height
+  const ctx = canvas.getContext('2d', {
+    // OPTIMIZATION: Disable alpha for better performance where possible
+    alpha: true,
+    desynchronized: true, // Hint for better performance
+  });
+  canvas.width = width;
+  canvas.height = height;
+  
+  if (cache) {
+    const key = `${width}x${height}`;
+    canvasCache.set(key, ctx);
+  }
+  
   return ctx;
 }
 
@@ -25,9 +52,23 @@ export function clipCanvas(ctx, fn) {
   ctx.globalCompositeOperation = 'source-over';
 }
 
+// OPTIMIZATION: Cache last fill style to avoid redundant state changes
+let lastFillStyle = null;
+let lastStrokeStyle = null;
+
+/**
+ * OPTIMIZED: Plot with fillStyle caching
+ */
 export function plot(ctx, x, y, color) {
-  x = Math.round(x); y = Math.round(y);
-  ctx.fillStyle = color;
+  x = Math.round(x);
+  y = Math.round(y);
+  
+  // OPTIMIZATION: Only set fillStyle if it changed
+  if (lastFillStyle !== color) {
+    ctx.fillStyle = color;
+    lastFillStyle = color;
+  }
+  
   ctx.fillRect(x, y, 1, 1);
 }
 
@@ -67,20 +108,50 @@ export function checkLineWith(x1, y1, x2, y2, fn) {
   );
 }
 
+/**
+ * OPTIMIZED: Draw rect with style caching
+ */
 export function drawRect(ctx, x, y, w, h, color) {
-  x = Math.round(x); y = Math.round(y);
-  w = Math.round(w); h = Math.round(h);
-  ctx.fillStyle = color;
+  x = Math.round(x);
+  y = Math.round(y);
+  w = Math.round(w);
+  h = Math.round(h);
+  
+  // OPTIMIZATION: Only set fillStyle if it changed
+  if (lastFillStyle !== color) {
+    ctx.fillStyle = color;
+    lastFillStyle = color;
+  }
+  
   ctx.fillRect(x, y, w, h);
 }
 
+/**
+ * OPTIMIZED: Stroke rect with style caching
+ */
 export function strokeRect(ctx, x, y, w, h, color) {
-  if (w === 1 || h === 1) return drawRect(x, y, w, h, color);
-  x = Math.round(x); y = Math.round(y);
-  w = Math.round(w); h = Math.round(h);
+  if (w === 1 || h === 1) return drawRect(ctx, x, y, w, h, color);
+  x = Math.round(x);
+  y = Math.round(y);
+  w = Math.round(w);
+  h = Math.round(h);
+  
+  // OPTIMIZATION: Only set strokeStyle if it changed
+  if (lastStrokeStyle !== color) {
+    ctx.strokeStyle = color;
+    lastStrokeStyle = color;
+  }
+  
   ctx.lineWidth = 1;
-  ctx.strokeStyle = color;
-  ctx.strokeRect(x+0.5, y+0.5, w-1, h-1);
+  ctx.strokeRect(x + 0.5, y + 0.5, w - 1, h - 1);
+}
+
+/**
+ * OPTIMIZATION: Reset style cache (call when switching contexts)
+ */
+export function resetStyleCache() {
+  lastFillStyle = null;
+  lastStrokeStyle = null;
 }
 
 export function drawCircle(ctx, x, y, r, color) {

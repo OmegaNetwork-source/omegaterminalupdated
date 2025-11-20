@@ -122,3 +122,8 @@ export async function refreshOpportunities(): Promise<FarmingOpportunity[]> {
   return uniqueOpportunities;
 }
 
+
+
+
+
+

@@ -526,3 +526,142 @@
 .noGlow {
   box-shadow: none !important;
 }
+
+/* -----------------------------------------------------------------------------
+   Swap Status Card Styling
+   ----------------------------------------------------------------------------- */
+
+.container :global(.omega-terminal-swap-card) {
+  position: relative;
+  margin: 14px 0;
+  padding: 18px 20px;
+  border-radius: 14px;
+  border: 1px solid color-mix(in srgb, var(--palette-primary, #00d4ff) 25%, transparent);
+  border-left: 4px solid var(--palette-warning, #ff9800);
+  background: linear-gradient(
+    140deg,
+    color-mix(in srgb, var(--palette-bg, rgba(8, 10, 18, 1)) 92%, transparent) 0%,
+    color-mix(in srgb, var(--palette-primary, rgba(0, 188, 242, 1)) 5%, transparent) 100%
+  );
+  box-shadow:
+    0 12px 30px rgba(0, 0, 0, 0.35),
+    0 6px 16px color-mix(in srgb, var(--palette-primary, rgba(0, 188, 242, 1)) 12%, transparent);
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.container :global(.omega-terminal-swap-card:hover) {
+  transform: translateY(-2px);
+  box-shadow:
+    0 16px 40px rgba(0, 0, 0, 0.4),
+    0 10px 22px color-mix(in srgb, var(--palette-primary, rgba(0, 188, 242, 1)) 20%, transparent);
+}
+
+.container :global(.omega-terminal-swap-card--maintenance) {
+  border-left-color: var(--palette-error, #ff6b6b);
+}
+
+.container :global(.omega-terminal-swap-card--beta) {
+  border-left-color: var(--palette-primary, #00d4ff);
+}
+
+.container :global(.omega-terminal-swap-card__header) {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 12px;
+}
+
+.container :global(.omega-terminal-swap-card__icon) {
+  font-size: 28px;
+  filter: drop-shadow(0 0 6px rgba(0, 0, 0, 0.4));
+}
+
+.container :global(.omega-terminal-swap-card__meta) {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.container :global(.omega-terminal-swap-card__title) {
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--palette-primary, #00d4ff);
+  text-shadow: 0 0 10px color-mix(in srgb, var(--palette-primary, rgba(0, 188, 242, 1)) 45%, transparent);
+}
+
+.container :global(.omega-terminal-swap-card__status) {
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.75);
+  opacity: 0.8;
+}
+
+.container :global(.omega-terminal-swap-card__body) {
+  color: rgba(220, 230, 245, 0.9);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.container :global(.omega-terminal-swap-card__body p) {
+  margin: 6px 0;
+}
+
+.container :global(.omega-terminal-swap-card__link) {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 12px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--palette-primary, #00d4ff);
+  border: 1px solid color-mix(in srgb, var(--palette-primary, #00d4ff) 40%, transparent);
+  background: color-mix(in srgb, var(--palette-primary, #00d4ff) 12%, transparent);
+  text-decoration: none;
+  transition: all 0.25s ease;
+}
+
+.container :global(.omega-terminal-swap-card__link:hover) {
+  color: var(--palette-secondary, #00ff88);
+  border-color: color-mix(in srgb, var(--palette-secondary, #00ff88) 50%, transparent);
+  background: color-mix(in srgb, var(--palette-secondary, #00ff88) 18%, transparent);
+  transform: translateY(-1px);
+}
+
+.container :global(.omega-terminal-swap-card__footer) {
+  margin-top: 14px;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+:global(body.light-mode) .omega-terminal-swap-card {
+  background: linear-gradient(
+    140deg,
+    rgba(240, 245, 255, 0.94) 0%,
+    rgba(220, 235, 255, 0.9) 100%
+  );
+  border-color: rgba(0, 81, 213, 0.2);
+  color: rgba(20, 26, 40, 0.9);
+}
+
+:global(body.light-mode) .omega-terminal-swap-card__title {
+  color: rgba(0, 81, 213, 0.85);
+}
+
+:global(body.light-mode) .omega-terminal-swap-card__link {
+  color: rgba(0, 81, 213, 0.9);
+  border-color: rgba(0, 81, 213, 0.3);
+}
+
+:global(body.light-mode) .omega-terminal-swap-card__link:hover {
+  color: rgba(15, 125, 255, 0.95);
+  border-color: rgba(15, 125, 255, 0.4);
+}

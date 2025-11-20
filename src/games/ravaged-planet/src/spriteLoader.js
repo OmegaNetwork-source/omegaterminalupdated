@@ -1,9 +1,10 @@
 /**
  * Sprite Loader Utility
  * Loads and parses sprite sheets from image files
+ * UPDATED: Enhanced error handling and logging
  */
 
-import { createCanvas } from './gfx.js';
+import { createCanvas } from './engine/gfx.js';
 
 /**
  * Sprite sheet configuration
@@ -141,6 +142,7 @@ export const SPRITE_CONFIGS = {
  * @param {string} spriteName - Name of the sprite (key in SPRITE_CONFIGS)
  * @param {string} imagePath - Path to the sprite sheet image
  * @returns {Promise<Object>} Sprite object with frames and animations
+ * UPDATED: Enhanced logging and error handling
  */
 export async function loadSpriteSheet(spriteName, imagePath) {
   const config = SPRITE_CONFIGS[spriteName];
@@ -148,11 +150,21 @@ export async function loadSpriteSheet(spriteName, imagePath) {
     throw new Error(`Unknown sprite config: ${spriteName}`);
   }
 
+  console.log(`[SpriteLoader] Loading ${spriteName} from ${imagePath}...`);
+
   // Load the image
   const img = new Image();
+  img.crossOrigin = 'anonymous'; // Allow cross-origin loading
+  
   await new Promise((resolve, reject) => {
-    img.onload = resolve;
-    img.onerror = reject;
+    img.onload = () => {
+      console.log(`[SpriteLoader] Image loaded: ${spriteName}, size: ${img.width}x${img.height}`);
+      resolve();
+    };
+    img.onerror = (e) => {
+      console.error(`[SpriteLoader] Failed to load image: ${imagePath}`, e);
+      reject(e);
+    };
     img.src = imagePath;
   });
 
@@ -162,29 +174,37 @@ export async function loadSpriteSheet(spriteName, imagePath) {
 
   // Create canvas for each frame
   const frames = [];
+  console.log(`[SpriteLoader] Parsing ${spriteName}: ${rows}x${cols} grid, frame size: ${frameWidth}x${frameHeight}`);
+  
   for (let row = 0; row < rows; row++) {
     for (let col = 0; col < cols; col++) {
-      const frameCanvas = createCanvas(frameWidth, frameHeight);
-      frameCanvas.drawImage(
-        img,
-        col * frameWidth,
-        row * frameHeight,
-        frameWidth,
-        frameHeight,
-        0,
-        0,
-        frameWidth,
-        frameHeight
-      );
-      frames.push({
-        canvas: frameCanvas.canvas,
-        ctx: frameCanvas,
-        row,
-        col,
-        index: row * cols + col,
-      });
+      try {
+        const frameCanvas = createCanvas(frameWidth, frameHeight);
+        frameCanvas.drawImage(
+          img,
+          col * frameWidth,
+          row * frameHeight,
+          frameWidth,
+          frameHeight,
+          0,
+          0,
+          frameWidth,
+          frameHeight
+        );
+        frames.push({
+          canvas: frameCanvas.canvas,
+          ctx: frameCanvas,
+          row,
+          col,
+          index: row * cols + col,
+        });
+      } catch (e) {
+        console.error(`[SpriteLoader] Failed to create frame [${row},${col}] for ${spriteName}:`, e);
+      }
     }
   }
+  
+  console.log(`[SpriteLoader] Created ${frames.length} frames for ${spriteName}`);
 
   // Build animation sequences
   const animations = {};
@@ -235,20 +255,33 @@ export async function loadSpriteSheet(spriteName, imagePath) {
  * Load all sprite sheets
  * @param {string} basePath - Base path to sprite directory
  * @returns {Promise<Map>} Map of sprite name to sprite object
+ * UPDATED: Enhanced logging and parallel loading
  */
 export async function loadAllSprites(basePath = '/games/ravaged-planet/sprites') {
   const spriteMap = new Map();
+  console.log(`[SpriteLoader] Starting to load all sprites from ${basePath}...`);
+  console.log(`[SpriteLoader] Sprites to load:`, Object.keys(SPRITE_CONFIGS));
   
-  for (const spriteName of Object.keys(SPRITE_CONFIGS)) {
+  // Load all sprites in parallel for better performance
+  const loadPromises = Object.keys(SPRITE_CONFIGS).map(async (spriteName) => {
     try {
       const imagePath = `${basePath}/${spriteName}.png`;
       const sprite = await loadSpriteSheet(spriteName, imagePath);
       spriteMap.set(spriteName, sprite);
-      console.log(`Loaded sprite: ${spriteName}`);
+      console.log(`[SpriteLoader] ✓ Loaded sprite: ${spriteName}`);
+      return { success: true, name: spriteName };
     } catch (error) {
-      console.error(`Failed to load sprite ${spriteName}:`, error);
+      console.error(`[SpriteLoader] ✗ Failed to load sprite ${spriteName}:`, error);
+      return { success: false, name: spriteName, error };
     }
-  }
+  });
+  
+  const results = await Promise.all(loadPromises);
+  const successCount = results.filter(r => r.success).length;
+  const failCount = results.filter(r => !r.success).length;
+  
+  console.log(`[SpriteLoader] Sprite loading complete: ${successCount} succeeded, ${failCount} failed`);
+  console.log(`[SpriteLoader] Available sprites:`, Array.from(spriteMap.keys()));
   
   return spriteMap;
 }

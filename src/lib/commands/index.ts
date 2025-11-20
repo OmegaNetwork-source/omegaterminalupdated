@@ -7,6 +7,14 @@ import { entertainmentCommands } from "./entertainment";
 import { networkCommands } from "./network";
 import { solanaCommands } from "./solana";
 import { nearCommands } from "./near";
+import { polygonCommands } from "./polygon";
+import { ethereumCommands } from "./ethereum";
+import { arbitrumCommands } from "./arbitrum";
+import { optimismCommands } from "./optimism";
+import { baseCommands } from "./base";
+import { bnbCommands } from "./bnb";
+import { uniswapCommands } from "./uniswap";
+import { pancakeswapCommands } from "./pancakeswap";
 import { eclipseCommands } from "./eclipse";
 import { newsCommand } from "./news";
 import { spotifyCommands } from "./spotify";
@@ -33,6 +41,7 @@ import { ethCommands } from "./eth";
 import { gamesCommand } from "./games";
 import { kalshiCommand } from "./kalshi";
 import { polymarketCommands } from "./polymarket";
+import { tradeCommands } from "./trade";
 import { colorCommands } from "./color";
 import { hyperliquidCommands } from "./hyperliquid";
 import { ensCommands } from "./ens";
@@ -83,6 +92,14 @@ const COMMAND_GROUPS: Array<{ label: string; commands: Command[] }> = [
   { label: "network", commands: networkCommands },
   { label: "solana", commands: solanaCommands },
   { label: "near", commands: nearCommands },
+  { label: "polygon", commands: polygonCommands },
+  { label: "ethereum", commands: ethereumCommands },
+  { label: "arbitrum", commands: arbitrumCommands },
+  { label: "optimism", commands: optimismCommands },
+  { label: "base", commands: baseCommands },
+  { label: "bnb", commands: bnbCommands },
+  { label: "uniswap", commands: uniswapCommands },
+  { label: "pancakeswap", commands: pancakeswapCommands },
   { label: "eclipse", commands: eclipseCommands },
   { label: "news", commands: [newsCommand] },
   { label: "spotify", commands: spotifyCommands },
@@ -110,6 +127,7 @@ const COMMAND_GROUPS: Array<{ label: string; commands: Command[] }> = [
   { label: "games", commands: [gamesCommand] },
   { label: "kalshi", commands: [kalshiCommand] },
   { label: "polymarket", commands: polymarketCommands },
+  { label: "trade", commands: tradeCommands },
   { label: "color", commands: colorCommands },
   { label: "hyperliquid", commands: hyperliquidCommands },
   { label: "ens", commands: ensCommands },
@@ -243,6 +261,14 @@ export {
   networkCommands,
   solanaCommands,
   nearCommands,
+  polygonCommands,
+  ethereumCommands,
+  arbitrumCommands,
+  optimismCommands,
+  baseCommands,
+  bnbCommands,
+  uniswapCommands,
+  pancakeswapCommands,
   eclipseCommands,
   newsCommand,
   spotifyCommands,

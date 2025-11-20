@@ -103,10 +103,102 @@
 .count-display {
   font-size: 24px;
   font-weight: bold;
-  color: #ffd700;
-  min-width: 40px;
+  color: #00ff88;
+  min-width: 50px;
   text-align: center;
+  text-shadow: 0 0 10px rgba(0, 255, 136, 0.8);
 }
 
+/* Draft Toggle */
+.draft-toggle-container {
+  margin-top: 30px;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 2px solid rgba(255, 215, 0, 0.3);
+  border-radius: 8px;
+}
+
+.draft-toggle-label {
+  font-size: 16px;
+  font-weight: bold;
+  color: #ffd700;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.6);
+  letter-spacing: 2px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.draft-icon {
+  font-size: 20px;
+}
+
+.draft-toggle-description {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 15px;
+  font-style: italic;
+}
+
+.draft-toggle-switch {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  gap: 15px;
+}
+
+.draft-toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.draft-slider {
+  position: relative;
+  width: 60px;
+  height: 30px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 30px;
+  transition: all 0.3s ease;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.draft-slider::before {
+  content: '';
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  left: 4px;
+  top: 2px;
+  background: #888;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+.draft-toggle-switch input:checked + .draft-slider {
+  background: rgba(255, 215, 0, 0.3);
+  border-color: #ffd700;
+  box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+}
+
+.draft-toggle-switch input:checked + .draft-slider::before {
+  transform: translateX(30px);
+  background: #ffd700;
+  box-shadow: 
+    0 0 10px rgba(255, 215, 0, 0.8),
+    0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+.draft-toggle-text {
+  font-size: 14px;
+  font-weight: bold;
+  color: #fff;
+  letter-spacing: 1px;
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+  min-width: 80px;
+}
 
 
