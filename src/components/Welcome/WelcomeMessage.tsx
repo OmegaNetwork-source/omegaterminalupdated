@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import { getQuickActions, groupQuickActionsByCategory } from '@/lib/quick-actions';
 import { createCommandLine } from '@/lib/commands/command-output-helpers';
 import { WelcomeHeader } from './WelcomeHeader';
+import { useCustomizerContext } from '@/providers/CustomizerProvider';
+import { ChristmasTree } from '@/components/Effects/ChristmasTree';
 
 const lightbulbIcon = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 8px;"><path d="M9 21h6"></path><path d="M12 3a6 6 0 0 0 6 6c0 2.5-1.5 4.5-3 6H9c-1.5-1.5-3-3.5-3-6a6 6 0 0 1 6-6z"></path><line x1="12" y1="9" x2="12" y2="15"></line></svg>`;
 
@@ -14,6 +16,8 @@ const mediaIcon = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" s
 
 export function WelcomeMessage() {
   const [actions, setActions] = useState(getQuickActions());
+  const { colorPalette } = useCustomizerContext();
+  const isXmasPalette = colorPalette === 'xmas';
 
   // Listen for quick actions updates
   useEffect(() => {
@@ -91,6 +95,21 @@ export function WelcomeMessage() {
       <div style={{ position: 'relative', zIndex: 1 }}>
         {/* Header with Typing Animation */}
         <WelcomeHeader />
+
+        {/* Christmas Tree - Only shows when Xmas palette is active */}
+        {isXmasPalette && (
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              marginBottom: '24px',
+              marginTop: '16px',
+            }}
+          >
+            <ChristmasTree />
+          </div>
+        )}
 
         {/* Custom Quick Actions Section with Drop Zone */}
         <div

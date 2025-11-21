@@ -65,7 +65,7 @@ export const SOCIAL_LINKS = {
  * Default theme on first load
  * Can be overridden by localStorage
  */
-export const DEFAULT_THEME: Theme = "void";
+export const DEFAULT_THEME: Theme = "retro";
 
 /**
  * Default AI provider on first load
@@ -78,10 +78,10 @@ export const DEFAULT_AI_PROVIDER: AIProvider = "off";
  * Each theme has corresponding CSS styles
  */
 export const AVAILABLE_THEMES = [
-  "void",
+  "retro",
   "neo",
   "elite",
-  "neon",
+  "modern",
 ] as const;
 
 /**

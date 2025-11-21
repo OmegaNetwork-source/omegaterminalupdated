@@ -848,10 +848,10 @@ export const config: OmegaConfig = {
 
   // Theme Options
   THEMES: [
-    "void",
+    "retro",
     "neo",
     "elite",
-    "neon",
+    "modern",
   ],
 
   // ChainGPT API Configuration

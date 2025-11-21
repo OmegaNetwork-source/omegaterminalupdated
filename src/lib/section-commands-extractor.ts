@@ -67,10 +67,10 @@ export function extractCommandsFromSection(sectionId: string): SectionCommand[] 
         { command: "color light", label: "Light Palette" },
         { command: "color reset", label: "Reset Palette" },
         // Themes
-        { command: "theme void", label: "Void Theme", description: "Deep void terminal with vibrant accents" },
+        { command: "theme retro", label: "Retro Theme", description: "Deep void terminal with vibrant accents" },
         { command: "theme neo", label: "Neo Theme", description: "Matrix digital rain with cyberpunk green" },
         { command: "theme elite", label: "Elite Theme", description: "Premium luxury with gold accents" },
-        { command: "theme neon", label: "Neon Theme", description: "Futuristic glassmorphism with electric neon" }
+        { command: "theme modern", label: "Modern Theme", description: "Futuristic glassmorphism with electric neon" }
       );
       break;
 

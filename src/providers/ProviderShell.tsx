@@ -104,6 +104,16 @@ const GlobalGameModal = dynamic(
   }
 );
 
+const XmasSnowfall = dynamic(
+  () =>
+    import("@/components/Effects/XmasSnowfall").then((mod) => ({
+      default: mod.default || mod.XmasSnowfall,
+    })),
+  {
+    ssr: false,
+  }
+);
+
 export function ProviderShell({ children }: { children: ReactNode }) {
   return (
     <Suspense fallback={<ProvidersFallback />}>
@@ -117,6 +127,7 @@ export function ProviderShell({ children }: { children: ReactNode }) {
                     <TerminalProvider>
                       {children}
                       <GlobalGameModal />
+                      <XmasSnowfall />
                     </TerminalProvider>
                   </TelegramProvider>
                 </GamesProvider>

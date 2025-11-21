@@ -10,10 +10,10 @@ import { ReactNode } from "react";
  * Used throughout the application for theme switching
  */
 export type Theme =
-  | "void"
+  | "retro"
   | "neo"
   | "elite"
-  | "neon";
+  | "modern";
 
 /**
  * Theme context value providing theme state and methods

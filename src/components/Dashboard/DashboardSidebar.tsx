@@ -30,6 +30,7 @@ import { useWallet } from "@/hooks/useWallet";
 import { useViewMode } from "@/hooks/useViewMode";
 import { useTheme } from "@/hooks/useTheme";
 import { useCustomizer } from "@/hooks/useCustomizer";
+import { useSoundEffects } from "@/hooks/useSoundEffects";
 import { commandRegistry } from "@/lib/commands";
 import styles from "./DashboardSidebar.module.css";
 import { getSubActionIcon } from "./utils/subActionIcons";
@@ -264,6 +265,7 @@ export function DashboardSidebar(): JSX.Element {
   const viewMode = useViewMode();
   const theme = useTheme();
   const customizer = useCustomizer();
+  const soundEffects = useSoundEffects();
 
   const [isHydrated, setIsHydrated] = useState(false);
   const [expandedSections, setExpandedSections] = useState<string[]>(["quick"]);
@@ -291,7 +293,7 @@ export function DashboardSidebar(): JSX.Element {
         "System Help", "Connect Wallet", "Claim Faucet", "AI Assistant", "AI Toggle", "AI Help",
         "Basic View", "Clear Terminal", "Terminal Style", "Color Palettes", "Cycle Palette",
         "Crimson", "Anime", "Ocean", "Forest", "Sunset", "Purple", "Cyber", "Gold", "Ice", "Fire",
-        "Reset Default", "Themes", "Cycle Theme", "Void", "Neo", "Elite", "Neon"
+        "Reset Default", "Mute Sounds", "Unmute Sounds", "Themes", "Cycle Theme", "Retro", "Neo", "Elite", "Modern"
       ],
       news: [
         "Crypto News", "Open News Reader", "Latest News", "Trending News", "Bitcoin News",
@@ -873,6 +875,13 @@ export function DashboardSidebar(): JSX.Element {
                   {getSubActionIcon("Reset Default")}
                   <span>Reset Default</span>
                 </button>
+                <button
+                  className={styles.subButton}
+                  onClick={() => soundEffects.setEnabled(!soundEffects.state.isEnabled)}
+                >
+                  {soundEffects.state.isEnabled ? getSubActionIcon("Mute Sounds") : getSubActionIcon("Volume")}
+                  <span>{soundEffects.state.isEnabled ? "Mute Sounds" : "Unmute Sounds"}</span>
+                </button>
                 
                 {/* Compact Grid Layout for Palettes */}
                 <div className={styles.paletteGrid}>
@@ -1034,17 +1043,17 @@ export function DashboardSidebar(): JSX.Element {
                 
                 {/* Compact Grid Layout for Themes */}
                 <div className={styles.themeGrid}>
-                  <button className={`${styles.themeChip} ${styles.themeDark}`} onClick={() => handleSetTheme("void")} title="Void - Deep void terminal">
-                    <span>🌑 Void</span>
+                  <button className={`${styles.themeChip} ${styles.themeDark}`} onClick={() => handleSetTheme("retro")} title="Retro - Deep void terminal">
+                    <span>Retro</span>
                   </button>
                   <button className={`${styles.themeChip} ${styles.themeMatrix}`} onClick={() => handleSetTheme("neo")} title="Neo - Matrix digital rain">
-                    <span>💚 Neo</span>
+                    <span>Neo</span>
                   </button>
                   <button className={`${styles.themeChip} ${styles.themeExecutive}`} onClick={() => handleSetTheme("elite")} title="Elite - Premium luxury">
-                    <span>👑 Elite</span>
+                    <span>Elite</span>
                   </button>
-                  <button className={`${styles.themeChip} ${styles.themeModern}`} onClick={() => handleSetTheme("neon")} title="Neon - Futuristic cyber">
-                    <span>⚡ Neon</span>
+                  <button className={`${styles.themeChip} ${styles.themeModern}`} onClick={() => handleSetTheme("modern")} title="Modern - Futuristic cyber">
+                    <span>Modern</span>
                   </button>
                 </div>
               </div>

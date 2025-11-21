@@ -12,10 +12,10 @@ import { AVAILABLE_THEMES } from "@/lib/constants";
  * Maps each theme to a human-readable description
  */
 export const THEME_DESCRIPTIONS: Record<Theme, string> = {
-  void: "🌑 Deep void terminal - Pure darkness with vibrant accents",
-  neo: "💚 Neo Matrix - Digital rain with cyberpunk green glow",
-  elite: "👑 Elite Prestige - Luxury gold and premium serif typography",
-  neon: "⚡ Neon Cyber - Futuristic glassmorphism with electric neon",
+  retro: "Retro - Deep void terminal with vibrant accents",
+  neo: "Neo Matrix - Digital rain with cyberpunk green glow",
+  elite: "Elite Prestige - Luxury gold and premium serif typography",
+  modern: "Modern Cyber - Futuristic glassmorphism with electric neon",
 };
 
 /**
@@ -37,10 +37,10 @@ export const THEME_DESCRIPTIONS: Record<Theme, string> = {
 export function getThemeClassNames(theme: Theme): string[] {
   // Map new theme names to CSS classes
   const themeClassMap: Record<Theme, string[]> = {
-    void: ["theme-dark"], // Uses existing dark theme CSS
+    retro: ["theme-dark"], // Uses existing dark theme CSS
     neo: ["theme-matrix"], // Uses existing matrix theme CSS
     elite: ["theme-executive"], // Uses existing executive theme CSS
-    neon: ["modern-ui-futuristic", "modern-terminal-ui"], // Uses existing modern theme CSS
+    modern: ["modern-ui-futuristic", "modern-terminal-ui"], // Uses existing modern theme CSS
   };
 
   return themeClassMap[theme] || [`theme-${theme}`];

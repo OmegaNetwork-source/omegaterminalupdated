@@ -636,7 +636,7 @@ const CATEGORY_HELP: Record<string, () => string[]> = {
   ],
   theme: () => [
     "🎨 INTERFACE & THEMES:",
-    "  theme <name>         → Switch theme (void, neo, elite, neon)",
+    "  theme <name>         → Switch theme (retro, neo, elite, modern)",
     "  gui <style>          → Transform UI (chatgpt, discord, aol, windows95, limewire)",
     "  view [basic|futuristic] → Toggle view mode",
     "  clear                → Clear terminal",
@@ -648,10 +648,10 @@ function listAvailableThemes(context: CommandContext): void {
   context.log("", "output");
 
   const themeDescriptions: Record<string, string> = {
-    void: "🌑 Deep void terminal - Pure darkness with vibrant accents",
-    neo: "💚 Neo Matrix - Digital rain with cyberpunk green glow",
-    elite: "👑 Elite Prestige - Luxury gold and premium serif typography",
-    neon: "⚡ Neon Cyber - Futuristic glassmorphism with electric neon",
+    retro: "Retro - Deep void terminal with vibrant accents",
+    neo: "Neo Matrix - Digital rain with cyberpunk green glow",
+    elite: "Elite Prestige - Luxury gold and premium serif typography",
+    modern: "Modern Cyber - Futuristic glassmorphism with electric neon",
   };
 
   AVAILABLE_THEMES.forEach((theme) => {
@@ -659,7 +659,7 @@ function listAvailableThemes(context: CommandContext): void {
     context.log(`  theme ${theme.padEnd(10)} → ${description}`, "output");
   });
   context.log("", "output");
-  context.log("💡 Try: theme void", "success");
+  context.log("💡 Try: theme retro", "success");
 }
 
 function ensureTheme(value: string): Theme | null {
@@ -1316,8 +1316,8 @@ export const guiCommand: Command = {
           : "terminal";
       const currentTheme =
         typeof localStorage !== "undefined"
-          ? localStorage.getItem("omega-theme-mode") || "void"
-          : "void";
+          ? localStorage.getItem("omega-theme-mode") || "retro"
+          : "retro";
 
       context.log("🎮 GUI Interface Styles", "info");
       context.log("═══════════════════════════════════════", "output");
@@ -1359,21 +1359,14 @@ export const guiCommand: Command = {
 
       context.log("🎯 CURRENT:", "info");
       context.log(`  GUI Style: ${currentStyle}`, "output");
-      const themeEmoji: Record<string, string> = {
-        void: "🌑",
-        neo: "💚",
-        elite: "👑",
-        neon: "⚡",
-      };
       const themeName: Record<string, string> = {
-        void: "Void",
+        retro: "Retro",
         neo: "Neo",
         elite: "Elite",
-        neon: "Neon",
+        modern: "Modern",
       };
-      const emoji = themeEmoji[currentTheme] || "🌑";
-      const name = themeName[currentTheme] || "Void";
-      context.log(`  Theme: ${emoji} ${name}`, "output");
+      const name = themeName[currentTheme] || "Retro";
+      context.log(`  Theme: ${name}`, "output");
       context.log("", "info");
       context.log("💡 Try: gui chatgpt", "success");
       return;

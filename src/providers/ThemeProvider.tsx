@@ -37,13 +37,13 @@ const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
  * @returns Provider component wrapping children with theme context
  *
  * @example
- * <ThemeProvider initialTheme="void">
+ * <ThemeProvider initialTheme="retro">
  *   <App />
  * </ThemeProvider>
  */
 export function ThemeProvider({
   children,
-  initialTheme = "void",
+  initialTheme = "retro",
 }: ThemeProviderProps) {
   const [currentTheme, setCurrentTheme] = useState<Theme>(initialTheme);
   const soundEffects = useSoundEffects();
@@ -96,8 +96,8 @@ export function ThemeProvider({
     const themeClasses = getThemeClassNames(theme);
     document.body.classList.add(...themeClasses);
 
-    // Add special classes for neon theme to terminal element
-    if (theme === "neon" && terminal) {
+    // Add special classes for modern theme to terminal element
+    if (theme === "modern" && terminal) {
       terminal.classList.add("modern-ui", "futuristic-theme");
     } else if (terminal) {
       terminal.classList.add(`theme-${theme}`);
@@ -136,8 +136,8 @@ export function ThemeProvider({
         console.log(`Theme set to ${theme} mode`);
       }
 
-      // Play sound for neon UI theme selection (non-blocking)
-      if (theme === "neon") {
+      // Play sound for modern UI theme selection (non-blocking)
+      if (theme === "modern") {
         try {
           soundEffects.playModernUIThemeSound();
         } catch {}
