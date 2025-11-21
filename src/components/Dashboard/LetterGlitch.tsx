@@ -1,6 +1,8 @@
 "use client";
 
-import { useRef, useEffect, useImperativeHandle, forwardRef } from 'react';
+import { useRef, useEffect, useImperativeHandle, forwardRef, useState, useMemo, useCallback } from 'react';
+import { useWallet } from "@/hooks/useWallet";
+import { LETTER_GLITCH_WORDS, normalizeLetterGlitchWord } from "@/lib/letterGlitchWords";
 
 export interface LetterGlitchProps {
   glitchColors?: string[];
@@ -59,11 +61,14 @@ export const LetterGlitch = forwardRef<LetterGlitchRef, LetterGlitchProps>(({
   const glitchIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const hoverGlitchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const vortexAnimationRef = useRef<number | null>(null);
+  const wallet = useWallet();
+  const walletAddress = wallet?.state.address ?? null;
+  const [foundWordIds, setFoundWordIds] = useState<string[]>([]);
+  const foundWordSet = useMemo(() => new Set(foundWordIds), [foundWordIds]);
+  const totalHiddenWords = LETTER_GLITCH_WORDS.length;
   
   // Easter egg hidden text patterns - only these should use special colors
-  const hiddenTexts = useRef<string[]>([
-    'OMEGA', 'DeFi', 'Web3', 'ETH', 'BTC', 'SOL', 'Ω'
-  ]);
+  const hiddenTexts = useRef<string[]>([...LETTER_GLITCH_WORDS]);
   const hiddenTextTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const hiddenTextFadeIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const isShowingHiddenText = useRef(false);
@@ -81,13 +86,22 @@ export const LetterGlitch = forwardRef<LetterGlitchRef, LetterGlitchProps>(({
   const charWidth = 10;
   const charHeight = 20;
 
-  const getRandomChar = () => {
-    return lettersAndSymbols[Math.floor(Math.random() * lettersAndSymbols.length)];
+  const pickRandomValue = (array: string[], fallback: string) => {
+    if (!array || array.length === 0) {
+      return fallback;
+    }
+    const value = array[Math.floor(Math.random() * array.length)];
+    return value ?? fallback;
   };
 
-  const getRandomColor = () => {
-    return glitchColors[Math.floor(Math.random() * glitchColors.length)];
-  };
+  const defaultChar = lettersAndSymbols[0] ?? "Ω";
+  const defaultColor = glitchColors[0] ?? "#61dca3";
+
+  const getRandomChar = () => pickRandomValue(lettersAndSymbols, defaultChar);
+
+  const getRandomColor = () => pickRandomValue(glitchColors, defaultColor);
+  const getRandomColorFromPalette = (palette: string[]) =>
+    pickRandomValue(palette, defaultColor);
 
   const hexToRgb = (hex: string) => {
     const shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
@@ -98,9 +112,9 @@ export const LetterGlitch = forwardRef<LetterGlitchRef, LetterGlitchProps>(({
     const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
     return result
       ? {
-          r: parseInt(result[1], 16),
-          g: parseInt(result[2], 16),
-          b: parseInt(result[3], 16)
+          r: parseInt(result[1] ?? "00", 16),
+          g: parseInt(result[2] ?? "00", 16),
+          b: parseInt(result[3] ?? "00", 16)
         }
       : null;
   };
@@ -117,6 +131,86 @@ export const LetterGlitch = forwardRef<LetterGlitchRef, LetterGlitchProps>(({
     };
     return `rgb(${result.r}, ${result.g}, ${result.b})`;
   };
+
+  const recordHiddenWord = useCallback(
+    async (word: string) => {
+      if (!word) return;
+      const normalizedWord = normalizeLetterGlitchWord(word);
+
+      setFoundWordIds((prev) => {
+        if (prev.includes(normalizedWord)) {
+          return prev;
+        }
+        return [...prev, normalizedWord];
+      });
+
+      if (!walletAddress) {
+        return;
+      }
+
+      try {
+        await fetch("/api/letter-glitch/words", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            walletAddress,
+            word,
+          }),
+        });
+      } catch (error) {
+        console.error("[LetterGlitch] Failed to save found word:", error);
+      }
+    },
+    [walletAddress]
+  );
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const fetchFoundWords = async () => {
+      if (!walletAddress) {
+        if (isMounted) {
+          setFoundWordIds([]);
+        }
+        return;
+      }
+
+      try {
+        const response = await fetch(
+          `/api/letter-glitch/words?walletAddress=${encodeURIComponent(walletAddress)}`,
+          {
+            cache: "no-store",
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch found words");
+        }
+
+        const data = await response.json();
+        const normalized =
+          Array.isArray(data.foundWords) && data.foundWords.length > 0
+            ? data.foundWords.map((value: string) =>
+                normalizeLetterGlitchWord(value)
+              )
+            : [];
+
+        if (isMounted) {
+          setFoundWordIds(normalized);
+        }
+      } catch (error) {
+        console.error("[LetterGlitch] Failed to fetch found words:", error);
+      }
+    };
+
+    fetchFoundWords();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [walletAddress]);
 
   const calculateGrid = (width: number, height: number) => {
     const columns = Math.ceil(width / charWidth);
@@ -320,7 +414,16 @@ export const LetterGlitch = forwardRef<LetterGlitchRef, LetterGlitchProps>(({
     if (!letters.current || letters.current.length === 0 || isGlitching.current) return;
     if (grid.current.columns === 0 || grid.current.rows === 0) return;
     
-    const text = hiddenTexts.current[Math.floor(Math.random() * hiddenTexts.current.length)];
+    const availableTexts = hiddenTexts.current.filter(
+      (word) => !foundWordSet.has(normalizeLetterGlitchWord(word))
+    );
+    const textPool = availableTexts.length > 0 ? availableTexts : hiddenTexts.current;
+    if (textPool.length === 0) return;
+    const selectedText =
+      textPool[Math.floor(Math.random() * textPool.length)] ??
+      hiddenTexts.current[0] ??
+      "OMEGA";
+    const text = selectedText;
     const textLength = text.length;
     
     // Find a random position to place the text (ensure it fits)
@@ -336,7 +439,7 @@ export const LetterGlitch = forwardRef<LetterGlitchRef, LetterGlitchProps>(({
     
     // Special bright colors ONLY for hidden text (not from palette)
     const specialColors = ['#00ff88', '#00d4ff', '#ffffff', '#ffff00', '#ff00ff', '#00ffff', '#ff8800'];
-    const highlightColor = specialColors[Math.floor(Math.random() * specialColors.length)];
+    const highlightColor = pickRandomValue(specialColors, specialColors[0] ?? '#00ff88');
     
     // Store active hidden text info for click detection
     const indices: number[] = [];
@@ -352,7 +455,7 @@ export const LetterGlitch = forwardRef<LetterGlitchRef, LetterGlitchProps>(({
         if (letters.current[index].isFrozen) continue;
         
         indices.push(index);
-        letters.current[index].char = text[i];
+        letters.current[index].char = text.charAt(i);
         letters.current[index].targetColor = highlightColor;
         letters.current[index].color = highlightColor; // Set immediately for visibility
         letters.current[index].colorProgress = 1;
@@ -375,7 +478,10 @@ export const LetterGlitch = forwardRef<LetterGlitchRef, LetterGlitchProps>(({
       clearTimeout(hiddenTextTimeoutRef.current);
     }
     
-    // First, keep it bright for 2 seconds (more time to click)
+    // Random display duration between 1-3 seconds to give users time to click
+    const displayDuration = 1000 + Math.random() * 2000; // 1000ms to 3000ms
+    
+    // First, keep it bright for the random duration (minimum 1 second, maximum 3 seconds)
     hiddenTextTimeoutRef.current = setTimeout(() => {
       // Only fade if not frozen
       if (activeHiddenTextRef.current) {
@@ -431,11 +537,60 @@ export const LetterGlitch = forwardRef<LetterGlitchRef, LetterGlitchProps>(({
           activeHiddenTextRef.current = null;
         }
       }
-    }, 2000); // Show clearly for 2 seconds (more time to click)
+    }, displayDuration); // Random duration between 1-3 seconds to give users time to click
   };
   
+  // Check if click is on an Ω symbol (always clickable, easier to find)
+  const checkOmegaClick = (x: number, y: number): boolean => {
+    if (!canvasRef.current || !letters.current || letters.current.length === 0) return false;
+    
+    const canvas = canvasRef.current;
+    const rect = canvas.getBoundingClientRect();
+    const clickX = x - rect.left;
+    const clickY = y - rect.top;
+    
+    // Calculate which grid cell was clicked
+    const col = Math.floor(clickX / charWidth);
+    const row = Math.floor(clickY / charHeight);
+    
+    // Check bounds
+    if (row < 0 || row >= grid.current.rows || col < 0 || col >= grid.current.columns) {
+      return false;
+    }
+    
+    const index = row * grid.current.columns + col;
+    if (index >= letters.current.length || !letters.current[index]) {
+      return false;
+    }
+    
+    const letter = letters.current[index];
+    
+    // Check if this letter is an Ω symbol and not already frozen
+    if (letter.char === 'Ω' && !letter.isFrozen) {
+      // Freeze this Ω symbol with a special highlight color
+      letter.isFrozen = true;
+      letter.frozenText = 'Ω';
+      // Use a bright highlight color to show it's been found
+      letter.targetColor = '#00ff88';
+      letter.color = '#00ff88';
+      letter.colorProgress = 1;
+      
+      drawLetters();
+      recordHiddenWord('Ω');
+      return true;
+    }
+    
+    return false;
+  };
+
   // Freeze hidden text when clicked
   const freezeHiddenText = (x: number, y: number) => {
+    // First check for Ω symbol clicks (easier to find)
+    if (checkOmegaClick(x, y)) {
+      return true;
+    }
+    
+    // Then check for active hidden text
     if (!activeHiddenTextRef.current || !canvasRef.current) return false;
     
     const canvas = canvasRef.current;
@@ -443,20 +598,26 @@ export const LetterGlitch = forwardRef<LetterGlitchRef, LetterGlitchProps>(({
     const clickX = x - rect.left;
     const clickY = y - rect.top;
     
-    // Check if click is within the hidden text area
-    const { startCol, startRow, length } = activeHiddenTextRef.current;
-    const textStartX = startCol * charWidth;
-    const textEndX = (startCol + length) * charWidth;
-    const textY = startRow * charHeight;
-    const textEndY = (startRow + 1) * charHeight;
+    // Check if click is within the hidden text area (with generous padding for easier clicking)
+    const currentHiddenText = activeHiddenTextRef.current;
+    const { startCol, startRow, length } = currentHiddenText;
+    
+    // Add padding around the text for easier clicking (half character width/height on each side)
+    const paddingX = charWidth * 0.5;
+    const paddingY = charHeight * 0.5;
+    
+    const textStartX = (startCol * charWidth) - paddingX;
+    const textEndX = ((startCol + length) * charWidth) + paddingX;
+    const textY = (startRow * charHeight) - paddingY;
+    const textEndY = ((startRow + 1) * charHeight) + paddingY;
     
     if (clickX >= textStartX && clickX <= textEndX && 
         clickY >= textY && clickY <= textEndY) {
       // Freeze all letters in this hidden text
-      activeHiddenTextRef.current.indices.forEach(index => {
+      currentHiddenText.indices.forEach(index => {
         if (letters.current[index] && !letters.current[index].isFrozen) {
           letters.current[index].isFrozen = true;
-          letters.current[index].frozenText = activeHiddenTextRef.current!.text;
+          letters.current[index].frozenText = currentHiddenText.text;
           // Keep the special color
         }
       });
@@ -475,6 +636,7 @@ export const LetterGlitch = forwardRef<LetterGlitchRef, LetterGlitchProps>(({
       }
       
       drawLetters();
+      recordHiddenWord(currentHiddenText.text);
       return true;
     }
     
@@ -549,7 +711,7 @@ export const LetterGlitch = forwardRef<LetterGlitchRef, LetterGlitchProps>(({
       letter.offsetProgress = 0; // Start transition
       
       // Slowly change color (use palette colors)
-      letter.targetColor = glitchColorsToUse[Math.floor(Math.random() * glitchColorsToUse.length)];
+      letter.targetColor = getRandomColorFromPalette(glitchColorsToUse);
       letter.colorProgress = 0;
       
       // Occasionally change character (slower than intense glitch)
@@ -586,7 +748,7 @@ export const LetterGlitch = forwardRef<LetterGlitchRef, LetterGlitchProps>(({
           
           // Slowly change color (use palette colors)
           if (Math.random() < 0.3) {
-            letters.current[index].targetColor = glitchColorsToUse[Math.floor(Math.random() * glitchColorsToUse.length)];
+        letters.current[index].targetColor = getRandomColorFromPalette(glitchColorsToUse);
             letters.current[index].colorProgress = 0;
           }
         }
@@ -664,7 +826,7 @@ export const LetterGlitch = forwardRef<LetterGlitchRef, LetterGlitchProps>(({
       if (letter.isFrozen) return;
       
       letter.char = getRandomChar();
-      letter.targetColor = glitchColorsToUse[Math.floor(Math.random() * glitchColorsToUse.length)];
+      letter.targetColor = getRandomColorFromPalette(glitchColorsToUse);
       if (!smooth) {
         letter.color = letter.targetColor;
         letter.colorProgress = 1;
@@ -688,7 +850,7 @@ export const LetterGlitch = forwardRef<LetterGlitchRef, LetterGlitchProps>(({
         const index = Math.floor(Math.random() * letters.current.length);
         if (letters.current[index]) {
           letters.current[index].char = getRandomChar();
-          letters.current[index].targetColor = glitchColorsToUse[Math.floor(Math.random() * glitchColorsToUse.length)];
+          letters.current[index].targetColor = getRandomColorFromPalette(glitchColorsToUse);
           letters.current[index].colorProgress = 0;
         }
       }
@@ -738,7 +900,7 @@ export const LetterGlitch = forwardRef<LetterGlitchRef, LetterGlitchProps>(({
       if (letter.isFrozen) return;
       
       letter.char = getRandomChar();
-      letter.targetColor = glitchColorsToUse[Math.floor(Math.random() * glitchColorsToUse.length)];
+      letter.targetColor = getRandomColorFromPalette(glitchColorsToUse);
       letter.colorProgress = 0;
     });
     
@@ -757,13 +919,19 @@ export const LetterGlitch = forwardRef<LetterGlitchRef, LetterGlitchProps>(({
       const end = Math.min(start + batchSize, totalLetters);
       
       for (let i = start; i < end; i++) {
-        if (letters.current[i]) {
-          // Use more organized characters
-          const organizedChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-          letters.current[i].char = organizedChars[Math.floor(Math.random() * organizedChars.length)];
-          letters.current[i].targetColor = originalGlitchColors.current[Math.floor(Math.random() * originalGlitchColors.current.length)];
-          letters.current[i].colorProgress = 0;
-        }
+        const letter = letters.current[i];
+        if (!letter) continue;
+
+        // Use more organized characters
+        const organizedChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        const organizedIndex = Math.floor(Math.random() * organizedChars.length);
+        letter.char = organizedChars.charAt(organizedIndex);
+        const palette =
+          originalGlitchColors.current.length > 0
+            ? originalGlitchColors.current
+            : glitchColors;
+        letter.targetColor = getRandomColorFromPalette(palette);
+        letter.colorProgress = 0;
       }
       
       drawLetters();
@@ -823,7 +991,7 @@ export const LetterGlitch = forwardRef<LetterGlitchRef, LetterGlitchProps>(({
   useEffect(() => {
     if (letters.current.length > 0 && glitchColors.length > 0 && !isGlitching.current) {
       const getRandomColorFromPalette = () => {
-        return glitchColors[Math.floor(Math.random() * glitchColors.length)];
+        return getRandomColor();
       };
       
       letters.current.forEach(letter => {
@@ -853,6 +1021,10 @@ export const LetterGlitch = forwardRef<LetterGlitchRef, LetterGlitchProps>(({
     
     // Handle clicks on canvas to freeze hidden text
     const handleCanvasClick = (e: MouseEvent) => {
+      // Prevent default to avoid any unwanted behavior
+      e.preventDefault();
+      e.stopPropagation();
+      
       if (freezeHiddenText(e.clientX, e.clientY)) {
         // Successfully froze text, schedule next one
         setTimeout(() => {
@@ -861,7 +1033,23 @@ export const LetterGlitch = forwardRef<LetterGlitchRef, LetterGlitchProps>(({
       }
     };
     
+    // Also handle touch events for mobile devices
+    const handleCanvasTouch = (e: TouchEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      
+      if (e.touches.length > 0 && e.touches[0]) {
+        const touch = e.touches[0];
+        if (freezeHiddenText(touch.clientX, touch.clientY)) {
+          setTimeout(() => {
+            scheduleHiddenText();
+          }, 3000);
+        }
+      }
+    };
+    
     canvas.addEventListener('click', handleCanvasClick);
+    canvas.addEventListener('touchstart', handleCanvasTouch, { passive: false });
 
     let resizeTimeout: NodeJS.Timeout;
 
@@ -911,6 +1099,7 @@ export const LetterGlitch = forwardRef<LetterGlitchRef, LetterGlitchProps>(({
       }
       if (canvas) {
         canvas.removeEventListener('click', handleCanvasClick);
+        canvas.removeEventListener('touchstart', handleCanvasTouch);
       }
       window.removeEventListener('resize', handleResize);
     };
@@ -928,8 +1117,96 @@ export const LetterGlitch = forwardRef<LetterGlitchRef, LetterGlitchProps>(({
   const canvasStyle: React.CSSProperties = {
     display: 'block',
     width: '100%',
-    height: '100%'
+    height: '100%',
+    cursor: 'pointer',
+    userSelect: 'none'
   };
+
+  const wordsOverlayStyle: React.CSSProperties = {
+    position: 'absolute',
+    bottom: 12,
+    left: 12,
+    right: 12,
+    padding: '8px 12px',
+    borderRadius: 8,
+    border: '1px solid rgba(255, 255, 255, 0.06)',
+    background: 'rgba(0, 0, 0, 0.25)',
+    backdropFilter: 'blur(8px)',
+    color: '#ffffff',
+    pointerEvents: 'none',
+    boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2)',
+    fontFamily: 'var(--font-mono, "IBM Plex Mono", monospace)'
+  };
+
+  const wordsHeaderStyle: React.CSSProperties = {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    gap: 12,
+    marginBottom: 6,
+    fontSize: 11,
+    letterSpacing: '0.1em',
+    textTransform: 'uppercase',
+    color: '#8fffd2'
+  };
+
+  const progressIndicatorStyle: React.CSSProperties = {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: 6,
+    fontSize: 11,
+    fontWeight: 600,
+    color: '#ffffff',
+    letterSpacing: '0.05em'
+  };
+
+  const wordsListStyle: React.CSSProperties = {
+    display: 'flex',
+    flexWrap: 'wrap',
+    gap: 6,
+    alignItems: 'center'
+  };
+
+  const chipBaseStyle: React.CSSProperties = {
+    display: 'inline-flex',
+    alignItems: 'center',
+    padding: '3px 8px',
+    borderRadius: 999,
+    fontSize: 11,
+    letterSpacing: '0.08em',
+    border: '1px solid rgba(255, 255, 255, 0.2)',
+    background: 'rgba(0, 0, 0, 0.3)',
+    color: '#ffffff',
+    textTransform: 'uppercase',
+    transition: 'all 0.2s ease',
+    pointerEvents: 'none'
+  };
+
+  const chipBadgeStyle: React.CSSProperties = {
+    marginLeft: 6,
+    fontSize: 10,
+    letterSpacing: '0.1em',
+    color: '#6dffc9'
+  };
+
+  const connectHintStyle: React.CSSProperties = {
+    fontSize: 10,
+    color: 'rgba(255, 255, 255, 0.6)',
+    letterSpacing: '0.05em',
+    marginTop: 2
+  };
+
+  const walletConnected = Boolean(walletAddress);
+  const wordsFoundCount = foundWordSet.size;
+
+  const getChipStyle = (isFound: boolean): React.CSSProperties => ({
+    ...chipBaseStyle,
+    borderColor: isFound ? 'rgba(97, 220, 163, 0.9)' : 'rgba(255, 255, 255, 0.25)',
+    color: isFound ? '#b0ffe6' : chipBaseStyle.color,
+    background: isFound ? 'rgba(15, 70, 45, 0.75)' : chipBaseStyle.background,
+    boxShadow: isFound ? '0 0 12px rgba(97, 220, 163, 0.45)' : 'none',
+    opacity: isFound ? 1 : 0.65
+  });
 
   const outerVignetteStyle: React.CSSProperties = {
     position: 'absolute',
@@ -958,6 +1235,36 @@ export const LetterGlitch = forwardRef<LetterGlitchRef, LetterGlitchProps>(({
       <canvas ref={canvasRef} style={canvasStyle} />
       {outerVignette && <div style={outerVignetteStyle}></div>}
       {centerVignette && <div style={centerVignetteStyle}></div>}
+      <div style={wordsOverlayStyle}>
+        <div style={wordsHeaderStyle}>
+          <div style={progressIndicatorStyle}>
+            <span>→</span>
+            <span>
+              {wordsFoundCount}/{totalHiddenWords}
+            </span>
+          </div>
+          <span>Hidden Words</span>
+        </div>
+        <div style={wordsListStyle}>
+          {LETTER_GLITCH_WORDS.map((word) => {
+            const normalized = normalizeLetterGlitchWord(word);
+            const isFound = foundWordSet.has(normalized);
+            return (
+              <div key={word} style={getChipStyle(isFound)}>
+                {word}
+                {isFound && walletConnected && (
+                  <span style={chipBadgeStyle}>Found</span>
+                )}
+              </div>
+            );
+          })}
+          {!walletConnected && (
+            <div style={connectHintStyle}>
+              Connect your wallet to save discoveries.
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 });

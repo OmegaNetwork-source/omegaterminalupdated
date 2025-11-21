@@ -2,16 +2,16 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 20px;
-  margin: 20px 0;
+  padding: 8px;
+  margin: 0;
   position: relative;
 }
 
 .treeSvg {
-  width: 120px;
-  height: 180px;
+  width: 60px;
+  height: 90px;
   max-width: 100%;
-  filter: drop-shadow(0 0 8px rgba(34, 139, 34, 0.4));
+  filter: drop-shadow(0 0 6px rgba(34, 139, 34, 0.4));
 }
 
 /* Rotating animation for tree layers */
@@ -126,8 +126,8 @@
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .treeSvg {
-    width: 100px;
-    height: 150px;
+    width: 50px;
+    height: 75px;
   }
 }
 

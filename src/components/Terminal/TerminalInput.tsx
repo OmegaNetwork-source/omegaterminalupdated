@@ -19,6 +19,8 @@ import {
 } from "@/lib/commands/rubic";
 import { useMobileDetection } from "@/hooks/useMobileDetection";
 import { VirtualKeyboard } from "@/components/Mobile/VirtualKeyboard";
+import { QuickCommandChips } from "@/components/Mobile/QuickCommandChips";
+import { useKeyboardOpen } from "@/hooks/useKeyboardOpen";
 import styles from "./TerminalInput.module.css";
 
 export interface TerminalInputRef {
@@ -38,6 +40,7 @@ export const TerminalInput = forwardRef<TerminalInputRef, TerminalInputProps>(({
   const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const mobile = useMobileDetection();
+  const isKeyboardOpenHook = useKeyboardOpen();
 
   // Expose methods to parent component
   useImperativeHandle(ref, () => ({
@@ -266,11 +269,36 @@ export const TerminalInput = forwardRef<TerminalInputRef, TerminalInputProps>(({
     }, 0);
   };
 
+  // Handle quick command chip click
+  const handleQuickCommand = (command: string) => {
+    setInputValue(command);
+    // Focus input after setting value
+    setTimeout(() => {
+      if (inputRef.current) {
+        inputRef.current.focus();
+        inputRef.current.setSelectionRange(command.length, command.length);
+      }
+    }, 0);
+  };
+
   return (
     <>
       <div className={styles.inputSection}>
+        {/* Quick Command Chips - Mobile only */}
+        {mobile.isMobile && (
+          <QuickCommandChips onCommandClick={handleQuickCommand} />
+        )}
+
         <div className={styles.inputLine}>
-          <span className={styles.prompt}>{TERMINAL_PROMPT}</span>
+          {/* CLI prefix - hidden on very small screens on mobile */}
+          {!mobile.isMobile && (
+            <span className={styles.prompt}>{TERMINAL_PROMPT}</span>
+          )}
+          {mobile.isMobile && (
+            <span className={`${styles.prompt} ${styles.promptMobile}`}>
+              {TERMINAL_PROMPT}
+            </span>
+          )}
           <input
             ref={inputRef}
             type="text"
@@ -282,6 +310,8 @@ export const TerminalInput = forwardRef<TerminalInputRef, TerminalInputProps>(({
             placeholder={placeholder}
             disabled={disabled}
             autoComplete="off"
+            autoCapitalize="none"
+            autoCorrect="off"
             spellCheck={false}
             className={styles.input}
             inputMode={mobile.isMobile ? "none" : "text"} // Prevent native keyboard on mobile

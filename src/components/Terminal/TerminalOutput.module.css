@@ -395,10 +395,24 @@
     align-items: stretch;
   }
 
-  /* When keyboard is open, reduce output area to make room */
+  /* Ensure output doesn't go behind input + keyboard */
+  .container {
+    padding-bottom: 100px; /* Space for input (~60px) + keyboard (~40px) */
+  }
+
+  /* When keyboard is open, reduce output area to make room for input + keyboard */
+  /* ChatGPT style: input stays at bottom (70px), keyboard above it (max-height calc(100vh - 140px)) */
   :global(body.keyboard-open) .container {
-    max-height: calc(100vh - 56px - 70px - 200px); /* Account for keyboard height (~200px) */
-    padding-bottom: calc(12px + 70px + 200px); /* Input + Keyboard */
+    max-height: calc(100vh - 56px - 70px - 280px); /* Header + Input + Keyboard (min-height 280px) */
+    padding-bottom: calc(12px + 70px + 280px); /* Input + Keyboard minimum height */
+  }
+  
+  /* For larger keyboards, adjust dynamically */
+  @media (min-height: 600px) {
+    :global(body.keyboard-open) .container {
+      max-height: calc(100vh - 56px - 70px - 320px); /* More space for keyboard */
+      padding-bottom: calc(12px + 70px + 320px);
+    }
   }
 
   .line,

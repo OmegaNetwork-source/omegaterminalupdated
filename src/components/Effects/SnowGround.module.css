@@ -1,0 +1,88 @@
+.snowContainer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.snowSvg {
+  width: 100%;
+  height: 100%;
+  max-width: 200px;
+  filter: drop-shadow(0 -2px 4px rgba(255, 255, 255, 0.3));
+}
+
+/* Main snow mound */
+.snowMound {
+  fill: #ffffff;
+  stroke: rgba(255, 255, 255, 0.8);
+  stroke-width: 0.5;
+  filter: drop-shadow(0 -2px 6px rgba(255, 255, 255, 0.4));
+  animation: snowGlow 3s ease-in-out infinite;
+}
+
+/* Smaller snow mounds for texture */
+.snowMoundSmall {
+  fill: rgba(255, 255, 255, 0.9);
+  stroke: rgba(255, 255, 255, 0.7);
+  stroke-width: 0.3;
+  filter: drop-shadow(0 -1px 3px rgba(255, 255, 255, 0.3));
+}
+
+/* Sparkle effect for snow glitter */
+.sparkle {
+  fill: rgba(255, 255, 255, 0.95);
+  filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.8));
+  animation: sparkleTwinkle 2s ease-in-out infinite;
+}
+
+@keyframes snowGlow {
+  0%,
+  100% {
+    opacity: 0.95;
+    filter: drop-shadow(0 -2px 6px rgba(255, 255, 255, 0.4));
+  }
+  50% {
+    opacity: 1;
+    filter: drop-shadow(0 -2px 8px rgba(255, 255, 255, 0.6));
+  }
+}
+
+@keyframes sparkleTwinkle {
+  0%,
+  100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.3);
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .snowContainer {
+    height: 30px;
+  }
+  
+  .snowSvg {
+    max-width: 150px;
+  }
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .snowMound,
+  .sparkle {
+    animation: none;
+  }
+}
+

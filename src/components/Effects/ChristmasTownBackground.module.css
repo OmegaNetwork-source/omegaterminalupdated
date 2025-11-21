@@ -1,0 +1,207 @@
+.townContainer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.townSvg {
+  width: 100%;
+  height: 100%;
+  max-width: 600px;
+  max-height: 450px;
+  opacity: 0.85;
+}
+
+/* Stars twinkling animation */
+.stars {
+  opacity: 0.9;
+}
+
+.star {
+  fill: #ffffff;
+  filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.8));
+  animation: starTwinkle 3s ease-in-out infinite;
+}
+
+@keyframes starTwinkle {
+  0%,
+  100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+}
+
+/* Moon glow */
+.moon {
+  fill: #f5f5dc;
+  filter: drop-shadow(0 0 8px rgba(245, 245, 220, 0.6));
+  animation: moonGlow 4s ease-in-out infinite;
+}
+
+@keyframes moonGlow {
+  0%,
+  100% {
+    opacity: 0.9;
+    filter: drop-shadow(0 0 8px rgba(245, 245, 220, 0.6));
+  }
+  50% {
+    opacity: 1;
+    filter: drop-shadow(0 0 12px rgba(245, 245, 220, 0.8));
+  }
+}
+
+/* Mountains */
+.mountains {
+  opacity: 0.7;
+}
+
+.mountain {
+  opacity: 0.8;
+}
+
+.snowCap {
+  animation: snowCapShimmer 5s ease-in-out infinite;
+}
+
+@keyframes snowCapShimmer {
+  0%,
+  100% {
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 0.9;
+  }
+}
+
+/* Houses */
+.house {
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+  animation: houseGlow 6s ease-in-out infinite;
+}
+
+@keyframes houseGlow {
+  0%,
+  100% {
+    opacity: 0.95;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+  }
+  50% {
+    opacity: 1;
+    filter: drop-shadow(0 4px 12px rgba(220, 20, 60, 0.2));
+  }
+}
+
+/* Window lights - warm and inviting */
+.window {
+  animation: windowFlicker 4s ease-in-out infinite;
+  filter: drop-shadow(0 0 4px rgba(255, 215, 0, 0.8));
+}
+
+@keyframes windowFlicker {
+  0%,
+  100% {
+    opacity: 1;
+    filter: drop-shadow(0 0 4px rgba(255, 215, 0, 0.8));
+  }
+  25% {
+    opacity: 0.95;
+    filter: drop-shadow(0 0 6px rgba(255, 215, 0, 1));
+  }
+  50% {
+    opacity: 1;
+    filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.9));
+  }
+  75% {
+    opacity: 0.98;
+    filter: drop-shadow(0 0 7px rgba(255, 215, 0, 1));
+  }
+}
+
+/* Street lamps */
+.streetLamp {
+  animation: lampSway 8s ease-in-out infinite;
+  transform-origin: center bottom;
+}
+
+@keyframes lampSway {
+  0%,
+  100% {
+    transform: translateX(0) rotate(0deg);
+  }
+  50% {
+    transform: translateX(1px) rotate(0.5deg);
+  }
+}
+
+.lampGlow {
+  animation: lampGlow 2s ease-in-out infinite;
+  filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.9));
+}
+
+@keyframes lampGlow {
+  0%,
+  100% {
+    opacity: 0.9;
+    filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.9));
+  }
+  50% {
+    opacity: 1;
+    filter: drop-shadow(0 0 12px rgba(255, 215, 0, 1));
+  }
+}
+
+/* Snow base */
+.snowBase {
+  animation: snowBaseGlow 5s ease-in-out infinite;
+}
+
+@keyframes snowBaseGlow {
+  0%,
+  100% {
+    opacity: 0.9;
+  }
+  50% {
+    opacity: 0.95;
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .townSvg {
+    max-width: 100%;
+    max-height: 350px;
+  }
+  
+  .house {
+    transform: scale(0.85);
+  }
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .star,
+  .moon,
+  .snowCap,
+  .house,
+  .window,
+  .streetLamp,
+  .lampGlow,
+  .snowBase {
+    animation: none;
+  }
+}
+

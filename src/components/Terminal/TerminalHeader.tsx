@@ -14,6 +14,7 @@ import styles from "./TerminalHeader.module.css";
 import { useSoundEffects } from "@/hooks/useSoundEffects";
 import { useMobileDetection } from "@/hooks/useMobileDetection";
 import { MobileMenu } from "@/components/Mobile/MobileMenu";
+import { AIProviderBottomSheet } from "@/components/Mobile/AIProviderBottomSheet";
 import { PortfolioTracker } from "./PortfolioTracker";
 
 export function TerminalHeader({
@@ -29,6 +30,7 @@ export function TerminalHeader({
   const soundEffects = useSoundEffects();
   const mobile = useMobileDetection();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isAIProviderSheetOpen, setIsAIProviderSheetOpen] = useState(false);
 
   return (
     <>
@@ -203,7 +205,7 @@ export function TerminalHeader({
           </button>
         </div>
 
-        {/* AI Provider Selector */}
+        {/* AI Provider Selector - Desktop: Select dropdown, Mobile: Button to open bottom sheet */}
         <span
           className={`${styles.aiLabel} ${
             aiProvider === "off" ? styles.aiLabelOff : styles.aiLabelOn
@@ -211,22 +213,35 @@ export function TerminalHeader({
         >
           AI:
         </span>
-        <select
-          value={aiProvider}
-          onChange={async (e) => {
-            onAiProviderChange(e.target.value as AIProvider);
-            try {
-              await soundEffects.playAIToggleSound();
-            } catch {}
-          }}
-          className={`${styles.aiSelect} ${
-            aiProvider === "off" ? styles.aiSelectOff : styles.aiSelectOn
-          }`}
-        >
-          <option value="off">Off</option>
-          <option value="near">NEAR AI</option>
-          <option value="openai">OpenAI</option>
-        </select>
+        {mobile.isMobile ? (
+          <button
+            onClick={() => setIsAIProviderSheetOpen(true)}
+            className={`${styles.aiSelectButton} ${
+              aiProvider === "off" ? styles.aiSelectOff : styles.aiSelectOn
+            }`}
+            aria-label="Change AI Provider"
+            type="button"
+          >
+            {aiProvider === "off" ? "Off" : aiProvider === "near" ? "NEAR AI" : "OpenAI"}
+          </button>
+        ) : (
+          <select
+            value={aiProvider}
+            onChange={async (e) => {
+              onAiProviderChange(e.target.value as AIProvider);
+              try {
+                await soundEffects.playAIToggleSound();
+              } catch {}
+            }}
+            className={`${styles.aiSelect} ${
+              aiProvider === "off" ? styles.aiSelectOff : styles.aiSelectOn
+            }`}
+          >
+            <option value="off">Off</option>
+            <option value="near">NEAR AI</option>
+            <option value="openai">OpenAI</option>
+          </select>
+        )}
 
         {/* Connection Status */}
         <div
@@ -259,6 +274,21 @@ export function TerminalHeader({
         aiProvider={aiProvider}
         connectionStatus={connectionStatus}
         walletAddress={walletAddress}
+      />
+    )}
+
+    {/* AI Provider Bottom Sheet - Mobile only */}
+    {mobile.isMobile && (
+      <AIProviderBottomSheet
+        isOpen={isAIProviderSheetOpen}
+        onClose={() => setIsAIProviderSheetOpen(false)}
+        currentProvider={aiProvider}
+        onProviderChange={async (provider) => {
+          onAiProviderChange(provider);
+          try {
+            await soundEffects.playAIToggleSound();
+          } catch {}
+        }}
       />
     )}
     </>

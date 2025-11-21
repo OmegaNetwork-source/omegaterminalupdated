@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect, useRef } from "react";
 import { useMobileDetection } from "@/hooks/useMobileDetection";
 import styles from "./VirtualKeyboard.module.css";
 
@@ -16,12 +16,14 @@ interface KeyLayout {
   value: string;
   label: string;
   shiftLabel?: string;
-  type?: "normal" | "wide" | "space" | "special";
+  type?: "normal" | "wide" | "space" | "special" | "backspace";
   action?: "backspace" | "enter" | "shift" | "close";
 }
 
-// Terminal-specific keyboard layout with common command characters
+// Terminal-specific keyboard layout - Apple-style vertical layout
+// Restructured to have fewer keys per row (max 10-11) for better mobile fit
 const KEYBOARD_LAYOUT: KeyLayout[][] = [
+  // Row 1: Numbers and symbols - max 11 keys
   [
     { value: "`", label: "`", shiftLabel: "~" },
     { value: "1", label: "1", shiftLabel: "!" },
@@ -36,8 +38,9 @@ const KEYBOARD_LAYOUT: KeyLayout[][] = [
     { value: "0", label: "0", shiftLabel: ")" },
     { value: "-", label: "-", shiftLabel: "_" },
     { value: "=", label: "=", shiftLabel: "+" },
-    { value: "Backspace", label: "⌫", type: "wide", action: "backspace" },
+    { value: "Backspace", label: "⌫", type: "backspace", action: "backspace" },
   ],
+  // Row 2: QWERTY top row - max 11 keys
   [
     { value: "Tab", label: "Tab", type: "wide" },
     { value: "q", label: "q", shiftLabel: "Q" },
@@ -50,11 +53,12 @@ const KEYBOARD_LAYOUT: KeyLayout[][] = [
     { value: "i", label: "i", shiftLabel: "I" },
     { value: "o", label: "o", shiftLabel: "O" },
     { value: "p", label: "p", shiftLabel: "P" },
+  ],
+  // Row 3: Bracket row - continuation of QWERTY
+  [
     { value: "[", label: "[", shiftLabel: "{" },
     { value: "]", label: "]", shiftLabel: "}" },
     { value: "\\", label: "\\", shiftLabel: "|" },
-  ],
-  [
     { value: "Caps", label: "Caps", type: "wide" },
     { value: "a", label: "a", shiftLabel: "A" },
     { value: "s", label: "s", shiftLabel: "S" },
@@ -65,11 +69,12 @@ const KEYBOARD_LAYOUT: KeyLayout[][] = [
     { value: "j", label: "j", shiftLabel: "J" },
     { value: "k", label: "k", shiftLabel: "K" },
     { value: "l", label: "l", shiftLabel: "L" },
+  ],
+  // Row 4: ASDF continuation and symbols
+  [
     { value: ";", label: ";", shiftLabel: ":" },
     { value: "'", label: "'", shiftLabel: '"' },
     { value: "Enter", label: "↵", type: "wide", action: "enter" },
-  ],
-  [
     { value: "Shift", label: "⇧", type: "wide", action: "shift" },
     { value: "z", label: "z", shiftLabel: "Z" },
     { value: "x", label: "x", shiftLabel: "X" },
@@ -78,11 +83,15 @@ const KEYBOARD_LAYOUT: KeyLayout[][] = [
     { value: "b", label: "b", shiftLabel: "B" },
     { value: "n", label: "n", shiftLabel: "N" },
     { value: "m", label: "m", shiftLabel: "M" },
+  ],
+  // Row 5: Bottom row - punctuation and modifiers
+  [
     { value: ",", label: ",", shiftLabel: "<" },
     { value: ".", label: ".", shiftLabel: ">" },
     { value: "/", label: "/", shiftLabel: "?" },
     { value: "Shift", label: "⇧", type: "wide", action: "shift" },
   ],
+  // Row 6: Spacebar row
   [
     { value: " ", label: "Space", type: "space" },
     { value: "Close", label: "⌨️", type: "special", action: "close" },
@@ -115,6 +124,8 @@ export function VirtualKeyboard({
   const mobile = useMobileDetection();
   const [shift, setShift] = useState(false);
   const [capsLock, setCapsLock] = useState(false);
+  const [isCompressed, setIsCompressed] = useState(false);
+  const keyboardRef = useRef<HTMLDivElement | null>(null);
 
   // Close keyboard when clicking outside or pressing ESC
   useEffect(() => {
@@ -141,6 +152,52 @@ export function VirtualKeyboard({
       return () => clearTimeout(timer);
     }
   }, [shift]);
+
+  // Detect if keys overflow horizontally and compress layout if needed
+  useEffect(() => {
+    if (!isOpen) {
+      setIsCompressed(false);
+      return;
+    }
+
+    if (typeof window === "undefined" || typeof ResizeObserver === "undefined") {
+      return;
+    }
+
+    const checkOverflow = () => {
+      const container = keyboardRef.current;
+      if (!container) return;
+
+      const rows = container.querySelectorAll<HTMLElement>(`.${styles.keyRow}`);
+      let hasOverflow = false;
+
+      rows.forEach((row) => {
+        if (row.scrollWidth - row.clientWidth > 2) {
+          hasOverflow = true;
+        }
+      });
+
+      setIsCompressed(hasOverflow);
+    };
+
+    checkOverflow();
+
+    const observerTarget = keyboardRef.current;
+    if (!observerTarget) return;
+
+    const resizeObserver = new ResizeObserver(() => {
+      checkOverflow();
+    });
+
+    resizeObserver.observe(observerTarget);
+
+    window.addEventListener("orientationchange", checkOverflow);
+
+    return () => {
+      resizeObserver.disconnect();
+      window.removeEventListener("orientationchange", checkOverflow);
+    };
+  }, [isOpen]);
 
   const handleKeyClick = useCallback(
     (key: KeyLayout) => {
@@ -193,7 +250,12 @@ export function VirtualKeyboard({
   if (!isOpen || !mobile.isMobile) return null;
 
   return (
-    <div className={styles.keyboard}>
+    <div
+      ref={keyboardRef}
+      className={`${styles.keyboard} ${
+        isCompressed ? styles.keyboardCompressed : ""
+      }`}
+    >
       <div className={styles.keyboardHeader}>
         <button
           className={styles.closeButton}
@@ -249,6 +311,8 @@ export function VirtualKeyboard({
                       ? styles.keySpace
                       : key.type === "special"
                       ? styles.keySpecial
+                      : key.type === "backspace"
+                      ? styles.keyBackspace
                       : ""
                   } ${key.action === "shift" && shift ? styles.keyActive : ""} ${
                     key.action === "close" ? styles.keyClose : ""

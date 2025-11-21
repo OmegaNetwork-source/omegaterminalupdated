@@ -1,0 +1,97 @@
+/**
+ * QuickCommandChips Component Styles
+ * Horizontal scrollable command chips for mobile quick access
+ */
+
+.chipsContainer {
+  margin-bottom: 8px;
+  padding: 0 4px;
+  overflow: hidden;
+  position: relative;
+}
+
+.chipsScroll {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+  padding: 4px 0;
+  scroll-snap-type: x proximity;
+}
+
+.chipsScroll::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+.chip {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 12px;
+  border-radius: 16px;
+  border: 1px solid var(--palette-border, rgba(0, 188, 242, 0.3));
+  background: color-mix(in srgb, var(--palette-primary, #00bcf2) 8%, transparent);
+  color: var(--palette-primary, #00bcf2);
+  font-size: 11px;
+  font-weight: 500;
+  font-family: "Courier New", monospace;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 150ms ease;
+  touch-action: manipulation;
+  min-height: 32px;
+  scroll-snap-align: start;
+}
+
+.chip:hover,
+.chip:active {
+  background: color-mix(in srgb, var(--palette-primary, #00bcf2) 15%, transparent);
+  border-color: var(--palette-primary, #00bcf2);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #00bcf2) 20%, transparent));
+}
+
+.chip:active {
+  transform: scale(0.95);
+}
+
+/* Ensure chips are touch-friendly */
+@media (hover: none) and (pointer: coarse) {
+  .chip {
+    min-height: 36px;
+    min-width: 64px;
+    padding: 8px 14px;
+  }
+}
+
+/* Dark theme adjustments */
+:global(body.theme-dark) .chip {
+  border-color: var(--palette-border, rgba(0, 212, 255, 0.3));
+  background: color-mix(in srgb, var(--palette-primary, #00d4ff) 8%, transparent);
+  color: var(--palette-primary, #00d4ff);
+}
+
+:global(body.theme-dark) .chip:hover,
+:global(body.theme-dark) .chip:active {
+  background: color-mix(in srgb, var(--palette-primary, #00d4ff) 15%, transparent);
+  border-color: var(--palette-primary, #00d4ff);
+}
+
+/* Light theme adjustments */
+:global(body.theme-light) .chip {
+  border-color: var(--palette-border, rgba(30, 64, 175, 0.3));
+  background: color-mix(in srgb, var(--palette-primary, #1e40af) 8%, transparent);
+  color: var(--palette-primary, #1e40af);
+}
+
+:global(body.theme-light) .chip:hover,
+:global(body.theme-light) .chip:active {
+  background: color-mix(in srgb, var(--palette-primary, #1e40af) 15%, transparent);
+  border-color: var(--palette-primary, #1e40af);
+}
+

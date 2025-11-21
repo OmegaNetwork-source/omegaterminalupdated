@@ -508,6 +508,8 @@
     flex-direction: column;
     align-items: stretch;
     justify-content: flex-start;
+    /* Reserve space at bottom for input + keyboard */
+    padding-bottom: env(safe-area-inset-bottom, 0px);
   }
 
   .terminalWrapper {
@@ -522,6 +524,21 @@
     flex: 1;
     min-height: 0;
     background: transparent;
+    /* Ensure terminal output doesn't go behind input + keyboard */
+    padding-bottom: 120px; /* Space for input section (~60px) + keyboard (~60px) */
+  }
+
+  /* When keyboard is open, adjust wrapper to account for input + keyboard */
+  /* ChatGPT style: input fixed at bottom, keyboard above */
+  :global(body.keyboard-open) .terminalWrapper {
+    padding-bottom: calc(70px + 280px); /* Input height (70px) + keyboard min-height (280px) */
+  }
+  
+  /* For larger keyboards, adjust dynamically */
+  @media (min-height: 600px) {
+    :global(body.keyboard-open) .terminalWrapper {
+      padding-bottom: calc(70px + 320px); /* More space for larger keyboard */
+    }
   }
 
   .tabBar {
@@ -565,21 +582,6 @@
     margin: 8px 12px;
     padding: 10px 12px;
     font-size: 12px;
-  }
-
-  /* Full screen terminal on mobile - ChatGPT style */
-  .terminalWrapper {
-    background: var(--palette-bg, #000000);
-  }
-
-  /* Ensure terminal takes remaining space after header */
-  .container {
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-    height: -webkit-fill-available;
-    max-height: 100vh;
-    overflow: hidden;
   }
 }
 

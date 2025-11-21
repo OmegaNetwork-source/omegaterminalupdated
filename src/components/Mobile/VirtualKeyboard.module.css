@@ -9,28 +9,56 @@
 
 .keyboard {
   position: fixed;
-  bottom: 70px; /* Position above input field (70px height) */
+  /* Position directly above input section - ChatGPT style unified layout */
+  /* Input section is typically 60-70px on mobile, we'll calculate dynamically */
+  bottom: calc(60px + env(safe-area-inset-bottom, 0px)); /* Start with base input height */
   left: 0;
   right: 0;
-  background: var(--palette-bg, #1a1a1f);
-  border-top: 1px solid var(--palette-border, rgba(0, 188, 242, 0.25));
-  z-index: 999; /* Below input (1000) but above content */
-  animation: slideUp 250ms ease-out;
-  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.5);
-  max-height: calc(100vh - 56px - 70px); /* Header (56px) + Input (70px) */
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
+  background: var(--palette-surface, rgba(50, 50, 55, 0.95));
+  border-top: none; /* No border-top, will connect seamlessly with input */
+  border-bottom: 1px solid var(--palette-border, rgba(0, 188, 242, 0.2)); /* Border at bottom to separate from input */
+  z-index: 999; /* Just below input (1000) but above content */
+  animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.4);
+  /* Calculate height to fit all rows dynamically */
+  height: auto; /* Auto height to fit content */
+  max-height: calc(100vh - 56px - 70px - env(safe-area-inset-bottom, 0px)); /* Viewport minus header and input */
+  min-height: 260px; /* Minimum height to show essential rows */
+  overflow-x: hidden; /* Prevent horizontal scroll */
+  overflow-y: auto; /* Allow vertical scroll if needed */
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling */
   box-sizing: border-box;
+  padding-bottom: 0; /* No bottom padding, input handles safe area */
+  backdrop-filter: blur(30px) saturate(180%);
+  -webkit-backdrop-filter: blur(30px) saturate(180%);
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 100vw;
+  margin-top: 0;
+  /* Seamless connection with input - no gap */
+  margin-bottom: 0;
+}
+
+/* For landscape orientation, adjust height calculation */
+@media (max-height: 500px) and (orientation: landscape) {
+  .keyboard {
+    bottom: calc(55px + env(safe-area-inset-bottom, 0px)); /* Smaller input in landscape */
+    max-height: calc(100vh - 56px - 55px - env(safe-area-inset-bottom, 0px)); /* Less space in landscape */
+    min-height: 220px; /* Reduced minimum for landscape */
+  }
 }
 
 @keyframes slideUp {
   from {
-    transform: translateY(100%);
-    bottom: 70px;
+    bottom: calc(60px + env(safe-area-inset-bottom, 0px)); /* Start at input position */
+    transform: translateY(100%); /* Slide up from below */
+    opacity: 0;
   }
   to {
-    transform: translateY(0);
-    bottom: 70px;
+    bottom: calc(60px + env(safe-area-inset-bottom, 0px)); /* End above input section */
+    transform: translateY(0); /* Final position */
+    opacity: 1;
   }
 }
 
@@ -49,19 +77,19 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 5px 10px;
-  border-bottom: 1px solid var(--palette-border, rgba(0, 188, 242, 0.25));
-  background: color-mix(in srgb, var(--palette-bg, #1a1a1f) 95%, transparent);
+  padding: 4px 8px;
+  border-bottom: 1px solid var(--palette-border, rgba(0, 188, 242, 0.1));
+  background: transparent;
   flex-shrink: 0;
-  min-height: 32px;
+  min-height: 28px;
+  max-height: 28px;
 }
 
 .headerTitle {
   font-size: 11px;
-  color: var(--palette-text-secondary, rgba(255, 255, 255, 0.6));
-  font-family: "Courier New", monospace;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  color: var(--palette-text-secondary, rgba(255, 255, 255, 0.7));
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
+  font-weight: 500;
   flex: 1;
   text-align: center;
   white-space: nowrap;
@@ -70,26 +98,30 @@
 }
 
 .closeButton {
-  min-width: 32px;
-  min-height: 32px;
+  min-width: 28px;
+  min-height: 28px;
+  width: 28px;
+  height: 28px;
   background: color-mix(in srgb, var(--palette-primary, #00bcf2) 10%, transparent);
-  border: 1px solid var(--palette-border, rgba(0, 188, 242, 0.25));
-  border-radius: 4px;
+  border: 1px solid var(--palette-border, rgba(0, 188, 242, 0.2));
+  border-radius: 6px;
   color: var(--palette-text, #ffffff);
   font-size: 14px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 150ms ease;
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
   touch-action: manipulation;
   flex-shrink: 0;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  padding: 0;
 }
 
-.closeButton:hover,
 .closeButton:active {
   background: color-mix(in srgb, var(--palette-primary, #00bcf2) 20%, transparent);
   border-color: var(--palette-primary, #00bcf2);
+  transform: scale(0.95);
 }
 
 .modifierIndicators {
@@ -104,6 +136,9 @@
   font-weight: 600;
   min-width: 24px;
   text-align: center;
+  padding: 2px 6px;
+  background: color-mix(in srgb, var(--palette-primary, #00bcf2) 15%, transparent);
+  border-radius: 4px;
 }
 
 /* -----------------------------------------------------------------------------
@@ -113,13 +148,15 @@
 .shortcutsBar {
   display: flex;
   gap: 4px;
-  padding: 5px 10px;
+  padding: 4px 6px;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
-  border-bottom: 1px solid var(--palette-border, rgba(0, 188, 242, 0.25));
-  background: color-mix(in srgb, var(--palette-bg, #1a1a1f) 98%, transparent);
+  border-bottom: 1px solid var(--palette-border, rgba(0, 188, 242, 0.1));
+  background: transparent;
   flex-shrink: 0;
   min-height: 32px;
+  max-height: 32px;
+  align-items: center;
 }
 
 .shortcutsBar::-webkit-scrollbar {
@@ -127,27 +164,32 @@
 }
 
 .shortcutButton {
-  min-height: 26px;
+  min-height: 24px;
+  height: 24px;
   padding: 4px 8px;
-  background: color-mix(in srgb, var(--palette-primary, #00bcf2) 15%, transparent);
+  background: color-mix(in srgb, var(--palette-primary, #00bcf2) 12%, transparent);
   color: var(--palette-primary, #00bcf2);
-  border: 1px solid var(--palette-border, rgba(0, 188, 242, 0.25));
+  border: 1px solid var(--palette-border, rgba(0, 188, 242, 0.2));
   border-radius: 12px;
   font-size: 10px;
-  font-weight: 600;
-  font-family: "Courier New", monospace;
+  font-weight: 500;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
   white-space: nowrap;
   cursor: pointer;
-  transition: all 150ms ease;
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
   touch-action: manipulation;
   flex-shrink: 0;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.shortcutButton:hover,
 .shortcutButton:active {
   background: var(--palette-primary, #00bcf2);
-  color: #000;
-  transform: scale(1.05);
+  color: var(--palette-bg, #000000);
+  transform: scale(0.96);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--palette-primary, #00bcf2) 20%, transparent);
 }
 
 /* -----------------------------------------------------------------------------
@@ -155,95 +197,196 @@
    ----------------------------------------------------------------------------- */
 
 .keyboardBody {
-  padding: 4px 6px;
-  max-height: calc(100vh - 56px - 70px - 100px); /* Account for header, input, and keyboard header/shortcuts */
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
+  padding: 6px 4px 4px 4px; /* Comfortable padding for keys */
+  overflow-y: auto; /* Allow vertical scrolling to see all rows */
+  overflow-x: hidden; /* No horizontal scrolling - all keys must fit */
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 3px; /* Comfortable gap between rows */
+  flex: 1 1 auto; /* Take up available space and allow shrinking */
+  min-height: 0; /* Critical for flex child scrolling */
+  width: 100%;
+  max-width: 100vw; /* Ensure doesn't exceed viewport */
+  box-sizing: border-box;
+  /* Ensure all rows are visible and scrollable if needed */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 188, 242, 0.3) transparent;
+}
+
+/* Custom scrollbar for keyboard body */
+.keyboardBody::-webkit-scrollbar {
+  width: 4px;
+}
+
+.keyboardBody::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.keyboardBody::-webkit-scrollbar-thumb {
+  background: rgba(0, 188, 242, 0.3);
+  border-radius: 2px;
+}
+
+.keyboardBody::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 188, 242, 0.5);
 }
 
 .keyRow {
   display: flex;
-  gap: 2px;
-  margin-bottom: 0;
-  justify-content: center;
-  align-items: stretch;
+  gap: 3px; /* Comfortable gap between keys for touch targets */
+  justify-content: flex-start;
+  align-items: flex-end; /* Align to bottom so backspace can extend upward */
   flex-wrap: nowrap;
   width: 100%;
+  max-width: 100vw; /* Never exceed viewport */
   box-sizing: border-box;
-  flex: 1;
-  min-height: 0;
+  height: 38px; /* Slightly smaller for more vertical space */
+  min-height: 38px;
+  max-height: 38px; /* Prevent rows from expanding */
+  padding: 0 4px; /* Small padding for edge spacing */
+  overflow-x: hidden; /* No horizontal scrolling - all keys must fit */
+  overflow-y: visible; /* Allow backspace to extend upward */
+  flex-shrink: 0; /* Prevent rows from shrinking */
 }
 
+/* Last row (spacebar) uses center alignment */
 .keyRow:last-child {
-  margin-bottom: 0;
+  justify-content: center;
+  align-items: stretch;
+}
+
+/* First row with backspace - allow taller backspace */
+.keyRow:first-child {
+  align-items: flex-end;
+  overflow: visible;
 }
 
 .key {
-  min-height: 36px;
-  height: 36px;
-  min-width: 0;
-  flex: 1;
-  padding: 2px 4px;
-  background: var(--palette-bg-secondary, #2a2a2f);
-  border: 1px solid var(--palette-border, rgba(0, 188, 242, 0.25));
-  border-radius: 4px;
+  height: 38px; /* Slightly smaller for more vertical space */
+  min-height: 38px;
+  flex: 1 1 0; /* Equal flex distribution - keys share space evenly */
+  min-width: 0; /* Allow shrinking below content size if needed */
+  max-width: 100%; /* Never exceed row width */
+  padding: 0 2px; /* Minimal padding */
+  background: var(--palette-surface, rgba(255, 255, 255, 0.1));
+  border: none;
+  border-radius: 6px; /* More rounded like Apple keyboards */
   color: var(--palette-text, #ffffff);
-  font-size: 11px;
-  font-weight: 500;
-  font-family: "Courier New", monospace;
+  font-size: 12px; /* Readable font size */
+  font-weight: 400;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
   cursor: pointer;
-  transition: all 100ms ease;
+  transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
   touch-action: manipulation;
   user-select: none;
   display: flex;
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
-  max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  line-height: 1.2;
+  line-height: 1;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2), 0 0 0 0.5px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+.key::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 6px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.15) 0%, transparent 50%);
+  pointer-events: none;
 }
 
 .key:active {
   transform: scale(0.95);
-  background: color-mix(in srgb, var(--palette-primary, #00bcf2) 30%, transparent);
-  border-color: var(--palette-primary, #00bcf2);
+  background: color-mix(in srgb, var(--palette-primary, #00bcf2) 40%, transparent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--palette-primary, #00bcf2) 20%, transparent),
+              0 1px 0 rgba(0, 0, 0, 0.2);
+}
+
+.key:active::before {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.25) 0%, transparent 50%);
 }
 
 .keyWide {
-  flex: 1.5;
-  min-width: 0;
-  font-size: 10px;
+  flex: 1.5; /* Wide keys get 1.5x more space */
+  min-width: 0; /* Allow shrinking */
+  max-width: 100%; /* Never exceed row width */
+  font-size: 10px; /* Readable font size */
+  font-weight: 500;
+}
+
+.keyBackspace {
+  flex: 1.2 !important; /* Backspace gets slightly more space */
+  min-width: 0 !important; /* Allow shrinking */
+  max-width: 100% !important; /* Never exceed row width */
+  min-height: 44px !important; /* Taller for easier thumb access */
+  height: 44px !important;
+  font-size: 16px; /* Larger icon for visibility */
+  font-weight: 600;
+  background: color-mix(in srgb, var(--palette-error, #ff4757) 12%, transparent) !important;
+  border: 1.5px solid color-mix(in srgb, var(--palette-error, #ff4757) 30%, transparent) !important;
+  color: var(--palette-error, #ff4757) !important;
+  position: relative;
+  align-self: flex-end; /* Align to bottom of row for better thumb reach */
+  margin-top: -6px; /* Extend upward for easier thumb access */
+  box-shadow: 0 2px 4px rgba(255, 71, 87, 0.2), 0 1px 0 rgba(0, 0, 0, 0.2) !important;
+}
+
+.keyBackspace::before {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.15) 0%, transparent 50%);
+}
+
+.keyBackspace:active {
+  background: color-mix(in srgb, var(--palette-error, #ff4757) 30%, transparent) !important;
+  border-color: var(--palette-error, #ff4757) !important;
+  transform: scale(0.95);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--palette-error, #ff4757) 30%, transparent),
+              0 2px 6px rgba(255, 71, 87, 0.4),
+              0 1px 0 rgba(0, 0, 0, 0.2);
 }
 
 .keySpace {
-  flex: 6;
-  min-width: 0;
-  font-size: 10px;
+  flex: 6; /* Spacebar gets most of the space */
+  min-width: 0; /* Allow shrinking */
+  max-width: calc(100vw - 80px); /* Max width minus other keys and padding */
+  font-size: 11px; /* Readable font size */
+  font-weight: 400;
 }
 
 .keySpecial {
-  background: color-mix(in srgb, var(--palette-primary, #00bcf2) 10%, transparent);
+  background: color-mix(in srgb, var(--palette-primary, #00bcf2) 15%, transparent);
+  font-size: 12px;
+}
+
+.keySpecial::before {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.2) 0%, transparent 50%);
 }
 
 .keyActive {
   background: var(--palette-primary, #00bcf2);
-  color: #000;
-  border-color: var(--palette-primary, #00bcf2);
+  color: var(--palette-bg, #000000);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--palette-primary, #00bcf2) 30%, transparent),
+              0 1px 0 rgba(0, 0, 0, 0.2);
+}
+
+.keyActive::before {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.3) 0%, transparent 50%);
 }
 
 .keyClose {
-  background: color-mix(in srgb, var(--palette-error, #ff6666) 15%, transparent);
-  border-color: color-mix(in srgb, var(--palette-error, #ff6666) 30%, transparent);
+  background: color-mix(in srgb, var(--palette-error, #ff4757) 15%, transparent);
+  color: var(--palette-error, #ff4757);
 }
 
 .keyClose:active {
-  background: color-mix(in srgb, var(--palette-error, #ff6666) 30%, transparent);
+  background: color-mix(in srgb, var(--palette-error, #ff4757) 30%, transparent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--palette-error, #ff4757) 20%, transparent),
+              0 1px 0 rgba(0, 0, 0, 0.2);
 }
 
 /* -----------------------------------------------------------------------------
@@ -251,20 +394,40 @@
    ----------------------------------------------------------------------------- */
 
 :global(body.light-mode) .keyboard {
-  background: var(--palette-bg, rgba(250, 252, 255, 0.98));
-  border-top-color: var(--palette-border, rgba(0, 81, 213, 0.2));
+  background: rgba(220, 220, 220, 0.95);
+  border-top-color: rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(30px) saturate(180%);
+  -webkit-backdrop-filter: blur(30px) saturate(180%);
 }
 
 :global(body.light-mode) .key {
-  background: var(--palette-bg-secondary, rgba(240, 244, 255, 0.8));
-  color: var(--palette-text, rgba(18, 22, 38, 0.92));
-  border-color: var(--palette-border, rgba(0, 81, 213, 0.2));
+  background: rgba(255, 255, 255, 0.95);
+  color: var(--palette-text, rgba(0, 0, 0, 0.9));
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.1), 0 0 0 0.5px rgba(0, 0, 0, 0.05);
+}
+
+:global(body.light-mode) .key::before {
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.05) 0%, transparent 50%);
+}
+
+:global(body.light-mode) .key:active {
+  background: color-mix(in srgb, var(--palette-primary, #0051d5) 30%, rgba(255, 255, 255, 0.95));
+  color: var(--palette-text, rgba(0, 0, 0, 0.9));
 }
 
 :global(body.light-mode) .shortcutButton {
-  background: color-mix(in srgb, var(--palette-primary, #0051d5) 15%, transparent);
+  background: color-mix(in srgb, var(--palette-primary, #0051d5) 12%, rgba(255, 255, 255, 0.9));
   color: var(--palette-primary, #0051d5);
-  border-color: var(--palette-border, rgba(0, 81, 213, 0.2));
+  border-color: rgba(0, 81, 213, 0.2);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+
+:global(body.light-mode) .keyboardHeader {
+  border-bottom-color: rgba(0, 0, 0, 0.08);
+}
+
+:global(body.light-mode) .shortcutsBar {
+  border-bottom-color: rgba(0, 0, 0, 0.08);
 }
 
 /* -----------------------------------------------------------------------------
@@ -272,43 +435,248 @@
    ----------------------------------------------------------------------------- */
 
 @media (max-width: 480px) {
+  .keyboard {
+    /* Calculate based on actual input height on small screens (typically 60-65px) */
+    bottom: calc(60px + env(safe-area-inset-bottom, 0px)); /* Position directly above input */
+    max-height: calc(100vh - 56px - 60px - env(safe-area-inset-bottom, 0px)); /* Header + Input + safe area */
+    min-height: 280px; /* Minimum for small screens - more rows now */
+    width: 100vw; /* Full viewport width */
+    max-width: 100vw; /* Prevent any overflow */
+    overflow-x: hidden; /* No horizontal scrolling - all keys must fit */
+  }
+
   .keyboardBody {
-    padding: 3px 4px;
+    padding: 4px 3px 3px 3px; /* Minimal padding for mobile */
+    gap: 2px; /* Small gap between rows */
+    overflow-y: auto; /* Still allow vertical scrolling */
+    overflow-x: hidden; /* No horizontal scrolling */
+    width: 100%;
+    max-width: 100vw;
   }
 
   .keyRow {
-    gap: 1.5px;
-    margin-bottom: 1.5px;
+    gap: 2px; /* Small gap between keys for touch targets */
+    height: 34px; /* Compact height for mobile */
+    min-height: 34px;
+    max-height: 34px;
+    padding: 0 3px; /* Small padding */
+    align-items: flex-end;
+    overflow-x: hidden; /* No horizontal scrolling - must fit all keys */
+    overflow-y: visible; /* Allow backspace to extend upward */
+    width: 100%;
+    max-width: 100vw; /* Never exceed viewport */
   }
 
   .key {
-    min-height: 32px;
-    height: 32px;
-    padding: 3px 4px;
-    font-size: 10px;
-    border-radius: 3px;
+    height: 34px; /* Compact height for mobile */
+    min-height: 34px;
+    flex: 1 1 0; /* Equal flex distribution */
+    min-width: 0; /* Allow shrinking */
+    max-width: 100%; /* Never exceed row width */
+    font-size: 11px; /* Readable font size */
+    border-radius: 5px; /* Rounded corners */
+    padding: 0 2px; /* Minimal padding */
+  }
+
+  .keyBackspace {
+    flex: 1.2 !important; /* Slightly more space for backspace */
+    min-height: 40px !important; /* Taller for easier access */
+    height: 40px !important;
+    min-width: 0 !important; /* Allow shrinking */
+    max-width: 100% !important; /* Never exceed row width */
+    font-size: 14px; /* Readable icon size */
+    margin-top: -6px;
   }
 
   .keyWide {
-    font-size: 9px;
+    flex: 1.4; /* Wide keys get more space */
+    min-width: 0; /* Allow shrinking */
+    max-width: 100%; /* Never exceed row width */
+    font-size: 9px; /* Smaller font for wide keys */
   }
 
   .keySpace {
-    font-size: 9px;
+    flex: 5; /* Spacebar gets most space */
+    min-width: 0; /* Allow shrinking */
+    max-width: calc(100vw - 70px); /* Max width minus other elements */
+    font-size: 10px; /* Readable font */
   }
 
   .shortcutButton {
-    padding: 4px 8px;
-    font-size: 10px;
-    min-height: 24px;
+    padding: 2px 4px;
+    font-size: 8px;
+    min-height: 20px;
+    height: 20px;
   }
 
   .keyboardHeader {
-    padding: 5px 10px;
+    padding: 2px 4px;
+    min-height: 22px;
+    max-height: 22px;
   }
 
   .shortcutsBar {
-    padding: 5px 10px;
+    padding: 2px 3px;
+    min-height: 24px;
+    max-height: 24px;
+    gap: 2px; /* Smaller gap between shortcut buttons */
+  }
+
+  .closeButton {
+    min-width: 22px;
+    min-height: 22px;
+    width: 22px;
+    height: 22px;
+    font-size: 11px;
+  }
+}
+
+/* Tablet/iPad sizes - larger keys like in second screenshot */
+@media (min-width: 768px) {
+  .keyboard {
+    bottom: calc(70px + env(safe-area-inset-bottom, 0px)); /* Position directly above input on tablets */
+    max-height: calc(100vh - 56px - 70px - env(safe-area-inset-bottom, 0px)); /* Header + Input + safe area */
+  }
+  
+  .keyRow {
+    gap: 4px; /* More gap on tablets */
+    height: 44px;
+    min-height: 44px;
+    padding: 0 8px; /* More padding on tablets */
+  }
+
+  .key {
+    height: 44px;
+    min-height: 44px;
+    min-width: 28px; /* Larger minimum on tablets */
+    font-size: 14px; /* Larger font on tablets */
+    padding: 0 3px; /* More padding */
+    border-radius: 6px;
+  }
+  
+  .keyWide {
+    flex: 2;
+    min-width: 35px;
+    font-size: 11px;
+  }
+  
+  .keyBackspace {
+    flex: 2 !important;
+    min-width: 50px !important;
+    font-size: 18px;
+  }
+  
+  .keySpace {
+    flex: 6;
+    min-width: 100px;
+    font-size: 12px;
+  }
+  
+  .keyboardBody {
+    padding: 6px 6px;
+    gap: 4px;
+  }
+  
+  .shortcutButton {
+    padding: 4px 8px;
+    font-size: 11px;
+    min-height: 26px;
+    height: 26px;
+  }
+  
+  .keyboardHeader {
+    padding: 6px 8px;
+    min-height: 28px;
+    max-height: 28px;
+  }
+  
+  .shortcutsBar {
+    padding: 4px 6px;
+    min-height: 32px;
+    max-height: 32px;
+    gap: 4px;
+  }
+}
+
+/* Max-width for keys is set per key type above to prevent overflow */
+
+/* Ensure proper scrolling behavior - no horizontal scrolling */
+.keyboard {
+  overflow-x: hidden; /* No horizontal scrolling - all keys must fit */
+  overflow-y: hidden; /* Container doesn't scroll, only body scrolls */
+  width: 100vw; /* Full viewport width */
+  max-width: 100vw; /* Never exceed viewport */
+}
+
+.keyboardCompressed .keyboardBody {
+  padding: 2px 2px 1px 2px;
+  gap: 1px;
+}
+
+.keyboardCompressed .keyRow {
+  gap: 1px;
+  padding: 0 1px;
+}
+
+.keyboardCompressed .key {
+  font-size: 10px;
+  padding: 0 1px;
+}
+
+.keyboardCompressed .keyWide {
+  flex: 1.2;
+  font-size: 8px;
+}
+
+.keyboardCompressed .keySpace {
+  flex: 4;
+  font-size: 9px;
+}
+
+.keyboardCompressed .keyBackspace {
+  flex: 1.1 !important;
+  font-size: 14px;
+  min-width: 0 !important;
+}
+
+.keyboardCompressed .shortcutButton {
+  font-size: 8px;
+  padding: 2px 4px;
+}
+
+.keyboardCompressed .keyboardHeader {
+  padding: 2px 4px;
+}
+
+.keyboardCompressed .closeButton {
+  min-width: 20px;
+  min-height: 20px;
+  width: 20px;
+  height: 20px;
+  font-size: 10px;
+}
+
+/* Touch-friendly targets */
+@media (hover: none) and (pointer: coarse) {
+  .key {
+    min-height: 36px;
+    height: 36px;
+    min-width: 28px;
+  }
+  
+  .keyRow {
+    min-height: 36px;
+    height: 36px;
+  }
+
+  /* Make backspace even more accessible on touch devices */
+  .keyBackspace {
+    min-height: 50px !important;
+    height: 50px !important;
+    min-width: 56px !important;
+    padding: 0 6px;
+    font-size: 20px;
+    margin-top: -10px; /* More upward extension for thumb reach */
   }
 }
 
@@ -319,6 +687,10 @@
   }
 
   .key {
+    transition: none;
+  }
+  
+  .shortcutButton {
     transition: none;
   }
 }

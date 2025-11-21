@@ -179,6 +179,58 @@
   transition: color 0.3s ease;
 }
 
+.aiSelectButton {
+  background: color-mix(in srgb, var(--palette-primary, #00bcf2) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--palette-primary, #00bcf2) 30%, transparent);
+  border-radius: 6px;
+  padding: 6px 10px;
+  color: var(--palette-primary, #00bcf2);
+  font-family: "Courier New", monospace;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  min-width: 110px;
+  transition: all 0.3s ease;
+  touch-action: manipulation;
+  min-height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.aiSelectButton:hover,
+.aiSelectButton:active {
+  background: color-mix(in srgb, var(--palette-primary, #00bcf2) 15%, transparent);
+  border-color: var(--palette-primary, #00bcf2);
+  transform: translateY(-1px);
+}
+
+.aiSelectButton:active {
+  transform: scale(0.95);
+}
+
+.aiSelectButton.aiSelectOff {
+  border-color: #ff4757 !important;
+  color: #ff4757 !important;
+}
+
+.aiSelectButton.aiSelectOff:hover {
+  border-color: #ff4757 !important;
+  background-color: color-mix(in srgb, #ff4757 15%, transparent) !important;
+}
+
+.aiSelectButton.aiSelectOn {
+  border-color: #00ff88 !important;
+  color: #00ff88 !important;
+}
+
+.aiSelectButton.aiSelectOn:hover {
+  border-color: #00ff88 !important;
+  background-color: color-mix(in srgb, #00ff88 15%, transparent) !important;
+}
+
 .aiSelect {
   background: color-mix(in srgb, var(--palette-primary, #00bcf2) 10%, transparent);
   border: 1px solid color-mix(in srgb, var(--palette-primary, #00bcf2) 30%, transparent);

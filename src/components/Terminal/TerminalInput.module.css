@@ -364,31 +364,54 @@
     right: 0;
     width: 100%;
     margin: 0;
-    padding: 12px 16px;
-    padding-bottom: max(12px, calc(12px + env(safe-area-inset-bottom)));
+    padding: 8px 12px;
+    padding-bottom: max(8px, calc(8px + env(safe-area-inset-bottom)));
     border-radius: 0;
     background: var(--palette-bg, rgba(0, 0, 0, 0.95));
-    border-top: 1px solid var(--palette-border, rgba(0, 188, 242, 0.25));
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: none; /* No border-top, keyboard connects seamlessly above */
+    border-bottom: none; /* No border-bottom, sits at bottom */
     z-index: 1000; /* Above keyboard to ensure visibility */
     box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.3);
-    min-height: 60px;
-    max-height: 70px;
+    min-height: auto;
+    max-height: none;
     box-sizing: border-box;
     display: flex;
-    align-items: center;
+    flex-direction: column;
+    gap: 8px;
+    align-items: stretch;
     justify-content: stretch;
+    /* Input always stays at bottom like ChatGPT */
+    transform: translateY(0);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    /* Height calculation for keyboard positioning */
+    height: auto;
   }
 
-  /* Ensure input field is always visible and scrollable */
-  .input {
-    width: 100%;
-    max-width: 100%;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
+  /* When keyboard is open, input stays at bottom, keyboard sits directly above */
+  /* Unified appearance - they connect seamlessly */
+  :global(body.keyboard-open) .inputSection {
+    bottom: 0; /* Stay at bottom */
+    transform: translateY(0); /* No vertical movement */
+    border-top: 1px solid var(--palette-border, rgba(0, 188, 242, 0.2)); /* Border where keyboard connects */
+    /* Unified styling with keyboard */
+    background: var(--palette-bg, rgba(0, 0, 0, 0.95));
+  }
+  
+  /* Ensure smooth transitions */
+  .inputSection {
+    transition: border-top 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                background 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  /* Make input line scroll horizontally if text is long */
+  /* Input line styling on mobile */
   .inputLine {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    min-height: 44px;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: thin;
@@ -431,6 +454,17 @@
     font-size: 15px;
   }
 
+  /* Hide prompt on very small screens */
+  .promptMobile {
+    display: none;
+  }
+
+  @media (min-width: 375px) {
+    .promptMobile {
+      display: inline;
+    }
+  }
+
   .input {
     font-size: 16px;
   }
@@ -443,10 +477,11 @@
 
 @media (max-width: 480px) {
   .inputSection {
-    padding: 10px 14px;
-    padding-bottom: max(10px, calc(10px + env(safe-area-inset-bottom)));
-    min-height: 56px;
-    max-height: 64px;
+    padding: 8px 12px; /* Consistent padding */
+    padding-bottom: max(8px, calc(8px + env(safe-area-inset-bottom)));
+    min-height: 55px; /* Consistent height for keyboard positioning */
+    max-height: 60px; /* Consistent max height */
+    height: auto;
   }
 
   .inputLine {
