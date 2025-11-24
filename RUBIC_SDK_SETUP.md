@@ -13,6 +13,7 @@ Rubic SDK has been successfully integrated into the Omega Terminal project with 
 
 ### 1. Type Definitions (`src/types/rubic.ts`)
 
+
 - Complete TypeScript type definitions for Rubic SDK
 - Network types, token types, trade types, swap types
 - Configuration interfaces
