@@ -6,6 +6,12 @@
 import type { Command } from "@/types/commands";
 import { createCommandLine, createUsageError } from "./command-output-helpers";
 import {
+  isAwaitingStableTokenInput,
+  handleStableTokenCreationInput,
+  cancelStableTokenCreation,
+} from "./stable-token";
+import { handleStableTransactions } from "./stable-transactions";
+import {
   FARMING_NETWORKS,
   CONTRACT_TEMPLATES,
   FARMING_FLOWS,
@@ -436,6 +442,134 @@ async function handleTemplates(context: any) {
   });
 }
 
+async function handleStableNetwork(context: any, args: string[] = []) {
+  const subcommand = args[2]?.toLowerCase();
+  
+  if (subcommand === "token-creator") {
+    const tokenCreatorHtml = `
+      <div style="
+        background: linear-gradient(135deg, color-mix(in srgb, var(--palette-primary, #00d4ff) 15%, transparent), color-mix(in srgb, var(--palette-secondary, #00ff88) 10%, transparent));
+        border: 1px solid color-mix(in srgb, var(--palette-primary, #00d4ff) 30%, transparent);
+        border-radius: 12px;
+        padding: 20px;
+        margin: 10px 0;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      ">
+        <div style="
+          font-size: 18px;
+          font-weight: 600;
+          color: var(--palette-primary, #00d4ff);
+          margin-bottom: 16px;
+          text-shadow: 0 0 8px color-mix(in srgb, var(--palette-primary, #00d4ff) 40%, transparent);
+        ">🪙 TOKEN CREATOR</div>
+        
+        <div style="
+          font-size: 13px;
+          color: var(--palette-text, #ccd4e0);
+          line-height: 1.8;
+          margin-bottom: 12px;
+        ">
+          <div style="margin-bottom: 12px;">Create and deploy tokens on Stable Network testnet.</div>
+          <div style="margin-bottom: 8px;"><strong style="color: var(--palette-primary, #00d4ff);">Network:</strong> Stable Testnet (Chain ID: 2201)</div>
+          <div style="margin-bottom: 8px;"><strong style="color: var(--palette-primary, #00d4ff);">Gas Token:</strong> gUSDT</div>
+          <div style="margin-bottom: 8px;"><strong style="color: var(--palette-primary, #00d4ff);">Standard:</strong> ERC-20 (EVM Compatible)</div>
+        </div>
+        
+        <div style="
+          margin-top: 20px;
+          padding: 12px;
+          background: color-mix(in srgb, var(--palette-warning, #ffaa00) 10%, transparent);
+          border: 1px solid color-mix(in srgb, var(--palette-warning, #ffaa00) 30%, transparent);
+          border-radius: 6px;
+          font-size: 12px;
+          color: var(--palette-text, #ccd4e0);
+        ">
+          <span style="color: var(--palette-warning, #ffaa00);">🚧</span>
+          <span style="margin-left: 8px;">Token Creator feature coming soon. Use the deploy command to create tokens.</span>
+        </div>
+      </div>
+    `;
+    context.logHtml(tokenCreatorHtml);
+    context.log("", "output");
+    return;
+  }
+  
+  if (subcommand === "transactions") {
+    // Delegate to stable transactions handler
+    await handleStableTransactions(context, args);
+    return;
+  }
+  
+  // Default: Show network information
+  const stableNetworkHtml = `
+    <div style="
+      background: linear-gradient(135deg, color-mix(in srgb, var(--palette-primary, #00d4ff) 15%, transparent), color-mix(in srgb, var(--palette-secondary, #00ff88) 10%, transparent));
+      border: 1px solid color-mix(in srgb, var(--palette-primary, #00d4ff) 30%, transparent);
+      border-radius: 12px;
+      padding: 20px;
+      margin: 10px 0;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    ">
+      <div style="
+        font-size: 18px;
+        font-weight: 600;
+        color: var(--palette-primary, #00d4ff);
+        margin-bottom: 16px;
+        text-shadow: 0 0 8px color-mix(in srgb, var(--palette-primary, #00d4ff) 40%, transparent);
+      ">🌐 STABLE NETWORK</div>
+      
+      <div style="
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--palette-secondary, #00ff88);
+        margin: 16px 0 12px 0;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      ">Network Information</div>
+      
+      <div style="
+        font-size: 13px;
+        color: var(--palette-text, #ccd4e0);
+        line-height: 1.8;
+        margin-bottom: 12px;
+      ">
+        <div style="margin-bottom: 8px;"><strong style="color: var(--palette-primary, #00d4ff);">Network Name:</strong> Stable Testnet</div>
+        <div style="margin-bottom: 8px;"><strong style="color: var(--palette-primary, #00d4ff);">Chain ID:</strong> 2201</div>
+        <div style="margin-bottom: 8px;"><strong style="color: var(--palette-primary, #00d4ff);">Currency Symbol:</strong> gUSDT</div>
+        <div style="margin-bottom: 8px;"><strong style="color: var(--palette-primary, #00d4ff);">Genesis Hash:</strong> 66afbb6e57e6faf019b3021de299125cddab61d433f28894db751252f5b8eaf2</div>
+        <div style="margin-bottom: 8px;"><strong style="color: var(--palette-primary, #00d4ff);">Block Time:</strong> ~0.7 seconds</div>
+        <div style="margin-bottom: 8px;"><strong style="color: var(--palette-primary, #00d4ff);">Address Format:</strong> 0x... (EVM)</div>
+        <div style="margin-bottom: 8px;"><strong style="color: var(--palette-primary, #00d4ff);">Gas Token:</strong> gUSDT</div>
+        <div style="margin-bottom: 8px;"><strong style="color: var(--palette-primary, #00d4ff);">Decimals:</strong> 18</div>
+      </div>
+      
+      <div style="
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--palette-secondary, #00ff88);
+        margin: 20px 0 12px 0;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      ">Endpoints & Links</div>
+      
+      <div style="
+        font-size: 13px;
+        color: var(--palette-text, #ccd4e0);
+        line-height: 1.8;
+        margin-bottom: 12px;
+      ">
+        <div style="margin-bottom: 8px;"><strong style="color: var(--palette-primary, #00d4ff);">RPC Endpoint:</strong> <a href="https://rpc.testnet.stable.xyz" target="_blank" style="color: var(--palette-secondary, #00ff88); text-decoration: none;">https://rpc.testnet.stable.xyz</a></div>
+        <div style="margin-bottom: 8px;"><strong style="color: var(--palette-primary, #00d4ff);">WebSocket:</strong> <a href="wss://rpc.testnet.stable.xyz" target="_blank" style="color: var(--palette-secondary, #00ff88); text-decoration: none;">wss://rpc.testnet.stable.xyz</a></div>
+        <div style="margin-bottom: 8px;"><strong style="color: var(--palette-primary, #00d4ff);">Block Explorer:</strong> <a href="https://testnet.stablescan.xyz" target="_blank" style="color: var(--palette-secondary, #00ff88); text-decoration: none;">Stablescan</a></div>
+        <div style="margin-bottom: 8px;"><strong style="color: var(--palette-primary, #00d4ff);">Faucet:</strong> <a href="https://faucet.stable.xyz" target="_blank" style="color: var(--palette-secondary, #00ff88); text-decoration: none;">https://faucet.stable.xyz</a></div>
+      </div>
+    </div>
+  `;
+  
+  context.logHtml(stableNetworkHtml);
+  context.log("", "output");
+}
+
 async function handleHelp(context: any) {
   const helpHtml = `
     <div style="
@@ -542,6 +676,10 @@ export const farmCommand: Command = {
         break;
       case "templates":
         await handleTemplates(context);
+        break;
+      case "stable-network":
+      case "stable":
+        await handleStableNetwork(context, args);
         break;
       case "help":
       default:

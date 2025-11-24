@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { getQuickActions, groupQuickActionsByCategory } from '@/lib/quick-actions';
 import { createCommandLine } from '@/lib/commands/command-output-helpers';
 import { WelcomeHeader } from './WelcomeHeader';
+import { useTerminal } from '@/providers/TerminalProvider';
 
 const lightbulbIcon = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 8px;"><path d="M9 21h6"></path><path d="M12 3a6 6 0 0 0 6 6c0 2.5-1.5 4.5-3 6H9c-1.5-1.5-3-3.5-3-6a6 6 0 0 1 6-6z"></path><line x1="12" y1="9" x2="12" y2="15"></line></svg>`;
 
@@ -13,6 +14,7 @@ const analyticsIcon = `<svg width="18" height="18" viewBox="0 0 24 24" fill="non
 const mediaIcon = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 8px;"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>`;
 
 export function WelcomeMessage() {
+  const { executeCommand } = useTerminal();
   const [actions, setActions] = useState(getQuickActions());
 
   // Listen for quick actions updates
@@ -26,6 +28,14 @@ export function WelcomeMessage() {
       window.removeEventListener('omega-quick-actions-updated', handleUpdate);
     };
   }, []);
+
+  const handleConnectWallet = useCallback(() => {
+    void executeCommand("connect");
+  }, [executeCommand]);
+
+  const handleSystemHelp = useCallback(() => {
+    void executeCommand("help");
+  }, [executeCommand]);
 
   const grouped = groupQuickActionsByCategory(actions);
   
@@ -46,7 +56,8 @@ export function WelcomeMessage() {
     "Other": "var(--palette-primary, #00d4ff)",
   };
 
-  const categories = Object.keys(grouped);
+  // Filter out "Wallet & Connection" category since we have buttons at the top
+  const categories = Object.keys(grouped).filter(category => category !== "Wallet & Connection");
 
   return (
     <div
@@ -92,47 +103,144 @@ export function WelcomeMessage() {
         {/* Header with Typing Animation */}
         <WelcomeHeader />
 
-        {/* Custom Quick Actions Section with Drop Zone */}
+        {/* Action Buttons - styled like sidebar buttons, side by side and centered */}
+        <div style={{ display: 'flex', flexDirection: 'row', gap: '12px', marginBottom: '24px', justifyContent: 'center', alignItems: 'center' }}>
+          <button
+            onClick={handleConnectWallet}
+            style={{
+              background: 'color-mix(in srgb, var(--palette-primary, #00bcf2) 8%, transparent)',
+              border: '1px solid var(--palette-border, rgba(0, 212, 255, 0.15))',
+              borderRadius: '8px',
+              padding: '8px 12px',
+              color: 'var(--palette-primary, #00d4ff)',
+              fontFamily: '"Courier New", monospace',
+              fontSize: '11px',
+              fontWeight: 500,
+              letterSpacing: '0.05em',
+              cursor: 'pointer',
+              transition: 'all 0.15s ease',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'flex-start',
+              gap: '8px',
+              minHeight: '36px',
+              position: 'relative',
+            }}
+            onMouseEnter={(e) => {
+              const target = e.currentTarget;
+              target.style.background = 'color-mix(in srgb, var(--palette-primary, #00bcf2) 18%, transparent)';
+              target.style.borderColor = 'var(--palette-primary, #00d4ff)';
+              target.style.boxShadow = '0 0 20px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #00bcf2) 30%, transparent)), inset 0 0 10px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #00bcf2) 10%, transparent))';
+              target.style.transform = 'translateX(6px) scale(1.02)';
+              target.style.color = 'var(--palette-secondary, #00ffff)';
+            }}
+            onMouseLeave={(e) => {
+              const target = e.currentTarget;
+              target.style.background = 'color-mix(in srgb, var(--palette-primary, #00bcf2) 8%, transparent)';
+              target.style.borderColor = 'var(--palette-border, rgba(0, 212, 255, 0.15))';
+              target.style.boxShadow = 'none';
+              target.style.transform = 'none';
+              target.style.color = 'var(--palette-primary, #00d4ff)';
+            }}
+          >
+            <svg
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="currentColor"
+              style={{ width: '14px', height: '14px', flexShrink: 0 }}
+            >
+              <path d="M21,18V19A2,2 0 0,1 19,21H5C3.89,21 3,20.1 3,19V5A2,2 0 0,1 5,3H19A2,2 0 0,1 21,5V6H12C10.89,6 10,6.9 10,8V16A2,2 0 0,0 12,18H21M12,16V8H21V16H12Z" fill="currentColor" />
+            </svg>
+            <span>Connect Wallet</span>
+          </button>
+
+          <button
+            onClick={handleSystemHelp}
+            style={{
+              background: 'color-mix(in srgb, var(--palette-primary, #00bcf2) 8%, transparent)',
+              border: '1px solid var(--palette-border, rgba(0, 212, 255, 0.15))',
+              borderRadius: '8px',
+              padding: '8px 12px',
+              color: 'var(--palette-primary, #00d4ff)',
+              fontFamily: '"Courier New", monospace',
+              fontSize: '11px',
+              fontWeight: 500,
+              letterSpacing: '0.05em',
+              cursor: 'pointer',
+              transition: 'all 0.15s ease',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'flex-start',
+              gap: '8px',
+              minHeight: '36px',
+              position: 'relative',
+            }}
+            onMouseEnter={(e) => {
+              const target = e.currentTarget;
+              target.style.background = 'color-mix(in srgb, var(--palette-primary, #00bcf2) 18%, transparent)';
+              target.style.borderColor = 'var(--palette-primary, #00d4ff)';
+              target.style.boxShadow = '0 0 20px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #00bcf2) 30%, transparent)), inset 0 0 10px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #00bcf2) 10%, transparent))';
+              target.style.transform = 'translateX(6px) scale(1.02)';
+              target.style.color = 'var(--palette-secondary, #00ffff)';
+            }}
+            onMouseLeave={(e) => {
+              const target = e.currentTarget;
+              target.style.background = 'color-mix(in srgb, var(--palette-primary, #00bcf2) 8%, transparent)';
+              target.style.borderColor = 'var(--palette-border, rgba(0, 212, 255, 0.15))';
+              target.style.boxShadow = 'none';
+              target.style.transform = 'none';
+              target.style.color = 'var(--palette-primary, #00d4ff)';
+            }}
+          >
+            <svg
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="currentColor"
+              style={{ width: '14px', height: '14px', flexShrink: 0 }}
+            >
+              <path d="M11,18H13V16H11V18M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,6A4,4 0 0,0 8,10H10A2,2 0 0,1 12,8A2,2 0 0,1 14,10C14,12 11,11.75 11,15H13C13,12.75 16,12.5 16,10A4,4 0 0,0 12,6Z" fill="currentColor" />
+            </svg>
+            <span>System Help</span>
+          </button>
+        </div>
+
+        {/* Quick Actions Hint Text - styled like buttons, centered below */}
         <div
-          id="omega-quick-actions-drop-zone"
           style={{
-            background: 'linear-gradient(135deg, color-mix(in srgb, var(--palette-primary, #00d4ff) 10%, transparent) 0%, color-mix(in srgb, var(--palette-secondary, #00ff88) 6%, transparent) 100%)',
-            border: '2px dashed color-mix(in srgb, var(--palette-primary, #00d4ff) 30%, transparent)',
-            borderRadius: '16px',
-            padding: '24px',
+            textAlign: 'center',
+            marginTop: '16px',
             marginBottom: '24px',
-            boxShadow: '0 4px 20px color-mix(in srgb, var(--palette-primary, #00d4ff) 10%, transparent)',
-            transition: 'all 0.3s ease',
-          }}
-          onMouseEnter={(e) => {
-            const target = e.currentTarget;
-            target.style.borderColor = 'color-mix(in srgb, var(--palette-primary, #00d4ff) 50%, transparent)';
-            target.style.background = 'linear-gradient(135deg, color-mix(in srgb, var(--palette-primary, #00d4ff) 15%, transparent) 0%, color-mix(in srgb, var(--palette-secondary, #00ff88) 10%, transparent) 100%)';
-          }}
-          onMouseLeave={(e) => {
-            const target = e.currentTarget;
-            target.style.borderColor = 'color-mix(in srgb, var(--palette-primary, #00d4ff) 30%, transparent)';
-            target.style.background = 'linear-gradient(135deg, color-mix(in srgb, var(--palette-primary, #00d4ff) 10%, transparent) 0%, color-mix(in srgb, var(--palette-secondary, #00ff88) 6%, transparent) 100%)';
           }}
         >
           <div
             style={{
-              fontSize: '18px',
-              fontWeight: 700,
-              color: 'var(--palette-primary, #00d4ff)',
-              marginBottom: '20px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '10px',
-              textTransform: 'uppercase',
-              letterSpacing: '1px',
+              fontSize: '11px',
+              color: 'color-mix(in srgb, var(--palette-text, #e0e0e0) 70%, transparent)',
+              fontFamily: '"Courier New", monospace',
+              fontWeight: 500,
+              letterSpacing: '0.05em',
             }}
-          >
-            <span dangerouslySetInnerHTML={{ __html: lightbulbIcon }} />
-            <span>Your Quick Actions</span>
-          </div>
+            dangerouslySetInnerHTML={{
+              __html: `💡 Drag sections from sidebar here to add commands | ${createCommandLine('quick-actions', 'quick-actions')}`,
+            }}
+          />
+        </div>
 
-          {categories.length > 0 ? (
+        {/* Custom Quick Actions Section with Drop Zone (invisible box, but functional) */}
+        <div
+          id="omega-quick-actions-drop-zone"
+          style={{
+            padding: '24px 0',
+            marginBottom: '24px',
+            minHeight: '100px',
+          }}
+          onDragOver={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+          }}
+        >
+
+          {categories.length > 0 && (
             categories.map((category, catIndex) => {
               const categoryActions = grouped[category];
               if (!categoryActions || categoryActions.length === 0) return null;
@@ -214,31 +322,7 @@ export function WelcomeMessage() {
                 </div>
               );
             })
-          ) : (
-            <div
-              style={{
-                textAlign: 'center',
-                padding: '20px',
-                color: 'color-mix(in srgb, var(--palette-text, #e0e0e0) 70%, transparent)',
-              }}
-            >
-              No quick actions set yet. Drag sections from the sidebar here or use 'quick-actions add' to customize!
-            </div>
           )}
-
-          <div
-            style={{
-              marginTop: '20px',
-              paddingTop: '16px',
-              borderTop: '1px solid color-mix(in srgb, var(--palette-primary, #00d4ff) 20%, transparent)',
-              textAlign: 'center',
-              fontSize: '12px',
-              color: 'color-mix(in srgb, var(--palette-text, #e0e0e0) 70%, transparent)',
-            }}
-            dangerouslySetInnerHTML={{
-              __html: `💡 Drag sections from sidebar here to add commands | ${createCommandLine('quick-actions', 'quick-actions')} to customize`,
-            }}
-          />
         </div>
       </div>
     </div>

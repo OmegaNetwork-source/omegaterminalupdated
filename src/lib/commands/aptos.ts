@@ -143,16 +143,135 @@ async function handleBalance(context: any) {
     }
 
     context.log(`Checking APT balance for ${address}...`, "info");
-    // Get account resource to fetch APT balance
-    const accountResource = await aptosClient.getAccountResource({
-      accountAddress: address,
-      resourceType: "0x1::coin::CoinStore<0x1::aptos_coin::AptosCoin>",
-    });
-    const balance = (accountResource.data as any).coin?.value || "0";
-    const aptAmount = Number(balance) / 1e8; // APT has 8 decimals
-    context.log(`💰 APT Balance: ${aptAmount.toFixed(8)} APT`, "success");
+    
+    // Try multiple methods to get balance (view function is most reliable)
+    let balanceFound = false;
+    let aptAmount = 0;
+    
+    // Method 1: Try view function first (most reliable)
+    try {
+      const viewResponse = await fetch(
+        `https://api.mainnet.aptoslabs.com/v1/view`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+          },
+          body: JSON.stringify({
+            function: "0x1::coin::balance",
+            type_arguments: ["0x1::aptos_coin::AptosCoin"],
+            arguments: [address],
+          }),
+        }
+      );
+      
+      if (viewResponse.ok) {
+        const viewData = await viewResponse.json();
+        const balance = viewData[0] || "0";
+        const balanceBigInt = BigInt(String(balance));
+        aptAmount = Number(balanceBigInt) / 1e8;
+        balanceFound = true;
+        context.log(`💰 APT Balance: ${aptAmount.toFixed(8)} APT`, "success");
+      } else {
+        const errorText = await viewResponse.text();
+        throw new Error(`View function returned ${viewResponse.status}: ${errorText.substring(0, 100)}`);
+      }
+    } catch (viewError: any) {
+      // Method 2: Try SDK getAccountResource
+      try {
+        const accountResource = await aptosClient.getAccountResource({
+          accountAddress: address,
+          resourceType: "0x1::coin::CoinStore<0x1::aptos_coin::AptosCoin>",
+        });
+        
+        const coinData = (accountResource.data as any);
+        // Check different possible structures
+        const balance = coinData?.coin?.value || coinData?.value || coinData?.balance || "0";
+        const balanceBigInt = BigInt(String(balance));
+        aptAmount = Number(balanceBigInt) / 1e8;
+        balanceFound = true;
+        
+        context.log(`💰 APT Balance: ${aptAmount.toFixed(8)} APT`, "success");
+      } catch (sdkError: any) {
+        // Method 3: Direct REST API call
+        try {
+          // Try with proper URL encoding
+          const resourceType = "0x1::coin::CoinStore<0x1::aptos_coin::AptosCoin>";
+          const encodedResourceType = encodeURIComponent(resourceType);
+          const apiUrl = `https://api.mainnet.aptoslabs.com/v1/accounts/${address}/resource/${encodedResourceType}`;
+          
+          const response = await fetch(apiUrl, {
+            method: "GET",
+            headers: {
+              "Accept": "application/json",
+            },
+          });
+          
+          if (response.ok) {
+            const data = await response.json();
+            // Try multiple possible response structures
+            const balance = data.data?.coin?.value || 
+                           data.data?.value || 
+                           data.data?.balance ||
+                           data.coin?.value ||
+                           data.value ||
+                           "0";
+            
+            const balanceBigInt = BigInt(String(balance));
+            aptAmount = Number(balanceBigInt) / 1e8;
+            balanceFound = true;
+            
+            context.log(`💰 APT Balance: ${aptAmount.toFixed(8)} APT`, "success");
+          } else if (response.status === 404) {
+            // Try getting all account resources
+            const altUrl = `https://api.mainnet.aptoslabs.com/v1/accounts/${address}/resources`;
+            const accountResponse = await fetch(altUrl);
+            
+            if (accountResponse.ok) {
+              const accountData = await accountResponse.json();
+              // Find CoinStore resource
+              const coinStore = accountData.find((r: any) => 
+                r.type?.includes("CoinStore") && r.type?.includes("AptosCoin")
+              );
+              
+              if (coinStore) {
+                const balance = coinStore.data?.coin?.value || coinStore.data?.value || "0";
+                const balanceBigInt = BigInt(String(balance));
+                aptAmount = Number(balanceBigInt) / 1e8;
+                balanceFound = true;
+                context.log(`💰 APT Balance: ${aptAmount.toFixed(8)} APT`, "success");
+              } else {
+                context.log(`💰 APT Balance: 0.00000000 APT`, "success");
+                context.log("💡 This account has no APT balance yet.", "output");
+              }
+            } else {
+              context.log(`💰 APT Balance: 0.00000000 APT`, "success");
+              context.log("💡 This account has no APT balance yet.", "output");
+            }
+          } else {
+            const errorText = await response.text();
+            throw new Error(`API error: ${response.status} - ${errorText.substring(0, 100)}`);
+          }
+        } catch (apiError: any) {
+          // If all methods fail, show error with details
+          context.log(`Balance error: ${viewError?.message || sdkError?.message || apiError?.message}`, "error");
+          context.log(`Tried view function, SDK, and REST API - all failed.`, "output");
+          context.log(`Address: ${address}`, "output");
+        }
+      }
+    }
+    
+    if (balanceFound && aptAmount === 0) {
+      context.log("💡 This account has no APT balance yet.", "output");
+    }
   } catch (err: any) {
     context.log(`Balance error: ${err?.message ?? err}`, "error");
+    context.log(`Error details: ${JSON.stringify(err, null, 2)}`, "output");
+    if (err?.message?.includes("resource_not_found")) {
+      context.log("💡 This account may not have initialized its CoinStore resource yet.", "output");
+      context.log("   This is normal for new accounts with 0 APT balance.", "output");
+    }
   }
 }
 

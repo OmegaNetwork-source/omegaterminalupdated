@@ -71,6 +71,7 @@ import { factionCommands } from "./faction";
 import { aptosCommands } from "./aptos";
 import { farmingCommands } from "./farm";
 import { botCommands } from "./bot";
+import { stableTokenCommands } from "./stable-token";
 import { web3telegramCommands } from "./web3telegram";
 import { rubicCommands } from "./rubic";
 
@@ -157,6 +158,7 @@ const COMMAND_GROUPS: Array<{ label: string; commands: Command[] }> = [
   { label: "aptos", commands: aptosCommands },
   { label: "farming", commands: farmingCommands },
   { label: "bots", commands: botCommands },
+  { label: "stable-token", commands: stableTokenCommands },
   { label: "rubic", commands: rubicCommands },
 ];
 
@@ -318,5 +320,6 @@ export {
   aptosCommands,
   farmingCommands,
   botCommands,
+  stableTokenCommands,
 };
 export default commandRegistry;

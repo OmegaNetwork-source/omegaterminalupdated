@@ -10,7 +10,7 @@ import type { Theme, AIProvider } from "@/types";
  * Application version number
  * Displayed in boot animation and header
  */
-export const APP_VERSION = "3.0.0";
+export const APP_VERSION = "2.6.1";
 
 /**
  * Application title - short form
@@ -23,7 +23,7 @@ export const APP_TITLE = "OMEGA TERMINAL";
  * Used in boot animation and page metadata
  */
 export const APP_FULL_TITLE =
-  "OMEGA TERMINAL - CLASSIFIED ACCESS SYSTEM v3.0.0";
+  "OMEGA TERMINAL - CLASSIFIED ACCESS SYSTEM v2.6.1";
 
 /**
  * Application description

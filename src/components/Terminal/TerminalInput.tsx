@@ -14,6 +14,10 @@ import {
   isAwaitingTokenInput,
 } from "@/lib/commands/token-factory";
 import {
+  handleStableTokenCreationInput,
+  isAwaitingStableTokenInput,
+} from "@/lib/commands/stable-token";
+import {
   handleSwapInput,
   isAwaitingSwapInput,
 } from "@/lib/commands/rubic";
@@ -154,6 +158,13 @@ export const TerminalInput = forwardRef<TerminalInputRef, TerminalInputProps>(({
           return;
         }
       }
+      if (isAwaitingStableTokenInput()) {
+        const handled = handleStableTokenCreationInput(inputValue.trim());
+        if (handled) {
+          setInputValue("");
+          return;
+        }
+      }
       if (isAwaitingSwapInput()) {
         const handled = handleSwapInput(inputValue.trim());
         if (handled) {
@@ -174,6 +185,15 @@ export const TerminalInput = forwardRef<TerminalInputRef, TerminalInputProps>(({
           // Check if we're in token creation mode (matches vanilla terminal.html line 4028)
           if (isAwaitingTokenInput()) {
             const handled = handleTokenCreationInput(inputValue.trim());
+            if (handled) {
+              setInputValue("");
+              e.preventDefault();
+              return;
+            }
+          }
+          // Check if we're in stable token creation mode
+          if (isAwaitingStableTokenInput()) {
+            const handled = handleStableTokenCreationInput(inputValue.trim());
             if (handled) {
               setInputValue("");
               e.preventDefault();

@@ -16,6 +16,7 @@ import { useOmegaMelodiesPlayer } from "@/hooks/useOmegaMelodiesPlayer";
 import { useMobileDetection } from "@/hooks/useMobileDetection";
 import { MobileStatsPanel } from "@/components/Mobile/MobileStatsPanel";
 import Cubes, { CubesRef } from "@/components/Background/Cubes";
+import { SystemOverview } from "./SystemOverview";
 import styles from "./DashboardStatsPanel.module.css";
 
 // Dynamically import media panels (heavy external SDKs)
@@ -555,6 +556,21 @@ export function DashboardStatsPanel(): JSX.Element | null {
           </div>
         </section>
       )}
+
+      {/* System Overview - shown when no panels are open */}
+      {!isChartOpen &&
+        !perps.playerState.isPanelOpen &&
+        !spotify.playerState.isPanelOpen &&
+        !youtube.playerState.isPanelOpen &&
+        !newsReader.readerState.isPanelOpen &&
+        !bluesPlayer.playerState.isPanelOpen &&
+        !lofiPlayer.playerState.isPanelOpen &&
+        !techPlayer.playerState.isPanelOpen &&
+        !funkyPlayer.playerState.isPanelOpen &&
+        !trancePlayer.playerState.isPanelOpen &&
+        !melodiesPlayer.playerState.isPanelOpen && (
+          <SystemOverview />
+        )}
     </aside>
   );
 }

@@ -204,8 +204,8 @@ const NetworkSection = dynamic(
 
 const FarmingSection = dynamic(
   () =>
-    import("./sidebar-sections/FarmingSection").then((mod) => ({
-      default: mod.FarmingSection,
+    import("./sidebar-sections/FarmingSectionNew").then((mod) => ({
+      default: mod.FarmingSectionNew,
     })),
   {
     ssr: false,
@@ -318,7 +318,7 @@ export function DashboardSidebar(): JSX.Element {
         "View Profile", "Leaderboards", "Polymarket", "Kalshi", "Hyperliquid"
       ],
       entertainment: [
-        "Entertainment & Games", "Games", "Screensaver"
+        "Entertainment & Games", "Somnia Arcade", "Games", "Screensaver"
       ],
       trading: [
         "Trading & Analytics", "Chart", "DexScreener", "GeckoTerminal", "Alpha Vantage"
@@ -341,6 +341,11 @@ export function DashboardSidebar(): JSX.Element {
       ],
       chaingpt: [
         "ChainGPT Tools", "Chat", "NFT Generator", "Tutorials"
+      ],
+      farming: [
+        "Farming", "Networks", "Stable Network", "Stable", "Website", "Faucet", 
+        "Token Creator", "Transactions", "stable token create", "stable transactions",
+        "stable.xyz", "faucet.stable.xyz", "Create Token", "Start Transactions"
       ],
     };
 
@@ -2487,6 +2492,24 @@ export function DashboardSidebar(): JSX.Element {
           <div className={styles.sectionContent}>
             <button
               className={styles.button}
+              onClick={() => {
+                if (typeof window !== "undefined" && (window as any).openSomniaArcade) {
+                  (window as any).openSomniaArcade();
+                }
+              }}
+            >
+              <svg
+                className={styles.buttonIcon}
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="currentColor"
+              >
+                <path d="M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4M12,6A6,6 0 0,1 18,12A6,6 0 0,1 12,18A6,6 0 0,1 6,12A6,6 0 0,1 12,6M12,8A4,4 0 0,0 8,12A4,4 0 0,0 12,16A4,4 0 0,0 16,12A4,4 0 0,0 12,8M12,10A2,2 0 0,1 14,12A2,2 0 0,1 12,14A2,2 0 0,1 10,12A2,2 0 0,1 12,10Z" fill="currentColor" />
+              </svg>
+              <span>Somnia Arcade</span>
+            </button>
+            <button
+              className={styles.button}
               onClick={() => handleCommandClick("games")}
             >
               <svg
@@ -2739,16 +2762,24 @@ export function DashboardSidebar(): JSX.Element {
       
       // Enhanced matching: check for partial matches, word matches, and command matches
       const hasMatch = 
-        // Direct keyword match
-        sectionKeywords.some((keyword) =>
-          keyword.toLowerCase().includes(query)
-        ) ||
-        // Multi-word search (all words must match somewhere)
+        // Direct keyword match (bidirectional - query in keyword OR keyword in query)
+        sectionKeywords.some((keyword) => {
+          const lowerKeyword = keyword.toLowerCase();
+          return lowerKeyword.includes(query) || query.includes(lowerKeyword);
+        }) ||
+        // Multi-word search (all words must match somewhere, bidirectional)
         (queryWords.length > 1 && queryWords.every((word) =>
-          sectionKeywords.some((keyword) =>
-            keyword.toLowerCase().includes(word)
-          )
+          sectionKeywords.some((keyword) => {
+            const lowerKeyword = keyword.toLowerCase();
+            return lowerKeyword.includes(word) || word.includes(lowerKeyword);
+          })
         )) ||
+        // Single word search - check if any keyword contains the word or vice versa
+        (queryWords.length === 1 && sectionKeywords.some((keyword) => {
+          const lowerKeyword = keyword.toLowerCase();
+          const word = queryWords[0];
+          return lowerKeyword.includes(word) || word.includes(lowerKeyword);
+        })) ||
         // Command name match (exact or partial)
         allCommandTerms.some((term) => {
           const lowerTerm = term.toLowerCase();
