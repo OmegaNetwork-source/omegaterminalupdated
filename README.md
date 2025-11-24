@@ -49,6 +49,7 @@ This phase migrates the futuristic UI system into the Next.js app with React Con
 - `CustomizerProvider` manages color palettes and settings (applies attributes/CSS vars)
 - `WelcomeScreen` shows once (persisted via `omega-initialized`)
 - `DashboardLayout` renders sidebar + terminal + stats (responsive hiding rules)
+  
 
 ### Commands
 
