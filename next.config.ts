@@ -251,7 +251,7 @@ const nextConfig: NextConfig = {
         // Ignore pino-pretty in browser
         "pino-pretty": false,
         // Ignore @solana/kit in browser (transitive dep of coinbase sdk)
-        "@solana/kit": path.join(__dirname, "src/lib/stubs/solana-kit.ts"),
+        // "@solana/kit": path.join(__dirname, "src/lib/stubs/solana-kit.ts"),
         // Force use of browser client for Aptos - multiple aliases to catch all cases
         "@aptos-labs/aptos-client": browserClientPath,
         // Also alias common variations
@@ -328,12 +328,12 @@ const nextConfig: NextConfig = {
         new webpack.NormalModuleReplacementPlugin(
           /^base-x$/,
           require.resolve("base-x")
-        ),
-        // Fix @solana/kit import issue
-        new webpack.NormalModuleReplacementPlugin(
-          /^@solana\/kit$/,
-          path.join(__dirname, "src/lib/stubs/solana-kit.ts")
         )
+        // Fix @solana/kit import issue
+        // new webpack.NormalModuleReplacementPlugin(
+        //   /^@solana\/kit$/,
+        //   path.join(__dirname, "src/lib/stubs/solana-kit.ts")
+        // )
       );
 
       config.optimization.splitChunks = {
