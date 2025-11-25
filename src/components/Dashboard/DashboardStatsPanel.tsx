@@ -13,6 +13,7 @@ import { useTechPlayer } from "@/hooks/useTechPlayer";
 import { useFunkyPlayer } from "@/hooks/useFunkyPlayer";
 import { useOmegaTrancePlayer } from "@/hooks/useOmegaTrancePlayer";
 import { useOmegaMelodiesPlayer } from "@/hooks/useOmegaMelodiesPlayer";
+import { useCompanion } from "@/hooks/useCompanion";
 import { useMobileDetection } from "@/hooks/useMobileDetection";
 import { MobileStatsPanel } from "@/components/Mobile/MobileStatsPanel";
 import Cubes, { CubesRef } from "@/components/Background/Cubes";
@@ -70,6 +71,11 @@ const OmegaMelodiesPlayerPanel = dynamic(
   { ssr: false, loading: () => <div className={styles.panelLoading}>Loading Melodies Player...</div> }
 );
 
+const CompanionPanel = dynamic(
+  () => import("@/components/Media/CompanionPanel").then((mod) => ({ default: mod.CompanionPanel })),
+  { ssr: false, loading: () => <div className={styles.panelLoading}>Loading Companion...</div> }
+);
+
 type TradingViewWidget = {
   remove?: () => void;
 };
@@ -96,6 +102,31 @@ export function DashboardStatsPanel(): JSX.Element | null {
   const funkyPlayer = useFunkyPlayer();
   const trancePlayer = useOmegaTrancePlayer();
   const melodiesPlayer = useOmegaMelodiesPlayer();
+  const companion = useCompanion();
+  const statsPanelRef = useRef<HTMLElement>(null);
+
+  // Expose companion panel control globally
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      (window as any).__omegaOpenCompanion = () => {
+        companion.openPanel();
+      };
+      return () => {
+        delete (window as any).__omegaOpenCompanion;
+      };
+    }
+  }, [companion]);
+
+  // Prevent stats panel from scrolling when companion panel is open
+  useEffect(() => {
+    if (statsPanelRef.current) {
+      if (companion.isPanelOpen) {
+        statsPanelRef.current.style.overflow = 'hidden';
+      } else {
+        statsPanelRef.current.style.overflow = '';
+      }
+    }
+  }, [companion.isPanelOpen]);
 
   const [isChartOpen, setIsChartOpen] = useState<boolean>(false);
   const [chartSymbol, setChartSymbol] = useState<string>("—");
@@ -333,7 +364,7 @@ export function DashboardStatsPanel(): JSX.Element | null {
   ]);
 
   return (
-    <aside className={styles.statsPanel}>
+    <aside ref={statsPanelRef} className={styles.statsPanel}>
       {/* Animated Cubes Background Effect */}
       <Cubes
         ref={cubesRef}
@@ -557,6 +588,17 @@ export function DashboardStatsPanel(): JSX.Element | null {
         </section>
       )}
 
+      {/* Companion Panel - inside stats panel like chart viewer */}
+      {companion.isPanelOpen && (
+        <section className={`${styles.section} ${styles.mediaSection}`}>
+          <div className={styles.mediaPanelWrapper}>
+            <Suspense fallback={<div className={styles.panelLoading}>Loading Companion...</div>}>
+              <CompanionPanel />
+            </Suspense>
+          </div>
+        </section>
+      )}
+
       {/* System Overview - shown when no panels are open */}
       {!isChartOpen &&
         !perps.playerState.isPanelOpen &&
@@ -568,7 +610,8 @@ export function DashboardStatsPanel(): JSX.Element | null {
         !techPlayer.playerState.isPanelOpen &&
         !funkyPlayer.playerState.isPanelOpen &&
         !trancePlayer.playerState.isPanelOpen &&
-        !melodiesPlayer.playerState.isPanelOpen && (
+        !melodiesPlayer.playerState.isPanelOpen &&
+        !companion.isPanelOpen && (
           <SystemOverview />
         )}
     </aside>

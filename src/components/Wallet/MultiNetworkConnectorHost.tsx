@@ -82,6 +82,18 @@ const NETWORKS: NetworkMap = {
     logo: "https://assets.coingecko.com/coins/images/16547/small/photo_2023-03-29_21.47.00.jpeg",
     walletType: "metamask",
   },
+  monad: {
+    key: "monad",
+    name: "Monad Mainnet",
+    chainId: "0x8f", // 143 in hex
+    chainIdDecimal: 143,
+    rpcUrl: "https://rpc.monad.xyz", // Update with official RPC when available
+    explorerUrl: "https://monadvision.com",
+    currency: { name: "Monad", symbol: "MON", decimals: 18 },
+    icon: "🔷",
+    logo: "https://assets.coingecko.com/coins/images/38927/small/monad.jpg",
+    walletType: "metamask",
+  },
   arbitrumSepolia: {
     key: "arbitrumSepolia",
     name: "Arbitrum Sepolia",
@@ -189,18 +201,6 @@ const NETWORKS: NetworkMap = {
     logo: undefined, // Fair doesn't have a CoinGecko entry yet
     walletType: "metamask",
   },
-  monad: {
-    key: "monad",
-    name: "Monad",
-    chainId: "0x1d4c0", // 120000 in hex (Monad testnet)
-    chainIdDecimal: 120000,
-    rpcUrl: "https://testnet-rpc.monad.xyz",
-    explorerUrl: "https://testnet-explorer.monad.xyz",
-    currency: { name: "MON", symbol: "MON", decimals: 18 },
-    icon: "🔷",
-    logo: undefined, // Monad doesn't have a CoinGecko entry yet
-    walletType: "metamask",
-  },
   stable: {
     key: "stable",
     name: "Stable Network",
@@ -234,6 +234,7 @@ const EVM_NETWORK_KEYS = [
   "bsc",
   "polygon",
   "arbitrum",
+  "monad",
 ];
 
 const OTHER_NETWORK_KEYS = [

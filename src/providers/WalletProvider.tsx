@@ -66,7 +66,8 @@ function getNetworkNameFromChainId(chainId: number): string | null {
     1313161768: "Omega Network",
     121212: "Rome Protocol",
     935: "FAIR Testnet",
-    120000: "Monad",
+    120000: "Monad Testnet",
+    143: "Monad Mainnet",
   };
   return chainIdMap[chainId] || null;
 }

@@ -419,13 +419,21 @@
   position: relative;
   z-index: 1;
   margin-bottom: 0;
-  overflow: hidden;
+  overflow: hidden !important; /* CRITICAL: Prevent wrapper from scrolling */
+  height: calc(100vh - 32px); /* Full height minus padding */
+  max-height: calc(100vh - 32px);
+  display: flex;
+  flex-direction: column;
 }
 
 /* Media sections don't need section titles - panels have their own headers */
 .mediaSection {
-  padding: 0;
-  margin-bottom: 16px;
+  padding: 0 !important;
+  margin-bottom: 0 !important;
+  height: 100%;
+  overflow: hidden !important; /* CRITICAL: Prevent section from scrolling */
+  display: flex;
+  flex-direction: column;
 }
 
 .mediaSection .sectionTitle {

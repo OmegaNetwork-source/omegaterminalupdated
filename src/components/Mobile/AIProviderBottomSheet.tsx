@@ -16,6 +16,7 @@ const AI_PROVIDERS: Array<{ value: AIProvider; label: string; description: strin
   { value: "off", label: "Off", description: "AI assistance disabled" },
   { value: "near", label: "NEAR AI", description: "NEAR Protocol AI assistant" },
   { value: "openai", label: "OpenAI", description: "OpenAI GPT assistant" },
+  { value: "companion", label: "Companion", description: "AI companion with video chat" },
 ];
 
 /**

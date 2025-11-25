@@ -370,12 +370,12 @@ export function extractCommandsFromSection(sectionId: string): SectionCommand[] 
 
     case "network-monad":
       commands.push(
-        { command: "monad connect", label: "Connect Wallet", description: "Connect MONAD wallet" },
-        { command: "monad balance", label: "Check Balance", description: "Check MONAD balance" },
-        { command: "monad network", label: "Network Info", description: "View MONAD network information" },
-        { command: "monad staking", label: "Staking", description: "Stake MONAD tokens" },
-        { command: "monad governance", label: "Governance", description: "Participate in MONAD governance" },
-        { command: "monad help", label: "MONAD Help", description: "Show MONAD commands help" }
+        { command: "monad connect", label: "Connect Wallet", description: "Connect wallet to MONAD Network" },
+        { command: "monad tokens", label: "Check Tokens", description: "List all supported tokens from MACE API" },
+        { command: "monad balance", label: "Token Balance", description: "Check token balances for your wallet" },
+        { command: "monad swap", label: "Swap Tokens", description: "Find best swap routes using MACE aggregator" },
+        { command: "monad quote", label: "Price Quote", description: "Get price quote between two tokens" },
+        { command: "monad exchanges", label: "View Exchanges", description: "View supported DEX exchanges" }
       );
       break;
 

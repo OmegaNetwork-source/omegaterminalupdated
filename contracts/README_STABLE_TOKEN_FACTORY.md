@@ -102,3 +102,4 @@ Each created token includes:
 - Gas fees are paid in gUSDT (Stable Network's native token)
 - All tokens are ERC20 compatible and can be used with standard wallets
 
+

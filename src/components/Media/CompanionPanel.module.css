@@ -1,0 +1,281 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  max-height: 100%;
+  overflow: hidden !important; /* CRITICAL: Prevent container from scrolling */
+  background: var(--palette-surface, rgba(21, 21, 32, 1));
+  border-left: 1px solid color-mix(in srgb, var(--palette-border, rgba(0, 212, 255, 0.3)) 50%, transparent);
+  color: var(--palette-text, #e0e0e0);
+  font-family: "Courier New", monospace;
+  position: relative;
+  /* Container never scrolls - only internal messages container scrolls */
+}
+
+.mobile {
+  border-left: none;
+}
+
+.header {
+  flex-shrink: 0; /* Header never shrinks - FIXED */
+  flex-grow: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px;
+  border-bottom: 1px solid color-mix(in srgb, var(--palette-border, rgba(0, 212, 255, 0.3)) 50%, transparent);
+  background: color-mix(in srgb, var(--palette-surface, rgba(21, 21, 32, 1)) 80%, transparent);
+  gap: 12px;
+  /* Header stays fixed at top */
+}
+
+.title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--palette-primary, #00d4ff);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  text-align: center;
+}
+
+.headerButtons {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  justify-content: center;
+}
+
+.actionButton {
+  background: transparent;
+  border: 1px solid color-mix(in srgb, var(--palette-border, rgba(0, 212, 255, 0.3)) 50%, transparent);
+  color: var(--palette-text, #e0e0e0);
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: "Courier New", monospace;
+  font-size: 12px;
+  transition: all 0.2s ease;
+  min-width: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.actionButton:hover {
+  background: color-mix(in srgb, var(--palette-primary, #00d4ff) 15%, transparent);
+  border-color: var(--palette-primary, #00d4ff);
+  color: var(--palette-primary, #00d4ff);
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden; /* CRITICAL: Content area doesn't scroll */
+  min-height: 0;
+  position: relative;
+}
+
+.videoContainer {
+  flex-shrink: 0; /* Never shrink - FIXED */
+  flex-grow: 0; /* Never grow - FIXED */
+  padding: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: color-mix(in srgb, var(--palette-surface, rgba(21, 21, 32, 1)) 60%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--palette-border, rgba(0, 212, 255, 0.3)) 50%, transparent);
+  /* Video container is FIXED - never scrolls */
+  position: relative;
+  z-index: 1;
+}
+
+.video {
+  width: 100%;
+  max-width: 300px;
+  height: auto;
+  max-height: 300px;
+  min-height: 200px;
+  border-radius: 8px;
+  border: 2px solid color-mix(in srgb, var(--palette-primary, #00d4ff) 30%, transparent);
+  background: #000;
+  object-fit: contain;
+  display: block;
+}
+
+.messagesContainer {
+  flex: 1;
+  overflow-y: auto !important; /* ONLY THIS SCROLLS */
+  overflow-x: hidden;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  /* ONLY messages container scrolls - video stays fixed above */
+}
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  text-align: center;
+  color: color-mix(in srgb, var(--palette-text, #e0e0e0) 60%, transparent);
+}
+
+.emptyState p {
+  margin: 8px 0;
+  font-size: 13px;
+}
+
+.hint {
+  font-size: 11px !important;
+  color: color-mix(in srgb, var(--palette-text, #e0e0e0) 40%, transparent) !important;
+}
+
+.messages {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.message {
+  display: flex;
+  flex-direction: column;
+  max-width: 85%;
+  padding: 10px 12px;
+  border-radius: 8px;
+  word-wrap: break-word;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.message.user {
+  align-self: flex-end;
+  background: color-mix(in srgb, var(--palette-primary, #00d4ff) 20%, transparent);
+  border: 1px solid color-mix(in srgb, var(--palette-primary, #00d4ff) 40%, transparent);
+  color: var(--palette-text, #e0e0e0);
+}
+
+.message.assistant {
+  align-self: flex-start;
+  background: color-mix(in srgb, var(--palette-surface, rgba(21, 21, 32, 1)) 80%, transparent);
+  border: 1px solid color-mix(in srgb, var(--palette-border, rgba(0, 212, 255, 0.3)) 50%, transparent);
+  color: var(--palette-text, #e0e0e0);
+}
+
+.messageContent {
+  font-size: 13px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
+.messageProvider {
+  margin-top: 6px;
+  font-size: 10px;
+  color: color-mix(in srgb, var(--palette-text, #e0e0e0) 50%, transparent);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.typingIndicator {
+  display: inline-block;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.error {
+  padding: 8px 16px;
+  background: color-mix(in srgb, var(--palette-error, #ff6666) 15%, transparent);
+  border-left: 3px solid var(--palette-error, #ff6666);
+  color: var(--palette-error, #ff6666);
+  font-size: 12px;
+  margin: 0 0 16px 0;
+  border-radius: 4px;
+}
+
+.inputContainer {
+  flex-shrink: 0; /* Never shrink - FIXED */
+  flex-grow: 0; /* Never grow - FIXED */
+  display: flex;
+  gap: 8px;
+  padding: 16px;
+  border-top: 1px solid color-mix(in srgb, var(--palette-border, rgba(0, 212, 255, 0.3)) 50%, transparent);
+  background: color-mix(in srgb, var(--palette-surface, rgba(21, 21, 32, 1)) 80%, transparent);
+  /* Input stays fixed at bottom - never scrolls */
+  position: relative;
+  z-index: 1;
+}
+
+.input {
+  flex: 1;
+  padding: 10px 12px;
+  background: color-mix(in srgb, var(--palette-surface, rgba(21, 21, 32, 1)) 60%, transparent);
+  border: 1px solid color-mix(in srgb, var(--palette-border, rgba(0, 212, 255, 0.3)) 50%, transparent);
+  border-radius: 6px;
+  color: var(--palette-text, #e0e0e0);
+  font-family: "Courier New", monospace;
+  font-size: 13px;
+  transition: all 0.2s ease;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--palette-primary, #00d4ff);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--palette-primary, #00d4ff) 20%, transparent);
+}
+
+.input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.sendButton {
+  padding: 10px 20px;
+  background: linear-gradient(135deg, #00d4ff, #00bcf2);
+  color: #000000;
+  border: 2px solid #00d4ff;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  font-family: "Courier New", monospace;
+  font-size: 13px;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.sendButton:hover:not(:disabled) {
+  opacity: 0.9;
+  transform: scale(1.02);
+  box-shadow: 0 4px 12px rgba(0, 212, 255, 0.5);
+}
+
+.sendButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+

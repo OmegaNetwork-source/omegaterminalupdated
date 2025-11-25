@@ -83,7 +83,34 @@ const TOKEN_MAP: Record<string, string> = {
   IOTA: "iota",
   DCR: "decred",
   DGB: "digibyte",
+  MONAD: "monad",
 };
+
+/**
+ * Format price with appropriate decimal places based on value
+ * Low-value tokens (< $1) get more decimal places for accuracy
+ */
+function formatPrice(price: number): string {
+  if (price >= 1) {
+    // Prices >= $1: show 2 decimal places
+    return price.toLocaleString(undefined, {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+  } else if (price >= 0.01) {
+    // Prices >= $0.01 but < $1: show 4 decimal places
+    return price.toLocaleString(undefined, {
+      minimumFractionDigits: 4,
+      maximumFractionDigits: 4,
+    });
+  } else {
+    // Prices < $0.01: show 6 decimal places
+    return price.toLocaleString(undefined, {
+      minimumFractionDigits: 6,
+      maximumFractionDigits: 6,
+    });
+  }
+}
 
 /**
  * SystemOverview Component
@@ -115,6 +142,14 @@ export function SystemOverview(): JSX.Element {
   });
   const [showTokenSelector, setShowTokenSelector] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [explorerStats, setExplorerStats] = useState<{
+    totalTransactions: number | null;
+    totalWallets: number | null;
+  }>({
+    totalTransactions: null,
+    totalWallets: null,
+  });
+  const [loadingStats, setLoadingStats] = useState(true);
 
   // Save selected tokens to localStorage
   useEffect(() => {
@@ -176,6 +211,42 @@ export function SystemOverview(): JSX.Element {
     const interval = setInterval(fetchPrices, 60000);
     return () => clearInterval(interval);
   }, [selectedTokens]);
+
+  // Fetch explorer stats
+  useEffect(() => {
+    const fetchExplorerStats = async () => {
+      try {
+        setLoadingStats(true);
+        const response = await fetch("/api/explorer/stats", {
+          cache: "no-store", // Always fetch fresh data
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          console.log("[SystemOverview] Explorer stats data:", data);
+          if (data.success) {
+            setExplorerStats({
+              totalTransactions: data.totalTransactions,
+              totalWallets: data.totalWallets,
+            });
+          } else {
+            console.error("[SystemOverview] API returned error:", data.error);
+          }
+        } else {
+          console.error("[SystemOverview] API response not OK:", response.status);
+        }
+      } catch (error) {
+        console.error("[SystemOverview] Failed to fetch explorer stats:", error);
+      } finally {
+        setLoadingStats(false);
+      }
+    };
+
+    fetchExplorerStats();
+    // Refresh stats every 5 minutes
+    const interval = setInterval(fetchExplorerStats, 300000);
+    return () => clearInterval(interval);
+  }, []);
 
   // Check Aptos wallet connection
   const [aptosConnected, setAptosConnected] = useState(false);
@@ -500,10 +571,7 @@ export function SystemOverview(): JSX.Element {
                         <div key={price.symbol} className={styles.priceItem}>
                           <span className={styles.priceSymbol}>{price.symbol}</span>
                           <span className={styles.priceValue}>
-                            ${price.price.toLocaleString(undefined, {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 2,
-                            })}
+                            ${formatPrice(price.price)}
                           </span>
                           {price.change24h !== undefined && (
                             <span
@@ -547,21 +615,25 @@ export function SystemOverview(): JSX.Element {
             <div className={styles.cardContent}>
               <div className={styles.statsGrid}>
                 <div className={styles.statItem}>
-                  <span className={styles.statLabel}>Active Networks</span>
+                  <span className={styles.statLabel}>Total Transactions</span>
                   <span className={styles.statValue}>
-                    {[
-                      wallet.state.isConnected,
-                      aptosConnected,
-                      multichain?.solana?.state.connected,
-                      multichain?.near?.state.connected,
-                      multichain?.eclipse?.state.connected,
-                    ].filter(Boolean).length}
+                    {loadingStats
+                      ? "..."
+                      : explorerStats.totalTransactions !== null
+                      ? explorerStats.totalTransactions.toLocaleString()
+                      : "—"}
                   </span>
                 </div>
-                <div className={styles.statItem}>
-                  <span className={styles.statLabel}>Terminal Status</span>
-                  <span className={styles.statValue}>● Online</span>
-                </div>
+                {explorerStats.totalWallets !== null && (
+                  <div className={styles.statItem}>
+                    <span className={styles.statLabel}>Total Wallets</span>
+                    <span className={styles.statValue}>
+                      {loadingStats
+                        ? "..."
+                        : explorerStats.totalWallets.toLocaleString()}
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
           </div>

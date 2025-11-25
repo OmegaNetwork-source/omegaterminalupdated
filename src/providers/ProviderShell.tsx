@@ -73,6 +73,16 @@ const TelegramProvider = dynamic(
   }
 );
 
+const CompanionProvider = dynamic(
+  () =>
+    import("./CompanionProvider").then((mod) => ({
+      default: mod.CompanionProvider,
+    })),
+  {
+    ssr: false,
+  }
+);
+
 function ProvidersFallback() {
   return (
     <div
@@ -124,11 +134,13 @@ export function ProviderShell({ children }: { children: ReactNode }) {
               <NewsReaderProvider>
                 <GamesProvider>
                   <TelegramProvider>
-                    <TerminalProvider>
-                      {children}
-                      <GlobalGameModal />
-                      <XmasSnowfall />
-                    </TerminalProvider>
+                    <CompanionProvider>
+                      <TerminalProvider>
+                        {children}
+                        <GlobalGameModal />
+                        <XmasSnowfall />
+                      </TerminalProvider>
+                    </CompanionProvider>
                   </TelegramProvider>
                 </GamesProvider>
               </NewsReaderProvider>

@@ -8,7 +8,7 @@
  * AI Provider type for AI-powered features
  * Controls which AI backend is used for command processing
  */
-export type AIProvider = "off" | "near" | "openai";
+export type AIProvider = "off" | "near" | "openai" | "companion";
 
 /**
  * Connection status for wallet and network connections

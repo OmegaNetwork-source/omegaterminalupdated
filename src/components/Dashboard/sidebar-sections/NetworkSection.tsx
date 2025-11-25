@@ -1438,48 +1438,48 @@ export function NetworkSection(): JSX.Element {
           </button>
           <button
             className={styles.subButton}
+            onClick={() => handleCommand("monad tokens")}
+          >
+            <svg className={styles.subButtonIcon} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+              <path d="M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4M12,6A6,6 0 0,1 18,12A6,6 0 0,1 12,18A6,6 0 0,1 6,12A6,6 0 0,1 12,6M12,8A4,4 0 0,0 8,12A4,4 0 0,0 12,16A4,4 0 0,0 16,12A4,4 0 0,0 12,8Z" />
+            </svg>
+            <span>→ Check Tokens</span>
+          </button>
+          <button
+            className={styles.subButton}
             onClick={() => handleCommand("monad balance")}
           >
             <svg className={styles.subButtonIcon} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
               <path d="M7,15H9C9,16.08 10.37,17 12,17C13.63,17 15,16.08 15,15C15,13.9 13.96,13.5 11.76,12.97C9.64,12.44 7,11.78 7,9C7,7.21 8.47,5.69 10.5,5.18V3H13.5V5.18C15.53,5.69 17,7.21 17,9H15C15,7.92 13.63,7 12,7C10.37,7 9,7.92 9,9C9,10.1 10.04,10.5 12.24,11.03C14.36,11.56 17,12.22 17,15C17,16.79 15.53,18.31 13.5,18.82V21H10.5V18.82C8.47,18.31 7,16.79 7,15Z" />
             </svg>
-            <span>→ Check Balance</span>
+            <span>→ Token Balance</span>
           </button>
           <button
             className={styles.subButton}
-            onClick={() => handleCommand("monad network")}
+            onClick={() => handleCommand("monad swap")}
+          >
+            <svg className={styles.subButtonIcon} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+              <path d="M7.99,17V10H9.99V17H7.99M11.99,17V6H13.99V17H11.99M15.99,17V13H17.99V17H15.99M19.99,2H3.99C2.89,2 2,2.9 2,4V20A2,2 0 0,0 4,22H20A2,2 0 0,0 22,20V4C22,2.9 21.1,2 20,2H19.99Z" />
+            </svg>
+            <span>→ Swap Tokens</span>
+          </button>
+          <button
+            className={styles.subButton}
+            onClick={() => handleCommand("monad quote")}
+          >
+            <svg className={styles.subButtonIcon} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+              <path d="M7,15H9C9,16.08 10.37,17 12,17C13.63,17 15,16.08 15,15C15,13.9 13.96,13.5 11.76,12.97C9.64,12.44 7,11.78 7,9C7,7.21 8.47,5.69 10.5,5.18V3H13.5V5.18C15.53,5.69 17,7.21 17,9H15C15,7.92 13.63,7 12,7C10.37,7 9,7.92 9,9C9,10.1 10.04,10.5 12.24,11.03C14.36,11.56 17,12.22 17,15C17,16.79 15.53,18.31 13.5,18.82V21H10.5V18.82C8.47,18.31 7,16.79 7,15Z" />
+            </svg>
+            <span>→ Price Quote</span>
+          </button>
+          <button
+            className={styles.subButton}
+            onClick={() => handleCommand("monad exchanges")}
           >
             <svg className={styles.subButtonIcon} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
               <path d="M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4M12,6A6,6 0 0,1 18,12A6,6 0 0,1 12,18A6,6 0 0,1 6,12A6,6 0 0,1 12,6M12,8A4,4 0 0,0 8,12A4,4 0 0,0 12,16A4,4 0 0,0 16,12A4,4 0 0,0 12,8Z" />
             </svg>
-            <span>→ Network Info</span>
-          </button>
-          <button
-            className={styles.subButton}
-            onClick={() => handleCommand("monad staking")}
-          >
-            <svg className={styles.subButtonIcon} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
-              <path d="M12,2L13.09,8.26L22,9L13.09,9.74L12,16L10.91,9.74L2,9L10.91,8.26L12,2Z" />
-            </svg>
-            <span>→ Staking</span>
-          </button>
-          <button
-            className={styles.subButton}
-            onClick={() => handleCommand("monad governance")}
-          >
-            <svg className={styles.subButtonIcon} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
-              <path d="M19,3H5C3.89,3 3,3.89 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5C21,3.89 20.1,3 19,3M19,5V19H5V5H19M10,17L6,13L7.41,11.59L10,14.17L16.59,7.58L18,9" />
-            </svg>
-            <span>→ Governance</span>
-          </button>
-          <button
-            className={styles.subButton}
-            onClick={() => handleCommand("monad help")}
-          >
-            <svg className={styles.subButtonIcon} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
-              <path d="M11,18H13V16H11V18M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,6A4,4 0 0,0 8,10H10A2,2 0 0,1 12,8A2,2 0 0,1 14,10C14,12 11,11.75 11,15H13C13,12.75 16,12.5 16,10A4,4 0 0,0 12,6Z" />
-            </svg>
-            <span>→ MONAD Help</span>
+            <span>→ View Exchanges</span>
           </button>
         </div>
       </details>

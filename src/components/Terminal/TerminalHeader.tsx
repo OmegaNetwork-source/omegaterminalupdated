@@ -222,16 +222,22 @@ export function TerminalHeader({
             aria-label="Change AI Provider"
             type="button"
           >
-            {aiProvider === "off" ? "Off" : aiProvider === "near" ? "NEAR AI" : "OpenAI"}
+            {aiProvider === "off" ? "Off" : aiProvider === "near" ? "NEAR AI" : aiProvider === "openai" ? "OpenAI" : "Companion"}
           </button>
         ) : (
           <select
             value={aiProvider}
             onChange={async (e) => {
-              onAiProviderChange(e.target.value as AIProvider);
+              const newProvider = e.target.value as AIProvider;
+              onAiProviderChange(newProvider);
               try {
                 await soundEffects.playAIToggleSound();
               } catch {}
+              // Open companion panel if companion is selected
+              if (newProvider === "companion" && typeof window !== "undefined") {
+                // Use a global function to open companion panel
+                (window as any).__omegaOpenCompanion?.();
+              }
             }}
             className={`${styles.aiSelect} ${
               aiProvider === "off" ? styles.aiSelectOff : styles.aiSelectOn
@@ -240,6 +246,7 @@ export function TerminalHeader({
             <option value="off">Off</option>
             <option value="near">NEAR AI</option>
             <option value="openai">OpenAI</option>
+            <option value="companion">Companion</option>
           </select>
         )}
 

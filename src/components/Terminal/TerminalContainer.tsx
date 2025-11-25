@@ -157,6 +157,21 @@ export function TerminalContainer() {
     };
   }, []);
 
+  // Expose AI provider setter globally for companion panel
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    
+    (window as any).__omegaSetAIProvider = (provider: string) => {
+      setAiProvider(provider as typeof aiProvider);
+    };
+    
+    return () => {
+      if (typeof window !== "undefined") {
+        delete (window as any).__omegaSetAIProvider;
+      }
+    };
+  }, [setAiProvider]);
+
   // Theme cycle handler
   const handleThemeCycle = useCallback(() => {
     toggleTheme();

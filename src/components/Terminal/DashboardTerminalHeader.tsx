@@ -142,10 +142,15 @@ export function DashboardTerminalHeader({
           title="Select AI Provider"
           value={aiProvider}
           onChange={async (e) => {
-            onAiProviderChange(e.target.value as AIProvider);
+            const newProvider = e.target.value as AIProvider;
+            onAiProviderChange(newProvider);
             try {
               await soundEffects.playAIToggleSound();
             } catch {}
+            // Open companion panel if companion is selected
+            if (newProvider === "companion" && typeof window !== "undefined") {
+              (window as any).__omegaOpenCompanion?.();
+            }
           }}
           className={`${styles.aiSelect} ${
             aiProvider === "off" ? styles.aiSelectOff : styles.aiSelectOn
@@ -154,6 +159,7 @@ export function DashboardTerminalHeader({
           <option value="off">AI: Off</option>
           <option value="near">AI: NEAR</option>
           <option value="openai">AI: OpenAI</option>
+          <option value="companion">Companion</option>
         </select>
 
         {/* View Mode Toggle */}
