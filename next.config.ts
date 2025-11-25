@@ -9,9 +9,7 @@ const withBundleAnalyzer = bundleAnalyzer({
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   devIndicators: {
-    appIsrStatus: false,
-    buildActivity: false,
-    buildActivityPosition: "bottom-right",
+    position: "bottom-right",
   },
 
   // Output file tracing root to silence workspace warning
@@ -245,6 +243,10 @@ const nextConfig: NextConfig = {
           __dirname,
           "src/lib/stubs/telegram-bridge.ts"
         ),
+        // Ignore React Native Async Storage in browser
+        "@react-native-async-storage/async-storage": false,
+        // Ignore pino-pretty in browser
+        "pino-pretty": false,
         // Force use of browser client for Aptos - multiple aliases to catch all cases
         "@aptos-labs/aptos-client": browserClientPath,
         // Also alias common variations
