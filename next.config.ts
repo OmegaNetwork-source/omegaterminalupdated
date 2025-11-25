@@ -35,6 +35,9 @@ const nextConfig: NextConfig = {
     "base-x",
     "@walletconnect/universal-provider",
     "@walletconnect/ethereum-provider",
+    "@coinbase/cdp-sdk",
+    "@solana-program/token",
+    "@solana-program/system",
   ],
 
   // Image optimization configuration
