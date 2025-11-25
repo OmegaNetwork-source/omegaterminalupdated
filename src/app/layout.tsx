@@ -11,6 +11,8 @@ import { MultiChainProvider } from "@/providers/MultiChainProvider";
 import { ProviderShell } from "@/providers/ProviderShell";
 import { MultiNetworkConnectorHost } from "@/components/Wallet/MultiNetworkConnectorHost";
 import { AptosWalletProvider } from "@/providers/AptosWalletProvider";
+import ContextProvider from "../../context";
+import { headers } from "next/headers";
 import WebVitals from "./_components/WebVitals";
 
 /**
@@ -48,17 +50,22 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
+  interactiveWidget: "resizes-content",
 };
 
 /**
  * Root layout component for the application
  * This is a Server Component that wraps all pages
  */
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  // Retrieve cookies from request headers on the server
+  const headersObj = await headers();
+  const cookies = headersObj.get("cookie");
+
   return (
     <html lang="en">
       <head>
@@ -77,24 +84,26 @@ export default function RootLayout({
       </head>
       <body suppressHydrationWarning data-omega-hydrated="true">
         <WebVitals />
-        <SoundEffectsProvider>
-          <ThemeProvider>
-            <CustomizerProvider>
-              <ViewModeProvider>
-                <GUIThemeProvider>
-                  <WalletProvider>
-                    <MultiNetworkConnectorHost />
-                    <MultiChainProvider>
-                      <AptosWalletProvider>
-                        <ProviderShell>{children}</ProviderShell>
-                      </AptosWalletProvider>
-                    </MultiChainProvider>
-                  </WalletProvider>
-                </GUIThemeProvider>
-              </ViewModeProvider>
-            </CustomizerProvider>
-          </ThemeProvider>
-        </SoundEffectsProvider>
+        <ContextProvider cookies={cookies}>
+          <SoundEffectsProvider>
+            <ThemeProvider>
+              <CustomizerProvider>
+                <ViewModeProvider>
+                  <GUIThemeProvider>
+                    <WalletProvider>
+                      <MultiNetworkConnectorHost />
+                      <MultiChainProvider>
+                        <AptosWalletProvider>
+                          <ProviderShell>{children}</ProviderShell>
+                        </AptosWalletProvider>
+                      </MultiChainProvider>
+                    </WalletProvider>
+                  </GUIThemeProvider>
+                </ViewModeProvider>
+              </CustomizerProvider>
+            </ThemeProvider>
+          </SoundEffectsProvider>
+        </ContextProvider>
       </body>
     </html>
   );

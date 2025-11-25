@@ -8,6 +8,11 @@ const withBundleAnalyzer = bundleAnalyzer({
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  devIndicators: {
+    appIsrStatus: false,
+    buildActivity: false,
+    buildActivityPosition: "bottom-right",
+  },
 
   // Output file tracing root to silence workspace warning
   outputFileTracingRoot: require("path").join(__dirname),
@@ -26,8 +31,13 @@ const nextConfig: NextConfig = {
     },
   },
 
-  // Transpile rubic-sdk to handle CommonJS module properly
-  transpilePackages: ["rubic-sdk"],
+  // Transpile packages that need special handling
+  transpilePackages: [
+    "rubic-sdk",
+    "base-x",
+    "@walletconnect/universal-provider",
+    "@walletconnect/ethereum-provider",
+  ],
 
   // Image optimization configuration
   images: {
@@ -113,6 +123,7 @@ const nextConfig: NextConfig = {
         https: require.resolve("https-browserify"),
         stream: require.resolve("stream-browserify"),
         crypto: require.resolve("crypto-browserify"),
+        "pino-pretty": false,
       };
 
       // Configure webpack to prefer browser builds
@@ -149,6 +160,33 @@ const nextConfig: NextConfig = {
       config.module.rules.push({
         test: /[\\/]node_modules[\\/]rubic-sdk[\\/]/,
         type: "javascript/auto",
+        resolve: {
+          fullySpecified: false,
+        },
+      });
+
+      // Add rule to handle base-x properly
+      config.module.rules.push({
+        test: /[\\/]node_modules[\\/]base-x[\\/]/,
+        type: "javascript/auto",
+        resolve: {
+          fullySpecified: false,
+        },
+      });
+
+      // Add rule to handle @walletconnect/universal-provider properly
+      config.module.rules.push({
+        test: /[\\/]node_modules[\\/]@walletconnect[\\/]universal-provider[\\/]/,
+        type: "javascript/esm",
+        resolve: {
+          fullySpecified: false,
+        },
+      });
+
+      // Add rule to handle @walletconnect/ethereum-provider properly
+      config.module.rules.push({
+        test: /[\\/]node_modules[\\/]@walletconnect[\\/]ethereum-provider[\\/]/,
+        type: "javascript/esm",
         resolve: {
           fullySpecified: false,
         },
@@ -213,6 +251,16 @@ const nextConfig: NextConfig = {
         "@aptos-labs/aptos-client/dist/node/index.node.mjs": browserClientPath,
         "@aptos-labs/aptos-client/dist/node/index.node.js":
           browserClientPath.replace(/\.mjs$/, ".js"),
+        // Fix base-x import issue for crypto libraries
+        "base-x": require.resolve("base-x"),
+        "@walletconnect/universal-provider$": path.join(
+          __dirname,
+          "src/lib/polyfills/walletConnectUniversalProvider.ts"
+        ),
+        "@walletconnect/universal-provider/original$": path.join(
+          __dirname,
+          "node_modules/@walletconnect/universal-provider/dist/index.js"
+        ),
       };
 
       // Ignore node-specific modules from Aptos SDK and force browser version
@@ -268,6 +316,11 @@ const nextConfig: NextConfig = {
         new webpack.NormalModuleReplacementPlugin(
           /^@aptos-labs\/aptos-client$/,
           browserClientMjs
+        ),
+        // Fix base-x import issue for crypto libraries
+        new webpack.NormalModuleReplacementPlugin(
+          /^base-x$/,
+          require.resolve("base-x")
         )
       );
 

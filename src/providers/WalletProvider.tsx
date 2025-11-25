@@ -37,11 +37,18 @@ import React, {
 } from "react";
 import { BrowserProvider, JsonRpcProvider, Wallet } from "ethers";
 import {
+  useAppKitAccount,
+  useAppKitNetwork,
+  useAppKitProvider,
+  useDisconnect as useAppKitDisconnect,
+} from "@reown/appkit/react";
+import {
   WalletState,
   WalletContextValue,
   WalletProviderProps,
   WalletConnectResult,
   InitializeExternalWalletParams,
+  EthereumProvider,
 } from "@/types/wallet";
 import {
   connectMetaMask as connectMetaMaskModule,
@@ -51,6 +58,7 @@ import {
   addOmegaNetwork as addOmegaNetworkModule,
 } from "@/lib/wallet";
 import { getEthereumProvider } from "@/lib/wallet/detection";
+import { useMobileDetection } from "@/hooks/useMobileDetection";
 
 /**
  * Get network name from chainId
@@ -101,6 +109,13 @@ export function WalletProvider({ children }: WalletProviderProps) {
   >(null);
   const [signer, setSigner] = useState<any | null>(null);
   const [sessionWallet, setSessionWallet] = useState<Wallet | null>(null);
+  const { isMobile } = useMobileDetection();
+  const { address: appKitAddress, isConnected: appKitConnected } =
+    useAppKitAccount({ namespace: "eip155" });
+  const { walletProvider: appKitWalletProvider } =
+    useAppKitProvider<EthereumProvider>("eip155");
+  const { caipNetwork, chainId: appKitChainId } = useAppKitNetwork();
+  const { disconnect: disconnectAppKit } = useAppKitDisconnect();
 
   // Refs for stable event listener wrappers (Comment 1)
   const accountsChangedHandlerRef = useRef<(accounts: string[]) => void>(
@@ -231,7 +246,9 @@ export function WalletProvider({ children }: WalletProviderProps) {
           const network = await result.provider.getNetwork();
 
           // Get network name from chainId
-          const networkName = getNetworkNameFromChainId(Number(network.chainId));
+          const networkName = getNetworkNameFromChainId(
+            Number(network.chainId)
+          );
 
           // Update state
           setWalletState({
@@ -299,7 +316,8 @@ export function WalletProvider({ children }: WalletProviderProps) {
       setSigner(newSigner);
 
       // Use provided networkName or get from chainId
-      const finalNetworkName = networkName || getNetworkNameFromChainId(chainId);
+      const finalNetworkName =
+        networkName || getNetworkNameFromChainId(chainId);
 
       setWalletState({
         type: walletType,
@@ -331,6 +349,103 @@ export function WalletProvider({ children }: WalletProviderProps) {
     },
     [handleGetBalance, onAccountsChanged, onChainChanged]
   );
+
+  useEffect(() => {
+    if (!isMobile) {
+      return;
+    }
+
+    const resolveChainId = (): number | null => {
+      if (typeof appKitChainId === "number") {
+        return appKitChainId;
+      }
+      if (typeof appKitChainId === "string") {
+        const hexMatch = appKitChainId.match(/^0x[0-9a-f]+$/i);
+        if (hexMatch) {
+          return parseInt(appKitChainId, 16);
+        }
+        const parts = appKitChainId.split(":");
+        const numericPart = parts[parts.length - 1];
+        const parsed = parseInt(numericPart, 10);
+        if (!Number.isNaN(parsed)) {
+          return parsed;
+        }
+      }
+      if (typeof caipNetwork?.id === "number") {
+        return caipNetwork.id;
+      }
+      if (typeof caipNetwork?.id === "string") {
+        const parts = caipNetwork.id.split(":");
+        const numericPart = parts[parts.length - 1];
+        const parsed = parseInt(numericPart, 10);
+        if (!Number.isNaN(parsed)) {
+          return parsed;
+        }
+      }
+      return null;
+    };
+
+    const normalizedChainId = resolveChainId();
+
+    if (
+      appKitConnected &&
+      appKitAddress &&
+      appKitWalletProvider &&
+      normalizedChainId
+    ) {
+      const alreadySynced =
+        walletState.type === "appkit" &&
+        walletState.address?.toLowerCase() === appKitAddress.toLowerCase() &&
+        walletState.chainId === normalizedChainId;
+
+      if (!alreadySynced) {
+        const ethersProvider = new BrowserProvider(
+          appKitWalletProvider as unknown as any
+        );
+
+        void handleInitializeExternalConnection({
+          provider: ethersProvider,
+          address: appKitAddress,
+          chainId: normalizedChainId,
+          walletType: "appkit",
+          networkName: caipNetwork?.name,
+        });
+      }
+
+      return;
+    }
+
+    if (
+      walletState.type === "appkit" &&
+      walletState.isConnected &&
+      (!appKitConnected || !appKitAddress)
+    ) {
+      setProvider(null);
+      setSigner(null);
+      setWalletState((prev) => ({
+        ...prev,
+        type: null,
+        address: null,
+        isConnected: false,
+        balance: null,
+        chainId: null,
+        networkName: null,
+      }));
+    }
+  }, [
+    appKitConnected,
+    appKitAddress,
+    appKitWalletProvider,
+    appKitChainId,
+    caipNetwork?.id,
+    caipNetwork?.name,
+    handleInitializeExternalConnection,
+    isMobile,
+    walletState.address,
+    walletState.chainId,
+    walletState.isConnected,
+    walletState.type,
+  ]);
 
   /**
    * Create new session wallet
@@ -484,6 +599,10 @@ export function WalletProvider({ children }: WalletProviderProps) {
           ethereumProvider.removeListener("accountsChanged", onAccountsChanged);
           ethereumProvider.removeListener("chainChanged", onChainChanged);
         }
+      } else if (walletState.type === "appkit") {
+        disconnectAppKit().catch((error) => {
+          console.warn("AppKit disconnect failed", error);
+        });
       }
 
       // Clear state
@@ -510,7 +629,7 @@ export function WalletProvider({ children }: WalletProviderProps) {
     } catch (error: any) {
       console.error("Disconnect error:", error);
     }
-  }, [walletState.type, onAccountsChanged, onChainChanged]);
+  }, [walletState.type, onAccountsChanged, onChainChanged, disconnectAppKit]);
 
   /**
    * Add Omega Network to MetaMask
@@ -594,7 +713,9 @@ export function WalletProvider({ children }: WalletProviderProps) {
         // Get the current provider
         const ethereumProvider = getEthereumProvider();
         if (!ethereumProvider) {
-          console.warn("[WalletProvider] No ethereum provider available on chain change");
+          console.warn(
+            "[WalletProvider] No ethereum provider available on chain change"
+          );
           return;
         }
 
@@ -625,7 +746,9 @@ export function WalletProvider({ children }: WalletProviderProps) {
           localStorage.setItem("walletNetworkName", networkName);
         }
 
-        console.log(`[WalletProvider] Chain changed to ${networkName || chainId}`);
+        console.log(
+          `[WalletProvider] Chain changed to ${networkName || chainId}`
+        );
       } catch (error: any) {
         console.error("[WalletProvider] Error handling chain change:", error);
         // On error, update chainId but keep existing connection

@@ -10,12 +10,19 @@
 
 .container {
   width: 100vw;
+  min-height: 100vh;
   height: 100vh;
+  height: 100dvh;
   padding: 20px;
   background: linear-gradient(
-    135deg, 
-    var(--palette-bg, #000) 0%, 
-    color-mix(in srgb, var(--palette-bg, #000) 90%, var(--palette-primary, #00bcf2) 10%) 100%
+    135deg,
+    var(--palette-bg, #000) 0%,
+    color-mix(
+        in srgb,
+        var(--palette-bg, #000) 90%,
+        var(--palette-primary, #00bcf2) 10%
+      )
+      100%
   );
   position: relative;
   display: flex;
@@ -37,7 +44,10 @@
   justify-content: center;
   background: radial-gradient(
     circle at center,
-    var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #00bcf2) 18%, transparent)),
+    var(
+      --palette-primary-glow,
+      color-mix(in srgb, var(--palette-primary, #00bcf2) 18%, transparent)
+    ),
     color-mix(in srgb, var(--palette-bg, #000) 92%, transparent)
   );
   color: var(--palette-secondary, rgba(0, 255, 214, 0.95));
@@ -51,10 +61,15 @@
   padding: 18px 32px;
   border: 1px solid var(--palette-secondary, rgba(0, 255, 214, 0.42));
   border-radius: 16px;
-  background: color-mix(in srgb, var(--palette-primary, #00bcf2) 8%, transparent);
+  background: color-mix(
+    in srgb,
+    var(--palette-primary, #00bcf2) 8%,
+    transparent
+  );
   box-shadow: 0 24px 48px var(--palette-primary-glow, rgba(0, 188, 242, 0.25));
   animation: pulseGlow 1.6s ease-in-out infinite;
-  transition: border-color 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+  transition: border-color 0.3s ease, background-color 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
 @keyframes pulseGlow {
@@ -65,7 +80,8 @@
   }
 
   50% {
-    box-shadow: 0 24px 60px var(--palette-secondary-glow, rgba(0, 255, 214, 0.35));
+    box-shadow: 0 24px 60px
+      var(--palette-secondary-glow, rgba(0, 255, 214, 0.35));
     transform: translateY(-4px);
   }
 }
@@ -76,8 +92,10 @@
   flex-direction: column;
   background: linear-gradient(
     135deg,
-    color-mix(in srgb, var(--palette-bg, rgba(0, 12, 28, 1)) 70%, transparent) 0%,
-    color-mix(in srgb, var(--palette-bg, rgba(0, 6, 14, 1)) 95%, transparent) 100%
+    color-mix(in srgb, var(--palette-bg, rgba(0, 12, 28, 1)) 70%, transparent)
+      0%,
+    color-mix(in srgb, var(--palette-bg, rgba(0, 6, 14, 1)) 95%, transparent)
+      100%
   );
   border: 1px solid var(--palette-border, rgba(0, 188, 242, 0.25));
   border-radius: 20px;
@@ -116,7 +134,11 @@
 .embedded {
   width: 100%;
   height: 100%;
-  background: color-mix(in srgb, var(--palette-bg, rgba(21, 21, 32, 1)) 70%, transparent);
+  background: color-mix(
+    in srgb,
+    var(--palette-bg, rgba(21, 21, 32, 1)) 70%,
+    transparent
+  );
   backdrop-filter: blur(20px);
   border: 1px solid var(--palette-border, rgba(0, 212, 255, 0.15));
   border-radius: 12px;
@@ -151,7 +173,11 @@
 .tabBar {
   display: flex;
   align-items: center;
-  background: color-mix(in srgb, var(--palette-bg, rgba(17, 17, 17, 1)) 95%, transparent);
+  background: color-mix(
+    in srgb,
+    var(--palette-bg, rgba(17, 17, 17, 1)) 95%,
+    transparent
+  );
   border-bottom: 1px solid var(--palette-primary, #00bcf2);
   box-shadow: 0 1px 10px var(--palette-primary-glow, rgba(0, 188, 242, 0.3));
   transition: border-color 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
@@ -194,7 +220,11 @@
    ----------------------------------------------------------------------------- */
 
 .infoBox {
-  background: color-mix(in srgb, var(--palette-primary, #00bcf2) 10%, transparent);
+  background: color-mix(
+    in srgb,
+    var(--palette-primary, #00bcf2) 10%,
+    transparent
+  );
   border: 1px solid var(--palette-primary, #00bcf2);
   color: var(--palette-primary, #00bcf2);
   padding: 10px 16px;
@@ -202,7 +232,8 @@
   margin: 0 0 12px 0;
   font-size: 15px;
   box-shadow: 0 0 10px var(--palette-primary-glow, rgba(0, 188, 242, 0.3));
-  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+  transition: background-color 0.3s ease, border-color 0.3s ease,
+    color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .commandInitBanner {
@@ -210,13 +241,18 @@
   padding: 12px 18px;
   border-radius: 12px;
   border: 1px dashed var(--palette-secondary, rgba(0, 255, 214, 0.4));
-  background: color-mix(in srgb, var(--palette-primary, #00bcf2) 8%, transparent);
+  background: color-mix(
+    in srgb,
+    var(--palette-primary, #00bcf2) 8%,
+    transparent
+  );
   color: var(--palette-secondary, rgba(0, 255, 214, 0.95));
   font-size: 0.95rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   text-align: center;
-  transition: border-color 0.3s ease, background-color 0.3s ease, color 0.3s ease;
+  transition: border-color 0.3s ease, background-color 0.3s ease,
+    color 0.3s ease;
 }
 
 .commandErrorBanner {
@@ -293,21 +329,56 @@
   background: linear-gradient(
     160deg,
     var(--palette-bg, rgba(10, 10, 20, 0.98)) 0%,
-    color-mix(in srgb, var(--palette-bg, rgba(10, 10, 20, 0.98)) 90%, var(--palette-primary, #00bcf2) 10%) 100%
+    color-mix(
+        in srgb,
+        var(--palette-bg, rgba(10, 10, 20, 0.98)) 90%,
+        var(--palette-primary, #00bcf2) 10%
+      )
+      100%
   );
   color: var(--palette-text, rgba(245, 238, 220, 0.98));
-  border: 1px solid var(--palette-border, color-mix(in srgb, var(--palette-primary, rgba(255, 215, 0, 1)) 30%, transparent));
-  box-shadow: 0 28px 64px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #00bcf2) 18%, transparent));
+  border: 1px solid
+    var(
+      --palette-border,
+      color-mix(
+        in srgb,
+        var(--palette-primary, rgba(255, 215, 0, 1)) 30%,
+        transparent
+      )
+    );
+  box-shadow: 0 28px 64px
+    var(
+      --palette-primary-glow,
+      color-mix(in srgb, var(--palette-primary, #00bcf2) 18%, transparent)
+    );
   transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 :global(body.theme-executive) .terminalWrapper {
   background: linear-gradient(
     135deg,
-    color-mix(in srgb, var(--palette-surface, rgba(18, 22, 36, 1)) 90%, transparent) 0%,
-    color-mix(in srgb, var(--palette-surface, rgba(8, 10, 16, 1)) 90%, transparent) 100%
+    color-mix(
+        in srgb,
+        var(--palette-surface, rgba(18, 22, 36, 1)) 90%,
+        transparent
+      )
+      0%,
+    color-mix(
+        in srgb,
+        var(--palette-surface, rgba(8, 10, 16, 1)) 90%,
+        transparent
+      )
+      100%
   );
-  border: 1px solid var(--palette-border, color-mix(in srgb, var(--palette-primary, rgba(255, 215, 0, 1)) 35%, transparent));
+  border: 1px solid
+    var(
+      --palette-border,
+      color-mix(
+        in srgb,
+        var(--palette-primary, rgba(255, 215, 0, 1)) 35%,
+        transparent
+      )
+    );
   box-shadow: none;
   transition: border-color 0.3s ease, background 0.3s ease;
 }
@@ -316,19 +387,49 @@
   background: linear-gradient(
     160deg,
     var(--palette-bg, rgba(10, 12, 18, 0.92)) 0%,
-    color-mix(in srgb, var(--palette-bg, rgba(10, 12, 18, 0.92)) 90%, var(--palette-primary, #00bcf2) 10%) 100%
+    color-mix(
+        in srgb,
+        var(--palette-bg, rgba(10, 12, 18, 0.92)) 90%,
+        var(--palette-primary, #00bcf2) 10%
+      )
+      100%
   );
   color: var(--palette-text, rgba(235, 242, 255, 0.92));
-  border: 1px solid var(--palette-border, color-mix(in srgb, var(--palette-primary, rgba(98, 0, 255, 1)) 30%, transparent));
+  border: 1px solid
+    var(
+      --palette-border,
+      color-mix(
+        in srgb,
+        var(--palette-primary, rgba(98, 0, 255, 1)) 30%,
+        transparent
+      )
+    );
   box-shadow: none;
   transition: background 0.3s ease, border-color 0.3s ease;
 }
 
 :global(body.theme-modern) .tabBar {
-  background: color-mix(in srgb, var(--palette-surface, rgba(10, 12, 22, 1)) 80%, transparent);
-  border: 1px solid color-mix(in srgb, var(--palette-primary, rgba(98, 0, 255, 1)) 35%, transparent);
+  background: color-mix(
+    in srgb,
+    var(--palette-surface, rgba(10, 12, 22, 1)) 80%,
+    transparent
+  );
+  border: 1px solid
+    color-mix(
+      in srgb,
+      var(--palette-primary, rgba(98, 0, 255, 1)) 35%,
+      transparent
+    );
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08),
-    0 16px 32px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, rgba(98, 0, 255, 1)) 18%, transparent));
+    0 16px 32px
+      var(
+        --palette-primary-glow,
+        color-mix(
+          in srgb,
+          var(--palette-primary, rgba(98, 0, 255, 1)) 18%,
+          transparent
+        )
+      );
   transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
@@ -336,10 +437,23 @@
   background: linear-gradient(
     135deg,
     var(--palette-bg, rgba(0, 0, 0, 0.95)) 0%,
-    color-mix(in srgb, var(--palette-bg, rgba(0, 0, 0, 0.95)) 95%, var(--palette-primary, rgba(57, 255, 20, 1)) 5%) 100%
+    color-mix(
+        in srgb,
+        var(--palette-bg, rgba(0, 0, 0, 0.95)) 95%,
+        var(--palette-primary, rgba(57, 255, 20, 1)) 5%
+      )
+      100%
   );
   color: var(--palette-primary, #39ff14);
-  border: 1px solid var(--palette-border, color-mix(in srgb, var(--palette-primary, rgba(57, 255, 20, 1)) 30%, transparent));
+  border: 1px solid
+    var(
+      --palette-border,
+      color-mix(
+        in srgb,
+        var(--palette-primary, rgba(57, 255, 20, 1)) 30%,
+        transparent
+      )
+    );
   box-shadow: none;
   transition: background 0.3s ease, border-color 0.3s ease, color 0.3s ease;
 }
@@ -353,10 +467,23 @@
   background: linear-gradient(
     135deg,
     var(--palette-bg, rgba(24, 18, 0, 0.97)) 0%,
-    color-mix(in srgb, var(--palette-bg, rgba(24, 18, 0, 0.97)) 95%, var(--palette-primary, rgba(255, 170, 0, 1)) 5%) 100%
+    color-mix(
+        in srgb,
+        var(--palette-bg, rgba(24, 18, 0, 0.97)) 95%,
+        var(--palette-primary, rgba(255, 170, 0, 1)) 5%
+      )
+      100%
   );
   color: var(--palette-primary, #ffa000);
-  border: 1px solid var(--palette-border, color-mix(in srgb, var(--palette-primary, rgba(255, 170, 0, 1)) 30%, transparent));
+  border: 1px solid
+    var(
+      --palette-border,
+      color-mix(
+        in srgb,
+        var(--palette-primary, rgba(255, 170, 0, 1)) 30%,
+        transparent
+      )
+    );
   box-shadow: none;
   transition: background 0.3s ease, border-color 0.3s ease, color 0.3s ease;
 }
@@ -365,10 +492,23 @@
   background: linear-gradient(
     135deg,
     var(--palette-bg, rgba(1, 36, 86, 0.96)) 0%,
-    color-mix(in srgb, var(--palette-bg, rgba(1, 36, 86, 0.96)) 95%, var(--palette-primary, rgba(0, 188, 242, 1)) 5%) 100%
+    color-mix(
+        in srgb,
+        var(--palette-bg, rgba(1, 36, 86, 0.96)) 95%,
+        var(--palette-primary, rgba(0, 188, 242, 1)) 5%
+      )
+      100%
   );
   color: var(--palette-text, #ecf6ff);
-  border: 1px solid var(--palette-border, color-mix(in srgb, var(--palette-primary, rgba(0, 188, 242, 1)) 30%, transparent));
+  border: 1px solid
+    var(
+      --palette-border,
+      color-mix(
+        in srgb,
+        var(--palette-primary, rgba(0, 188, 242, 1)) 30%,
+        transparent
+      )
+    );
   box-shadow: none;
   transition: background 0.3s ease, border-color 0.3s ease, color 0.3s ease;
 }
@@ -378,7 +518,12 @@
   background: linear-gradient(
     135deg,
     var(--palette-bg, rgba(16, 26, 46, 0.9)) 0%,
-    color-mix(in srgb, var(--palette-bg, rgba(16, 26, 46, 0.9)) 90%, var(--palette-primary, #00bcf2) 10%) 100%
+    color-mix(
+        in srgb,
+        var(--palette-bg, rgba(16, 26, 46, 0.9)) 90%,
+        var(--palette-primary, #00bcf2) 10%
+      )
+      100%
   );
   border: 1px solid var(--palette-border, rgba(0, 188, 242, 0.32));
   transition: border-color 0.3s ease, background 0.3s ease;
@@ -386,28 +531,68 @@
 
 :global(body.light-mode) .container {
   background: var(--palette-bg, rgba(248, 250, 255, 0.95));
-  border: 1px solid var(--palette-border, color-mix(in srgb, var(--palette-primary, rgba(0, 81, 213, 1)) 20%, transparent));
+  border: 1px solid
+    var(
+      --palette-border,
+      color-mix(
+        in srgb,
+        var(--palette-primary, rgba(0, 81, 213, 1)) 20%,
+        transparent
+      )
+    );
   color: var(--palette-text, rgba(18, 22, 38, 0.92));
   box-shadow: none;
   transition: background 0.3s ease, border-color 0.3s ease, color 0.3s ease;
 }
 
 :global(body.light-mode) .terminalWrapper {
-  background: color-mix(in srgb, var(--palette-surface, rgba(240, 244, 255, 1)) 92%, transparent);
-  border: 1px solid var(--palette-border, color-mix(in srgb, var(--palette-primary, rgba(0, 81, 213, 1)) 20%, transparent));
+  background: color-mix(
+    in srgb,
+    var(--palette-surface, rgba(240, 244, 255, 1)) 92%,
+    transparent
+  );
+  border: 1px solid
+    var(
+      --palette-border,
+      color-mix(
+        in srgb,
+        var(--palette-primary, rgba(0, 81, 213, 1)) 20%,
+        transparent
+      )
+    );
   box-shadow: none;
   transition: background 0.3s ease, border-color 0.3s ease;
 }
 
 :global(body.light-mode) .tabBar {
-  background: color-mix(in srgb, var(--palette-surface, rgba(240, 244, 255, 1)) 85%, transparent);
-  border: 1px solid var(--palette-border, color-mix(in srgb, var(--palette-primary, rgba(0, 81, 213, 1)) 20%, transparent));
+  background: color-mix(
+    in srgb,
+    var(--palette-surface, rgba(240, 244, 255, 1)) 85%,
+    transparent
+  );
+  border: 1px solid
+    var(
+      --palette-border,
+      color-mix(
+        in srgb,
+        var(--palette-primary, rgba(0, 81, 213, 1)) 20%,
+        transparent
+      )
+    );
   transition: background 0.3s ease, border-color 0.3s ease;
 }
 
 :global(body.modern-ui-futuristic) .container {
   background: var(--modern-bg-primary, rgba(8, 14, 32, 0.9));
-  border: 1px solid var(--palette-border, color-mix(in srgb, var(--palette-primary, var(--modern-border, rgba(0, 255, 210, 1))) 32%, transparent));
+  border: 1px solid
+    var(
+      --palette-border,
+      color-mix(
+        in srgb,
+        var(--palette-primary, var(--modern-border, rgba(0, 255, 210, 1))) 32%,
+        transparent
+      )
+    );
   color: var(--modern-text-primary, rgba(245, 250, 255, 0.95));
   box-shadow: none;
   transition: border-color 0.3s ease, background 0.3s ease;
@@ -415,21 +600,53 @@
 
 :global(body.modern-ui-futuristic) .terminalWrapper {
   background: var(--modern-bg-secondary, rgba(6, 12, 28, 0.92));
-  border: 1px solid var(--palette-border, color-mix(in srgb, var(--palette-primary, var(--modern-border, rgba(0, 255, 210, 1))) 28%, transparent));
+  border: 1px solid
+    var(
+      --palette-border,
+      color-mix(
+        in srgb,
+        var(--palette-primary, var(--modern-border, rgba(0, 255, 210, 1))) 28%,
+        transparent
+      )
+    );
   box-shadow: none;
   transition: border-color 0.3s ease, background 0.3s ease;
 }
 
 :global(body.modern-ui-futuristic) .tabBar {
-  background: color-mix(in srgb, var(--palette-surface, rgba(8, 18, 36, 1)) 85%, transparent);
-  border: 1px solid var(--palette-border, color-mix(in srgb, var(--palette-primary, rgba(0, 255, 210, 1)) 25%, transparent));
+  background: color-mix(
+    in srgb,
+    var(--palette-surface, rgba(8, 18, 36, 1)) 85%,
+    transparent
+  );
+  border: 1px solid
+    var(
+      --palette-border,
+      color-mix(
+        in srgb,
+        var(--palette-primary, rgba(0, 255, 210, 1)) 25%,
+        transparent
+      )
+    );
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08),
-    0 18px 32px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, rgba(0, 255, 210, 1)) 12%, transparent));
+    0 18px 32px
+      var(
+        --palette-primary-glow,
+        color-mix(
+          in srgb,
+          var(--palette-primary, rgba(0, 255, 210, 1)) 12%,
+          transparent
+        )
+      );
   transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 :global(body.modern-ui-futuristic) .infoBox {
-  background: color-mix(in srgb, var(--palette-primary, rgba(0, 255, 210, 1)) 8%, transparent);
+  background: color-mix(
+    in srgb,
+    var(--palette-primary, rgba(0, 255, 210, 1)) 8%,
+    transparent
+  );
   border: 1px solid var(--palette-primary, rgba(0, 255, 210, 0.28));
   color: var(--modern-text-primary, rgba(245, 250, 255, 0.95));
   transition: background-color 0.3s ease, border-color 0.3s ease;
@@ -524,21 +741,6 @@
     flex: 1;
     min-height: 0;
     background: transparent;
-    /* Ensure terminal output doesn't go behind input + keyboard */
-    padding-bottom: 120px; /* Space for input section (~60px) + keyboard (~60px) */
-  }
-
-  /* When keyboard is open, adjust wrapper to account for input + keyboard */
-  /* ChatGPT style: input fixed at bottom, keyboard above */
-  :global(body.keyboard-open) .terminalWrapper {
-    padding-bottom: calc(70px + 280px); /* Input height (70px) + keyboard min-height (280px) */
-  }
-  
-  /* For larger keyboards, adjust dynamically */
-  @media (min-height: 600px) {
-    :global(body.keyboard-open) .terminalWrapper {
-      padding-bottom: calc(70px + 320px); /* More space for larger keyboard */
-    }
   }
 
   .tabBar {
@@ -648,6 +850,15 @@
     padding-bottom: max(16px, env(safe-area-inset-bottom));
     padding-left: max(16px, env(safe-area-inset-left));
     padding-right: max(16px, env(safe-area-inset-right));
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-right: env(safe-area-inset-right, 0px);
+    padding-bottom: 0;
+    padding-left: env(safe-area-inset-left, 0px);
   }
 }
 

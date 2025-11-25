@@ -129,6 +129,8 @@ export function WalletConnector() {
             <span className={styles.walletType}>
               {state.type === "metamask"
                 ? "MetaMask"
+                : state.type === "appkit"
+                ? "WalletConnect"
                 : state.type === "session"
                 ? "Session Wallet"
                 : "Imported Wallet"}

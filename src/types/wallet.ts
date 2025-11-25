@@ -11,11 +11,12 @@ import type { BrowserProvider, JsonRpcProvider } from "ethers";
 /**
  * Type of wallet connection
  * - 'metamask': Browser extension wallet (MetaMask)
+ * - 'appkit': Reown AppKit (WalletConnect v2) session
  * - 'session': Ephemeral wallet created in-session
  * - 'imported': Wallet imported via private key
  * - null: No wallet connected
  */
-export type WalletType = "metamask" | "session" | "imported" | null;
+export type WalletType = "metamask" | "appkit" | "session" | "imported" | null;
 
 /**
  * Wallet state interface containing all wallet-related state information

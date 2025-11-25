@@ -4,8 +4,8 @@
  */
 
 .chipsContainer {
-  margin-bottom: 8px;
-  padding: 0 4px;
+  margin: 0;
+  padding: 0;
   overflow: hidden;
   position: relative;
 }
@@ -34,7 +34,11 @@
   padding: 6px 12px;
   border-radius: 16px;
   border: 1px solid var(--palette-border, rgba(0, 188, 242, 0.3));
-  background: color-mix(in srgb, var(--palette-primary, #00bcf2) 8%, transparent);
+  background: color-mix(
+    in srgb,
+    var(--palette-primary, #00bcf2) 8%,
+    transparent
+  );
   color: var(--palette-primary, #00bcf2);
   font-size: 11px;
   font-weight: 500;
@@ -50,10 +54,18 @@
 
 .chip:hover,
 .chip:active {
-  background: color-mix(in srgb, var(--palette-primary, #00bcf2) 15%, transparent);
+  background: color-mix(
+    in srgb,
+    var(--palette-primary, #00bcf2) 15%,
+    transparent
+  );
   border-color: var(--palette-primary, #00bcf2);
   transform: translateY(-1px);
-  box-shadow: 0 2px 8px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #00bcf2) 20%, transparent));
+  box-shadow: 0 2px 8px
+    var(
+      --palette-primary-glow,
+      color-mix(in srgb, var(--palette-primary, #00bcf2) 20%, transparent)
+    );
 }
 
 .chip:active {
@@ -72,26 +84,41 @@
 /* Dark theme adjustments */
 :global(body.theme-dark) .chip {
   border-color: var(--palette-border, rgba(0, 212, 255, 0.3));
-  background: color-mix(in srgb, var(--palette-primary, #00d4ff) 8%, transparent);
+  background: color-mix(
+    in srgb,
+    var(--palette-primary, #00d4ff) 8%,
+    transparent
+  );
   color: var(--palette-primary, #00d4ff);
 }
 
 :global(body.theme-dark) .chip:hover,
 :global(body.theme-dark) .chip:active {
-  background: color-mix(in srgb, var(--palette-primary, #00d4ff) 15%, transparent);
+  background: color-mix(
+    in srgb,
+    var(--palette-primary, #00d4ff) 15%,
+    transparent
+  );
   border-color: var(--palette-primary, #00d4ff);
 }
 
 /* Light theme adjustments */
 :global(body.theme-light) .chip {
   border-color: var(--palette-border, rgba(30, 64, 175, 0.3));
-  background: color-mix(in srgb, var(--palette-primary, #1e40af) 8%, transparent);
+  background: color-mix(
+    in srgb,
+    var(--palette-primary, #1e40af) 8%,
+    transparent
+  );
   color: var(--palette-primary, #1e40af);
 }
 
 :global(body.theme-light) .chip:hover,
 :global(body.theme-light) .chip:active {
-  background: color-mix(in srgb, var(--palette-primary, #1e40af) 15%, transparent);
+  background: color-mix(
+    in srgb,
+    var(--palette-primary, #1e40af) 15%,
+    transparent
+  );
   border-color: var(--palette-primary, #1e40af);
 }
-

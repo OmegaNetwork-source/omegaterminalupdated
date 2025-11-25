@@ -3,6 +3,15 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { BrowserProvider, formatEther } from "ethers";
+import type { Chain } from "viem";
+import {
+  arbitrum as arbitrumChain,
+  base as baseChain,
+  bsc as bscChain,
+  mainnet as mainnetChain,
+  optimism as optimismChain,
+  polygon as polygonChain,
+} from "@reown/appkit/networks";
 
 import {
   NETWORK_SELECTOR_EVENT,
@@ -13,6 +22,9 @@ import {
   getEthereumProvider,
   waitForWalletProvider,
 } from "@/lib/wallet/detection";
+import { useMobileDetection } from "@/hooks/useMobileDetection";
+import { appKitInstance } from "../../../context";
+import { omegaChain } from "../../../config";
 
 interface NetworkDefinition {
   key: string;
@@ -32,6 +44,18 @@ interface NetworkDefinition {
 }
 
 type NetworkMap = Record<string, NetworkDefinition>;
+
+const SELECTED_NETWORK_STORAGE_KEY = "omega:selected-network";
+
+const APPKIT_CHAIN_MAP: Record<string, Chain> = {
+  ethereum: mainnetChain,
+  arbitrum: arbitrumChain,
+  base: baseChain,
+  polygon: polygonChain,
+  optimism: optimismChain,
+  bsc: bscChain,
+  omega: omegaChain,
+};
 
 const NETWORKS: NetworkMap = {
   ethereum: {
@@ -229,7 +253,7 @@ const NETWORKS: NetworkMap = {
 
 // Network categories
 const EVM_NETWORK_KEYS = [
-  "omega",      // First as requested
+  "omega", // First as requested
   "ethereum",
   "bsc",
   "polygon",
@@ -237,17 +261,9 @@ const EVM_NETWORK_KEYS = [
   "monad",
 ];
 
-const OTHER_NETWORK_KEYS = [
-  "aptos",
-  "solana",
-  "near",
-];
+const OTHER_NETWORK_KEYS = ["aptos", "solana", "near"];
 
-const TESTNET_NETWORK_KEYS = [
-  "fair",
-  "rome",
-  "stable",
-];
+const TESTNET_NETWORK_KEYS = ["fair", "rome", "stable"];
 
 // All networks for "All" tab
 const ALL_NETWORK_KEYS = [
@@ -272,15 +288,52 @@ export function MultiNetworkConnectorHost(): JSX.Element | null {
     open: false,
     isProcessing: false,
     activeTab: "all",
+    selectedNetwork: undefined,
   });
   const requestRef = useRef<NetworkSelectorRequest | null>(null);
+
+  // Mobile detection hook
+  const { isMobile } = useMobileDetection();
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    try {
+      const storedKey = window.localStorage.getItem(
+        SELECTED_NETWORK_STORAGE_KEY
+      );
+      if (!storedKey) {
+        return;
+      }
+
+      const storedNetwork = (NETWORKS as Record<string, NetworkDefinition>)[
+        storedKey
+      ];
+
+      if (storedNetwork) {
+        setState((prev) => ({
+          ...prev,
+          selectedNetwork: storedNetwork,
+        }));
+      }
+    } catch {
+      // Ignore storage errors silently
+    }
+  }, []);
+
   const closeModal = useCallback(() => {
-    setState({ open: false, isProcessing: false });
+    setState((prev) => ({
+      ...prev,
+      open: false,
+      isProcessing: false,
+      error: null,
+    }));
     requestRef.current = null;
   }, []);
 
@@ -292,7 +345,12 @@ export function MultiNetworkConnectorHost(): JSX.Element | null {
         source: customEvent.detail?.source,
       });
       requestRef.current = customEvent.detail;
-      setState({ open: true, isProcessing: false, error: null });
+      setState((prev) => ({
+        ...prev,
+        open: true,
+        isProcessing: false,
+        error: null,
+      }));
       console.log("[MultiNetworkConnectorHost] Modal state set to open");
     };
 
@@ -343,6 +401,57 @@ export function MultiNetworkConnectorHost(): JSX.Element | null {
     }
   }, []);
 
+  const rememberSelectedNetwork = useCallback((network: NetworkDefinition) => {
+    setState((prev) => ({
+      ...prev,
+      selectedNetwork: network,
+    }));
+
+    if (typeof window !== "undefined") {
+      try {
+        window.localStorage.setItem(SELECTED_NETWORK_STORAGE_KEY, network.key);
+      } catch {
+        // Ignore storage write failures silently
+      }
+    }
+  }, []);
+
+  const switchMobileNetworkBeforeConnect = useCallback(
+    async (network: NetworkDefinition) => {
+      if (!appKitInstance?.switchNetwork) {
+        log(
+          "AppKit instance is not ready for mobile network switching yet.",
+          "warning"
+        );
+        return;
+      }
+
+      const targetChain = APPKIT_CHAIN_MAP[network.key];
+      if (!targetChain) {
+        log(
+          `${network.name} is not yet configured inside the mobile wallet kit.`,
+          "warning"
+        );
+        return;
+      }
+
+      try {
+        await appKitInstance.switchNetwork(targetChain, {
+          throwOnFailure: false,
+        });
+        log(`Prepared AppKit for ${network.name}`, "info");
+      } catch (error: any) {
+        log(
+          `Failed to pre-switch AppKit to ${network.name}: ${
+            error?.message ?? error
+          }`,
+          "warning"
+        );
+      }
+    },
+    [log]
+  );
+
   const formatAddress = (address: string) => {
     return `${address.slice(0, 6)}…${address.slice(-4)}`;
   };
@@ -354,6 +463,43 @@ export function MultiNetworkConnectorHost(): JSX.Element | null {
 
       setState((prev) => ({ ...prev, isProcessing: true, error: null }));
 
+      // Use AppKit for mobile devices
+      if (isMobile) {
+        console.log("[MobileConnect] Detected mobile device, using AppKit");
+        try {
+          await switchMobileNetworkBeforeConnect(network);
+          log(`Connecting to ${network.name} via AppKit...`, "info");
+
+          // For mobile, trigger AppKit modal programmatically with fallback
+          if (appKitInstance) {
+            appKitInstance.open();
+            log(`AppKit modal opened for ${network.name}`, "success");
+          } else {
+            const appKitButton = document.querySelector(
+              "appkit-button"
+            ) as HTMLElement | null;
+            if (appKitButton) {
+              appKitButton.click();
+              log(
+                `Fallback AppKit button triggered for ${network.name}`,
+                "info"
+              );
+            } else {
+              log("AppKit instance not initialized yet", "error");
+            }
+          }
+
+          setState((prev) => ({ ...prev, isProcessing: false }));
+          closeModal();
+          return;
+        } catch (error: any) {
+          log(`AppKit connection error: ${error.message}`, "error");
+          setState((prev) => ({ ...prev, isProcessing: false }));
+          return;
+        }
+      }
+
+      // Desktop: Use MetaMask injection flow
       // Check BEFORE waiting
       if (process.env.NODE_ENV !== "production") {
         // eslint-disable-next-line no-console
@@ -791,7 +937,7 @@ export function MultiNetworkConnectorHost(): JSX.Element | null {
           `;
           detail.logHtml(removeConnectingScript);
         }
-        
+
         log(`Connection failed: ${error?.message ?? error}`, "error");
         setState((prev) => ({ ...prev, isProcessing: false }));
 
@@ -803,7 +949,7 @@ export function MultiNetworkConnectorHost(): JSX.Element | null {
         setState((prev) => ({ ...prev, isProcessing: false }));
       }
     },
-    [closeModal, log]
+    [closeModal, isMobile, log, switchMobileNetworkBeforeConnect]
   );
 
   const handleConnectNear = useCallback(
@@ -906,6 +1052,8 @@ export function MultiNetworkConnectorHost(): JSX.Element | null {
         return;
       }
 
+      rememberSelectedNetwork(network);
+
       if (network.walletType === "metamask") {
         await handleConnectEvm(network);
         setState((prev) => ({ ...prev, isProcessing: false }));
@@ -928,7 +1076,13 @@ export function MultiNetworkConnectorHost(): JSX.Element | null {
       );
       setState((prev) => ({ ...prev, isProcessing: false }));
     },
-    [handleConnectEvm, handleConnectNear, handleConnectAptos, log]
+    [
+      handleConnectEvm,
+      handleConnectNear,
+      handleConnectAptos,
+      log,
+      rememberSelectedNetwork,
+    ]
   );
 
   const modalContent = useMemo(() => {
@@ -997,7 +1151,8 @@ export function MultiNetworkConnectorHost(): JSX.Element | null {
               padding: "24px 24px 20px 24px",
               borderBottom: `1px solid var(--palette-border, rgba(0, 212, 255, 0.2))`,
               transition: "border-color 0.3s ease",
-              background: "linear-gradient(135deg, rgba(0, 212, 255, 0.05) 0%, rgba(0, 255, 136, 0.03) 100%)",
+              background:
+                "linear-gradient(135deg, rgba(0, 212, 255, 0.05) 0%, rgba(0, 255, 136, 0.03) 100%)",
             }}
           >
             <h2
@@ -1065,7 +1220,9 @@ export function MultiNetworkConnectorHost(): JSX.Element | null {
               {(["all", "evm", "other", "testnet"] as TabType[]).map((tab) => (
                 <button
                   key={tab}
-                  onClick={() => setState((prev) => ({ ...prev, activeTab: tab }))}
+                  onClick={() =>
+                    setState((prev) => ({ ...prev, activeTab: tab }))
+                  }
                   type="button"
                   style={{
                     padding: "8px 16px",
@@ -1105,7 +1262,13 @@ export function MultiNetworkConnectorHost(): JSX.Element | null {
                     }
                   }}
                 >
-                  {tab === "all" ? "All" : tab === "evm" ? "EVM" : tab === "other" ? "Other" : "Testnet"}
+                  {tab === "all"
+                    ? "All"
+                    : tab === "evm"
+                    ? "EVM"
+                    : tab === "other"
+                    ? "Other"
+                    : "Testnet"}
                 </button>
               ))}
             </div>
@@ -1167,6 +1330,8 @@ export function MultiNetworkConnectorHost(): JSX.Element | null {
                   }
 
                   return filteredKeys.map((network) => {
+                    const isSelected =
+                      state.selectedNetwork?.key === network.key;
                     return (
                       <button
                         key={network.key}
@@ -1174,138 +1339,171 @@ export function MultiNetworkConnectorHost(): JSX.Element | null {
                         onClick={() => handleConnectNetwork(network.key)}
                         disabled={state.isProcessing}
                         type="button"
-                      style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        padding: "14px 12px",
-                        background:
-                          "var(--palette-bg-overlay, rgba(0, 212, 255, 0.05))",
-                        border: `1px solid var(--palette-border, rgba(0, 212, 255, 0.2))`,
-                        borderRadius: "10px",
-                        cursor: state.isProcessing ? "not-allowed" : "pointer",
-                        transition: "all 0.2s ease",
-                        minHeight: "110px",
-                        opacity: state.isProcessing ? 0.5 : 1,
-                        position: "relative",
-                        overflow: "hidden",
-                      }}
-                      onMouseEnter={(e) => {
-                        if (!state.isProcessing) {
-                          e.currentTarget.style.background =
-                            "var(--palette-primary-glow, rgba(0, 212, 255, 0.12))";
-                          e.currentTarget.style.borderColor =
-                            "var(--palette-primary, #00d4ff)";
-                          e.currentTarget.style.transform = "translateY(-3px) scale(1.02)";
-                          e.currentTarget.style.boxShadow = `0 6px 20px var(--palette-primary-glow, rgba(0, 212, 255, 0.4))`;
-                        }
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.background =
-                          "var(--palette-bg-overlay, rgba(0, 212, 255, 0.05))";
-                        e.currentTarget.style.borderColor =
-                          "var(--palette-border, rgba(0, 212, 255, 0.2))";
-                        e.currentTarget.style.transform = "translateY(0) scale(1)";
-                        e.currentTarget.style.boxShadow = "none";
-                      }}
-                    >
-                      <div
-                        className="network-logo-wrapper"
                         style={{
-                          marginBottom: "12px",
-                          width: "48px",
-                          height: "48px",
                           display: "flex",
+                          flexDirection: "column",
                           alignItems: "center",
                           justifyContent: "center",
+                          padding: "14px 12px",
+                          background: isSelected
+                            ? "var(--palette-primary-glow, rgba(0, 212, 255, 0.18))"
+                            : "var(--palette-bg-overlay, rgba(0, 212, 255, 0.05))",
+                          border: `1px solid ${
+                            isSelected
+                              ? "var(--palette-primary, #00d4ff)"
+                              : "var(--palette-border, rgba(0, 212, 255, 0.2))"
+                          }`,
+                          borderRadius: "10px",
+                          cursor: state.isProcessing
+                            ? "not-allowed"
+                            : "pointer",
+                          transition: "all 0.2s ease",
+                          minHeight: "110px",
+                          opacity: state.isProcessing ? 0.5 : 1,
+                          position: "relative",
+                          overflow: "hidden",
+                          boxShadow: isSelected
+                            ? "0 0 20px var(--palette-primary-glow, rgba(0, 212, 255, 0.35))"
+                            : "none",
+                          transform: isSelected
+                            ? "translateY(-2px) scale(1.01)"
+                            : "translateY(0) scale(1)",
+                        }}
+                        onMouseEnter={(e) => {
+                          if (!state.isProcessing && !isSelected) {
+                            e.currentTarget.style.background =
+                              "var(--palette-primary-glow, rgba(0, 212, 255, 0.12))";
+                            e.currentTarget.style.borderColor =
+                              "var(--palette-primary, #00d4ff)";
+                            e.currentTarget.style.transform =
+                              "translateY(-3px) scale(1.02)";
+                            e.currentTarget.style.boxShadow = `0 6px 20px var(--palette-primary-glow, rgba(0, 212, 255, 0.4))`;
+                          }
+                        }}
+                        onMouseLeave={(e) => {
+                          if (isSelected) {
+                            return;
+                          }
+                          e.currentTarget.style.background =
+                            "var(--palette-bg-overlay, rgba(0, 212, 255, 0.05))";
+                          e.currentTarget.style.borderColor =
+                            "var(--palette-border, rgba(0, 212, 255, 0.2))";
+                          e.currentTarget.style.transform =
+                            "translateY(0) scale(1)";
+                          e.currentTarget.style.boxShadow = "none";
                         }}
                       >
-                        {network.key === "omega" ? (
-                          <div
-                            className="network-icon omega-network-icon"
+                        {isSelected && (
+                          <span
                             style={{
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              width: "48px",
-                              height: "48px",
-                              background:
-                                "var(--palette-surface, rgba(0, 0, 0, 0.9))",
-                              borderRadius: "50%",
-                              fontSize: "32px",
-                              fontWeight: "bold",
-                              fontFamily: "serif, 'Times New Roman'",
-                              color: "var(--palette-text, #ffffff)",
-                              boxShadow: `0 0 12px var(--palette-primary-glow, rgba(255, 255, 255, 0.6))`,
-                              border: `2px solid var(--palette-primary, #ffffff)`,
-                              backdropFilter: "blur(10px)",
-                              transition: "all 0.3s ease",
+                              position: "absolute",
+                              top: "8px",
+                              right: "10px",
+                              color: "var(--palette-secondary, #00ff88)",
+                              fontSize: "14px",
+                              fontWeight: 700,
                             }}
+                            aria-hidden="true"
                           >
-                            Ω
-                          </div>
-                        ) : network.logo ? (
-                          <img
-                            src={network.logo}
-                            alt={network.name}
-                            className="network-logo"
-                            style={{
-                              width: "48px",
-                              height: "48px",
-                              objectFit: "contain",
-                            }}
-                            onError={(e) => {
-                              const target = e.currentTarget;
-                              target.style.display = "none";
-                              const fallback =
-                                target.nextElementSibling as HTMLElement;
-                              if (fallback) {
-                                fallback.style.display = "flex";
-                              }
-                            }}
-                          />
-                        ) : (
-                          <div
-                            className="network-icon"
-                            style={{
-                              display: "flex",
-                              fontSize: "32px",
-                            }}
-                          >
-                            {network.icon}
-                          </div>
+                            ✓
+                          </span>
                         )}
-                      </div>
-                      <div
-                        className="network-name"
-                        style={{
-                          fontSize: "13px",
-                          fontWeight: 600,
-                          color: "var(--palette-primary, #00d4ff)",
-                          marginBottom: "3px",
-                          textAlign: "center",
-                          transition: "color 0.3s ease",
-                          lineHeight: "1.3",
-                        }}
-                      >
-                        {network.name}
-                      </div>
-                      <div
-                        className="network-symbol"
-                        style={{
-                          fontSize: "11px",
-                          color: "var(--palette-muted, #88aacc)",
-                          textAlign: "center",
-                          transition: "color 0.3s ease",
-                          opacity: 0.8,
-                        }}
-                      >
-                        {network.currency.symbol}
-                      </div>
-                    </button>
-                      );
-                    });
+                        <div
+                          className="network-logo-wrapper"
+                          style={{
+                            marginBottom: "12px",
+                            width: "48px",
+                            height: "48px",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                          }}
+                        >
+                          {network.key === "omega" ? (
+                            <div
+                              className="network-icon omega-network-icon"
+                              style={{
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                width: "48px",
+                                height: "48px",
+                                background:
+                                  "var(--palette-surface, rgba(0, 0, 0, 0.9))",
+                                borderRadius: "50%",
+                                fontSize: "32px",
+                                fontWeight: "bold",
+                                fontFamily: "serif, 'Times New Roman'",
+                                color: "var(--palette-text, #ffffff)",
+                                boxShadow: `0 0 12px var(--palette-primary-glow, rgba(255, 255, 255, 0.6))`,
+                                border: `2px solid var(--palette-primary, #ffffff)`,
+                                backdropFilter: "blur(10px)",
+                                transition: "all 0.3s ease",
+                              }}
+                            >
+                              Ω
+                            </div>
+                          ) : network.logo ? (
+                            <img
+                              src={network.logo}
+                              alt={network.name}
+                              className="network-logo"
+                              style={{
+                                width: "48px",
+                                height: "48px",
+                                objectFit: "contain",
+                              }}
+                              onError={(e) => {
+                                const target = e.currentTarget;
+                                target.style.display = "none";
+                                const fallback =
+                                  target.nextElementSibling as HTMLElement;
+                                if (fallback) {
+                                  fallback.style.display = "flex";
+                                }
+                              }}
+                            />
+                          ) : (
+                            <div
+                              className="network-icon"
+                              style={{
+                                display: "flex",
+                                fontSize: "32px",
+                              }}
+                            >
+                              {network.icon}
+                            </div>
+                          )}
+                        </div>
+                        <div
+                          className="network-name"
+                          style={{
+                            fontSize: "13px",
+                            fontWeight: 600,
+                            color: "var(--palette-primary, #00d4ff)",
+                            marginBottom: "3px",
+                            textAlign: "center",
+                            transition: "color 0.3s ease",
+                            lineHeight: "1.3",
+                          }}
+                        >
+                          {network.name}
+                        </div>
+                        <div
+                          className="network-symbol"
+                          style={{
+                            fontSize: "11px",
+                            color: "var(--palette-muted, #88aacc)",
+                            textAlign: "center",
+                            transition: "color 0.3s ease",
+                            opacity: 0.8,
+                          }}
+                        >
+                          {network.currency.symbol}
+                        </div>
+                      </button>
+                    );
+                  });
                 })()}
               </div>
             </div>
@@ -1328,17 +1526,34 @@ export function MultiNetworkConnectorHost(): JSX.Element | null {
                 lineHeight: "1.6",
               }}
             >
-              💡 Make sure you have MetaMask (EVM), Phantom (Solana), NEAR Wallet, or Petra (Aptos) installed
+              💡 Make sure you have MetaMask (EVM), Phantom (Solana), NEAR
+              Wallet, or Petra (Aptos) installed
             </p>
           </div>
         </div>
       </div>
     );
-  }, [closeModal, handleConnectNetwork, state.isProcessing, state.open, state.activeTab]);
+  }, [
+    closeModal,
+    handleConnectNetwork,
+    state.isProcessing,
+    state.open,
+    state.activeTab,
+  ]);
 
   if (!mounted) {
     return null;
   }
 
-  return modalContent ? createPortal(modalContent, document.body) : null;
+  return (
+    <>
+      {/* Hidden AppKit button for mobile wallet connection */}
+      {isMobile && (
+        <div style={{ display: "none" }}>
+          <appkit-button />
+        </div>
+      )}
+      {modalContent ? createPortal(modalContent, document.body) : null}
+    </>
+  );
 }
