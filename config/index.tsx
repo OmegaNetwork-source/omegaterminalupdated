@@ -41,10 +41,13 @@ export const omegaChain: Chain = {
 // Read Project ID from environment variables
 export const projectId = process.env.NEXT_PUBLIC_PROJECT_ID;
 
-// Ensure Project ID is defined at build time
-if (!projectId) {
-  throw new Error(
-    "NEXT_PUBLIC_PROJECT_ID is not defined. Please set it in .env.local"
+// Warn if Project ID is not defined, but don't throw at module load time
+// This allows the app to run, but AppKit features won't work without it
+if (!projectId && typeof window === "undefined") {
+  // Only warn on server-side during build/dev
+  console.warn(
+    "⚠️ NEXT_PUBLIC_PROJECT_ID is not defined. WalletConnect/AppKit features will be disabled.\n" +
+    "To enable: Get a Project ID from https://cloud.reown.com and add it to .env.local"
   );
 }
 
@@ -60,10 +63,15 @@ export const networks: [Chain, ...Chain[]] = [
 ]; // Add other desired networks
 
 // Create the Wagmi adapter instance
+// Use a placeholder UUID-format projectId if not provided to allow config creation
+// AppKit initialization in context/index.tsx will still check for a real projectId
+// This allows the app to run without a projectId, but AppKit features won't work
+const adapterProjectId = projectId || "00000000-0000-0000-0000-000000000000";
+
 export const wagmiAdapter = new WagmiAdapter({
   storage: createStorage({ storage: cookieStorage }), // Use cookieStorage for SSR
   ssr: true, // Enable SSR support
-  projectId,
+  projectId: adapterProjectId,
   networks, // Pass the explicitly typed networks array
 });
 

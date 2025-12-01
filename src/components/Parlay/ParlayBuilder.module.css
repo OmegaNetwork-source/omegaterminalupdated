@@ -1,0 +1,3677 @@
+/* =============================================================================
+   Parlay Builder Styles
+   ============================================================================= */
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(8px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.container {
+  width: 100%;
+  max-width: 1200px;
+  max-height: 90vh;
+  background: linear-gradient(
+    135deg,
+    rgba(15, 25, 35, 0.98) 0%,
+    rgba(10, 18, 28, 0.98) 100%
+  );
+  border: 1px solid rgba(0, 255, 214, 0.3);
+  border-radius: 16px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 
+    0 0 60px rgba(0, 255, 214, 0.15),
+    0 0 120px rgba(0, 255, 214, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from { 
+    opacity: 0;
+    transform: translateY(20px) scale(0.98);
+  }
+  to { 
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Header */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid rgba(0, 255, 214, 0.2);
+  background: rgba(0, 255, 214, 0.03);
+}
+
+.title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 24px;
+  font-weight: 700;
+  color: #00ffd6;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.titleIcon {
+  font-size: 28px;
+}
+
+.closeButton {
+  background: rgba(255, 100, 100, 0.1);
+  border: 1px solid rgba(255, 100, 100, 0.3);
+  color: #ff6464;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.closeButton:hover {
+  background: rgba(255, 100, 100, 0.2);
+  border-color: rgba(255, 100, 100, 0.5);
+}
+
+/* Header Layout */
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Account Status Badges */
+.accountStatus {
+  display: flex;
+  gap: 8px;
+}
+
+.accountBadge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+}
+
+.accountBadge.connected {
+  background: rgba(0, 255, 150, 0.15);
+  border-color: rgba(0, 255, 150, 0.3);
+  color: #00ff96;
+}
+
+.accountBadge.disconnected {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.accountBadge.disconnected:hover {
+  background: rgba(0, 255, 214, 0.1);
+  border-color: rgba(0, 255, 214, 0.3);
+  color: #00ffd6;
+}
+
+.badgeIcon {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #00d4aa, #00a884);
+  color: #000;
+}
+
+.accountBadge:nth-child(2) .badgeIcon {
+  background: linear-gradient(135deg, #627eea, #4a5fc1);
+  color: #fff;
+}
+
+.badgeText {
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.connectAllButton {
+  background: linear-gradient(135deg, #00ffd6, #00d4aa);
+  border: none;
+  color: #000;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.connectAllButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(0, 255, 214, 0.4);
+}
+
+/* Connect Modal */
+.connectModal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(8px);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.connectModalContent {
+  width: 100%;
+  max-width: 480px;
+  background: linear-gradient(135deg, rgba(15, 20, 30, 0.98), rgba(10, 15, 25, 0.98));
+  border: 1px solid rgba(0, 255, 214, 0.3);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 0 60px rgba(0, 255, 214, 0.15);
+  animation: slideUp 0.3s ease-out;
+}
+
+.connectModalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid rgba(0, 255, 214, 0.15);
+  background: rgba(0, 255, 214, 0.03);
+}
+
+.connectModalTitle {
+  font-size: 18px;
+  font-weight: 700;
+  color: #00ffd6;
+  margin: 0;
+}
+
+.connectModalClose {
+  background: rgba(255, 100, 100, 0.1);
+  border: 1px solid rgba(255, 100, 100, 0.3);
+  color: #ff6464;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.connectModalClose:hover {
+  background: rgba(255, 100, 100, 0.2);
+}
+
+.connectModalBody {
+  padding: 24px;
+}
+
+/* Connect Venue Tabs */
+.connectVenueTabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.connectVenueTab {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.connectVenueTab:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.connectVenueTab.active {
+  background: rgba(0, 255, 214, 0.1);
+  border-color: rgba(0, 255, 214, 0.3);
+  color: #00ffd6;
+}
+
+.connectVenueTab.connected {
+  background: rgba(0, 255, 150, 0.1);
+  border-color: rgba(0, 255, 150, 0.3);
+}
+
+.venueTabIcon {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 800;
+  color: #fff;
+}
+
+.venueTabName {
+  font-weight: 600;
+}
+
+.connectedCheck {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #00ff96;
+  color: #000;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+
+/* Connected Status */
+.connectedStatus {
+  text-align: center;
+  padding: 32px 24px;
+}
+
+.connectedIcon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #00ff96, #00d4aa);
+  color: #000;
+  font-size: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+}
+
+.connectedTitle {
+  font-size: 20px;
+  font-weight: 700;
+  color: #fff;
+  margin: 0 0 8px;
+}
+
+.connectedBalance {
+  font-size: 16px;
+  color: #00ffd6;
+  margin: 0 0 24px;
+  font-variant-numeric: tabular-nums;
+}
+
+.disconnectBtn {
+  background: rgba(255, 100, 100, 0.1);
+  border: 1px solid rgba(255, 100, 100, 0.3);
+  color: #ff6464;
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.disconnectBtn:hover {
+  background: rgba(255, 100, 100, 0.2);
+}
+
+/* Connect Form */
+.connectForm {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.connectFormGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.connectLabel {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.7);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.connectInput {
+  padding: 12px 14px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: #fff;
+  font-size: 14px;
+  font-family: 'SF Mono', 'Menlo', monospace;
+  transition: all 0.2s ease;
+}
+
+.connectInput:focus {
+  outline: none;
+  border-color: #00ffd6;
+  box-shadow: 0 0 0 3px rgba(0, 255, 214, 0.15);
+}
+
+.connectInput::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.connectTextarea {
+  padding: 12px 14px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: #fff;
+  font-size: 12px;
+  font-family: 'SF Mono', 'Menlo', monospace;
+  resize: vertical;
+  min-height: 100px;
+  transition: all 0.2s ease;
+}
+
+.connectTextarea:focus {
+  outline: none;
+  border-color: #00ffd6;
+  box-shadow: 0 0 0 3px rgba(0, 255, 214, 0.15);
+}
+
+.connectTextarea::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.connectHelpText {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.connectHelpText a {
+  color: #00ffd6;
+  text-decoration: none;
+}
+
+.connectHelpText a:hover {
+  text-decoration: underline;
+}
+
+.connectSubmitBtn {
+  margin-top: 8px;
+  padding: 14px;
+  background: linear-gradient(135deg, #00ffd6, #00d4aa);
+  border: none;
+  border-radius: 8px;
+  color: #000;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+
+.connectSubmitBtn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(0, 255, 214, 0.4);
+}
+
+.connectSubmitBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.connectSpinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(0, 0, 0, 0.2);
+  border-top-color: #000;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.connectError {
+  margin-top: 12px;
+  padding: 12px;
+  background: rgba(255, 80, 80, 0.15);
+  border: 1px solid rgba(255, 80, 80, 0.3);
+  border-radius: 8px;
+  color: #ff6464;
+  font-size: 13px;
+}
+
+.connectSecurityNote {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 20px;
+  padding: 14px;
+  background: rgba(0, 255, 214, 0.08);
+  border: 1px solid rgba(0, 255, 214, 0.2);
+  border-radius: 8px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.securityLock {
+  font-size: 16px;
+}
+
+/* Mode Tabs */
+.connectModeTabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  padding: 4px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+}
+
+.connectModeTab {
+  flex: 1;
+  padding: 12px;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.connectModeTab:hover {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.connectModeTab.active {
+  background: rgba(0, 255, 214, 0.15);
+  color: #00ffd6;
+}
+
+/* Login Options */
+.loginOptions {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Social Login */
+.socialLoginSection {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.googleButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  padding: 14px 20px;
+  background: #fff;
+  border: none;
+  border-radius: 10px;
+  color: #333;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.googleButton:hover:not(:disabled) {
+  background: #f5f5f5;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.googleButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.googleIcon {
+  flex-shrink: 0;
+}
+
+/* Login Divider */
+.loginDivider {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 8px 0;
+}
+
+.loginDivider::before,
+.loginDivider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.loginDivider span {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.4);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Wallet Options */
+.walletOptions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.walletConnectButton,
+.metamaskButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.walletConnectButton:hover:not(:disabled),
+.metamaskButton:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.25);
+  transform: translateY(-2px);
+}
+
+.walletConnectButton:disabled,
+.metamaskButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.wcIcon,
+.mmIcon {
+  font-size: 18px;
+}
+
+/* Email Login */
+.emailLoginSection {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.emailInput {
+  padding: 14px 16px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
+  color: #fff;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.emailInput:focus {
+  outline: none;
+  border-color: #00ffd6;
+  box-shadow: 0 0 0 3px rgba(0, 255, 214, 0.15);
+}
+
+.emailInput::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.emailSubmitBtn {
+  padding: 14px;
+  background: linear-gradient(135deg, #627eea, #4a5fc1);
+  border: none;
+  border-radius: 10px;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+
+.emailSubmitBtn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(98, 126, 234, 0.4);
+}
+
+.emailSubmitBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.emailSentNote {
+  font-size: 13px;
+  color: #00ff96;
+  text-align: center;
+  margin: 0;
+  padding: 8px;
+  background: rgba(0, 255, 150, 0.1);
+  border-radius: 6px;
+}
+
+/* Connected Address */
+.connectedAddress {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
+  font-family: 'SF Mono', 'Menlo', monospace;
+  margin: 0 0 8px;
+}
+
+/* Badge Icon Wallet */
+.badgeIconWallet {
+  font-size: 14px;
+}
+
+/* Main Content */
+.content {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 24px;
+  padding: 24px;
+  overflow: hidden;
+  flex: 1;
+}
+
+@media (max-width: 900px) {
+  .content {
+    grid-template-columns: 1fr;
+    overflow-y: auto;
+  }
+}
+
+/* Left Panel - Market Selection */
+.leftPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  overflow: hidden;
+}
+
+/* View Mode Tabs */
+.viewModeTabs {
+  display: flex;
+  gap: 8px;
+  padding: 4px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 10px;
+}
+
+.viewModeTab {
+  flex: 1;
+  padding: 10px 16px;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.viewModeTab:hover {
+  color: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.viewModeTab.active {
+  background: rgba(0, 255, 214, 0.15);
+  color: #00ffd6;
+}
+
+.searchSection {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Search Bar */
+.searchBar {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 14px;
+  font-size: 16px;
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 14px 40px 14px 44px;
+  background: rgba(0, 255, 214, 0.05);
+  border: 1px solid rgba(0, 255, 214, 0.2);
+  border-radius: 10px;
+  color: #ffffff;
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.searchInput::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.searchInput:focus {
+  border-color: rgba(0, 255, 214, 0.5);
+  background: rgba(0, 255, 214, 0.08);
+  box-shadow: 0 0 20px rgba(0, 255, 214, 0.1);
+}
+
+.clearSearch {
+  position: absolute;
+  right: 12px;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  border-radius: 50%;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.clearSearch:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+}
+
+/* Filters Row */
+.filtersRow {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.venueFilters {
+  display: flex;
+  gap: 6px;
+  flex: 1;
+}
+
+.sortSelect {
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  outline: none;
+  min-width: 120px;
+}
+
+.sortSelect:focus {
+  border-color: rgba(0, 255, 214, 0.4);
+}
+
+.sortSelect option {
+  background: #0a1420;
+  color: #ffffff;
+}
+
+/* Days to Close Filter */
+.daysFilterSection {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  background: rgba(0, 255, 214, 0.03);
+  border: 1px solid rgba(0, 255, 214, 0.1);
+  border-radius: 10px;
+}
+
+.daysFilterLabel {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.7);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.daysFilterButtons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.daysFilterButton {
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.daysFilterButton:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.daysFilterButton.active {
+  background: rgba(0, 255, 214, 0.15);
+  border-color: rgba(0, 255, 214, 0.4);
+  color: #00ffd6;
+  box-shadow: 0 0 12px rgba(0, 255, 214, 0.15);
+}
+
+/* Liquidity Filter */
+.liquidityFilterSection {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px;
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.05) 0%, rgba(0, 255, 214, 0.05) 100%);
+  border-radius: 10px;
+  border: 1px solid rgba(139, 92, 246, 0.15);
+}
+
+.liquidityFilterLabel {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.7);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.liquidityFilterLabel::before {
+  content: '💧';
+  font-size: 14px;
+}
+
+.liquidityFilterButtons {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.liquidityFilterButton {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 8px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.liquidityFilterButton:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: var(--filter-color, rgba(255, 255, 255, 0.3));
+  color: var(--filter-color, rgba(255, 255, 255, 0.9));
+  transform: translateY(-2px);
+}
+
+.liquidityFilterButton.active {
+  background: color-mix(in srgb, var(--filter-color, #00ffd6) 15%, transparent);
+  border-color: var(--filter-color, #00ffd6);
+  color: var(--filter-color, #00ffd6);
+  box-shadow: 0 4px 15px color-mix(in srgb, var(--filter-color, #00ffd6) 25%, transparent);
+}
+
+.liquidityIcon {
+  font-size: 16px;
+}
+
+.liquidityLabel {
+  font-weight: 700;
+  font-size: 12px;
+}
+
+.liquidityRange {
+  font-size: 9px;
+  opacity: 0.7;
+  font-weight: 400;
+}
+
+.liquidityFilterButton.active .liquidityRange {
+  opacity: 1;
+}
+
+/* Responsive adjustments for liquidity filter */
+@media (max-width: 768px) {
+  .liquidityFilterButtons {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.venueButton {
+  flex: 1;
+  padding: 10px 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.venueButton:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.venueButton.active {
+  background: rgba(0, 255, 214, 0.1);
+  border-color: rgba(0, 255, 214, 0.4);
+  color: #00ffd6;
+}
+
+.categoryTabs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.categoryTab {
+  padding: 8px 14px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.categoryTab:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.categoryTab.active {
+  background: rgba(0, 255, 214, 0.1);
+  border-color: rgba(0, 255, 214, 0.3);
+  color: #00ffd6;
+}
+
+/* Market List */
+.marketList {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-right: 8px;
+}
+
+.marketList::-webkit-scrollbar {
+  width: 6px;
+}
+
+.marketList::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 3px;
+}
+
+.marketList::-webkit-scrollbar-thumb {
+  background: rgba(0, 255, 214, 0.3);
+  border-radius: 3px;
+}
+
+/* Market Card */
+.marketCard {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.marketCard:hover {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(0, 255, 214, 0.3);
+  transform: translateY(-1px);
+}
+
+.marketCard.selected {
+  background: rgba(0, 255, 214, 0.08);
+  border-color: rgba(0, 255, 214, 0.4);
+}
+
+/* Market Card Content with Image */
+.marketCardContent {
+  display: flex;
+  gap: 14px;
+  margin-bottom: 12px;
+}
+
+.marketImageContainer {
+  flex-shrink: 0;
+  width: 64px;
+  height: 64px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.marketImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.marketInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.marketHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.marketVenue {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px 4px 6px;
+  background: rgba(0, 255, 214, 0.1);
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 700;
+  color: #00ffd6;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.marketVenue.kalshi {
+  background: rgba(255, 170, 0, 0.1);
+  color: #ffaa00;
+}
+
+.venueLogo {
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.marketCategory {
+  padding: 4px 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.6);
+  text-transform: capitalize;
+}
+
+.marketQuestion {
+  font-size: 14px;
+  color: #ffffff;
+  line-height: 1.5;
+  margin-bottom: 12px;
+  font-weight: 500;
+}
+
+.marketMeta {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.metaItem {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.03);
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.metaIcon {
+  font-size: 12px;
+}
+
+.marketLink {
+  display: block;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  font-size: 11px;
+  color: rgba(0, 255, 214, 0.7);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.marketLink:hover {
+  color: #00ffd6;
+}
+
+.marketPrices {
+  display: flex;
+  gap: 8px;
+}
+
+.priceButton {
+  flex: 1;
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.priceButton.yes {
+  background: rgba(0, 200, 150, 0.1);
+  border: 1px solid rgba(0, 200, 150, 0.3);
+  color: #00c896;
+}
+
+.priceButton.yes:hover {
+  background: rgba(0, 200, 150, 0.2);
+  border-color: rgba(0, 200, 150, 0.5);
+}
+
+.priceButton.yes.selected {
+  background: rgba(0, 200, 150, 0.3);
+  border-color: #00c896;
+}
+
+.priceButton.no {
+  background: rgba(255, 100, 100, 0.1);
+  border: 1px solid rgba(255, 100, 100, 0.3);
+  color: #ff6464;
+}
+
+.priceButton.no:hover {
+  background: rgba(255, 100, 100, 0.2);
+  border-color: rgba(255, 100, 100, 0.5);
+}
+
+.priceButton.no.selected {
+  background: rgba(255, 100, 100, 0.3);
+  border-color: #ff6464;
+}
+
+.priceLabel {
+  font-size: 10px;
+  opacity: 0.7;
+  text-transform: uppercase;
+}
+
+.priceValue {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.priceOdds {
+  font-size: 10px;
+  opacity: 0.6;
+}
+
+/* Right Panel - Lineup Builder */
+.rightPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 20px;
+  overflow: hidden;
+}
+
+.lineupHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.lineupNameInput {
+  width: 100%;
+  padding: 12px 14px;
+  background: rgba(0, 255, 214, 0.05);
+  border: 1px solid rgba(0, 255, 214, 0.2);
+  border-radius: 8px;
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 600;
+  outline: none;
+}
+
+.lineupNameInput::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+/* Settings */
+.settingsStack {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.settingGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.settingLabel {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.settingInput {
+  width: 100%;
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 600;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.settingInput:focus {
+  border-color: rgba(0, 255, 214, 0.4);
+  background: rgba(0, 255, 214, 0.05);
+}
+
+.leverageButtons {
+  display: flex;
+  gap: 6px;
+  width: 100%;
+}
+
+.leverageButton {
+  flex: 1;
+  padding: 12px 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+}
+
+.leverageButton:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.leverageButton.active {
+  background: rgba(0, 255, 214, 0.15);
+  border-color: rgba(0, 255, 214, 0.4);
+  color: #00ffd6;
+}
+
+.leverageButton.high {
+  color: #ff6464;
+}
+
+.leverageButton.high.active {
+  background: rgba(255, 100, 100, 0.15);
+  border-color: rgba(255, 100, 100, 0.4);
+}
+
+/* Stats Display - True Odds */
+.statsCard {
+  background: linear-gradient(135deg, rgba(0, 255, 214, 0.08), rgba(0, 255, 214, 0.02));
+  border: 1px solid rgba(0, 255, 214, 0.2);
+  border-radius: 12px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.statsCardHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(0, 255, 214, 0.15);
+  margin-bottom: 4px;
+}
+
+.statsCardTitle {
+  font-size: 14px;
+  font-weight: 700;
+  color: #00ffd6;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.statsCardSubtitle {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.statRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.statLabel {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.statValue {
+  font-size: 14px;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.statValue.highlight {
+  color: #00ffd6;
+  font-size: 18px;
+}
+
+.statValue.payout {
+  color: #00c896;
+  font-size: 20px;
+}
+
+.statValue.profit {
+  color: #4ade80;
+  font-size: 16px;
+}
+
+.statValue.roi {
+  color: #ffaa00;
+  font-size: 16px;
+}
+
+/* Payout Highlight */
+.payoutHighlight {
+  background: linear-gradient(135deg, rgba(0, 200, 150, 0.15), rgba(0, 255, 214, 0.08));
+  border: 1px solid rgba(0, 200, 150, 0.3);
+  border-radius: 10px;
+  padding: 14px;
+  margin: 8px 0;
+}
+
+.payoutHighlight .payoutLabel {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.payoutHighlight .payoutLabel span:first-child {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.payoutHighlight .payoutNote {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.payoutHighlight .payoutValue {
+  font-size: 28px;
+  font-weight: 700;
+  color: #4ade80;
+  text-align: right;
+}
+
+/* Quick Stake Buttons */
+.quickStakeButtons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.quickStakeButton {
+  flex: 1;
+  min-width: 50px;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.quickStakeButton:hover {
+  background: rgba(0, 255, 214, 0.1);
+  border-color: rgba(0, 255, 214, 0.3);
+  color: #00ffd6;
+}
+
+.quickStakeButton.active {
+  background: rgba(0, 255, 214, 0.15);
+  border-color: rgba(0, 255, 214, 0.5);
+  color: #00ffd6;
+}
+
+/* Odds Breakdown - Shows how odds combine */
+.oddsBreakdown {
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(0, 255, 214, 0.15);
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 12px;
+  font-size: 11px;
+}
+
+.oddsBreakdownTitle {
+  font-size: 10px;
+  font-weight: 700;
+  color: rgba(0, 255, 214, 0.8);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 8px;
+}
+
+.oddsBreakdownLeg {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 8px;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 4px;
+  margin-bottom: 4px;
+}
+
+.oddsLegNumber {
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.6);
+  min-width: 40px;
+}
+
+.oddsLegProb {
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.8);
+  min-width: 50px;
+  text-align: center;
+}
+
+.oddsLegOdds {
+  font-weight: 700;
+  color: #00ffd6;
+  min-width: 50px;
+  text-align: right;
+}
+
+.oddsBreakdownSeparator {
+  height: 1px;
+  background: rgba(0, 255, 214, 0.2);
+  margin: 8px 0;
+}
+
+.oddsBreakdownTotal {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px;
+  background: rgba(0, 255, 214, 0.08);
+  border-radius: 4px;
+  font-weight: 700;
+}
+
+.oddsBreakdownTotal > span:first-child {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.oddsTotalProb {
+  color: rgba(255, 255, 255, 0.9);
+  text-align: center;
+  min-width: 50px;
+}
+
+.oddsTotalOdds {
+  color: #00ffd6;
+  text-align: right;
+  min-width: 50px;
+  font-size: 12px;
+}
+
+/* Risk Indicator */
+.riskIndicator {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+}
+
+.riskHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.riskTitle {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.riskBadge {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.riskBadge.low {
+  background: rgba(0, 200, 150, 0.15);
+  color: #00c896;
+}
+
+.riskBadge.medium {
+  background: rgba(255, 170, 0, 0.15);
+  color: #ffaa00;
+}
+
+.riskBadge.high {
+  background: rgba(255, 100, 100, 0.15);
+  color: #ff6464;
+}
+
+.riskBadge.extreme {
+  background: rgba(255, 50, 50, 0.15);
+  color: #ff3333;
+}
+
+.riskBar {
+  height: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.riskFill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.3s ease, background 0.3s ease;
+}
+
+.riskFill.low {
+  background: linear-gradient(90deg, #00c896, #00ffd6);
+}
+
+.riskFill.medium {
+  background: linear-gradient(90deg, #ffaa00, #ffcc00);
+}
+
+.riskFill.high {
+  background: linear-gradient(90deg, #ff6464, #ff8c00);
+}
+
+.riskFill.extreme {
+  background: linear-gradient(90deg, #ff3333, #ff6464);
+}
+
+.riskBreakdown {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.riskBreakdown span {
+  cursor: help;
+}
+
+.riskLabel {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+}
+
+.riskLevel {
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.riskLevel.low { color: #00c896; }
+.riskLevel.medium { color: #ffaa00; }
+.riskLevel.high { color: #ff6464; }
+.riskLevel.extreme { color: #ff3333; }
+
+/* Resolution Window */
+.resolutionWindow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+}
+
+.resolutionLabel {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.resolutionValue {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 500;
+}
+
+/* Selected Legs */
+.legsSection {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow: hidden;
+}
+
+.legsHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.legsTitle {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.legsCount {
+  font-size: 12px;
+  color: #00ffd6;
+}
+
+.legsList {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.legItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.legItem:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.legNumber {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 255, 214, 0.1);
+  border-radius: 50%;
+  font-size: 10px;
+  font-weight: 700;
+  color: #00ffd6;
+}
+
+.legSide {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.legSide.yes {
+  background: rgba(0, 200, 150, 0.2);
+  color: #00c896;
+}
+
+.legSide.no {
+  background: rgba(255, 100, 100, 0.2);
+  color: #ff6464;
+}
+
+.legInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.legQuestion {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.9);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 2px;
+}
+
+.legOdds {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.legVenue {
+  text-transform: capitalize;
+}
+
+.legOddsValue {
+  color: #00ffd6;
+  font-weight: 600;
+}
+
+.legRemove {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 100, 100, 0.1);
+  border: none;
+  border-radius: 4px;
+  color: #ff6464;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.legRemove:hover {
+  background: rgba(255, 100, 100, 0.2);
+}
+
+.emptyLegs {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  text-align: center;
+  padding: 32px 16px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px dashed rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+
+.emptyLegsIcon {
+  font-size: 32px;
+  opacity: 0.4;
+}
+
+.emptyLegs p {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.5);
+  margin: 0;
+}
+
+.emptyLegsHint {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.emptyLegs svg {
+  width: 48px;
+  height: 48px;
+  opacity: 0.3;
+}
+
+/* Actions */
+.actions {
+  display: flex;
+  gap: 10px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.actionButton {
+  flex: 1;
+  padding: 14px 20px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.actionButton.primary {
+  background: linear-gradient(135deg, #00ffd6, #00c896);
+  border: none;
+  color: #000000;
+}
+
+.actionButton.primary:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 20px rgba(0, 255, 214, 0.3);
+}
+
+.actionButton.primary:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.actionButton.secondary {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.actionButton.secondary:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+}
+
+.actionButton.secondary:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Loading States */
+.loadingState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 60px 20px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.loadingMore {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 16px;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 12px;
+}
+
+.endOfList {
+  display: flex;
+  justify-content: center;
+  padding: 16px;
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 12px;
+}
+
+.spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid rgba(0, 255, 214, 0.2);
+  border-top-color: #00ffd6;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+.spinnerSmall {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(0, 255, 214, 0.2);
+  border-top-color: #00ffd6;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+.buttonSpinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(0, 0, 0, 0.2);
+  border-top-color: #000000;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  display: inline-block;
+  margin-right: 8px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Empty State */
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.emptyIcon {
+  font-size: 48px;
+  opacity: 0.3;
+}
+
+.emptyState p {
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.5);
+  margin: 0;
+}
+
+.emptyHint {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.3);
+}
+
+/* Error State */
+.errorState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.errorState p {
+  font-size: 14px;
+  color: #ff6464;
+  margin: 0;
+}
+
+.errorState button {
+  padding: 10px 20px;
+  background: rgba(0, 255, 214, 0.1);
+  border: 1px solid rgba(0, 255, 214, 0.3);
+  border-radius: 8px;
+  color: #00ffd6;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.errorState button:hover {
+  background: rgba(0, 255, 214, 0.2);
+}
+
+/* Error Message */
+.error {
+  padding: 12px 16px;
+  background: rgba(255, 100, 100, 0.1);
+  border: 1px solid rgba(255, 100, 100, 0.3);
+  border-radius: 8px;
+  color: #ff6464;
+  font-size: 13px;
+}
+
+/* Warnings */
+.warnings {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.warning {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  background: rgba(255, 170, 0, 0.1);
+  border-radius: 6px;
+  font-size: 11px;
+  color: #ffaa00;
+}
+
+.warning::before {
+  content: "!";
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  background: rgba(255, 170, 0, 0.3);
+  border-radius: 50%;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+/* Community Tab Highlight */
+.viewModeTab.communityTab {
+  background: linear-gradient(135deg, rgba(138, 43, 226, 0.1), rgba(0, 255, 214, 0.1));
+  border: 1px solid rgba(138, 43, 226, 0.3);
+}
+
+.viewModeTab.communityTab:hover {
+  border-color: rgba(138, 43, 226, 0.5);
+}
+
+.viewModeTab.communityTab.active {
+  background: linear-gradient(135deg, rgba(138, 43, 226, 0.2), rgba(0, 255, 214, 0.15));
+  border-color: rgba(138, 43, 226, 0.6);
+  color: #c084fc;
+}
+
+/* Category Icon */
+.categoryIcon {
+  font-size: 9px;
+  font-weight: 700;
+  padding: 2px 4px;
+  background: rgba(0, 255, 214, 0.15);
+  border-radius: 3px;
+  margin-right: 2px;
+}
+
+/* Meta Label (replacing emojis) */
+.metaLabel {
+  font-size: 9px;
+  font-weight: 700;
+  color: rgba(0, 255, 214, 0.7);
+  margin-right: 4px;
+}
+
+/* Hidden class for market list when community is active */
+.marketList.hidden {
+  display: none;
+}
+
+/* =============================================================================
+   Community Section Styles
+   ============================================================================= */
+
+.communitySection {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  overflow: hidden;
+}
+
+.communitySubTabs {
+  display: flex;
+  gap: 6px;
+  padding: 4px;
+  background: rgba(138, 43, 226, 0.05);
+  border: 1px solid rgba(138, 43, 226, 0.2);
+  border-radius: 10px;
+}
+
+.communitySubTab {
+  flex: 1;
+  padding: 10px 12px;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.communitySubTab:hover {
+  color: rgba(255, 255, 255, 0.8);
+  background: rgba(138, 43, 226, 0.1);
+}
+
+.communitySubTab.active {
+  background: linear-gradient(135deg, rgba(138, 43, 226, 0.2), rgba(0, 255, 214, 0.1));
+  color: #c084fc;
+}
+
+/* Section Headers */
+.sectionHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 16px;
+}
+
+.sectionTitle {
+  font-size: 18px;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0;
+  background: linear-gradient(135deg, #c084fc, #00ffd6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.sectionSubtitle {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* Pools Grid */
+.poolsGrid {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+.poolsGrid::-webkit-scrollbar {
+  width: 6px;
+}
+
+.poolsGrid::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 3px;
+}
+
+.poolsGrid::-webkit-scrollbar-thumb {
+  background: rgba(138, 43, 226, 0.4);
+  border-radius: 3px;
+}
+
+/* Pool Card */
+.poolCard {
+  background: linear-gradient(135deg, rgba(138, 43, 226, 0.08), rgba(0, 255, 214, 0.03));
+  border: 1px solid rgba(138, 43, 226, 0.2);
+  border-radius: 14px;
+  padding: 18px;
+  margin-bottom: 14px;
+  transition: all 0.2s ease;
+}
+
+.poolCard:hover {
+  border-color: rgba(138, 43, 226, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(138, 43, 226, 0.15);
+}
+
+.poolHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.poolCreator {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.creatorAvatar {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #8b5cf6, #06b6d4);
+  border-radius: 50%;
+  font-size: 14px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.creatorInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.creatorName {
+  font-size: 13px;
+  font-weight: 600;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ambassadorBadge {
+  padding: 2px 6px;
+  background: linear-gradient(135deg, #f59e0b, #f97316);
+  border-radius: 4px;
+  font-size: 9px;
+  font-weight: 700;
+  color: #000;
+  letter-spacing: 0.05em;
+}
+
+.creatorStats {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.poolStatus {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.poolStatus.open {
+  background: rgba(0, 200, 150, 0.15);
+  color: #00c896;
+}
+
+.poolStatus.locked {
+  background: rgba(255, 170, 0, 0.15);
+  color: #ffaa00;
+}
+
+.poolStatus.resolved {
+  background: rgba(0, 255, 214, 0.15);
+  color: #00ffd6;
+}
+
+.poolStatus.cancelled {
+  background: rgba(255, 100, 100, 0.15);
+  color: #ff6464;
+}
+
+.poolName {
+  font-size: 16px;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 14px 0;
+}
+
+/* Pool Legs */
+.poolLegs {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 14px;
+  padding: 10px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+}
+
+.poolLeg {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.legSideSmall {
+  padding: 3px 6px;
+  border-radius: 4px;
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.legSideSmall.yes {
+  background: rgba(0, 200, 150, 0.2);
+  color: #00c896;
+}
+
+.legSideSmall.no {
+  background: rgba(255, 100, 100, 0.2);
+  color: #ff6464;
+}
+
+.poolLegQuestion {
+  color: rgba(255, 255, 255, 0.7);
+  flex: 1;
+}
+
+/* Pool Stats */
+.poolStats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.poolStat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 8px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+}
+
+.poolStatLabel {
+  font-size: 9px;
+  color: rgba(255, 255, 255, 0.4);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.poolStatValue {
+  font-size: 13px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+/* Pool Tiers */
+.poolTiers {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 14px;
+  padding: 10px;
+  background: rgba(138, 43, 226, 0.05);
+  border: 1px solid rgba(138, 43, 226, 0.15);
+  border-radius: 8px;
+}
+
+.tiersLabel {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.tiersList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.tierBadge {
+  padding: 4px 8px;
+  background: rgba(138, 43, 226, 0.1);
+  border: 1px solid rgba(138, 43, 226, 0.2);
+  border-radius: 4px;
+  font-size: 10px;
+  color: #c084fc;
+}
+
+/* Pool Actions */
+.poolActions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.entryRange {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.joinPoolButton {
+  padding: 10px 24px;
+  background: linear-gradient(135deg, #8b5cf6, #06b6d4);
+  border: none;
+  border-radius: 8px;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.joinPoolButton:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(139, 92, 246, 0.4);
+}
+
+.joinPoolButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* =============================================================================
+   Big Wins Section
+   ============================================================================= */
+
+.winsSection {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.winsList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.winCard {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px;
+  background: linear-gradient(135deg, rgba(0, 200, 150, 0.08), rgba(255, 215, 0, 0.05));
+  border: 1px solid rgba(0, 200, 150, 0.2);
+  border-radius: 12px;
+  transition: all 0.2s ease;
+}
+
+.winCard:hover {
+  border-color: rgba(0, 200, 150, 0.4);
+  transform: translateX(4px);
+}
+
+.winAvatar {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #f59e0b, #eab308);
+  border-radius: 50%;
+  font-size: 16px;
+  font-weight: 700;
+  color: #000;
+}
+
+.winInfo {
+  flex: 1;
+}
+
+.winUser {
+  font-size: 14px;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 2px;
+}
+
+.winPool {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 2px;
+}
+
+.winMeta {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.winAmount {
+  text-align: right;
+}
+
+.winPayout {
+  font-size: 18px;
+  font-weight: 700;
+  color: #00c896;
+  margin-bottom: 2px;
+}
+
+.winMultiplier {
+  font-size: 12px;
+  font-weight: 600;
+  color: #fbbf24;
+  margin-bottom: 2px;
+}
+
+.winStake {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+/* =============================================================================
+   Create Pool Section
+   ============================================================================= */
+
+.createPoolSection {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.createPoolForm {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.formLabel {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.6);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.formInput {
+  padding: 12px 14px;
+  background: rgba(138, 43, 226, 0.05);
+  border: 1px solid rgba(138, 43, 226, 0.2);
+  border-radius: 8px;
+  color: #ffffff;
+  font-size: 14px;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.formInput::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.formInput:focus {
+  border-color: rgba(138, 43, 226, 0.5);
+  background: rgba(138, 43, 226, 0.08);
+  box-shadow: 0 0 20px rgba(138, 43, 226, 0.1);
+}
+
+.formRow {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+/* Tier Config */
+.tierConfigSection {
+  padding: 16px;
+  background: rgba(138, 43, 226, 0.05);
+  border: 1px solid rgba(138, 43, 226, 0.15);
+  border-radius: 10px;
+}
+
+.tierConfigTitle {
+  font-size: 14px;
+  font-weight: 700;
+  color: #c084fc;
+  margin: 0 0 6px 0;
+}
+
+.tierConfigDesc {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.5);
+  margin: 0 0 14px 0;
+}
+
+.tierPreview {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.tierPreviewItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+}
+
+.tierLabel {
+  font-size: 11px;
+  font-weight: 700;
+  color: #c084fc;
+  width: 50px;
+}
+
+.tierRange {
+  flex: 1;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.tierMultiplier {
+  font-size: 14px;
+  font-weight: 700;
+  color: #00ffd6;
+}
+
+/* Pool Leverage Section - Only for Pool Creation */
+.poolLeverageSection {
+  padding: 16px;
+  background: linear-gradient(135deg, rgba(255, 100, 100, 0.05), rgba(255, 170, 0, 0.05));
+  border: 1px solid rgba(255, 170, 0, 0.2);
+  border-radius: 10px;
+}
+
+.poolLeverageHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.poolLeverageTitle {
+  font-size: 14px;
+  font-weight: 700;
+  color: #ffaa00;
+  margin: 0;
+}
+
+.poolLeverageWarning {
+  font-size: 11px;
+  color: rgba(255, 100, 100, 0.8);
+}
+
+.poolLeverageDesc {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.5);
+  margin: 0 0 14px 0;
+}
+
+.poolLeverageButtons {
+  display: flex;
+  gap: 8px;
+}
+
+.poolLeverageButton {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 12px 8px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.6);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.poolLeverageButton:hover {
+  background: rgba(255, 170, 0, 0.1);
+  border-color: rgba(255, 170, 0, 0.3);
+}
+
+.poolLeverageButton.active {
+  background: rgba(255, 170, 0, 0.15);
+  border-color: rgba(255, 170, 0, 0.5);
+  color: #ffaa00;
+}
+
+.poolLeverageButton.high {
+  border-color: rgba(255, 100, 100, 0.3);
+}
+
+.poolLeverageButton.high:hover,
+.poolLeverageButton.high.active {
+  background: rgba(255, 100, 100, 0.15);
+  border-color: rgba(255, 100, 100, 0.5);
+  color: #ff6464;
+}
+
+.poolLeverageButton .leverageValue {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.poolLeverageButton .leverageLabel {
+  font-size: 10px;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+.leveragePreview {
+  margin-top: 14px;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.leveragePreviewRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.leveragePreviewRow .leveragedOdds {
+  color: #ffaa00;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.leveragePreviewRow .leveragedPayout {
+  color: #4ade80;
+  font-weight: 700;
+  font-size: 16px;
+}
+
+/* Selected Legs Preview */
+.selectedLegsPreview {
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+}
+
+.previewTitle {
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.8);
+  margin: 0 0 12px 0;
+}
+
+.previewEmpty {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.4);
+  margin: 0;
+  text-align: center;
+  padding: 20px 0;
+}
+
+.previewLegs {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.previewLeg {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+}
+
+.previewLegNum {
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 255, 214, 0.1);
+  border-radius: 50%;
+  font-size: 10px;
+  font-weight: 700;
+  color: #00ffd6;
+}
+
+.previewLegSide {
+  padding: 3px 6px;
+  border-radius: 4px;
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.previewLegSide.yes {
+  background: rgba(0, 200, 150, 0.2);
+  color: #00c896;
+}
+
+.previewLegSide.no {
+  background: rgba(255, 100, 100, 0.2);
+  color: #ff6464;
+}
+
+.previewLegQuestion {
+  flex: 1;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* Create Pool Button */
+.createPoolButton {
+  padding: 16px 24px;
+  background: linear-gradient(135deg, #8b5cf6, #06b6d4);
+  border: none;
+  border-radius: 10px;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.createPoolButton:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(139, 92, 246, 0.4);
+}
+
+.createPoolButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* =============================================================================
+   AI Insight Section
+   ============================================================================= */
+
+.aiInsightSection {
+  margin-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  padding-top: 12px;
+}
+
+.aiInsightToggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(168, 85, 247, 0.1));
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  border-radius: 8px;
+  color: #a78bfa;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 100%;
+  justify-content: center;
+}
+
+.aiInsightToggle:hover:not(:disabled) {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(168, 85, 247, 0.2));
+  border-color: rgba(139, 92, 246, 0.5);
+}
+
+.aiInsightToggle:disabled {
+  opacity: 0.7;
+  cursor: wait;
+}
+
+.signalDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.signalDot.buy {
+  background: #10b981;
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.5);
+}
+
+.signalDot.sell {
+  background: #ef4444;
+  box-shadow: 0 0 8px rgba(239, 68, 68, 0.5);
+}
+
+.signalDot.hold {
+  background: #f59e0b;
+  box-shadow: 0 0 8px rgba(245, 158, 11, 0.5);
+}
+
+.aiInsightCard {
+  margin-top: 10px;
+  padding: 14px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+  border: 1px solid rgba(139, 92, 246, 0.2);
+}
+
+.aiInsightCard.buy {
+  border-color: rgba(16, 185, 129, 0.3);
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.05), transparent);
+}
+
+.aiInsightCard.sell {
+  border-color: rgba(239, 68, 68, 0.3);
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.05), transparent);
+}
+
+.aiInsightCard.hold {
+  border-color: rgba(245, 158, 11, 0.3);
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.05), transparent);
+}
+
+.aiSignalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.aiSignal {
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+.aiSignal.buy {
+  background: rgba(16, 185, 129, 0.2);
+  color: #10b981;
+}
+
+.aiSignal.sell {
+  background: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+}
+
+.aiSignal.hold {
+  background: rgba(245, 158, 11, 0.2);
+  color: #f59e0b;
+}
+
+.aiConfidence {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.aiSummary {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.5;
+  margin: 0 0 10px 0;
+}
+
+.aiFactors {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 10px;
+}
+
+.aiFactor {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.aiRisk {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+.aiRisk.low {
+  background: rgba(16, 185, 129, 0.15);
+  color: #10b981;
+}
+
+.aiRisk.medium {
+  background: rgba(245, 158, 11, 0.15);
+  color: #f59e0b;
+}
+
+.aiRisk.high {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+}
+
+/* Join Section */
+.joinSection {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.participantsBadge {
+  padding: 6px 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.6);
+  white-space: nowrap;
+}
+
+/* =============================================================================
+   Join Pool Modal
+   ============================================================================= */
+
+.joinModal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1100;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.joinModalContent {
+  width: 100%;
+  max-width: 480px;
+  background: linear-gradient(135deg, rgba(15, 25, 35, 0.98), rgba(20, 10, 40, 0.98));
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  border-radius: 16px;
+  overflow: hidden;
+  animation: slideUp 0.3s ease-out;
+}
+
+.joinModalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 24px;
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(6, 182, 212, 0.05));
+  border-bottom: 1px solid rgba(139, 92, 246, 0.2);
+}
+
+.joinModalHeader h3 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0;
+}
+
+.closeModalButton {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 100, 100, 0.1);
+  border: 1px solid rgba(255, 100, 100, 0.3);
+  border-radius: 6px;
+  color: #ff6464;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.closeModalButton:hover {
+  background: rgba(255, 100, 100, 0.2);
+}
+
+.joinModalBody {
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.poolSummary {
+  padding: 14px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+}
+
+.poolSummary h4 {
+  font-size: 16px;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 8px 0;
+}
+
+.poolSummaryStats {
+  display: flex;
+  gap: 16px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* Modal AI Insight */
+.modalAiInsight {
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(139, 92, 246, 0.2);
+}
+
+.modalAiInsight.buy {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.08), transparent);
+  border-color: rgba(16, 185, 129, 0.3);
+}
+
+.modalAiInsight.sell {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.08), transparent);
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+.modalAiInsight.hold {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.08), transparent);
+  border-color: rgba(245, 158, 11, 0.3);
+}
+
+.modalAiHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.modalAiSignal {
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 6px;
+}
+
+.modalAiSignal.buy {
+  background: rgba(16, 185, 129, 0.2);
+  color: #10b981;
+}
+
+.modalAiSignal.sell {
+  background: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+}
+
+.modalAiSignal.hold {
+  background: rgba(245, 158, 11, 0.2);
+  color: #f59e0b;
+}
+
+.modalAiConfidence {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.modalAiSummary {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* Entry Amount Section */
+.entryAmountSection {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.entryLabel {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.7);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.entryInputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.dollarSign {
+  position: absolute;
+  left: 14px;
+  font-size: 18px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.entryInput {
+  width: 100%;
+  padding: 14px 14px 14px 36px;
+  background: rgba(139, 92, 246, 0.05);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  border-radius: 10px;
+  color: #ffffff;
+  font-size: 24px;
+  font-weight: 700;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.entryInput:focus {
+  border-color: rgba(139, 92, 246, 0.6);
+  background: rgba(139, 92, 246, 0.08);
+}
+
+.entrySlider {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.slider {
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.1);
+  outline: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #8b5cf6, #06b6d4);
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
+}
+
+.slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #8b5cf6, #06b6d4);
+  cursor: pointer;
+  border: none;
+}
+
+.sliderLabels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.quickAmounts {
+  display: flex;
+  gap: 8px;
+}
+
+.quickAmountBtn {
+  flex: 1;
+  padding: 10px 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.quickAmountBtn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.quickAmountBtn.active {
+  background: rgba(139, 92, 246, 0.15);
+  border-color: rgba(139, 92, 246, 0.4);
+  color: #a78bfa;
+}
+
+/* Tier Calculation */
+.tierCalculation {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  padding: 16px;
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.08), rgba(6, 182, 212, 0.05));
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  border-radius: 12px;
+}
+
+.tierInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.tierInfo .tierLabel {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.tierInfo .tierValue {
+  font-size: 18px;
+  font-weight: 700;
+  color: #00ffd6;
+}
+
+/* Tier Breakdown */
+.tierBreakdown {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.tierBreakdownTitle {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 4px;
+}
+
+.tierRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 6px;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.5);
+  transition: all 0.2s ease;
+}
+
+.tierRow.active {
+  background: rgba(139, 92, 246, 0.1);
+  border-color: rgba(139, 92, 246, 0.3);
+  color: #c084fc;
+}
+
+/* Modal Footer */
+.joinModalFooter {
+  display: flex;
+  gap: 12px;
+  padding: 18px 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.cancelButton {
+  flex: 1;
+  padding: 14px 20px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cancelButton:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+}
+
+.confirmJoinButton {
+  flex: 2;
+  padding: 14px 20px;
+  background: linear-gradient(135deg, #8b5cf6, #06b6d4);
+  border: none;
+  border-radius: 10px;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.confirmJoinButton:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(139, 92, 246, 0.4);
+}
+
+.confirmJoinButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* =============================================================================
+   Multi-Outcome Preview
+   ============================================================================= */
+
+.multiOutcomePreview {
+  margin-top: 12px;
+  padding: 10px 12px;
+  background: rgba(139, 92, 246, 0.08);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  border-radius: 8px;
+}
+
+.outcomesLabel {
+  font-size: 11px;
+  font-weight: 600;
+  color: #c084fc;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.topOutcomes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.outcomeChip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  font-size: 11px;
+}
+
+.outcomeChipLabel {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.outcomeChipProb {
+  font-weight: 700;
+  color: #00ffd6;
+}
+
+/* =============================================================================
+   Market Actions & Quick Trade
+   ============================================================================= */
+
+.marketActions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.actionButtons {
+  display: flex;
+  gap: 8px;
+}
+
+.chartButton {
+  padding: 8px 12px;
+  background: rgba(139, 92, 246, 0.1);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  border-radius: 8px;
+  color: #c084fc;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.chartButton:hover {
+  background: rgba(139, 92, 246, 0.2);
+  border-color: rgba(139, 92, 246, 0.5);
+  transform: translateY(-1px);
+}
+
+.quickTradeButton {
+  padding: 8px 16px;
+  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.quickTradeButton:hover {
+  background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+}
+
+/* =============================================================================
+   Trading Panel Overlay
+   ============================================================================= */
+
+.tradingPanelOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(8px);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.tradingPanelContainer {
+  animation: slideUp 0.3s ease;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.tradingPanelContainer::-webkit-scrollbar {
+  width: 6px;
+}
+
+.tradingPanelContainer::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.tradingPanelContainer::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+}
+

@@ -79,6 +79,10 @@ export interface TerminalHeaderProps {
   onLightDarkToggle: () => void;
   /** Callback when dashboard toggle button is clicked */
   onDashboardToggle: () => void;
+  /** Callback when terminal mode toggle button is clicked (single/multi) */
+  onTerminalModeToggle?: () => void;
+  /** Current terminal mode */
+  terminalMode?: "single" | "multi";
   /** Current AI provider selection */
   aiProvider: AIProvider;
   /** Callback when AI provider changes */

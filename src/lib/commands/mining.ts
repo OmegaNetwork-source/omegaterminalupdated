@@ -178,11 +178,58 @@ function createMiningSuccessHtml(reward: string, txHash?: string): string {
           display: flex;
           align-items: center;
           gap: 6px;
+          margin-bottom: 8px;
         ">
           ${SVG_ICONS.coin}
           <span>Reward: <strong style="color: var(--palette-secondary, #00ff88);">+${reward} OMEGA</strong></span>
         </div>
         ${txLink}
+        <div style="display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap;">
+          <button onclick="(function() {
+            if (window.__omegaGuiExecuteCommand) {
+              window.__omegaGuiExecuteCommand('stop');
+            } else if (window.terminal && window.terminal.executeCommand) {
+              window.terminal.executeCommand('stop');
+            }
+          })()" style="
+            background: linear-gradient(135deg, color-mix(in srgb, var(--palette-error, #ff4757) 80%, transparent), color-mix(in srgb, var(--palette-error, #ff4757) 60%, transparent));
+            border: 1px solid color-mix(in srgb, var(--palette-error, #ff4757) 50%, transparent);
+            border-radius: 6px;
+            color: #fff;
+            font-size: 0.85em;
+            font-weight: 600;
+            padding: 8px 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+          " onmouseover="this.style.opacity = '0.9'; this.style.transform = 'translateY(-1px)';" onmouseout="this.style.opacity = '1'; this.style.transform = 'translateY(0)';">
+            ⏹️ Stop Mining
+          </button>
+          <button onclick="(function() {
+            if (window.__omegaGuiExecuteCommand) {
+              window.__omegaGuiExecuteCommand('claim');
+            } else if (window.terminal && window.terminal.executeCommand) {
+              window.terminal.executeCommand('claim');
+            }
+          })()" style="
+            background: linear-gradient(135deg, color-mix(in srgb, var(--palette-secondary, #00ff88) 80%, transparent), color-mix(in srgb, var(--palette-secondary, #00ff88) 60%, transparent));
+            border: 1px solid color-mix(in srgb, var(--palette-secondary, #00ff88) 50%, transparent);
+            border-radius: 6px;
+            color: #fff;
+            font-size: 0.85em;
+            font-weight: 600;
+            padding: 8px 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+          " onmouseover="this.style.opacity = '0.9'; this.style.transform = 'translateY(-1px)';" onmouseout="this.style.opacity = '1'; this.style.transform = 'translateY(0)';">
+            💰 Claim Reward
+          </button>
+        </div>
       </div>
     </div>
   `;

@@ -83,6 +83,16 @@ const CompanionProvider = dynamic(
   }
 );
 
+const ParlayProvider = dynamic(
+  () =>
+    import("./ParlayProvider").then((mod) => ({
+      default: mod.ParlayProvider,
+    })),
+  {
+    ssr: false,
+  }
+);
+
 function ProvidersFallback() {
   return (
     <div
@@ -124,6 +134,16 @@ const XmasSnowfall = dynamic(
   }
 );
 
+const GlobalParlayBuilder = dynamic(
+  () =>
+    import("@/components/Parlay/GlobalParlayBuilder").then((mod) => ({
+      default: mod.GlobalParlayBuilder,
+    })),
+  {
+    ssr: false,
+  }
+);
+
 export function ProviderShell({ children }: { children: ReactNode }) {
   return (
     <Suspense fallback={<ProvidersFallback />}>
@@ -135,11 +155,14 @@ export function ProviderShell({ children }: { children: ReactNode }) {
                 <GamesProvider>
                   <TelegramProvider>
                     <CompanionProvider>
-                      <TerminalProvider>
-                        {children}
-                        <GlobalGameModal />
-                        <XmasSnowfall />
-                      </TerminalProvider>
+                      <ParlayProvider>
+                        <TerminalProvider>
+                          {children}
+                          <GlobalGameModal />
+                          <GlobalParlayBuilder />
+                          <XmasSnowfall />
+                        </TerminalProvider>
+                      </ParlayProvider>
                     </CompanionProvider>
                   </TelegramProvider>
                 </GamesProvider>

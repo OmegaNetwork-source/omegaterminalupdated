@@ -292,11 +292,20 @@ const Cubes = forwardRef<CubesRef, CubesProps>(({
     (e: MouseEvent | TouchEvent) => {
       if (!rippleOnClick || !sceneRef.current) return;
 
-      // Check if click target is content above (has higher z-index)
+      // Check if click target is interactive content (buttons, inputs, links, etc.)
+      // Only prevent ripple on actual interactive elements, not background areas
       const target = e.target as HTMLElement;
-      if (target && target.closest('[style*="z-index"], [class*="section"], [class*="chart"], [class*="panel"]')) {
-        // Click is on content above, don't trigger ripple
+      if (target) {
+        // Check if clicking on interactive elements
+        const isInteractive = target.closest('button, a, input, select, textarea, [role="button"], [tabindex]');
+        // Check if clicking on actual panel content (not just background)
+        const isPanelContent = target.closest('[class*="card"], [class*="chartContainer"], [class*="mediaPanel"], [class*="articleCard"]');
+        
+        // Only prevent ripple if clicking on interactive elements or actual content
+        // Allow ripple on background areas and empty spaces
+        if (isInteractive || isPanelContent) {
         return;
+        }
       }
 
       const rect = sceneRef.current.getBoundingClientRect();

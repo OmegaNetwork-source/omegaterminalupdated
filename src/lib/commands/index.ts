@@ -74,6 +74,8 @@ import { botCommands } from "./bot";
 import { stableTokenCommands } from "./stable-token";
 import { web3telegramCommands } from "./web3telegram";
 import { rubicCommands } from "./rubic";
+import { parlayCommand, parlayCreateCommand, parlayListCommand } from "./parlay";
+import { extractCommands } from "./extract";
 
 export interface CommandRegistrationResult {
   registeredGroups: string[];
@@ -160,6 +162,8 @@ const COMMAND_GROUPS: Array<{ label: string; commands: Command[] }> = [
   { label: "bots", commands: botCommands },
   { label: "stable-token", commands: stableTokenCommands },
   { label: "rubic", commands: rubicCommands },
+  { label: "parlay", commands: [parlayCommand, parlayCreateCommand, parlayListCommand] },
+  { label: "extract", commands: extractCommands },
 ];
 
 let registrationAttempted = false;

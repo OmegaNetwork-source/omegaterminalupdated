@@ -71,3 +71,4 @@ export * from "./profile";
 export * from "./ui";
 export * from "./sound";
 export * from "./rubic";
+export * from "./parlay";

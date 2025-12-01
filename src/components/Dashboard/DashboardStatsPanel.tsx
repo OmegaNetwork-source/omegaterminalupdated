@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useRef, useState, Suspense } from "react";
+import React, { useEffect, useMemo, useRef, useState, Suspense, useCallback } from "react";
 import Script from "next/script";
 import dynamic from "next/dynamic";
 import { usePerps } from "@/hooks/usePerps";
@@ -227,7 +227,7 @@ export function DashboardStatsPanel(): JSX.Element | null {
         console.log(`[Chart] Container dimensions: ${containerElement.offsetWidth}x${containerElement.offsetHeight}`);
         
         // Use 'new' keyword to instantiate TradingView widget
-        // When using autosize, don't set explicit height/width - let it fill container
+        // When using autosize, don't set explicit height/width - let it fill container naturally
         tradingViewWidgetRef.current = new tv.widget({
           symbol: chartSymbol,
           container_id: chartContainerId,
@@ -242,7 +242,7 @@ export function DashboardStatsPanel(): JSX.Element | null {
           save_image: false,
           studies_overrides: {},
           backgroundColor: "rgba(0, 0, 0, 0.4)", // Match container background
-          // Don't set height/width when autosize is true - let it fill container naturally
+          // Square format with reduced UI elements for better fit
         });
         
         console.log(`[Chart] TradingView widget created successfully for ${chartSymbol}`);
@@ -363,8 +363,51 @@ export function DashboardStatsPanel(): JSX.Element | null {
     melodiesPlayer.playerState.isPanelOpen
   ]);
 
+  // Handle clicks on stats panel background to trigger pulse animation
+  const handleStatsPanelClick = useCallback((e: React.MouseEvent<HTMLElement>) => {
+    // Only trigger if clicking on the background, not on content
+    const target = e.target as HTMLElement;
+    const isContent = target.closest('[class*="section"], [class*="card"], [class*="chart"], [class*="panel"], button, a, input');
+    
+    if (!isContent && cubesRef.current) {
+      // Get click position relative to the panel
+      const rect = e.currentTarget.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      
+      // Convert to grid coordinates (8x8 grid)
+      const gridSize = 8;
+      const cellW = rect.width / gridSize;
+      const cellH = rect.height / gridSize;
+      const col = Math.floor(x / cellW);
+      const row = Math.floor(y / cellH);
+      
+      // Trigger pulse animation at click location
+      cubesRef.current.pulse({
+        intensity: 1.0,
+        duration: 0.6,
+        origin: { row, col }
+      });
+    }
+  }, []);
+
+  // Check if any panel is open
+  const hasOpenPanel = 
+    isChartOpen ||
+    perps.playerState.isPanelOpen ||
+    spotify.playerState.isPanelOpen ||
+    youtube.playerState.isPanelOpen ||
+    newsReader.readerState.isPanelOpen ||
+    bluesPlayer.playerState.isPanelOpen ||
+    lofiPlayer.playerState.isPanelOpen ||
+    techPlayer.playerState.isPanelOpen ||
+    funkyPlayer.playerState.isPanelOpen ||
+    trancePlayer.playerState.isPanelOpen ||
+    melodiesPlayer.playerState.isPanelOpen ||
+    companion.isPanelOpen;
+
   return (
-    <aside ref={statsPanelRef} className={styles.statsPanel}>
+    <aside ref={statsPanelRef} className={styles.statsPanel} onClick={handleStatsPanelClick}>
       {/* Animated Cubes Background Effect */}
       <Cubes
         ref={cubesRef}
@@ -382,6 +425,11 @@ export function DashboardStatsPanel(): JSX.Element | null {
         rippleSpeed={2}
         className={styles.cubesBackground}
       />
+
+      {/* System Overview - Always visible at the top */}
+      <div className={hasOpenPanel ? styles.systemOverviewCompact : styles.systemOverviewFull}>
+        <SystemOverview />
+      </div>
 
       {/* TradingView Script - Load once, use many times */}
       <Script
@@ -599,21 +647,6 @@ export function DashboardStatsPanel(): JSX.Element | null {
         </section>
       )}
 
-      {/* System Overview - shown when no panels are open */}
-      {!isChartOpen &&
-        !perps.playerState.isPanelOpen &&
-        !spotify.playerState.isPanelOpen &&
-        !youtube.playerState.isPanelOpen &&
-        !newsReader.readerState.isPanelOpen &&
-        !bluesPlayer.playerState.isPanelOpen &&
-        !lofiPlayer.playerState.isPanelOpen &&
-        !techPlayer.playerState.isPanelOpen &&
-        !funkyPlayer.playerState.isPanelOpen &&
-        !trancePlayer.playerState.isPanelOpen &&
-        !melodiesPlayer.playerState.isPanelOpen &&
-        !companion.isPanelOpen && (
-          <SystemOverview />
-        )}
     </aside>
   );
 }

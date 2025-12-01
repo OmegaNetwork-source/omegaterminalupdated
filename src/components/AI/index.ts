@@ -8,6 +8,7 @@
  *
  * Current exports:
  * - ChatMessage: Individual chat message display
+ * - DigitalFace: Interactive animated digital face for AI companion
  *
  * Future exports (Phase 15):
  * - ChatInterface: Full chat UI with input and history
@@ -17,3 +18,6 @@
 
 export { ChatMessage } from "./ChatMessage";
 export type { ChatMessageProps } from "./ChatMessage";
+
+export { DigitalFace } from "./DigitalFace";
+export type { DigitalFaceProps, FaceExpression } from "./DigitalFace";

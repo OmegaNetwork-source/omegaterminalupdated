@@ -1,0 +1,549 @@
+/* Trading Panel - Kalshi/Polymarket Style */
+
+.tradingPanel {
+  background: linear-gradient(180deg, #1a2332 0%, #141c28 100%);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 0;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+}
+
+/* Panel Header */
+.panelHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  gap: 12px;
+}
+
+.marketQuestion {
+  font-size: 14px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.4;
+  flex: 1;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 24px;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  transition: color 0.2s ease;
+}
+
+.closeButton:hover {
+  color: #fff;
+}
+
+/* Action Tabs (Buy/Sell) */
+.actionTabs {
+  display: flex;
+  align-items: center;
+  padding: 16px 20px;
+  gap: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.actionTab {
+  background: none;
+  border: none;
+  font-size: 16px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+  padding: 8px 4px;
+  transition: all 0.2s ease;
+  border-bottom: 2px solid transparent;
+}
+
+.actionTab:hover {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.actionTab.active {
+  color: #fff;
+  border-bottom-color: #fff;
+}
+
+.sellTab.active {
+  color: #ef4444;
+  border-bottom-color: #ef4444;
+}
+
+.orderTypeDropdown {
+  margin-left: auto;
+  position: relative;
+}
+
+.orderTypeSelect {
+  appearance: none;
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  padding-right: 20px;
+}
+
+.orderTypeSelect option {
+  background: #1a2332;
+  color: #fff;
+}
+
+.dropdownIcon {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.5);
+  pointer-events: none;
+}
+
+/* Yes/No Selection */
+.sideSelection {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  padding: 20px;
+}
+
+.sideButton {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 16px 24px;
+  border-radius: 12px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  gap: 4px;
+}
+
+.yesButton {
+  background: rgba(75, 85, 99, 0.3);
+  border-color: rgba(75, 85, 99, 0.5);
+}
+
+.yesButton:hover {
+  background: rgba(75, 85, 99, 0.5);
+}
+
+.yesButton.selected {
+  background: rgba(34, 197, 94, 0.15);
+  border-color: rgba(34, 197, 94, 0.5);
+}
+
+.noButton {
+  background: rgba(75, 85, 99, 0.3);
+  border-color: rgba(75, 85, 99, 0.5);
+}
+
+.noButton:hover {
+  background: rgba(75, 85, 99, 0.5);
+}
+
+.noButton.selected {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.8);
+}
+
+.sideLabel {
+  font-size: 14px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.yesButton.selected .sideLabel {
+  color: #4ade80;
+}
+
+.noButton.selected .sideLabel {
+  color: #fff;
+}
+
+.sidePrice {
+  font-size: 18px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.yesButton.selected .sidePrice {
+  color: #4ade80;
+}
+
+.noButton.selected .sidePrice {
+  color: #fff;
+}
+
+/* Amount Section */
+.amountSection {
+  padding: 0 20px;
+  margin-bottom: 12px;
+}
+
+.amountLabel {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: 8px;
+}
+
+.amountInputWrapper {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.currencySymbol {
+  font-size: 32px;
+  font-weight: 300;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.amountInput {
+  background: transparent;
+  border: none;
+  font-size: 48px;
+  font-weight: 300;
+  color: #fff;
+  width: 100%;
+  outline: none;
+  font-family: inherit;
+}
+
+.amountInput::placeholder {
+  color: rgba(255, 255, 255, 0.2);
+}
+
+/* Quick Amounts */
+.quickAmounts {
+  display: flex;
+  gap: 8px;
+  padding: 0 20px 20px;
+  justify-content: center;
+}
+
+.quickAmountButton {
+  padding: 10px 20px;
+  background: rgba(75, 85, 99, 0.3);
+  border: 1px solid rgba(75, 85, 99, 0.5);
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.quickAmountButton:hover {
+  background: rgba(75, 85, 99, 0.5);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Payout Section */
+.payoutSection {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.payoutInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.payoutLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.moneyIcon {
+  font-size: 18px;
+}
+
+.avgPrice {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.5);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.infoIcon {
+  font-size: 12px;
+  cursor: help;
+  opacity: 0.7;
+}
+
+.payoutAmount {
+  font-size: 36px;
+  font-weight: 600;
+  color: #4ade80;
+  font-family: inherit;
+}
+
+/* Profit Preview */
+.profitPreview {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 20px;
+  background: rgba(34, 197, 94, 0.08);
+  border-top: 1px solid rgba(34, 197, 94, 0.1);
+}
+
+.profitLabel {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.profitValue {
+  font-size: 15px;
+  font-weight: 600;
+  color: #4ade80;
+}
+
+/* Trade Button */
+.tradeButton {
+  width: calc(100% - 40px);
+  margin: 20px;
+  padding: 16px 32px;
+  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+  border: none;
+  border-radius: 12px;
+  color: #fff;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.tradeButton:hover:not(:disabled) {
+  background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 20px rgba(34, 197, 94, 0.3);
+}
+
+.tradeButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.tradeButton.connectFirst {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+}
+
+.tradeButton.connectFirst:hover {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+}
+
+.spinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Balance Info */
+.balanceInfo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 20px;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.5);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.balanceAmount {
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* Market Info */
+.marketInfo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 20px;
+  background: rgba(0, 0, 0, 0.15);
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.venueTag {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.viewOnVenue {
+  font-size: 12px;
+  color: rgba(0, 255, 214, 0.8);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.viewOnVenue:hover {
+  color: #00ffd6;
+}
+
+/* =============================================================================
+   Wallet Connection Options
+   ============================================================================= */
+
+.walletOptionsContainer {
+  margin: 20px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.walletOptionsHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: rgba(59, 130, 246, 0.1);
+  border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+  font-size: 14px;
+  font-weight: 600;
+  color: #3b82f6;
+}
+
+.walletOptionsClose {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 20px;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  transition: color 0.2s ease;
+}
+
+.walletOptionsClose:hover {
+  color: #fff;
+}
+
+.walletOptions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+}
+
+.walletOptionButton {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.walletOptionButton:hover:not(:disabled) {
+  background: rgba(59, 130, 246, 0.15);
+  border-color: rgba(59, 130, 246, 0.4);
+  transform: translateX(4px);
+}
+
+.walletOptionButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.walletIcon {
+  font-size: 24px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.spinnerSmall {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #3b82f6;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-left: auto;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .tradingPanel {
+    border-radius: 0;
+    max-width: 100%;
+  }
+
+  .amountInput {
+    font-size: 36px;
+  }
+
+  .payoutAmount {
+    font-size: 28px;
+  }
+
+  .quickAmounts {
+    flex-wrap: wrap;
+  }
+
+  .quickAmountButton {
+    flex: 1;
+    min-width: calc(50% - 4px);
+  }
+
+  .walletOptionButton {
+    padding: 12px 14px;
+    font-size: 14px;
+  }
+
+  .walletIcon {
+    font-size: 20px;
+    width: 28px;
+    height: 28px;
+  }
+}
+

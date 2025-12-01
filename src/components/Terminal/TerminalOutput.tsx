@@ -10,7 +10,7 @@
  * Currently trusts that command handlers provide safe HTML content.
  */
 
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState, useCallback } from "react";
 import { TERMINAL_PROMPT } from "@/lib/constants";
 import type { TerminalOutputProps } from "@/types/terminal";
 import { MobileInlinePanel } from "@/components/Mobile/MobileInlinePanel";
@@ -22,6 +22,31 @@ import styles from "./TerminalOutput.module.css";
 export function TerminalOutput({ lines, isScrolling }: TerminalOutputProps) {
   const contentRef = useRef<HTMLDivElement>(null);
   const [userScrolledUp, setUserScrolledUp] = useState(false);
+
+  // Helper function to scroll terminal to bottom
+  const scrollToBottom = useCallback(() => {
+    if (contentRef.current) {
+      // Reset user scroll state to allow auto-scroll
+      setUserScrolledUp(false);
+      // Scroll to bottom with smooth behavior
+      contentRef.current.scrollTo({
+        top: contentRef.current.scrollHeight,
+        behavior: 'smooth',
+      });
+    }
+  }, []);
+
+  // Expose scroll function globally for quick actions
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      (window as any).__omegaScrollTerminalToBottom = scrollToBottom;
+    }
+    return () => {
+      if (typeof window !== "undefined") {
+        delete (window as any).__omegaScrollTerminalToBottom;
+      }
+    };
+  }, [scrollToBottom]);
 
   // Auto-scroll to bottom when new lines are added (only if user hasn't scrolled up)
   useEffect(() => {
@@ -178,6 +203,7 @@ export function TerminalOutput({ lines, isScrolling }: TerminalOutputProps) {
     };
   }, []);
 
+
   // Handle clicks on interactive elements (delegated event handler)
   const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
     const target = e.target as HTMLElement;
@@ -196,6 +222,15 @@ export function TerminalOutput({ lines, isScrolling }: TerminalOutputProps) {
           executeCommandElement.style.transform = "";
           executeCommandElement.style.opacity = "";
         }, 200);
+        // Auto-scroll to bottom to show command output
+        // Use a small delay to ensure command execution has started
+        setTimeout(() => {
+          scrollToBottom();
+        }, 100);
+        // Also scroll after a longer delay to catch any async output
+        setTimeout(() => {
+          scrollToBottom();
+        }, 500);
       }
       return;
     }

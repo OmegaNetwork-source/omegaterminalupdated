@@ -840,6 +840,15 @@ export function SpotifyProvider({ children }: { children: ReactNode }) {
   // ==========================================================================
 
   const openPanel = useCallback(() => {
+    // Close other media panels when opening Spotify
+    window.dispatchEvent(new CustomEvent("omega:closeYouTube"));
+    window.dispatchEvent(new CustomEvent("omega:closeNewsReader"));
+    window.dispatchEvent(new CustomEvent("omega:closeBluesPlayer"));
+    window.dispatchEvent(new CustomEvent("omega:closeLoFiPlayer"));
+    window.dispatchEvent(new CustomEvent("omega:closeTechPlayer"));
+    window.dispatchEvent(new CustomEvent("omega:closeFunkyPlayer"));
+    window.dispatchEvent(new CustomEvent("omega:closeOmegaTrancePlayer"));
+    window.dispatchEvent(new CustomEvent("omega:closeOmegaMelodiesPlayer"));
     setPlayerState((prev) => ({ ...prev, isPanelOpen: true }));
   }, []);
 
@@ -850,6 +859,35 @@ export function SpotifyProvider({ children }: { children: ReactNode }) {
   // ==========================================================================
   // Lifecycle
   // ==========================================================================
+
+  // Listen for close events from other panels
+  useEffect(() => {
+    const handleClose = () => {
+      setPlayerState((prev) => ({ ...prev, isPanelOpen: false }));
+    };
+
+    window.addEventListener("omega:closeSpotify", handleClose);
+    window.addEventListener("omega:openYouTube", handleClose);
+    window.addEventListener("omega:openNewsReader", handleClose);
+    window.addEventListener("omega:openBluesPlayer", handleClose);
+    window.addEventListener("omega:openLoFiPlayer", handleClose);
+    window.addEventListener("omega:openTechPlayer", handleClose);
+    window.addEventListener("omega:openFunkyPlayer", handleClose);
+    window.addEventListener("omega:openOmegaTrancePlayer", handleClose);
+    window.addEventListener("omega:openOmegaMelodiesPlayer", handleClose);
+
+    return () => {
+      window.removeEventListener("omega:closeSpotify", handleClose);
+      window.removeEventListener("omega:openYouTube", handleClose);
+      window.removeEventListener("omega:openNewsReader", handleClose);
+      window.removeEventListener("omega:openBluesPlayer", handleClose);
+      window.removeEventListener("omega:openLoFiPlayer", handleClose);
+      window.removeEventListener("omega:openTechPlayer", handleClose);
+      window.removeEventListener("omega:openFunkyPlayer", handleClose);
+      window.removeEventListener("omega:openOmegaTrancePlayer", handleClose);
+      window.removeEventListener("omega:openOmegaMelodiesPlayer", handleClose);
+    };
+  }, []);
 
   useEffect(() => {
     // Only run once on mount - restore session from localStorage

@@ -1,0 +1,331 @@
+/* DigitalFace - Enhanced Interactive AI Companion Face */
+
+.container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 180px;
+  background: linear-gradient(180deg, 
+    rgba(0, 5, 15, 1) 0%,
+    rgba(5, 10, 25, 1) 50%,
+    rgba(0, 8, 20, 1) 100%
+  );
+  border-radius: 12px;
+  overflow: hidden;
+  border: 2px solid var(--palette-primary, rgba(0, 212, 255, 0.4));
+  box-shadow: 
+    0 0 30px color-mix(in srgb, var(--palette-primary, #00d4ff) 20%, transparent),
+    inset 0 0 60px rgba(0, 20, 40, 0.5),
+    inset 0 0 120px rgba(0, 10, 30, 0.3);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+  user-select: none;
+}
+
+.container::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(ellipse at 50% 0%, rgba(0, 212, 255, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 100%, rgba(0, 255, 136, 0.05) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  position: relative;
+  z-index: 2;
+}
+
+/* Scanlines effect */
+.scanlines {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 10;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0) 0px,
+    rgba(0, 0, 0, 0) 1px,
+    rgba(0, 0, 0, 0.08) 1px,
+    rgba(0, 0, 0, 0.08) 2px
+  );
+  opacity: 0.7;
+  animation: scanlineMove 10s linear infinite;
+}
+
+@keyframes scanlineMove {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 0 100px;
+  }
+}
+
+/* Hover state */
+.container:hover {
+  border-color: var(--palette-primary, rgba(0, 212, 255, 0.7));
+  box-shadow: 
+    0 0 40px color-mix(in srgb, var(--palette-primary, #00d4ff) 30%, transparent),
+    0 0 80px color-mix(in srgb, var(--palette-primary, #00d4ff) 15%, transparent),
+    inset 0 0 60px rgba(0, 30, 60, 0.6);
+}
+
+.container:hover .scanlines {
+  animation-duration: 5s;
+}
+
+/* Active/Focused state */
+.container:focus-within {
+  border-color: var(--palette-secondary, rgba(0, 255, 136, 0.6));
+  outline: none;
+}
+
+/* Corner frame decoration */
+.container::after {
+  content: "";
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  right: 4px;
+  bottom: 4px;
+  border: 1px solid color-mix(in srgb, var(--palette-primary, #00d4ff) 15%, transparent);
+  border-radius: 8px;
+  pointer-events: none;
+  z-index: 3;
+}
+
+/* Glitch effect on rapid state changes */
+@keyframes glitchShake {
+  0%, 100% { transform: translate(0, 0); }
+  10% { transform: translate(-2px, 1px); }
+  20% { transform: translate(2px, -1px); }
+  30% { transform: translate(-1px, 2px); }
+  40% { transform: translate(1px, -2px); }
+  50% { transform: translate(-2px, -1px); }
+  60% { transform: translate(2px, 1px); }
+  70% { transform: translate(0, -2px); }
+  80% { transform: translate(-1px, 0); }
+  90% { transform: translate(1px, 1px); }
+}
+
+.container.glitching {
+  animation: glitchShake 0.3s ease-in-out;
+}
+
+/* Theme variable support with fallbacks */
+@supports (color: color-mix(in srgb, red 50%, blue)) {
+  .container {
+    --glow-color: color-mix(in srgb, var(--palette-primary, #00d4ff) 25%, transparent);
+    --border-color: color-mix(in srgb, var(--palette-primary, #00d4ff) 40%, transparent);
+  }
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .container {
+    min-height: 160px;
+    border-radius: 10px;
+    border-width: 1px;
+  }
+  
+  .container::after {
+    top: 3px;
+    left: 3px;
+    right: 3px;
+    bottom: 3px;
+    border-radius: 6px;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    min-height: 140px;
+    border-radius: 8px;
+  }
+}
+
+/* Dark mode enhancements (default) */
+@media (prefers-color-scheme: dark) {
+  .container {
+    background: linear-gradient(180deg, 
+      rgba(0, 3, 10, 1) 0%,
+      rgba(3, 8, 20, 1) 50%,
+      rgba(0, 5, 15, 1) 100%
+    );
+  }
+}
+
+/* Light mode adjustments */
+@media (prefers-color-scheme: light) {
+  .container {
+    background: linear-gradient(180deg, 
+      rgba(10, 15, 30, 1) 0%,
+      rgba(15, 20, 40, 1) 50%,
+      rgba(10, 15, 35, 1) 100%
+    );
+    border-color: var(--palette-primary, rgba(0, 150, 200, 0.5));
+  }
+  
+  .scanlines {
+    opacity: 0.5;
+  }
+}
+
+/* Overdrive mode - when clicking around face to speed up */
+.container.overdrive {
+  border-color: var(--palette-accent, rgba(255, 0, 255, 0.8));
+  box-shadow: 
+    0 0 50px color-mix(in srgb, var(--palette-accent, #ff00ff) 40%, transparent),
+    0 0 100px color-mix(in srgb, var(--palette-primary, #00d4ff) 30%, transparent),
+    inset 0 0 80px rgba(255, 0, 255, 0.15);
+  animation: overdriveShake 0.1s linear infinite;
+}
+
+.container.overdrive .scanlines {
+  animation-duration: 1s;
+  opacity: 0.9;
+}
+
+.overdriveGlow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 15;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(255, 0, 255, 0.1) 0%,
+    rgba(0, 212, 255, 0.05) 50%,
+    transparent 70%
+  );
+  animation: overdriveGlowPulse 0.3s ease-in-out infinite alternate;
+}
+
+@keyframes overdriveShake {
+  0%, 100% { transform: translate(0, 0); }
+  25% { transform: translate(-1px, 1px); }
+  50% { transform: translate(1px, -1px); }
+  75% { transform: translate(-1px, -1px); }
+}
+
+@keyframes overdriveGlowPulse {
+  0% { opacity: 0.5; }
+  100% { opacity: 1; }
+}
+
+/* Interaction hint on hover */
+.container:hover::before {
+  background: 
+    radial-gradient(ellipse at 50% 0%, rgba(0, 212, 255, 0.12) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 100%, rgba(0, 255, 136, 0.08) 0%, transparent 50%);
+}
+
+/* Click feedback */
+.container:active {
+  transform: scale(0.98);
+  transition: transform 0.1s ease;
+}
+
+.container:active:not(.overdrive) {
+  box-shadow: 
+    0 0 40px color-mix(in srgb, var(--palette-primary, #00d4ff) 35%, transparent),
+    inset 0 0 100px rgba(0, 50, 80, 0.6);
+}
+
+/* Matrix mode - digital rain effect - uses theme colors */
+.container.matrix {
+  border-color: color-mix(in srgb, var(--palette-primary, #00d4ff) 80%, transparent);
+  background: #000000;
+  box-shadow: 
+    0 0 60px color-mix(in srgb, var(--palette-primary, #00d4ff) 40%, transparent),
+    0 0 120px color-mix(in srgb, var(--palette-primary, #00d4ff) 20%, transparent),
+    inset 0 0 100px color-mix(in srgb, var(--palette-primary, #00d4ff) 10%, transparent);
+}
+
+.container.matrix::before {
+  background: 
+    linear-gradient(180deg, color-mix(in srgb, var(--palette-primary, #00d4ff) 10%, transparent) 0%, transparent 30%),
+    linear-gradient(0deg, color-mix(in srgb, var(--palette-secondary, #00ff88) 5%, transparent) 0%, transparent 20%);
+}
+
+.container.matrix::after {
+  border-color: color-mix(in srgb, var(--palette-primary, #00d4ff) 30%, transparent);
+}
+
+.container.matrix .scanlines {
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0) 0px,
+    rgba(0, 0, 0, 0) 1px,
+    color-mix(in srgb, var(--palette-primary, #00d4ff) 3%, transparent) 1px,
+    color-mix(in srgb, var(--palette-primary, #00d4ff) 3%, transparent) 2px
+  );
+  animation: scanlineMove 3s linear infinite;
+  opacity: 0.9;
+}
+
+/* Matrix rain glow overlay - uses theme colors */
+.matrixGlow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 15;
+  background: 
+    radial-gradient(ellipse at 50% 40%, color-mix(in srgb, var(--palette-primary, #00d4ff) 15%, transparent) 0%, transparent 50%),
+    linear-gradient(180deg, color-mix(in srgb, var(--palette-secondary, #00ff88) 5%, transparent) 0%, transparent 50%, color-mix(in srgb, var(--palette-primary, #00d4ff) 5%, transparent) 100%);
+  animation: matrixPulse 2s ease-in-out infinite alternate;
+}
+
+@keyframes matrixPulse {
+  0% { opacity: 0.5; }
+  50% { opacity: 0.8; }
+  100% { opacity: 0.6; }
+}
+
+/* Matrix mode hover enhancement - uses theme colors */
+.container.matrix:hover {
+  box-shadow: 
+    0 0 80px color-mix(in srgb, var(--palette-primary, #00d4ff) 50%, transparent),
+    0 0 150px color-mix(in srgb, var(--palette-primary, #00d4ff) 30%, transparent),
+    inset 0 0 120px color-mix(in srgb, var(--palette-primary, #00d4ff) 15%, transparent);
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .scanlines {
+    animation: none;
+  }
+  
+  .container.glitching {
+    animation: none;
+  }
+  
+  .container.overdrive {
+    animation: none;
+  }
+  
+  .overdriveGlow {
+    animation: none;
+  }
+  
+  .matrixGlow {
+    animation: none;
+  }
+}

@@ -1,0 +1,391 @@
+/* =============================================================================
+   Lineup Card Styles
+   ============================================================================= */
+
+.card {
+  background: linear-gradient(
+    135deg,
+    rgba(15, 25, 35, 0.95) 0%,
+    rgba(10, 18, 28, 0.95) 100%
+  );
+  border: 1px solid rgba(0, 255, 214, 0.2);
+  border-radius: 14px;
+  padding: 20px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.card:hover {
+  border-color: rgba(0, 255, 214, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(0, 255, 214, 0.1);
+}
+
+.card.active {
+  border-color: rgba(0, 255, 214, 0.5);
+}
+
+.card.won {
+  border-color: rgba(0, 200, 150, 0.5);
+  background: linear-gradient(
+    135deg,
+    rgba(0, 200, 150, 0.08) 0%,
+    rgba(10, 18, 28, 0.95) 100%
+  );
+}
+
+.card.lost {
+  border-color: rgba(255, 100, 100, 0.3);
+  background: linear-gradient(
+    135deg,
+    rgba(255, 100, 100, 0.05) 0%,
+    rgba(10, 18, 28, 0.95) 100%
+  );
+}
+
+/* Header */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.titleSection {
+  flex: 1;
+  min-width: 0;
+}
+
+.name {
+  font-size: 18px;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.creator {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.status {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.status.active {
+  background: rgba(0, 255, 214, 0.15);
+  color: #00ffd6;
+}
+
+.status.won {
+  background: rgba(0, 200, 150, 0.2);
+  color: #00c896;
+}
+
+.status.lost {
+  background: rgba(255, 100, 100, 0.2);
+  color: #ff6464;
+}
+
+.status.partial {
+  background: rgba(255, 170, 0, 0.2);
+  color: #ffaa00;
+}
+
+.status.draft {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* Stats Grid */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 16px;
+  padding: 14px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+}
+
+.stat {
+  text-align: center;
+}
+
+.statLabel {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.4);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 4px;
+}
+
+.statValue {
+  font-size: 16px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.statValue.highlight {
+  color: #00ffd6;
+}
+
+.statValue.positive {
+  color: #00c896;
+}
+
+.statValue.negative {
+  color: #ff6464;
+}
+
+/* Progress */
+.progress {
+  margin-bottom: 16px;
+}
+
+.progressHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  font-size: 12px;
+}
+
+.progressLabel {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.progressCount {
+  color: #00ffd6;
+}
+
+.progressBar {
+  height: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.progressFill.winning {
+  background: linear-gradient(90deg, #00c896, #00ffd6);
+}
+
+.progressFill.mixed {
+  background: linear-gradient(90deg, #ffaa00, #ffcc00);
+}
+
+/* Legs Preview */
+.legs {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.leg {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 6px;
+}
+
+.legStatus {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 10px;
+}
+
+.legStatus.pending {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.legStatus.won {
+  background: rgba(0, 200, 150, 0.2);
+  color: #00c896;
+}
+
+.legStatus.lost {
+  background: rgba(255, 100, 100, 0.2);
+  color: #ff6464;
+}
+
+.legInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.legQuestion {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.8);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.legMeta {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.4);
+  display: flex;
+  gap: 8px;
+}
+
+.legSide {
+  font-weight: 600;
+}
+
+.legSide.yes {
+  color: #00c896;
+}
+
+.legSide.no {
+  color: #ff6464;
+}
+
+.showMore {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px dashed rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 11px;
+}
+
+/* Footer */
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.resolution {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.4);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+}
+
+.actionButton {
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.actionButton.primary {
+  background: rgba(0, 255, 214, 0.15);
+  border: 1px solid rgba(0, 255, 214, 0.3);
+  color: #00ffd6;
+}
+
+.actionButton.primary:hover {
+  background: rgba(0, 255, 214, 0.25);
+}
+
+.actionButton.danger {
+  background: rgba(255, 100, 100, 0.1);
+  border: 1px solid rgba(255, 100, 100, 0.2);
+  color: #ff6464;
+}
+
+.actionButton.danger:hover {
+  background: rgba(255, 100, 100, 0.2);
+}
+
+/* Compact variant */
+.card.compact {
+  padding: 14px;
+}
+
+.card.compact .stats {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.card.compact .legs {
+  display: none;
+}
+
+/* Empty State */
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px dashed rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  text-align: center;
+}
+
+.emptyIcon {
+  font-size: 48px;
+  margin-bottom: 16px;
+  opacity: 0.3;
+}
+
+.emptyTitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: 8px;
+}
+
+.emptyText {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.4);
+  margin-bottom: 16px;
+}
+
+.emptyButton {
+  padding: 10px 20px;
+  background: linear-gradient(135deg, #00ffd6, #00c896);
+  border: none;
+  border-radius: 8px;
+  color: #000000;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.emptyButton:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(0, 255, 214, 0.3);
+}
+

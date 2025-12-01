@@ -11,6 +11,8 @@ import { MultiChainProvider } from "@/providers/MultiChainProvider";
 import { ProviderShell } from "@/providers/ProviderShell";
 import { MultiNetworkConnectorHost } from "@/components/Wallet/MultiNetworkConnectorHost";
 import { AptosWalletProvider } from "@/providers/AptosWalletProvider";
+import { ParlayProvider } from "@/providers/ParlayProvider";
+import { TradingAccountsProvider } from "@/providers/TradingAccountsProvider";
 import ContextProvider from "../../context";
 import { headers } from "next/headers";
 import WebVitals from "./_components/WebVitals";
@@ -94,7 +96,11 @@ export default async function RootLayout({
                       <MultiNetworkConnectorHost />
                       <MultiChainProvider>
                         <AptosWalletProvider>
-                          <ProviderShell>{children}</ProviderShell>
+                          <TradingAccountsProvider>
+                            <ParlayProvider>
+                              <ProviderShell>{children}</ProviderShell>
+                            </ParlayProvider>
+                          </TradingAccountsProvider>
                         </AptosWalletProvider>
                       </MultiChainProvider>
                     </WalletProvider>

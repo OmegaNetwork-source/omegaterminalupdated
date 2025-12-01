@@ -40,6 +40,7 @@ import { openNetworkSelector } from "@/lib/wallet/networkSelector";
 import { useViewMode } from "@/hooks/useViewMode";
 import { useGUITheme } from "@/hooks/useGUITheme";
 import { useCustomizer } from "@/hooks/useCustomizer";
+import { useTerminalMode } from "@/hooks/useTerminalMode";
 import { config } from "@/lib/config";
 import { Contract } from "ethers";
 import { parseCommandArgs } from "@/lib/utils";
@@ -118,6 +119,7 @@ export function useCommandExecution(): UseCommandExecutionReturn {
   const viewModeCtx = useViewMode();
   const guiThemeCtx = useGUITheme();
   const customizerCtx = useCustomizer();
+  const terminalModeCtx = useTerminalMode();
 
   // Terminal output state (start with welcome messages)
   const [terminalLines, setTerminalLines] = useState<TerminalLine[]>(() => {
@@ -1463,6 +1465,13 @@ export function useCommandExecution(): UseCommandExecutionReturn {
                 customizerCtx.resetToDefaults();
               }
             },
+          },
+          terminalMode: {
+            mode: terminalModeCtx.mode,
+            setTerminalMode: terminalModeCtx.setTerminalMode,
+            toggleMode: terminalModeCtx.toggleMode,
+            isMultiMode: terminalModeCtx.isMultiMode,
+            isSingleMode: terminalModeCtx.isSingleMode,
           },
           telegram: {
             state: telegram.state,

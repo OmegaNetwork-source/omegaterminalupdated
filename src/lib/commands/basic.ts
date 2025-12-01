@@ -673,7 +673,16 @@ export const helpCommand: Command = {
   name: "help",
   aliases: ["?"],
   description: "Display available commands",
-  handler: (context: CommandContext, args: string[]) => {
+  handler: async (context: CommandContext, args: string[]) => {
+    // Play Elon sound effect for help command
+    if (context.sound?.playHelpCommandSound) {
+      try {
+        await context.sound.playHelpCommandSound();
+      } catch {
+        // Ignore sound errors
+      }
+    }
+
     const category = args[1]?.toLowerCase();
 
     // Show category-specific help with enhanced formatting
@@ -1913,6 +1922,102 @@ export const urlCommand: Command = {
   },
 };
 
+export const multiterminalCommand: Command = {
+  name: "multiterminal",
+  aliases: ["mt", "multi", "terminals"],
+  description: "Toggle between single and multi-terminal modes",
+  usage: "multiterminal [single|multi|toggle]",
+  category: "system",
+  handler: (context: CommandContext, args: string[]) => {
+    const terminalMode = context.terminalMode;
+
+    if (!terminalMode) {
+      context.log("❌ Terminal mode system not available", "error");
+      return;
+    }
+
+    if (!args || args.length < 2) {
+      // Show current mode
+      const currentMode = terminalMode.mode;
+      context.log("🖥️  Terminal Modes:", "info");
+      context.log("", "info");
+      context.log(
+        `  Current mode: ${currentMode.toUpperCase()}`,
+        currentMode === "single" ? "success" : "info"
+      );
+      context.log("", "info");
+      context.log("Available commands:", "info");
+      context.log(
+        "  multiterminal single  → Single terminal mode (default)",
+        "output"
+      );
+      context.log(
+        "  multiterminal multi   → Multi-terminal mode (multiple terminals)",
+        "output"
+      );
+      context.log("  multiterminal toggle  → Toggle between modes", "output");
+      context.log("", "info");
+      context.log("💡 Your preference is saved automatically!", "info");
+      context.log("", "info");
+      context.log("Multi-terminal mode allows you to:", "info");
+      context.log("  • Run multiple commands simultaneously", "output");
+      context.log("  • Have separate terminals for different tasks", "output");
+      context.log("  • Arrange terminals in grid or split layouts", "output");
+      context.log("  • Resize and customize each terminal", "output");
+      return;
+    }
+
+    const mode = args[1]?.toLowerCase();
+
+    switch (mode) {
+      case "single":
+      case "one":
+      case "1":
+        terminalMode.setTerminalMode("single");
+        context.log("✅ Switched to single terminal mode", "success");
+        context.log("💡 Reloading page to apply changes...", "info");
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
+        break;
+
+      case "multi":
+      case "multiple":
+      case "many":
+        terminalMode.setTerminalMode("multi");
+        context.log("✅ Switched to multi-terminal mode", "success");
+        context.log("💡 Reloading page to apply changes...", "info");
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
+        break;
+
+      case "toggle":
+      case "switch":
+        const beforeMode = terminalMode.mode;
+        terminalMode.toggleMode();
+        const newMode = beforeMode === "single" ? "multi" : "single";
+        context.log(`✅ Toggled to ${newMode} terminal mode`, "success");
+        context.log("💡 Reloading page to apply changes...", "info");
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
+        break;
+
+      default:
+        context.log("❌ Invalid terminal mode", "error");
+        const helpHtml = `
+          <div style="margin: 8px 0;">
+            ${createCommandLine("multiterminal single", "Switch to single terminal mode")}
+            ${createCommandLine("multiterminal multi", "Switch to multi-terminal mode")}
+            ${createCommandLine("multiterminal toggle", "Toggle between modes")}
+          </div>
+        `;
+        context.logHtml(helpHtml);
+    }
+  },
+};
+
 export const basicCommands: Command[] = [
   helpCommand,
   clearCommand,
@@ -1925,6 +2030,7 @@ export const basicCommands: Command[] = [
   stopCommand,
   quickActionsCommand,
   urlCommand,
+  multiterminalCommand,
 ];
 
 export default basicCommands;

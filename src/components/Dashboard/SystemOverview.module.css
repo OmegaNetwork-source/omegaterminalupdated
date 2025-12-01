@@ -5,28 +5,36 @@
 
 .section {
   width: 100%;
-  height: 100%;
-  padding: 20px;
-  overflow-y: auto;
+  padding: 0;
+  overflow: visible;
+  position: relative;
+  z-index: 10;
+  isolation: isolate;
+  background: transparent;
+  border: none;
+  box-shadow: none;
 }
 
 .overviewContainer {
   display: flex;
   flex-direction: column;
-  height: 100%;
-  gap: 20px;
+  gap: 16px;
+  position: relative;
+  z-index: 2;
 }
 
 .header {
-  margin-bottom: 8px;
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--palette-border, rgba(0, 212, 255, 0.15));
 }
 
 .title {
-  font-size: 16px;
+  font-size: 13px;
   font-weight: 700;
   color: var(--palette-primary, #00d4ff);
   text-transform: uppercase;
-  letter-spacing: 2px;
+  letter-spacing: 1.5px;
   margin: 0;
   font-family: var(--theme-font-primary, 'Courier New'), monospace;
 }
@@ -34,33 +42,39 @@
 .content {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 20px;
   flex: 1;
 }
 
 .card {
-  background: var(--palette-bg-overlay, rgba(0, 212, 255, 0.08));
-  border: 1px solid var(--palette-border, rgba(0, 212, 255, 0.3));
-  border-radius: 10px;
-  padding: 16px;
+  background: color-mix(in srgb, var(--palette-surface, rgba(21, 21, 32, 1)) 88%, transparent);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--palette-border, rgba(0, 212, 255, 0.22));
+  border-radius: 12px;
+  padding: 14px;
   transition: all 0.2s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), 0 0 20px rgba(0, 212, 255, 0.08);
   position: relative;
-  z-index: 1;
+  z-index: 2;
+  isolation: isolate;
+  flex-shrink: 0;
 }
 
 .card:hover {
   border-color: var(--palette-primary, #00d4ff);
-  background: var(--palette-primary-glow, rgba(0, 212, 255, 0.08));
+  background: color-mix(in srgb, var(--palette-surface, rgba(21, 21, 32, 1)) 92%, transparent);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4), 0 0 24px rgba(0, 212, 255, 0.15);
+  transform: translateY(-1px);
 }
 
 .cardHeader {
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-bottom: 12px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid var(--palette-border, rgba(0, 212, 255, 0.3));
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--palette-border, rgba(0, 212, 255, 0.2));
   position: relative;
 }
 
@@ -84,7 +98,7 @@
   flex-direction: column;
   gap: 10px;
   position: relative;
-  z-index: 1;
+  z-index: 3;
 }
 
 .statusRow {
@@ -468,5 +482,266 @@
 
 .section::-webkit-scrollbar-thumb:hover {
   background: var(--palette-primary, #00d4ff);
+}
+
+/* Omega Music Players Quick Actions */
+.omegaPlayersSection {
+  margin-top: 16px;
+  padding-top: 16px;
+  margin-bottom: 4px;
+  border-top: 1px solid var(--palette-border, rgba(0, 212, 255, 0.15));
+}
+
+.omegaPlayersLabel {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: color-mix(in srgb, var(--palette-text, #ffffff) 60%, transparent);
+  margin-bottom: 10px;
+  font-family: var(--theme-font-primary, 'Courier New'), monospace;
+}
+
+.omegaPlayersGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.omegaPlayerButton {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 8px;
+  background: color-mix(in srgb, var(--palette-surface, rgba(21, 21, 32, 1)) 60%, transparent);
+  border: 1px solid var(--palette-border, rgba(0, 212, 255, 0.15));
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: var(--theme-font-primary, 'Courier New'), monospace;
+}
+
+.omegaPlayerButton:hover {
+  background: color-mix(in srgb, var(--palette-surface, rgba(21, 21, 32, 1)) 80%, transparent);
+  border-color: var(--palette-primary, #00d4ff);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 212, 255, 0.2);
+}
+
+.omegaPlayerLabel {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: color-mix(in srgb, var(--palette-text, #ffffff) 80%, transparent);
+}
+
+/* Mini Waveform */
+.miniWaveform {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  height: 24px;
+  width: 100%;
+  max-width: 60px;
+  cursor: pointer;
+  padding: 4px 0;
+}
+
+.waveBar {
+  width: 2px;
+  background: linear-gradient(
+    to top,
+    var(--palette-primary, #00d4ff) 0%,
+    color-mix(in srgb, var(--palette-primary, #00d4ff) 60%, transparent) 50%,
+    color-mix(in srgb, var(--palette-primary, #00d4ff) 20%, transparent) 100%
+  );
+  border-radius: 1px;
+  transition: all 0.3s ease;
+  animation: waveIdleMini 2s ease-in-out infinite;
+  min-height: 4px;
+  max-height: 20px;
+}
+
+/* Waveform Animation States */
+.miniWaveform.waveformPlaying .waveBar {
+  animation: wavePlayingMini 0.8s ease-in-out infinite;
+}
+
+/* Idle Wave Animation */
+@keyframes waveIdleMini {
+  0%,
+  100% {
+    transform: scaleY(0.6);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+}
+
+/* Playing Wave Animation */
+@keyframes wavePlayingMini {
+  0%,
+  100% {
+    transform: scaleY(0.8);
+    opacity: 0.8;
+  }
+  25% {
+    transform: scaleY(1.2);
+    opacity: 1;
+  }
+  50% {
+    transform: scaleY(0.9);
+    opacity: 0.9;
+  }
+  75% {
+    transform: scaleY(1.1);
+    opacity: 1;
+  }
+}
+
+/* Wallet Tracker Form */
+.walletTrackerForm {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.inputLabel {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--palette-text-secondary, rgba(255, 255, 255, 0.6));
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.walletInput {
+  width: 100%;
+  padding: 10px 12px;
+  background: color-mix(in srgb, var(--palette-surface, rgba(21, 21, 32, 1)) 80%, transparent);
+  border: 1px solid color-mix(in srgb, var(--palette-primary, #00d4ff) 20%, transparent);
+  border-radius: 6px;
+  color: var(--palette-text, #ffffff);
+  font-size: 12px;
+  font-family: 'Courier New', monospace;
+  transition: all 0.2s ease;
+}
+
+.walletInput:focus {
+  outline: none;
+  border-color: var(--palette-primary, #00d4ff);
+  background: color-mix(in srgb, var(--palette-surface, rgba(21, 21, 32, 1)) 90%, transparent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--palette-primary, #00d4ff) 20%, transparent);
+}
+
+.walletInput:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.walletInput::placeholder {
+  color: var(--palette-text-secondary, rgba(255, 255, 255, 0.3));
+}
+
+.networkIndicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: color-mix(in srgb, var(--palette-secondary, #00ff88) 15%, transparent);
+  border: 1px solid color-mix(in srgb, var(--palette-secondary, #00ff88) 30%, transparent);
+  border-radius: 6px;
+  font-size: 11px;
+}
+
+.networkLabel {
+  font-weight: 600;
+  color: var(--palette-text-secondary, rgba(255, 255, 255, 0.6));
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.networkValue {
+  color: var(--palette-secondary, #00ff88);
+  font-weight: 600;
+  font-family: 'Courier New', monospace;
+  text-transform: capitalize;
+}
+
+.trackButton {
+  width: 100%;
+  padding: 10px 16px;
+  background: linear-gradient(135deg, var(--palette-primary, #00d4ff) 0%, var(--palette-secondary, #00ff88) 100%);
+  border: none;
+  border-radius: 6px;
+  color: var(--palette-text, #000000);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 4px;
+}
+
+.trackButton:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--palette-primary, #00d4ff) 40%, transparent);
+}
+
+.trackButton:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.trackButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.errorMessage {
+  padding: 8px 12px;
+  background: color-mix(in srgb, var(--palette-error, #ff4757) 15%, transparent);
+  border: 1px solid color-mix(in srgb, var(--palette-error, #ff4757) 30%, transparent);
+  border-radius: 6px;
+  color: var(--palette-error, #ff4757);
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.successMessage {
+  padding: 8px 12px;
+  background: color-mix(in srgb, var(--palette-secondary, #00ff88) 15%, transparent);
+  border: 1px solid color-mix(in srgb, var(--palette-secondary, #00ff88) 30%, transparent);
+  border-radius: 6px;
+  color: var(--palette-secondary, #00ff88);
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.trackedWalletsInfo {
+  margin-top: 4px;
+  padding-top: 8px;
+  border-top: 1px solid color-mix(in srgb, var(--palette-primary, #00d4ff) 20%, transparent);
+}
+
+.trackedCount {
+  font-size: 11px;
+  color: var(--palette-text-secondary, rgba(255, 255, 255, 0.6));
+  font-weight: 500;
+}
+
+/* Additional spacing for Portfolio Tracker card to separate from Quick Actions */
+.portfolioTrackerCard {
+  margin-top: 12px;
 }
 

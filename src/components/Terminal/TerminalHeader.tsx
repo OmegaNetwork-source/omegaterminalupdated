@@ -22,6 +22,8 @@ export function TerminalHeader({
   onPaletteCycle,
   onLightDarkToggle,
   onDashboardToggle,
+  onTerminalModeToggle,
+  terminalMode = "single",
   aiProvider,
   onAiProviderChange,
   connectionStatus,
@@ -203,6 +205,7 @@ export function TerminalHeader({
             </svg>
             <span>DASHBOARD</span>
           </button>
+
         </div>
 
         {/* AI Provider Selector - Desktop: Select dropdown, Mobile: Button to open bottom sheet */}

@@ -4,7 +4,7 @@
  */
 
 import type { Command, CommandContext } from "@/types/commands";
-import { isValidEthereumAddress, shortenAddress } from "@/lib/utils";
+import { isValidEthereumAddress, shortenAddress, escapeHtml } from "@/lib/utils";
 import { config } from "@/lib/config";
 import { parseEther } from "ethers";
 import { openNetworkSelector } from "@/lib/wallet/networkSelector";
@@ -422,25 +422,255 @@ export const testWalletCommand: Command = {
 
     try {
       const walletInfo = await context.wallet.createSessionWallet();
+      
+      // Wait a bit for wallet state to update
+      await new Promise(resolve => setTimeout(resolve, 200));
+      
+      // Check if wallet was created successfully
       if (!walletInfo) {
-        context.log("Test wallet creation failed.", "error");
+        context.log("❌ Test wallet creation failed.", "error");
+        context.log("The wallet provider returned null. Please try again.", "info");
         return;
       }
 
-      context.log("✅ Test wallet created!", "success");
-      context.log(`Address: ${walletInfo.address}`, "output");
-      context.log("", "info");
-      context.log("⚠️  WARNING: This is a test wallet", "warning");
-      context.log("• Private key stored in session storage only", "info");
-      context.log("• Will be cleared when you close this tab", "info");
-      context.log("• Do NOT use for real funds", "info");
-      context.log("", "info");
-      context.log(
-        "💡 Use 'export' to view private key (save it if needed)",
-        "info"
-      );
+      if (!walletInfo.address) {
+        context.log("❌ Test wallet creation failed - no address returned.", "error");
+        context.log("Please check the browser console for errors.", "info");
+        return;
+      }
+
+      // Get balance if available
+      let balance = "0.0";
+      try {
+        const walletBalance = await context.wallet.getBalance();
+        if (walletBalance) {
+          balance = parseFloat(walletBalance).toFixed(4);
+        }
+      } catch (e) {
+        // Balance fetch is optional, continue without it
+      }
+
+      // Create formatted output box with all wallet details
+      const walletDetailsHtml = `
+        <div style="
+          background: linear-gradient(135deg, 
+            color-mix(in srgb, var(--palette-success, #00ff88) 15%, transparent), 
+            color-mix(in srgb, var(--palette-primary, #00d4ff) 10%, transparent)
+          );
+          border: 1px solid color-mix(in srgb, var(--palette-success, #00ff88) 30%, transparent);
+          border-radius: 12px;
+          padding: 20px;
+          margin: 12px 0;
+          box-shadow: 0 4px 16px rgba(0, 255, 136, 0.15);
+        ">
+          <div style="
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--palette-success, #00ff88);
+            margin-bottom: 16px;
+            text-shadow: 0 0 8px color-mix(in srgb, var(--palette-success, #00ff88) 40%, transparent);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+          ">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+              <polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </svg>
+            Test Wallet Created Successfully
+          </div>
+          
+          <div style="
+            background: color-mix(in srgb, var(--palette-bg, #000) 40%, transparent);
+            border: 1px solid color-mix(in srgb, var(--palette-primary, #00d4ff) 20%, transparent);
+            border-radius: 8px;
+            padding: 16px;
+            margin: 12px 0;
+          ">
+            <div style="
+              display: grid;
+              grid-template-columns: auto 1fr;
+              gap: 12px 20px;
+              align-items: start;
+            ">
+              <div style="
+                color: var(--palette-primary, #00d4ff);
+                font-weight: 600;
+                font-size: 13px;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+              ">Address:</div>
+              <div style="
+                color: var(--palette-text, #ffffff);
+                font-family: 'Courier New', monospace;
+                font-size: 13px;
+                word-break: break-all;
+                background: color-mix(in srgb, var(--palette-primary, #00d4ff) 5%, transparent);
+                padding: 8px 12px;
+                border-radius: 4px;
+                border: 1px solid color-mix(in srgb, var(--palette-primary, #00d4ff) 15%, transparent);
+              ">${escapeHtml(walletInfo.address)}</div>
+              
+              ${walletInfo.privateKey ? `
+                <div style="
+                  color: var(--palette-warning, #ffa502);
+                  font-weight: 600;
+                  font-size: 13px;
+                  text-transform: uppercase;
+                  letter-spacing: 0.5px;
+                ">Private Key:</div>
+                <div style="
+                  color: var(--palette-warning, #ffa502);
+                  font-family: 'Courier New', monospace;
+                  font-size: 12px;
+                  word-break: break-all;
+                  background: color-mix(in srgb, var(--palette-warning, #ffa502) 8%, transparent);
+                  padding: 8px 12px;
+                  border-radius: 4px;
+                  border: 1px solid color-mix(in srgb, var(--palette-warning, #ffa502) 20%, transparent);
+                ">${escapeHtml(walletInfo.privateKey)}</div>
+              ` : ''}
+              
+              <div style="
+                color: var(--palette-primary, #00d4ff);
+                font-weight: 600;
+                font-size: 13px;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+              ">Balance:</div>
+              <div style="
+                color: var(--palette-text, #ffffff);
+                font-family: 'Courier New', monospace;
+                font-size: 13px;
+              ">${balance} OMEGA</div>
+              
+              <div style="
+                color: var(--palette-primary, #00d4ff);
+                font-weight: 600;
+                font-size: 13px;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+              ">Network:</div>
+              <div style="
+                color: var(--palette-text, #ffffff);
+                font-size: 13px;
+              ">Omega Network (Testnet)</div>
+              
+              <div style="
+                color: var(--palette-primary, #00d4ff);
+                font-weight: 600;
+                font-size: 13px;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+              ">Type:</div>
+              <div style="
+                color: var(--palette-text, #ffffff);
+                font-size: 13px;
+              ">Session Wallet (Temporary)</div>
+            </div>
+          </div>
+          
+          <div style="
+            background: color-mix(in srgb, var(--palette-warning, #ffa502) 10%, transparent);
+            border: 1px solid color-mix(in srgb, var(--palette-warning, #ffa502) 25%, transparent);
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 16px;
+          ">
+            <div style="
+              color: var(--palette-warning, #ffa502);
+              font-weight: 600;
+              font-size: 13px;
+              margin-bottom: 8px;
+              display: flex;
+              align-items: center;
+              gap: 6px;
+            ">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                <line x1="12" y1="9" x2="12" y2="13"></line>
+                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+              </svg>
+              Important Warnings
+            </div>
+            <ul style="
+              color: var(--palette-text, #ccd4e0);
+              font-size: 12px;
+              margin: 0;
+              padding-left: 20px;
+              line-height: 1.8;
+            ">
+              <li>Private key is stored in session storage only</li>
+              <li>Wallet will be cleared when you close this tab</li>
+              <li>Do NOT use for real funds or production use</li>
+              <li>This is a test wallet for development purposes</li>
+            </ul>
+          </div>
+          
+          <div style="
+            margin-top: 16px;
+            padding-top: 12px;
+            border-top: 1px solid color-mix(in srgb, var(--palette-primary, #00d4ff) 20%, transparent);
+          ">
+            <div style="
+              color: var(--palette-text, #ccd4e0);
+              font-size: 12px;
+              margin-bottom: 8px;
+            ">Quick Actions:</div>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              ${createCommandLine("export", "View wallet details")}
+              ${createCommandLine("balance", "Check balance")}
+              ${createCommandLine("fund", "Request testnet tokens")}
+            </div>
+          </div>
+        </div>
+      `;
+
+      context.logHtml(walletDetailsHtml);
+      
     } catch (error: any) {
-      context.log(`Test wallet error: ${error?.message ?? error}`, "error");
+      const errorHtml = `
+        <div style="
+          background: linear-gradient(135deg, 
+            color-mix(in srgb, var(--palette-error, #ff4757) 15%, transparent), 
+            color-mix(in srgb, var(--palette-warning, #ffa502) 10%, transparent)
+          );
+          border: 1px solid color-mix(in srgb, var(--palette-error, #ff4757) 30%, transparent);
+          border-radius: 12px;
+          padding: 20px;
+          margin: 12px 0;
+        ">
+          <div style="
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--palette-error, #ff4757);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+          ">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+            Test Wallet Creation Failed
+          </div>
+          <div style="
+            color: var(--palette-text, #ccd4e0);
+            font-size: 13px;
+            margin: 8px 0;
+          ">${escapeHtml(error?.message || String(error) || "Unknown error occurred")}</div>
+          <div style="
+            color: var(--palette-text, #ccd4e0);
+            font-size: 12px;
+            margin-top: 12px;
+            opacity: 0.8;
+          ">Please check the browser console for more details and try again.</div>
+        </div>
+      `;
+      context.logHtml(errorHtml);
+      console.error("[test-wallet] Error creating session wallet:", error);
     }
   },
 };

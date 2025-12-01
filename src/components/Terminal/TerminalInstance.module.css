@@ -1,0 +1,147 @@
+.instance {
+  display: flex;
+  flex-direction: column;
+  background: var(--palette-surface, rgba(20, 20, 30, 0.95));
+  border: 1px solid var(--palette-primary, #00d4ff);
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+  min-width: 300px;
+  min-height: 300px;
+  height: 100%;
+  box-shadow: 0 4px 12px rgba(0, 212, 255, 0.1);
+  transition: all 0.2s ease;
+}
+
+.instance:hover {
+  border-color: var(--palette-secondary, #00ff88);
+  box-shadow: 0 4px 16px rgba(0, 212, 255, 0.2);
+}
+
+.instance.minimized {
+  height: auto;
+}
+
+.instance.minimized .content {
+  display: none;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background: var(--palette-surface, rgba(30, 30, 40, 0.9));
+  border-bottom: 1px solid var(--palette-primary, #00d4ff);
+  cursor: move;
+  user-select: none;
+}
+
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+
+.title {
+  font-size: 12px;
+  font-weight: bold;
+  color: var(--palette-primary, #00d4ff);
+  cursor: text;
+  padding: 2px 4px;
+  border-radius: 2px;
+  transition: background 0.2s ease;
+}
+
+.title:hover {
+  background: rgba(0, 212, 255, 0.1);
+}
+
+.titleInput {
+  background: transparent;
+  border: 1px solid var(--palette-primary, #00d4ff);
+  color: var(--palette-text, #fff);
+  font-family: "Courier New", monospace;
+  font-size: 12px;
+  padding: 2px 6px;
+  border-radius: 2px;
+  outline: none;
+  min-width: 100px;
+}
+
+.titleInput:focus {
+  border-color: var(--palette-secondary, #00ff88);
+  background: rgba(0, 212, 255, 0.1);
+}
+
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.headerButton {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid var(--palette-primary, #00d4ff);
+  color: var(--palette-text, #fff);
+  font-family: "Courier New", monospace;
+  font-size: 14px;
+  cursor: pointer;
+  border-radius: 2px;
+  transition: all 0.2s ease;
+}
+
+.headerButton:hover {
+  background: var(--palette-primary, #00d4ff);
+  color: var(--palette-bg, #000);
+  transform: scale(1.1);
+}
+
+.content {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  height: 100%;
+}
+
+.resizeHandle {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 16px;
+  height: 16px;
+  cursor: nwse-resize;
+  background: linear-gradient(
+    135deg,
+    transparent 0%,
+    transparent 40%,
+    var(--palette-primary, #00d4ff) 40%,
+    var(--palette-primary, #00d4ff) 45%,
+    transparent 45%,
+    transparent 60%,
+    var(--palette-primary, #00d4ff) 60%,
+    var(--palette-primary, #00d4ff) 65%,
+    transparent 65%
+  );
+  opacity: 0.5;
+  transition: opacity 0.2s ease;
+}
+
+.resizeHandle:hover {
+  opacity: 1;
+}
+
+.instance:has(.resizeHandle:hover) {
+  cursor: nwse-resize;
+}
+

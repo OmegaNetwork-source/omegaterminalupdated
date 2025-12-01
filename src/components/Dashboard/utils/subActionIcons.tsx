@@ -99,6 +99,22 @@ export function getSubActionIcon(label: string): JSX.Element {
         <path d="M18,18H6V6H18V18Z" fill="currentColor" />
       </svg>
     ),
+    // Wallet actions
+    "Create Test Wallet": (
+      <svg className={styles.subButtonIcon} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+        <path d="M17,14H19V17H22V19H19V22H17V19H14V17H17V14M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4M12,6A6,6 0 0,1 18,12A6,6 0 0,1 12,18A6,6 0 0,1 6,12A6,6 0 0,1 12,6M12,8A4,4 0 0,0 8,12A4,4 0 0,0 12,16A4,4 0 0,0 16,12A4,4 0 0,0 12,8Z" fill="currentColor" />
+      </svg>
+    ),
+    "Import Wallet": (
+      <svg className={styles.subButtonIcon} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+        <path d="M9,16V10H5L12,3L19,10H15V16H9M5,20V18H19V20H5Z" fill="currentColor" />
+      </svg>
+    ),
+    "Export Wallet": (
+      <svg className={styles.subButtonIcon} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+        <path d="M9,16H15V10H19L12,3L5,10H9V16M5,20V18H19V20H5Z" fill="currentColor" />
+      </svg>
+    ),
     "volume": (
       <svg className={styles.subButtonIcon} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
         <path d="M14,3.23V5.29C16.89,6.15 19,8.83 19,12C19,15.17 16.89,17.85 14,18.71V20.77C18.01,19.86 21,16.28 21,12C21,7.72 18.01,4.14 14,3.23M16.5,12C16.5,10.23 15.5,8.71 14,7.97V16C15.5,15.29 16.5,13.77 16.5,12M3,9V15H7L12,20V4L7,9H3Z" fill="currentColor" />
@@ -199,6 +215,21 @@ export function getSubActionIcon(label: string): JSX.Element {
   if (lowerLabel.includes("follow user")) return iconMap["track"];
   if (lowerLabel.includes("view profile") || lowerLabel.includes("profile")) return iconMap["portfolio"];
   if (lowerLabel.includes("leaderboards") || lowerLabel.includes("leagues")) return iconMap["list"];
+  // Trading UI
+  if (lowerLabel.includes("open trading ui") || lowerLabel.includes("trading ui")) return (
+    <svg className={styles.subButtonIcon} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+      <path d="M3,13H7V23H3V13M10,14H14V23H10V14M17,9H21V23H17V9M13.73,10.27L15.19,8.81L20,13.58V10H22V17H15V15H18.58L13.73,10.27M2,2V6H4V4H6V2H2M22,2H18V4H20V6H22V2M4,20H2V24H6V22H4V20M22,18V24H18V22H20V18H22Z" fill="currentColor" />
+    </svg>
+  );
+  if (lowerLabel.includes("connect account") || lowerLabel.includes("connect polymarket") || lowerLabel.includes("connect kalshi")) return (
+    <svg className={styles.subButtonIcon} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+      <path d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z" fill="currentColor" />
+    </svg>
+  );
+  // Wallet actions
+  if (lowerLabel.includes("create test wallet") || lowerLabel.includes("test wallet")) return iconMap["Create Test Wallet"];
+  if (lowerLabel.includes("import wallet")) return iconMap["Import Wallet"];
+  if (lowerLabel.includes("export wallet")) return iconMap["Export Wallet"];
 
   // Default arrow icon
   return (

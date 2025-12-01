@@ -268,6 +268,10 @@ export function NetworkSection(): JSX.Element {
           </svg>
         </summary>
         <div className={styles.subActions}>
+          {/* Network Commands Subsection */}
+          <div className={styles.subSectionHeader}>
+            <span>Network Commands</span>
+          </div>
           <button
             className={styles.subButton}
             onClick={() => handleCommand("solana connect")}
@@ -312,6 +316,83 @@ export function NetworkSection(): JSX.Element {
               <path d="M9.5,3A6.5,6.5 0 0,1 16,9.5C16,11.11 15.41,12.59 14.44,13.73L14.71,14H15.5L20.5,19L19,20.5L14,15.5V14.71L13.73,14.44C12.59,15.41 11.11,16 9.5,16A6.5,6.5 0 0,1 3,9.5A6.5,6.5 0 0,1 9.5,3M9.5,5C7,5 5,7 5,9.5C5,12 7,14 9.5,14C12,14 14,12 14,9.5C14,7 12,5 9.5,5Z" />
             </svg>
             <span>→ Search Tokens</span>
+          </button>
+
+          {/* Solana NFTs (Magic Eden) Subsection */}
+          <div className={styles.subSectionHeader}>
+            <span>Solana NFTs (Magic Eden)</span>
+          </div>
+          <button
+            className={styles.subButton}
+            onClick={() => handleCommand("magiceden view")}
+          >
+            <svg className={styles.subButtonIcon} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+              <path d="M21,18V19A2,2 0 0,1 19,21H5C3.89,21 3,20.1 3,19V5A2,2 0 0,1 5,3H19A2,2 0 0,1 21,5V6H12C10.89,6 10,6.9 10,8V16A2,2 0 0,0 12,18M12,16H21V8H12M16,13.5A1.5,1.5 0 0,1 14.5,12A1.5,1.5 0 0,1 16,10.5A1.5,1.5 0 0,1 17.5,12A1.5,1.5 0 0,1 16,13.5Z" />
+            </svg>
+            <span>→ 🖼️ View Collection</span>
+          </button>
+          <button
+            className={styles.subButton}
+            onClick={() => handleCommand("magiceden trending 7d")}
+          >
+            <svg className={styles.subButtonIcon} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+              <path d="M17.65,6.35C16.2,4.9 14.21,4 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20C15.73,20 18.84,17.45 19.73,14H17.65C16.83,16.33 14.61,18 12,18A6,6 0 0,1 6,12A6,6 0 0,1 12,6C13.66,6 15.14,6.69 16.22,7.78L13,11H20V4L17.65,6.35Z" />
+            </svg>
+            <span>→ 🔥 Trending NFTs</span>
+          </button>
+          <button
+            className={styles.subButton}
+            onClick={() => handleCommand("magiceden activities")}
+          >
+            <svg className={styles.subButtonIcon} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+              <path d="M22,21H2V3H4V19H6V17H10V19H12V16H16V19H18V17H22V21Z" />
+            </svg>
+            <span>→ 📊 Collection Activity</span>
+          </button>
+          <button
+            className={styles.subButton}
+            onClick={() => handleCommand("magiceden stats")}
+          >
+            <svg className={styles.subButtonIcon} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+              <path d="M22,21H2V3H4V19H6V17H10V19H12V16H16V19H18V17H22V21Z" />
+            </svg>
+            <span>→ 📈 Collection Stats</span>
+          </button>
+          <button
+            className={styles.subButton}
+            onClick={() => handleCommand("magiceden listings")}
+          >
+            <svg className={styles.subButtonIcon} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+              <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" />
+            </svg>
+            <span>→ 🏷️ Listings</span>
+          </button>
+          <button
+            className={styles.subButton}
+            onClick={() => handleCommand("magiceden holders")}
+          >
+            <svg className={styles.subButtonIcon} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+              <path d="M12,5.5A3.5,3.5 0 0,1 15.5,9A3.5,3.5 0 0,1 12,12.5A3.5,3.5 0 0,1 8.5,9A3.5,3.5 0 0,1 12,5.5M5,8C5.56,8 6.08,8.15 6.53,8.42C6.38,9.85 6.8,11.27 7.66,12.38C7.16,13.34 6.16,14 5,14A3,3 0 0,1 2,11A3,3 0 0,1 5,8M19,8A3,3 0 0,1 22,11A3,3 0 0,1 19,14C17.84,14 16.84,13.34 16.34,12.38C17.2,11.27 17.62,9.85 17.47,8.42C17.92,8.15 18.44,8 19,8M5.5,18.25C5.5,16.18 8.41,14.5 12,14.5C15.59,14.5 18.5,16.18 18.5,18.25V20H5.5V18.25M0,20V18.5C0,17.11 1.89,15.94 4.45,15.6C3.86,16.28 3.5,17.22 3.5,18.25V20H0M24,20H20.5V18.25C20.5,17.22 20.14,16.28 19.55,15.6C22.11,15.94 24,17.11 24,18.5V20Z" />
+            </svg>
+            <span>→ 👥 Holder Stats</span>
+          </button>
+          <button
+            className={styles.subButton}
+            onClick={() => handleCommand("magiceden attributes")}
+          >
+            <svg className={styles.subButtonIcon} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+              <path d="M12,2L13.09,8.26L22,9L13.09,9.74L12,16L10.91,9.74L2,9L10.91,8.26L12,2Z" />
+            </svg>
+            <span>→ 🎨 Attributes</span>
+          </button>
+          <button
+            className={styles.subButton}
+            onClick={() => handleCommand("magiceden help")}
+          >
+            <svg className={styles.subButtonIcon} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+              <path d="M11,18H13V16H11V18M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,6A4,4 0 0,0 8,10H10A2,2 0 0,1 12,8A2,2 0 0,1 14,10C14,12 11,11.75 11,15H13C13,12.75 16,12.5 16,10A4,4 0 0,0 12,6Z" />
+            </svg>
+            <span>→ ❓ Magic Eden Help</span>
           </button>
         </div>
       </details>

@@ -26,6 +26,7 @@ import type { ConnectionStatus } from "@/types";
 import styles from "./TerminalContainer.module.css";
 import { useViewMode } from "@/hooks/useViewMode";
 import { useCustomizer } from "@/hooks/useCustomizer";
+import { useTerminalMode } from "@/hooks/useTerminalMode";
 
 export function TerminalContainer() {
   const terminalInputRef = useRef<TerminalInputRef>(null);
@@ -193,6 +194,15 @@ export function TerminalContainer() {
     toggleViewMode();
   }, [toggleViewMode]);
 
+  const terminalMode = useTerminalMode();
+  const handleTerminalModeToggle = useCallback(() => {
+    terminalMode.toggleMode();
+    // Reload page to apply mode change
+    setTimeout(() => {
+      window.location.reload();
+    }, 500);
+  }, [terminalMode]);
+
   // AI provider change handler
   const handleAiProviderChange = useCallback(
     (provider: string) => {
@@ -213,6 +223,8 @@ export function TerminalContainer() {
           onPaletteCycle={handlePaletteCycle}
           onLightDarkToggle={handleLightDarkToggle}
           onDashboardToggle={handleDashboardToggle}
+          onTerminalModeToggle={handleTerminalModeToggle}
+          terminalMode={terminalMode.mode}
           aiProvider={aiProvider}
           onAiProviderChange={handleAiProviderChange}
           connectionStatus={connectionStatus}

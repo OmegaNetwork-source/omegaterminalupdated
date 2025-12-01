@@ -218,6 +218,22 @@
   fill: currentColor;
 }
 
+.controlButton.active {
+  background: color-mix(
+    in srgb,
+    var(--palette-primary, #00bcf2) 25%,
+    transparent
+  );
+  border-color: var(--palette-primary, #00bcf2);
+  color: var(--palette-secondary, #00ff88);
+  box-shadow: 0 0 10px
+    color-mix(
+      in srgb,
+      var(--palette-primary, #00bcf2) 30%,
+      transparent
+    );
+}
+
 .aiLabel {
   color: var(--palette-primary, #00bcf2);
   font-family: "Courier New", monospace;

@@ -3,11 +3,12 @@
 import { useEffect, useState, useRef } from "react";
 import dynamic from "next/dynamic";
 import { Suspense } from "react";
-import { TerminalContainer } from "@/components/Terminal";
+import { TerminalContainer, MultiTerminalManager } from "@/components/Terminal";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { DashboardLoadingSkeleton } from "@/components/LoadingSkeletons";
 import { useViewMode } from "@/hooks/useViewMode";
 import { useScreensaver } from "@/hooks/useScreensaver";
+import { useTerminalMode } from "@/hooks/useTerminalMode";
 import { WelcomeScreen } from "@/components/Dashboard/WelcomeScreen";
 
 const DashboardLayout = dynamic(
@@ -32,6 +33,7 @@ const ScreensaverOverlay = dynamic(
 // Render dashboard or basic terminal based on view mode
 function HomePageContent() {
   const { isBasicMode, viewMode } = useViewMode();
+  const { mode: terminalMode, isHydrated: terminalModeHydrated } = useTerminalMode();
   const screensaver = useScreensaver();
   const [mounted, setMounted] = useState(false);
   const [showWelcome, setShowWelcome] = useState(true);
@@ -73,7 +75,7 @@ function HomePageContent() {
   };
 
   // Prevent hydration mismatch by only showing content after mount
-  if (!mounted) {
+  if (!mounted || !terminalModeHydrated) {
     return <DashboardLoadingSkeleton />;
   }
 
@@ -82,10 +84,18 @@ function HomePageContent() {
     return <WelcomeScreen onComplete={handleWelcomeComplete} initialMode={viewMode} />;
   }
 
+  // Determine which terminal component to render
+  const renderTerminal = () => {
+    if (terminalMode === "multi") {
+      return <MultiTerminalManager />;
+    }
+    return <TerminalContainer />;
+  };
+
   return (
     <>
       {isBasicMode ? (
-        <TerminalContainer />
+        renderTerminal()
       ) : (
         <Suspense fallback={<DashboardLoadingSkeleton />}>
           <DashboardLayout />

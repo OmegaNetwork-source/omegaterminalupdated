@@ -112,6 +112,22 @@ export interface CommandContext {
   };
 
   /**
+   * Terminal mode management context
+   */
+  terminalMode?: {
+    /** Current terminal mode */
+    mode: "single" | "multi";
+    /** Set terminal mode */
+    setTerminalMode: (mode: "single" | "multi") => void;
+    /** Toggle terminal mode */
+    toggleMode: () => void;
+    /** Whether in multi-terminal mode */
+    isMultiMode: boolean;
+    /** Whether in single terminal mode */
+    isSingleMode: boolean;
+  };
+
+  /**
    * Wallet management context
    */
   wallet: {

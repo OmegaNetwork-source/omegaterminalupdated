@@ -388,14 +388,14 @@ export function ChristmasTapGame({ showCharactersOnly = false, showPresentAnimat
             <div
               className={styles.characterBackground}
               style={{
-                backgroundImage: "url('/grinch.png')",
+                backgroundImage: "url('/games/ravaged-planet/sprites/grinch.png')",
               }}
             />
             <div
               className={`${styles.sprite} ${styles.grinchSprite}`}
               key={`grinch-${grinchFrame}`}
               style={{
-                backgroundImage: `url('/grinch${grinchFrame}.png')`,
+                backgroundImage: `url('/games/ravaged-planet/sprites/grinch${grinchFrame}.png')`,
               }}
             />
           </div>
@@ -418,14 +418,14 @@ export function ChristmasTapGame({ showCharactersOnly = false, showPresentAnimat
             <div
               className={styles.characterBackground}
               style={{
-                backgroundImage: "url('/santa.png')",
+                backgroundImage: "url('/games/ravaged-planet/sprites/santa.png')",
               }}
             />
             <div
               className={`${styles.sprite} ${styles.santaSprite}`}
               key={`santa-${santaFrame}`}
               style={{
-                backgroundImage: `url('/santas${santaFrame}.png')`,
+                backgroundImage: `url('/games/ravaged-planet/sprites/santas${santaFrame}.png')`,
               }}
             />
           </div>
@@ -480,7 +480,7 @@ export function ChristmasTapGame({ showCharactersOnly = false, showPresentAnimat
               <div
                 className={styles.characterBackground}
                 style={{
-                  backgroundImage: "url('/grinch.png')",
+                  backgroundImage: "url('/games/ravaged-planet/sprites/grinch.png')",
                 }}
               />
             </div>
@@ -514,7 +514,7 @@ export function ChristmasTapGame({ showCharactersOnly = false, showPresentAnimat
               <div
                 className={styles.characterBackground}
                 style={{
-                  backgroundImage: "url('/santa.png')",
+                  backgroundImage: "url('/games/ravaged-planet/sprites/santa.png')",
                 }}
               />
             </div>

@@ -240,7 +240,7 @@ async function showUniswapSwapInterface(context: CommandContext, network: string
         <div style="position: relative;">
           <input type="text" id="uniswapFromSearch_${network}" placeholder="Search tokens..." 
             style="width: 100%; padding: 8px; background: color-mix(in srgb, var(--palette-primary, #00bcf2) 5%, transparent); color: var(--palette-text, #ffffff); border: 1px solid var(--palette-border, rgba(0, 212, 255, 0.3)); border-radius: 4px; box-sizing: border-box; cursor: text; font-family: 'Courier New', monospace;" autocomplete="off">
-          <div id="uniswapFromList_${network}" style="position: absolute; top: 100%; left: 0; right: 0; max-height: 200px; overflow-y: auto; background: color-mix(in srgb, var(--palette-primary, #00bcf2) 10%, transparent); border: 1px solid var(--palette-border, rgba(0, 212, 255, 0.3)); border-top: none; z-index: 1000; display: none; border-radius: 0 0 4px 4px;"></div>
+          <div id="uniswapFromList_${network}" style="position: absolute; top: 100%; left: 0; right: 0; max-height: 200px; overflow-y: auto; background: color-mix(in srgb, var(--palette-primary, #00bcf2) 10%, transparent); border: 1px solid var(--palette-border, rgba(0, 212, 255, 0.3)); border-top: none; z-index: 10000; display: none; border-radius: 0 0 4px 4px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);"></div>
         </div>
         <input type="hidden" id="uniswapFromTokenAddress_${network}" value="${nativeToken.address}">
         <div id="uniswapFromTokenDisplay_${network}" style="margin-top: 5px; padding: 8px; background: color-mix(in srgb, var(--palette-primary, #00bcf2) 10%, transparent); border-radius: 4px; color: var(--palette-primary, #00d4ff); border-left: 3px solid var(--palette-primary, #00d4ff); font-family: 'Courier New', monospace;">
@@ -255,7 +255,7 @@ async function showUniswapSwapInterface(context: CommandContext, network: string
         <div style="position: relative;">
           <input type="text" id="uniswapToSearch_${network}" placeholder="Search tokens..." 
             style="width: 100%; padding: 8px; background: color-mix(in srgb, var(--palette-primary, #00bcf2) 5%, transparent); color: var(--palette-text, #ffffff); border: 1px solid var(--palette-border, rgba(0, 212, 255, 0.3)); border-radius: 4px; box-sizing: border-box; cursor: text; font-family: 'Courier New', monospace;" autocomplete="off">
-          <div id="uniswapToList_${network}" style="position: absolute; top: 100%; left: 0; right: 0; max-height: 200px; overflow-y: auto; background: color-mix(in srgb, var(--palette-primary, #00bcf2) 10%, transparent); border: 1px solid var(--palette-border, rgba(0, 212, 255, 0.3)); border-top: none; z-index: 1000; display: none; border-radius: 0 0 4px 4px;"></div>
+          <div id="uniswapToList_${network}" style="position: absolute; top: 100%; left: 0; right: 0; max-height: 200px; overflow-y: auto; background: color-mix(in srgb, var(--palette-primary, #00bcf2) 10%, transparent); border: 1px solid var(--palette-border, rgba(0, 212, 255, 0.3)); border-top: none; z-index: 10000; display: none; border-radius: 0 0 4px 4px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);"></div>
         </div>
         <input type="hidden" id="uniswapToTokenAddress_${network}" value="">
         <div id="uniswapToTokenDisplay_${network}" style="margin-top: 5px; padding: 8px; background: color-mix(in srgb, var(--palette-primary, #00bcf2) 10%, transparent); border-radius: 4px; color: color-mix(in srgb, var(--palette-text, #ffffff) 70%, transparent); border-left: 3px solid var(--palette-border, rgba(0, 212, 255, 0.3)); font-family: 'Courier New', monospace;">Select a token</div>
@@ -288,11 +288,11 @@ async function showUniswapSwapInterface(context: CommandContext, network: string
 
   context.logHtml(html);
 
-  // Setup event handlers
+  // Setup event handlers - use longer timeout to ensure DOM is ready
   if (typeof window !== "undefined" && tokens) {
     setTimeout(() => {
       setupUniswapSwapInterface(context, network, tokens);
-    }, 100);
+    }, 200);
   }
 }
 
@@ -307,7 +307,15 @@ function setupUniswapSwapInterface(context: CommandContext, network: string, tok
   const quoteBtn = document.getElementById(`uniswapQuoteBtn_${network}`);
   const swapBtn = document.getElementById(`uniswapSwapBtn_${network}`);
 
-  if (!fromSearch || !toSearch) return;
+  if (!fromSearch || !toSearch) {
+    console.warn(`[Uniswap] Search inputs not found for network: ${network}`);
+    return;
+  }
+
+  if (!fromList || !toList) {
+    console.warn(`[Uniswap] Dropdown lists not found for network: ${network}`);
+    return;
+  }
 
   // Setup token search handlers with dynamic API search
   let fromSearchTimeout: any;
@@ -316,21 +324,21 @@ function setupUniswapSwapInterface(context: CommandContext, network: string, tok
     const query = (e.target as HTMLInputElement).value.trim();
 
     if (query.length < 1) {
-      if (fromList) fromList.style.display = "none";
+      fromList.style.display = "none";
       return;
     }
 
     // Show loading state
-    if (fromList) {
-      fromList.innerHTML = '<div style="padding: 8px; color: var(--palette-text, #e0e0e0);">🔍 Searching tokens...</div>';
-      fromList.style.display = "block";
-    }
+    fromList.innerHTML = '<div style="padding: 8px; color: var(--palette-text, #e0e0e0);">🔍 Searching tokens...</div>';
+    fromList.style.display = "block";
+    fromList.style.zIndex = "10000";
 
     fromSearchTimeout = setTimeout(async () => {
-      if (fromList) {
+      try {
         const networkInfo = SUPPORTED_NETWORKS.find(n => n.value === network);
         if (!networkInfo) {
           fromList.innerHTML = '<div style="padding: 8px; color: var(--palette-error, #ff4d4f);">❌ Unsupported network</div>';
+          fromList.style.display = "block";
           return;
         }
 
@@ -390,20 +398,43 @@ function setupUniswapSwapInterface(context: CommandContext, network: string, tok
               }
 
               fromSearch.value = "";
-              if (fromList) fromList.style.display = "none";
+              fromList.style.display = "none";
             });
 
-            fromList?.appendChild(item);
+            fromList.appendChild(item);
           });
-          fromList!.style.display = "block";
+          fromList.style.display = "block";
         } else {
-          fromList!.innerHTML =
+          fromList.innerHTML =
             '<div style="padding: 8px; color: color-mix(in srgb, var(--palette-text, #ffffff) 60%, transparent);">No results found</div>';
-          fromList!.style.display = "block";
+          fromList.style.display = "block";
         }
+      } catch (error) {
+        console.error("[Uniswap] Token search error:", error);
+        fromList.innerHTML = '<div style="padding: 8px; color: var(--palette-error, #ff4d4f);">❌ Search error. Please try again.</div>';
+        fromList.style.display = "block";
       }
     }, 300);
   });
+
+  // Close dropdowns when clicking outside (scoped to this interface)
+  const handleClickOutside = (e: MouseEvent) => {
+    const target = e.target as HTMLElement;
+    const fromSearchContainer = document.getElementById(`uniswapFromSearch_${network}`)?.parentElement;
+    const toSearchContainer = document.getElementById(`uniswapToSearch_${network}`)?.parentElement;
+    
+    if (fromSearchContainer && !fromSearchContainer.contains(target)) {
+      fromList.style.display = "none";
+    }
+    if (toSearchContainer && !toSearchContainer.contains(target)) {
+      toList.style.display = "none";
+    }
+  };
+  
+  // Add click outside listener
+  setTimeout(() => {
+    document.addEventListener("click", handleClickOutside);
+  }, 100);
 
   // Setup "To" token search with dynamic API search
   let toSearchTimeout: any;
@@ -412,21 +443,21 @@ function setupUniswapSwapInterface(context: CommandContext, network: string, tok
     const query = (e.target as HTMLInputElement).value.trim();
 
     if (query.length < 1) {
-      if (toList) toList.style.display = "none";
+      toList.style.display = "none";
       return;
     }
 
     // Show loading state
-    if (toList) {
-      toList.innerHTML = '<div style="padding: 8px; color: var(--palette-text, #e0e0e0);">🔍 Searching tokens...</div>';
-      toList.style.display = "block";
-    }
+    toList.innerHTML = '<div style="padding: 8px; color: var(--palette-text, #e0e0e0);">🔍 Searching tokens...</div>';
+    toList.style.display = "block";
+    toList.style.zIndex = "10000";
 
     toSearchTimeout = setTimeout(async () => {
-      if (toList) {
+      try {
         const networkInfo = SUPPORTED_NETWORKS.find(n => n.value === network);
         if (!networkInfo) {
           toList.innerHTML = '<div style="padding: 8px; color: var(--palette-error, #ff4d4f);">❌ Unsupported network</div>';
+          toList.style.display = "block";
           return;
         }
 
@@ -486,17 +517,21 @@ function setupUniswapSwapInterface(context: CommandContext, network: string, tok
               }
 
               toSearch.value = "";
-              if (toList) toList.style.display = "none";
+              toList.style.display = "none";
             });
 
-            toList?.appendChild(item);
+            toList.appendChild(item);
           });
-          toList!.style.display = "block";
+          toList.style.display = "block";
         } else {
-          toList!.innerHTML =
+          toList.innerHTML =
             '<div style="padding: 8px; color: color-mix(in srgb, var(--palette-text, #ffffff) 60%, transparent);">No results found</div>';
-          toList!.style.display = "block";
+          toList.style.display = "block";
         }
+      } catch (error) {
+        console.error("[Uniswap] Token search error:", error);
+        toList.innerHTML = '<div style="padding: 8px; color: var(--palette-error, #ff4d4f);">❌ Search error. Please try again.</div>';
+        toList.style.display = "block";
       }
     }, 300);
   });

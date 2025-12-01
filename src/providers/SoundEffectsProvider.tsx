@@ -391,10 +391,10 @@ export function SoundEffectsProvider({ children }: PropsWithChildren<{}>) {
       description: "Modern UI theme",
     });
     await registerSound("help-command", {
-      src: "/sounds/grandmas-boy.mp3",
+      src: "/sounds/elonsoundbit.mp4",
       volume: 0.8,
       duration: null,
-      description: "Help command",
+      description: "Help command - Elon sound",
     });
     await registerSound("faucet", {
       src: "/sounds/wookie.mp4.mp3",
