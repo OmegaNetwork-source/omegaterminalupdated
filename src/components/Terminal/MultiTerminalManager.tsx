@@ -8,6 +8,7 @@
 
 import { useState, useCallback, useMemo } from "react";
 import { TerminalInstance } from "./TerminalInstance";
+import { useViewMode } from "@/hooks/useViewMode";
 import styles from "./MultiTerminalManager.module.css";
 
 export interface TerminalInstanceData {
@@ -28,6 +29,7 @@ const DEFAULT_TERMINALS: TerminalInstanceData[] = [
 export function MultiTerminalManager() {
   const [terminals, setTerminals] = useState<TerminalInstanceData[]>(DEFAULT_TERMINALS);
   const [layout, setLayout] = useState<"grid" | "split">("grid");
+  const { isBasicMode, toggleViewMode } = useViewMode();
 
   const addTerminal = useCallback(() => {
     const newId = `terminal-${terminals.length + 1}`;
@@ -110,6 +112,27 @@ export function MultiTerminalManager() {
             title="Split Layout"
           >
             Split
+          </button>
+        </div>
+        <div className={styles.controlGroup}>
+          <button
+            className={styles.controlButton}
+            onClick={toggleViewMode}
+            title={isBasicMode ? "Switch to Dashboard View" : "Switch to Home View"}
+          >
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z" />
+            </svg>
+            {isBasicMode ? "Dashboard" : "Home"}
           </button>
         </div>
       </div>

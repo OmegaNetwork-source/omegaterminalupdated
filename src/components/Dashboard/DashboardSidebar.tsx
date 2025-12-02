@@ -441,15 +441,15 @@ export function DashboardSidebar(): JSX.Element {
     (cmd: string) => {
       console.log("🔘 Sidebar button clicked:", cmd);
       try {
-        void executeCommand(cmd);
-        // Auto-scroll terminal to bottom to show command output
-        if (typeof window !== "undefined" && (window as any).__omegaScrollTerminalToBottom) {
-          setTimeout(() => {
-            (window as any).__omegaScrollTerminalToBottom();
-          }, 100);
-          setTimeout(() => {
-            (window as any).__omegaScrollTerminalToBottom();
-          }, 500);
+      void executeCommand(cmd);
+      // Auto-scroll terminal to bottom to show command output
+      if (typeof window !== "undefined" && (window as any).__omegaScrollTerminalToBottom) {
+        setTimeout(() => {
+          (window as any).__omegaScrollTerminalToBottom();
+        }, 100);
+        setTimeout(() => {
+          (window as any).__omegaScrollTerminalToBottom();
+        }, 500);
         }
       } catch (error) {
         console.error("Error executing command:", cmd, error);
@@ -1052,6 +1052,9 @@ export function DashboardSidebar(): JSX.Element {
                   <button className={`${styles.themeChip} ${styles.themeModern}`} onClick={() => handleSetTheme("modern")} title="Modern - Futuristic cyber">
                     <span>Modern</span>
                   </button>
+                  <button className={`${styles.themeChip} ${styles.themeCrt}`} onClick={() => handleSetTheme("crt")} title="CRT - Classic green-on-black with glassmorphism">
+                    <span>CRT</span>
+                  </button>
                 </div>
               </div>
             </details>
@@ -1287,30 +1290,30 @@ export function DashboardSidebar(): JSX.Element {
                 padding: "12px 14px",
               }}
             >
-              <svg
-                className={styles.buttonIcon}
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="currentColor"
+                <svg
+                  className={styles.buttonIcon}
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="currentColor"
                 style={{ width: "16px", height: "16px", marginRight: "8px" }}
-              >
+                >
                 <path d="M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4M12,6A6,6 0 0,1 18,12A6,6 0 0,1 12,18A6,6 0 0,1 6,12A6,6 0 0,1 12,6M12,8A4,4 0 0,0 8,12A4,4 0 0,0 12,16A4,4 0 0,0 16,12A4,4 0 0,0 12,8M12,10A2,2 0 0,1 14,12A2,2 0 0,1 12,14A2,2 0 0,1 10,12A2,2 0 0,1 12,10Z" fill="currentColor" />
-              </svg>
+                </svg>
               <span style={{ fontWeight: 600 }}>Parlay Builder</span>
               <span style={{ marginLeft: "auto", fontSize: "9px", opacity: 0.7, textTransform: "uppercase", background: "rgba(0, 255, 214, 0.2)", padding: "2px 6px", borderRadius: "4px" }}>New</span>
-            </button>
+                </button>
 
             {/* Polymarket */}
             <details className={styles.expandable}>
               <summary className={styles.expandableButton}>
-              <svg
-                className={styles.buttonIcon}
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="currentColor"
-              >
+                <svg
+                  className={styles.buttonIcon}
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="currentColor"
+                >
                 <path d="M7,15H9C9,16.08 10.37,17 12,17C13.63,17 15,16.08 15,15C15,13.9 13.96,13.5 11.76,12.97C9.64,12.44 7,11.78 7,9C7,7.21 8.47,5.69 10.5,5.18V3H13.5V5.18C15.53,5.69 17,7.21 17,9H15C15,7.92 13.63,7 12,7C10.37,7 9,7.92 9,9C9,10.1 10.04,10.5 12.24,11.03C14.36,11.56 17,12.22 17,15C17,16.79 15.53,18.31 13.5,18.82V21H10.5V18.82C8.47,18.31 7,16.79 7,15Z" fill="currentColor" />
-              </svg>
+                </svg>
               <span>Polymarket</span>
                 <svg
                   className={styles.expandIcon}
@@ -1324,7 +1327,7 @@ export function DashboardSidebar(): JSX.Element {
               <div className={styles.subActions}>
                 <div className={styles.subSectionHeader}>
                   <span>Trading</span>
-                </div>
+              </div>
                 <button
                   className={styles.subButton}
                   draggable={true}
@@ -1390,7 +1393,7 @@ export function DashboardSidebar(): JSX.Element {
                 >
                   {getSubActionIcon("Markets")}
                   <span>Markets</span>
-                </button>
+            </button>
             <button
                   className={styles.subButton}
                   draggable={true}
@@ -1844,7 +1847,7 @@ export function DashboardSidebar(): JSX.Element {
                 >
                   {getSubActionIcon("Markets")}
                   <span>Markets</span>
-                </button>
+            </button>
                 <button
                   className={styles.subButton}
                   draggable={true}

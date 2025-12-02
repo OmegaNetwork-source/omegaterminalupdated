@@ -92,6 +92,81 @@
   min-height: 0;
 }
 
+/* -----------------------------------------------------------------------------
+   CRT Theme Overrides - Remove all borders
+   ----------------------------------------------------------------------------- */
+
+:global(body.theme-crt) .container {
+  background: #000000 !important;
+  color: var(--palette-primary, #00ff00) !important;
+  text-shadow: 
+    0 0 5px color-mix(in srgb, var(--palette-primary, #00ff00) 50%, transparent),
+    0 0 10px color-mix(in srgb, var(--palette-primary, #00ff00) 30%, transparent),
+    0 0 2px color-mix(in srgb, var(--palette-primary, #00ff00) 80%, transparent);
+}
+
+:global(body.theme-crt) .container * {
+  color: var(--palette-primary, #00ff00) !important;
+  text-shadow: 
+    0 0 5px color-mix(in srgb, var(--palette-primary, #00ff00) 50%, transparent),
+    0 0 10px color-mix(in srgb, var(--palette-primary, #00ff00) 30%, transparent),
+    0 0 2px color-mix(in srgb, var(--palette-primary, #00ff00) 80%, transparent);
+}
+
+:global(body.theme-crt) .controlBar {
+  background: rgba(0, 0, 0, 0.8) !important;
+  border: none !important;
+  border-bottom: 1px solid rgba(0, 255, 0, 0.2) !important;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  box-shadow: none !important;
+}
+
+:global(body.theme-crt) .controlButton {
+  background: rgba(0, 0, 0, 0.7) !important;
+  border: none !important;
+  border-radius: 0 !important;
+  color: var(--palette-primary, #00ff00) !important;
+  text-shadow: 
+    0 0 5px color-mix(in srgb, var(--palette-primary, #00ff00) 50%, transparent),
+    0 0 10px color-mix(in srgb, var(--palette-primary, #00ff00) 30%, transparent);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  box-shadow: none !important;
+}
+
+:global(body.theme-crt) .controlButton:hover {
+  background: rgba(0, 0, 0, 0.9) !important;
+  border: none !important;
+  color: var(--palette-secondary, #39ff14) !important;
+  text-shadow: 
+    0 0 8px color-mix(in srgb, var(--palette-primary, #00ff00) 80%, transparent),
+    0 0 15px color-mix(in srgb, var(--palette-primary, #00ff00) 50%, transparent);
+  box-shadow: none !important;
+}
+
+:global(body.theme-crt) .controlButton.active {
+  background: rgba(0, 0, 0, 0.9) !important;
+  border: none !important;
+  color: var(--palette-secondary, #39ff14) !important;
+}
+
+:global(body.theme-crt) .terminalCount {
+  background: rgba(0, 0, 0, 0.8) !important;
+  border: none !important;
+  border-radius: 0 !important;
+  color: var(--palette-primary, #00ff00) !important;
+  text-shadow: 
+    0 0 5px color-mix(in srgb, var(--palette-primary, #00ff00) 50%, transparent),
+    0 0 10px color-mix(in srgb, var(--palette-primary, #00ff00) 30%, transparent);
+}
+
+:global(body.theme-crt) .terminalGrid {
+  gap: 0 !important;
+  padding: 0 !important;
+  border: none !important;
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .terminalGrid.grid {

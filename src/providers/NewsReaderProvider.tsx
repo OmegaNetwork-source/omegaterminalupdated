@@ -151,16 +151,7 @@ export function NewsReaderProvider({ children }: { children: ReactNode }) {
   // ==========================================================================
 
   const openPanel = useCallback(async () => {
-    // Close other media panels when opening News Reader
-    window.dispatchEvent(new CustomEvent("omega:closeSpotify"));
-    window.dispatchEvent(new CustomEvent("omega:closeYouTube"));
-    window.dispatchEvent(new CustomEvent("omega:closeBluesPlayer"));
-    window.dispatchEvent(new CustomEvent("omega:closeLoFiPlayer"));
-    window.dispatchEvent(new CustomEvent("omega:closeTechPlayer"));
-    window.dispatchEvent(new CustomEvent("omega:closeFunkyPlayer"));
-    window.dispatchEvent(new CustomEvent("omega:closeOmegaTrancePlayer"));
-    window.dispatchEvent(new CustomEvent("omega:closeOmegaMelodiesPlayer"));
-    
+    // Allow multiple panels to be open simultaneously
     setReaderState((prev) => ({ ...prev, isPanelOpen: true }));
 
     // Load initial news if not already loaded
@@ -192,7 +183,7 @@ export function NewsReaderProvider({ children }: { children: ReactNode }) {
   // Lifecycle
   // ==========================================================================
 
-  // Listen for close events from other panels
+  // Listen for close events (but allow multiple panels to be open)
   useEffect(() => {
     const handleClose = () => {
       setReaderState((prev) => ({ ...prev, isPanelOpen: false }));
@@ -204,25 +195,9 @@ export function NewsReaderProvider({ children }: { children: ReactNode }) {
     };
 
     window.addEventListener("omega:closeNewsReader", handleClose);
-    window.addEventListener("omega:openSpotify", handleClose);
-    window.addEventListener("omega:openYouTube", handleClose);
-    window.addEventListener("omega:openBluesPlayer", handleClose);
-    window.addEventListener("omega:openLoFiPlayer", handleClose);
-    window.addEventListener("omega:openTechPlayer", handleClose);
-    window.addEventListener("omega:openFunkyPlayer", handleClose);
-    window.addEventListener("omega:openOmegaTrancePlayer", handleClose);
-    window.addEventListener("omega:openOmegaMelodiesPlayer", handleClose);
 
     return () => {
       window.removeEventListener("omega:closeNewsReader", handleClose);
-      window.removeEventListener("omega:openSpotify", handleClose);
-      window.removeEventListener("omega:openYouTube", handleClose);
-      window.removeEventListener("omega:openBluesPlayer", handleClose);
-      window.removeEventListener("omega:openLoFiPlayer", handleClose);
-      window.removeEventListener("omega:openTechPlayer", handleClose);
-      window.removeEventListener("omega:openFunkyPlayer", handleClose);
-      window.removeEventListener("omega:openOmegaTrancePlayer", handleClose);
-      window.removeEventListener("omega:openOmegaMelodiesPlayer", handleClose);
     };
   }, []);
 

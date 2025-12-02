@@ -156,6 +156,10 @@ body[data-color-palette="light"] ::-webkit-scrollbar-thumb:hover {
    Animation Keyframes
    ============================================================================= */
 
+/* =============================================================================
+   Optimized Animations - GPU Accelerated
+   ============================================================================= */
+
 @keyframes pulse {
   0%,
   100% {
@@ -177,22 +181,22 @@ body[data-color-palette="light"] ::-webkit-scrollbar-thumb:hover {
 
 @keyframes slideIn {
   from {
-    transform: translateY(-20px);
+    transform: translate3d(0, -20px, 0);
     opacity: 0;
   }
   to {
-    transform: translateY(0);
+    transform: translate3d(0, 0, 0);
     opacity: 1;
   }
 }
 
 @keyframes slideUp {
   from {
-    transform: translateY(20px);
+    transform: translate3d(0, 20px, 0);
     opacity: 0;
   }
   to {
-    transform: translateY(0);
+    transform: translate3d(0, 0, 0);
     opacity: 1;
   }
 }
@@ -228,12 +232,35 @@ body[data-color-palette="light"] ::-webkit-scrollbar-thumb:hover {
 
 @keyframes modalSlideIn {
   from {
-    transform: translateY(-50px);
+    transform: translate3d(0, -50px, 0);
     opacity: 0;
   }
   to {
-    transform: translateY(0);
+    transform: translate3d(0, 0, 0);
     opacity: 1;
+  }
+}
+
+/* GPU-accelerated animation classes */
+.animate-fadeIn,
+.animate-slideIn,
+.animate-slideUp,
+.animate-modalSlideIn {
+  will-change: transform, opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+/* Respect reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
 
@@ -535,6 +562,467 @@ body.modern-terminal-ui {
   -webkit-backdrop-filter: blur(20px) saturate(180%);
 }
 
+/* -----------------------------------------------------------------------------
+   CRT THEME - Classic Green-on-Black Terminal
+   Glassmorphism text effects, scanlines, CRT curvature, retro aesthetic
+   ----------------------------------------------------------------------------- */
+body.theme-crt {
+  /* Base Colors - Use palette colors for text, keep black background by default */
+  background: var(--palette-bg, #000000) !important;
+  color: var(--palette-primary, #00ff00) !important;
+  
+  /* CRT Scanlines Effect */
+  position: relative;
+  overflow: hidden;
+}
+
+/* White palette overrides for CRT theme - Solid white background */
+body.theme-crt[data-color-palette="white"] {
+  background: #ffffff !important;
+  color: #000000 !important;
+}
+
+body.theme-crt[data-color-palette="white"]::before {
+  /* Lighter scanlines for white background */
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.05),
+    rgba(0, 0, 0, 0.05) 1px,
+    transparent 1px,
+    transparent 2px
+  );
+}
+
+body.theme-crt[data-color-palette="white"]::after {
+  /* Lighter curvature for white background */
+  background: radial-gradient(
+    ellipse at center,
+    transparent 0%,
+    rgba(0, 0, 0, 0.1) 100%
+  );
+}
+
+body.theme-crt::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.15),
+    rgba(0, 0, 0, 0.15) 1px,
+    transparent 1px,
+    transparent 2px
+  );
+  pointer-events: none;
+  z-index: 9999;
+  mix-blend-mode: overlay;
+}
+
+/* CRT Curvature Effect */
+body.theme-crt::after {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 0%,
+    rgba(0, 0, 0, 0.3) 100%
+  );
+  pointer-events: none;
+  z-index: 9998;
+}
+
+/* Typography - Pixelated monospace */
+body.theme-crt {
+  font-family: "Courier New", "Monaco", "Consolas", "Lucida Console", monospace;
+  font-size: 14px;
+  line-height: 1.5;
+  letter-spacing: 0.05em;
+  font-weight: 400;
+  text-rendering: optimizeSpeed;
+  -webkit-font-smoothing: none;
+  -moz-osx-font-smoothing: grayscale;
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+}
+
+/* Theme Variables */
+body.theme-crt {
+  --theme-font-primary: "Courier New", "Monaco", "Consolas", "Lucida Console", monospace;
+  --theme-font-heading: "Courier New", "Monaco", "Consolas", "Lucida Console", monospace;
+  --theme-font-mono: "Courier New", "Monaco", "Consolas", "Lucida Console", monospace;
+  --theme-font-body: "Courier New", "Monaco", "Consolas", "Lucida Console", monospace;
+  --theme-letter-spacing: 0.05em;
+  --theme-line-height: 1.5;
+  --theme-font-weight-normal: 400;
+  --theme-font-weight-bold: 700;
+  --theme-spacing-xs: 4px;
+  --theme-spacing-sm: 8px;
+  --theme-spacing-md: 12px;
+  --theme-spacing-lg: 16px;
+  --theme-spacing-xl: 24px;
+  --theme-radius-sm: 0px;
+  --theme-radius-md: 0px;
+  --theme-radius-lg: 0px;
+  --theme-radius-xl: 0px;
+  --theme-text-transform: none;
+  
+  /* CRT Color Variables - Use palette colors */
+  --crt-green: var(--palette-primary, #00ff00);
+  --crt-green-bright: var(--palette-secondary, #39ff14);
+  --crt-green-dim: color-mix(in srgb, var(--palette-primary, #00ff00) 80%, transparent);
+  --crt-black: #000000;
+  --crt-bg: #000000;
+}
+
+/* Glassmorphism Text Effects - All text gets glass effect using palette colors */
+body.theme-crt *,
+body.theme-crt *::before,
+body.theme-crt *::after {
+  color: var(--palette-primary, #00ff00) !important;
+  text-shadow: 
+    0 0 5px color-mix(in srgb, var(--palette-primary, #00ff00) 50%, transparent),
+    0 0 10px color-mix(in srgb, var(--palette-primary, #00ff00) 30%, transparent),
+    0 0 15px color-mix(in srgb, var(--palette-primary, #00ff00) 20%, transparent),
+    0 0 2px color-mix(in srgb, var(--palette-primary, #00ff00) 80%, transparent);
+  backdrop-filter: blur(0.5px);
+  -webkit-backdrop-filter: blur(0.5px);
+}
+
+/* White palette overrides for CRT theme - Solid white background with black and dark blue text */
+body.theme-crt[data-color-palette="white"] {
+  background: #ffffff !important;
+  color: #000000 !important;
+}
+
+body.theme-crt[data-color-palette="white"] *,
+body.theme-crt[data-color-palette="white"] *::before,
+body.theme-crt[data-color-palette="white"] *::after {
+  color: #000000 !important;
+  text-shadow: none !important;
+}
+
+body.theme-crt[data-color-palette="white"] [class*="title"],
+body.theme-crt[data-color-palette="white"] [class*="Title"],
+body.theme-crt[data-color-palette="white"] h1,
+body.theme-crt[data-color-palette="white"] h2,
+body.theme-crt[data-color-palette="white"] h3,
+body.theme-crt[data-color-palette="white"] h4,
+body.theme-crt[data-color-palette="white"] h5,
+body.theme-crt[data-color-palette="white"] h6 {
+  background: linear-gradient(
+    135deg,
+    #1e3a8a 0%,
+    #1e40af 50%,
+    #1e3a8a 100%
+  ) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  color: #1e3a8a !important; /* Fallback */
+  text-shadow: none !important;
+}
+
+body.theme-crt[data-color-palette="white"] [class*="title"] svg,
+body.theme-crt[data-color-palette="white"] [class*="Title"] svg,
+body.theme-crt[data-color-palette="white"] [class*="header"] svg,
+body.theme-crt[data-color-palette="white"] [class*="Header"] svg {
+  color: #1e40af !important;
+  fill: #1e40af !important;
+  filter: none !important;
+}
+
+body.theme-crt[data-color-palette="white"] [class*="panel"],
+body.theme-crt[data-color-palette="white"] [class*="Panel"],
+body.theme-crt[data-color-palette="white"] [class*="container"],
+body.theme-crt[data-color-palette="white"] [class*="Container"],
+body.theme-crt[data-color-palette="white"] [class*="sidebar"],
+body.theme-crt[data-color-palette="white"] [class*="Sidebar"],
+body.theme-crt[data-color-palette="white"] [class*="header"],
+body.theme-crt[data-color-palette="white"] [class*="Header"] {
+  background: #ffffff !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+body.theme-crt[data-color-palette="white"] button,
+body.theme-crt[data-color-palette="white"] [class*="button"],
+body.theme-crt[data-color-palette="white"] [class*="Button"] {
+  background: #ffffff !important;
+  border: 1px solid #1e3a8a !important;
+  color: #1e3a8a !important;
+  text-shadow: none !important;
+}
+
+body.theme-crt[data-color-palette="white"] button:hover,
+body.theme-crt[data-color-palette="white"] [class*="button"]:hover {
+  background: #1e3a8a !important;
+  color: #ffffff !important;
+  border-color: #1e40af !important;
+}
+
+/* Enhanced glassmorphism for interactive elements - No borders, minimal shadows */
+body.theme-crt button,
+body.theme-crt [class*="button"],
+body.theme-crt [class*="Button"],
+body.theme-crt input,
+body.theme-crt textarea,
+body.theme-crt select,
+body.theme-crt a {
+  background: rgba(0, 0, 0, 0.7) !important;
+  backdrop-filter: blur(8px) saturate(120%);
+  -webkit-backdrop-filter: blur(8px) saturate(120%);
+  border: none !important;
+  box-shadow: none !important;
+  color: var(--palette-primary, #00ff00) !important;
+}
+
+/* Glassmorphism for panels and containers - No borders, no shadows */
+body.theme-crt [class*="panel"],
+body.theme-crt [class*="Panel"],
+body.theme-crt [class*="container"],
+body.theme-crt [class*="Container"],
+body.theme-crt [class*="sidebar"],
+body.theme-crt [class*="Sidebar"],
+body.theme-crt [class*="header"],
+body.theme-crt [class*="Header"] {
+  background: rgba(0, 0, 0, 0.85) !important;
+  backdrop-filter: blur(12px) saturate(110%);
+  -webkit-backdrop-filter: blur(12px) saturate(110%);
+}
+
+/* Advanced multi-color gradient for all titles and headers in CRT theme */
+body.theme-crt h1,
+body.theme-crt h2,
+body.theme-crt h3,
+body.theme-crt h4,
+body.theme-crt h5,
+body.theme-crt h6,
+body.theme-crt [class*="title"],
+body.theme-crt [class*="Title"],
+body.theme-crt [class*="header"] [class*="title"],
+body.theme-crt [class*="Header"] [class*="Title"] {
+  background: linear-gradient(
+    135deg,
+    var(--palette-secondary, #39ff14) 0%,
+    var(--palette-primary, #00ff00) 50%,
+    var(--palette-secondary, #39ff14) 100%
+  ) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  color: var(--palette-primary, #00ff00) !important; /* Fallback */
+  text-shadow: 
+    0 0 8px color-mix(in srgb, var(--palette-secondary, #39ff14) 60%, transparent),
+    0 0 15px color-mix(in srgb, var(--palette-primary, #00ff00) 40%, transparent),
+    0 0 20px color-mix(in srgb, var(--palette-secondary, #39ff14) 25%, transparent);
+}
+
+/* SVG icons in titles/headers - Use secondary/accent color */
+body.theme-crt [class*="title"] svg,
+body.theme-crt [class*="Title"] svg,
+body.theme-crt [class*="header"] svg,
+body.theme-crt [class*="Header"] svg,
+body.theme-crt h1 svg,
+body.theme-crt h2 svg,
+body.theme-crt h3 svg,
+body.theme-crt h4 svg,
+body.theme-crt h5 svg,
+body.theme-crt h6 svg {
+  color: var(--palette-secondary, #39ff14) !important;
+  fill: var(--palette-secondary, #39ff14) !important;
+  filter: drop-shadow(0 0 4px color-mix(in srgb, var(--palette-secondary, #39ff14) 70%, transparent)) !important;
+}
+
+body.theme-crt [class*="title"] svg path,
+body.theme-crt [class*="Title"] svg path,
+body.theme-crt [class*="header"] svg path,
+body.theme-crt [class*="Header"] svg path,
+body.theme-crt [class*="title"] svg *,
+body.theme-crt [class*="Title"] svg *,
+body.theme-crt [class*="header"] svg *,
+body.theme-crt [class*="Header"] svg * {
+  fill: var(--palette-secondary, #39ff14) !important;
+  stroke: var(--palette-secondary, #39ff14) !important;
+  color: var(--palette-secondary, #39ff14) !important;
+}
+
+body.theme-crt [class*="container"],
+body.theme-crt [class*="Container"],
+body.theme-crt [class*="sidebar"],
+body.theme-crt [class*="Sidebar"],
+body.theme-crt [class*="header"],
+body.theme-crt [class*="Header"] {
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Terminal output glassmorphism - No borders */
+body.theme-crt [class*="terminal"],
+body.theme-crt [class*="Terminal"],
+body.theme-crt [class*="output"],
+body.theme-crt [class*="Output"] {
+  background: rgba(0, 0, 0, 0.9) !important;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border: none !important;
+}
+
+/* Override inline styles in command output HTML - high specificity */
+body.theme-crt [class*="line"] [style*="border"],
+body.theme-crt [class*="line"] [style*="background"],
+body.theme-crt [class*="Output"] [style*="border"],
+body.theme-crt [class*="Output"] [style*="background"] {
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
+
+/* Force text colors in HTML command outputs */
+body.theme-crt [class*="line"] [style*="color"],
+body.theme-crt [class*="Output"] [style*="color"] {
+  color: var(--palette-primary, #00ff00) !important;
+  text-shadow: 
+    0 0 5px color-mix(in srgb, var(--palette-primary, #00ff00) 50%, transparent),
+    0 0 10px color-mix(in srgb, var(--palette-primary, #00ff00) 30%, transparent) !important;
+}
+
+/* Input fields with glassmorphism - No borders, minimal shadows */
+body.theme-crt input[type="text"],
+body.theme-crt input[type="password"],
+body.theme-crt input[type="email"],
+body.theme-crt input[type="number"],
+body.theme-crt textarea {
+  background: rgba(0, 0, 0, 0.8) !important;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: none !important;
+  color: var(--palette-primary, #00ff00) !important;
+  box-shadow: none !important;
+}
+
+body.theme-crt input:focus,
+body.theme-crt textarea:focus {
+  border: none !important;
+  box-shadow: none !important;
+  outline: none;
+  background: rgba(0, 0, 0, 0.9) !important;
+}
+
+/* Links with glassmorphism - Use palette colors */
+body.theme-crt a {
+  color: var(--palette-secondary, #39ff14) !important;
+  text-decoration: none;
+  border-bottom: none !important;
+  transition: all 0.2s ease;
+}
+
+body.theme-crt a:hover {
+  color: var(--palette-primary, #00ff00) !important;
+  text-shadow: 
+    0 0 8px color-mix(in srgb, var(--palette-primary, #00ff00) 80%, transparent),
+    0 0 15px color-mix(in srgb, var(--palette-primary, #00ff00) 50%, transparent);
+  border-bottom-color: rgba(0, 255, 0, 0.6);
+}
+
+/* Code blocks and pre-formatted text */
+body.theme-crt code,
+body.theme-crt pre {
+  background: rgba(0, 0, 0, 0.9) !important;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border: none !important;
+  color: var(--palette-primary, #00ff00) !important;
+  padding: 8px;
+  border-radius: 0;
+}
+
+/* Scrollbars with CRT styling - Use palette colors, no borders */
+body.theme-crt ::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+  background: rgba(0, 0, 0, 0.8);
+}
+
+body.theme-crt ::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--palette-primary, #00ff00) 30%, transparent);
+  border: none !important;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+body.theme-crt ::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in srgb, var(--palette-primary, #00ff00) 50%, transparent);
+  box-shadow: none !important;
+}
+
+body.theme-crt ::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.9);
+  border: none !important;
+}
+
+/* Selection styling - Use palette colors */
+body.theme-crt ::selection {
+  background: color-mix(in srgb, var(--palette-primary, #00ff00) 30%, transparent);
+  color: var(--palette-secondary, #39ff14);
+  text-shadow: 0 0 5px color-mix(in srgb, var(--palette-primary, #00ff00) 80%, transparent);
+}
+
+body.theme-crt ::-moz-selection {
+  background: color-mix(in srgb, var(--palette-primary, #00ff00) 30%, transparent);
+  color: var(--palette-secondary, #39ff14);
+  text-shadow: 0 0 5px color-mix(in srgb, var(--palette-primary, #00ff00) 80%, transparent);
+}
+
+/* CRT Theme Buttons - Glassmorphism with palette colors, no borders, no shadows */
+body.theme-crt button,
+body.theme-crt [class*="button"],
+body.theme-crt [class*="Button"] {
+  font-family: var(--theme-font-mono, "Courier New", monospace);
+  font-weight: var(--theme-font-weight-bold, 700);
+  letter-spacing: var(--theme-letter-spacing, 0.05em);
+  border-radius: var(--theme-radius-md, 0px);
+  padding: var(--theme-spacing-sm, 8px) var(--theme-spacing-md, 16px);
+  transition: all 0.2s ease;
+  background: rgba(0, 0, 0, 0.8) !important;
+  backdrop-filter: blur(8px) saturate(120%);
+  -webkit-backdrop-filter: blur(8px) saturate(120%);
+  border: none !important;
+  color: var(--palette-primary, #00ff00) !important;
+  box-shadow: none !important;
+  text-shadow: 
+    0 0 5px color-mix(in srgb, var(--palette-primary, #00ff00) 50%, transparent),
+    0 0 10px color-mix(in srgb, var(--palette-primary, #00ff00) 30%, transparent);
+}
+
+body.theme-crt button:hover,
+body.theme-crt [class*="button"]:hover,
+body.theme-crt [class*="Button"]:hover {
+  background: rgba(0, 0, 0, 0.9) !important;
+  border: none !important;
+  box-shadow: none !important;
+  text-shadow: 
+    0 0 8px color-mix(in srgb, var(--palette-primary, #00ff00) 80%, transparent),
+    0 0 15px color-mix(in srgb, var(--palette-primary, #00ff00) 50%, transparent);
+  transform: none;
+}
+
+body.theme-crt button:active,
+body.theme-crt [class*="button"]:active,
+body.theme-crt [class*="Button"]:active {
+  background: rgba(0, 0, 0, 0.95) !important;
+  box-shadow: none !important;
+  transform: none;
+}
+
 /* =============================================================================
    THEME-SPECIFIC BUTTON STYLING
    Buttons adapt to each theme's unique style and typography
@@ -560,6 +1048,19 @@ body.theme-dark [class*="button"]:hover {
   background: color-mix(in srgb, var(--palette-primary, #00d4ff) 15%, transparent);
   box-shadow: 0 0 15px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #00d4ff) 40%, transparent));
   transform: translateY(-1px);
+}
+
+body.theme-dark button:focus,
+body.theme-dark button:focus-visible,
+body.theme-dark [class*="button"]:focus,
+body.theme-dark [class*="button"]:focus-visible,
+body.theme-dark [class*="Button"]:focus,
+body.theme-dark [class*="Button"]:focus-visible {
+  outline: 2px solid var(--palette-primary, #00d4ff);
+  outline-offset: 2px;
+  box-shadow: 
+    0 0 15px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #00d4ff) 40%, transparent)),
+    0 0 0 2px var(--palette-primary, #00d4ff);
 }
 
 /* Light Theme Buttons */
@@ -597,6 +1098,18 @@ body.theme-matrix [class*="button"]:hover {
   box-shadow: 0 0 15px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #ffffff) 50%, transparent)), 
               0 0 30px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #ffffff) 25%, transparent));
   transform: translateY(-1px);
+}
+
+body.theme-matrix button:focus,
+body.theme-matrix button:focus-visible,
+body.theme-matrix [class*="button"]:focus,
+body.theme-matrix [class*="button"]:focus-visible {
+  outline: 2px solid var(--palette-primary, #ffffff);
+  outline-offset: 2px;
+  box-shadow: 
+    0 0 15px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #ffffff) 50%, transparent)), 
+    0 0 30px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #ffffff) 25%, transparent)),
+    0 0 0 2px var(--palette-primary, #ffffff);
 }
 
 /* Retro Theme Buttons */
@@ -1545,6 +2058,28 @@ body[data-color-palette="light"] {
   --palette-success-glow: rgba(5, 150, 105, 0.15);
   --palette-warning-glow: rgba(217, 119, 6, 0.15);
   --palette-error-glow: rgba(220, 38, 38, 0.15);
+}
+
+body[data-color-palette="white"] {
+  /* White Color Palette - Solid white background with black and dark blue text */
+  --palette-primary: #1e3a8a;
+  --palette-secondary: #1e40af;
+  --palette-accent: #3b82f6;
+  --palette-bg: #ffffff;
+  --palette-surface: #ffffff;
+  --palette-text: #000000;
+  --palette-muted: #1e3a8a;
+  --palette-border: #1e3a8a;
+  --palette-success: #059669;
+  --palette-warning: #d97706;
+  --palette-error: #dc2626;
+  /* Glow effects for white palette - subtle shadows */
+  --palette-primary-glow: rgba(30, 58, 138, 0.2);
+  --palette-secondary-glow: rgba(30, 64, 175, 0.2);
+  --palette-accent-glow: rgba(59, 130, 246, 0.2);
+  --palette-success-glow: rgba(5, 150, 105, 0.2);
+  --palette-warning-glow: rgba(217, 119, 6, 0.2);
+  --palette-error-glow: rgba(220, 38, 38, 0.2);
 }
 
 /* Light palette theme overrides - ensures light background works with all themes */

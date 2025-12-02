@@ -12,7 +12,7 @@ export type TerminalMode = "single" | "multi";
 const STORAGE_KEY = "omega-terminal-mode";
 
 export function useTerminalMode() {
-  const [mode, setMode] = useState<TerminalMode>("single");
+  const [mode, setMode] = useState<TerminalMode>("multi");
   const [isHydrated, setIsHydrated] = useState(false);
 
   // Load mode from localStorage on mount
@@ -21,9 +21,15 @@ export function useTerminalMode() {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved === "multi" || saved === "single") {
         setMode(saved);
+      } else {
+        // Default to multi if no saved preference
+        setMode("multi");
+        localStorage.setItem(STORAGE_KEY, "multi");
       }
     } catch (error) {
       console.error("Failed to load terminal mode:", error);
+      // Default to multi on error
+      setMode("multi");
     }
     setIsHydrated(true);
   }, []);

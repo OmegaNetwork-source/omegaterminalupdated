@@ -24,7 +24,7 @@
   font-family: var(--theme-font-body, "Courier New", monospace);
   letter-spacing: var(--theme-letter-spacing, 0.05em);
   transition: border-color 0.3s ease;
-  color: var(--palette-text, #ffffff);
+  color: var(--palette-text, rgba(255, 255, 255, 0.95));
 }
 
 /* Search Container */
@@ -62,7 +62,7 @@
   background: color-mix(in srgb, var(--palette-bg, rgba(15, 20, 35, 0.9)) 80%, transparent);
   border: 1px solid var(--palette-border, rgba(0, 212, 255, 0.3));
   border-radius: 6px;
-  color: var(--palette-text, #ffffff);
+  color: var(--palette-text, rgba(255, 255, 255, 0.95));
   font-family: var(--theme-font-body, "Courier New", monospace);
   font-size: 12px;
   letter-spacing: 0.05em;
@@ -527,6 +527,16 @@
     inset 0 0 10px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #00bcf2) 10%, transparent));
   transform: translateX(6px) scale(1.02);
   color: var(--palette-secondary, #00ffff);
+}
+
+.button:focus,
+.button:focus-visible {
+  outline: 2px solid var(--palette-primary, #00d4ff);
+  outline-offset: 2px;
+  box-shadow: 
+    0 0 20px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #00bcf2) 30%, transparent)),
+    inset 0 0 10px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #00bcf2) 10%, transparent)),
+    0 0 0 2px var(--palette-primary, #00d4ff);
 }
 
 .buttonActive {
@@ -1059,6 +1069,309 @@ details[open] .expandIcon {
   font-weight: 600;
 }
 
+.themeCrt {
+  font-family: "Courier New", "Monaco", "Consolas", "Lucida Console", monospace !important;
+  letter-spacing: 0.05em;
+  font-weight: 400;
+  color: var(--palette-primary, #00ff00) !important;
+  text-shadow: 
+    0 0 5px color-mix(in srgb, var(--palette-primary, #00ff00) 50%, transparent),
+    0 0 10px color-mix(in srgb, var(--palette-primary, #00ff00) 30%, transparent);
+  background: color-mix(in srgb, var(--palette-bg, #000000) 80%, transparent) !important;
+  border: 1px solid color-mix(in srgb, var(--palette-primary, #00ff00) 30%, transparent) !important;
+  box-shadow: 
+    0 0 10px color-mix(in srgb, var(--palette-primary, #00ff00) 20%, transparent),
+    inset 0 0 10px color-mix(in srgb, var(--palette-primary, #00ff00) 10%, transparent);
+}
+
+.themeCrt:hover {
+  background: color-mix(in srgb, var(--palette-bg, #000000) 90%, transparent) !important;
+  border-color: color-mix(in srgb, var(--palette-primary, #00ff00) 60%, transparent) !important;
+  color: var(--palette-secondary, #39ff14) !important;
+  text-shadow: 
+    0 0 8px color-mix(in srgb, var(--palette-primary, #00ff00) 80%, transparent),
+    0 0 15px color-mix(in srgb, var(--palette-primary, #00ff00) 50%, transparent);
+  box-shadow: 
+    0 0 20px color-mix(in srgb, var(--palette-primary, #00ff00) 40%, transparent),
+    inset 0 0 20px color-mix(in srgb, var(--palette-primary, #00ff00) 15%, transparent);
+}
+
+/* -----------------------------------------------------------------------------
+   CRT Theme Overrides - Match exact retro terminal look
+   ----------------------------------------------------------------------------- */
+
+:global(body.theme-crt) .sidebar {
+  background: #000000 !important;
+  border: none !important;
+  border-radius: 0 !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  padding: 16px !important;
+  color: var(--palette-primary, #00ff00) !important;
+  font-family: "Courier New", "Monaco", "Consolas", "Lucida Console", monospace !important;
+  font-size: 13px !important;
+  letter-spacing: 0.05em !important;
+  text-shadow: 
+    0 0 5px color-mix(in srgb, var(--palette-primary, #00ff00) 50%, transparent),
+    0 0 10px color-mix(in srgb, var(--palette-primary, #00ff00) 30%, transparent),
+    0 0 2px color-mix(in srgb, var(--palette-primary, #00ff00) 80%, transparent);
+  box-shadow: none !important;
+}
+
+:global(body.theme-crt) .sidebar * {
+  color: var(--palette-primary, #00ff00) !important;
+  text-shadow: 
+    0 0 5px color-mix(in srgb, var(--palette-primary, #00ff00) 50%, transparent),
+    0 0 10px color-mix(in srgb, var(--palette-primary, #00ff00) 30%, transparent),
+    0 0 2px color-mix(in srgb, var(--palette-primary, #00ff00) 80%, transparent);
+}
+
+:global(body.theme-crt) .searchContainer {
+  background: transparent !important;
+  border-bottom: none !important;
+  backdrop-filter: none !important;
+  padding-bottom: 8px !important;
+  margin-bottom: 12px !important;
+}
+
+:global(body.theme-crt) .searchInput {
+  background: rgba(0, 0, 0, 0.8) !important;
+  border: none !important;
+  border-radius: 0 !important;
+  color: var(--palette-primary, #00ff00) !important;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  box-shadow: none !important;
+}
+
+:global(body.theme-crt) .searchInput:focus {
+  border: none !important;
+  box-shadow: none !important;
+  background: rgba(0, 0, 0, 0.9) !important;
+}
+
+:global(body.theme-crt) .searchInput::placeholder {
+  color: color-mix(in srgb, var(--palette-primary, #00ff00) 40%, transparent) !important;
+}
+
+:global(body.theme-crt) .section {
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  padding: 12px 0 !important;
+  box-shadow: none !important;
+  margin-bottom: 16px !important;
+}
+
+:global(body.theme-crt) .sectionTitle {
+  background: linear-gradient(
+    135deg,
+    var(--palette-secondary, #39ff14) 0%,
+    var(--palette-primary, #00ff00) 50%,
+    var(--palette-secondary, #39ff14) 100%
+  ) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  color: var(--palette-primary, #00ff00) !important; /* Fallback */
+  border: none !important;
+  border-bottom: none !important;
+  padding-bottom: 6px !important;
+  margin-bottom: 12px !important;
+  font-size: 11px !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.1em !important;
+  text-shadow: 
+    0 0 8px color-mix(in srgb, var(--palette-secondary, #39ff14) 60%, transparent),
+    0 0 15px color-mix(in srgb, var(--palette-primary, #00ff00) 40%, transparent),
+    0 0 20px color-mix(in srgb, var(--palette-secondary, #39ff14) 25%, transparent);
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+
+/* Section title SVG icons - Use tertiary/accent color */
+:global(body.theme-crt) .sectionTitle svg,
+:global(body.theme-crt) .sectionTitleIcon {
+  color: var(--palette-secondary, #39ff14) !important;
+  fill: var(--palette-secondary, #39ff14) !important;
+  filter: drop-shadow(0 0 4px color-mix(in srgb, var(--palette-secondary, #39ff14) 70%, transparent)) !important;
+}
+
+:global(body.theme-crt) .sectionTitle svg path,
+:global(body.theme-crt) .sectionTitleIcon path,
+:global(body.theme-crt) .sectionTitle svg *,
+:global(body.theme-crt) .sectionTitleIcon * {
+  fill: var(--palette-secondary, #39ff14) !important;
+  stroke: var(--palette-secondary, #39ff14) !important;
+  color: var(--palette-secondary, #39ff14) !important;
+}
+
+:global(body.theme-crt) .sectionTitle:hover svg,
+:global(body.theme-crt) .sectionTitle:hover .sectionTitleIcon {
+  color: var(--palette-primary, #00ff00) !important;
+  fill: var(--palette-primary, #00ff00) !important;
+  filter: drop-shadow(0 0 8px color-mix(in srgb, var(--palette-primary, #00ff00) 80%, transparent)) !important;
+  transform: scale(1.1) !important;
+}
+
+:global(body.theme-crt) .sectionTitle:hover {
+  background: linear-gradient(
+    135deg,
+    var(--palette-primary, #00ff00) 0%,
+    var(--palette-secondary, #39ff14) 50%,
+    var(--palette-primary, #00ff00) 100%
+  ) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  text-shadow: 
+    0 0 10px color-mix(in srgb, var(--palette-primary, #00ff00) 80%, transparent),
+    0 0 18px color-mix(in srgb, var(--palette-secondary, #39ff14) 50%, transparent),
+    0 0 25px color-mix(in srgb, var(--palette-primary, #00ff00) 30%, transparent);
+}
+
+:global(body.theme-crt) .button {
+  background: rgba(0, 0, 0, 0.7) !important;
+  border: none !important;
+  border-radius: 0 !important;
+  color: var(--palette-primary, #00ff00) !important;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  box-shadow: none !important;
+  text-shadow: 
+    0 0 5px color-mix(in srgb, var(--palette-primary, #00ff00) 50%, transparent),
+    0 0 10px color-mix(in srgb, var(--palette-primary, #00ff00) 30%, transparent);
+}
+
+/* Button SVG icons - Use secondary color */
+:global(body.theme-crt) .button svg,
+:global(body.theme-crt) .button svg path,
+:global(body.theme-crt) .button svg * {
+  color: var(--palette-secondary, #39ff14) !important;
+  fill: var(--palette-secondary, #39ff14) !important;
+  stroke: var(--palette-secondary, #39ff14) !important;
+  filter: drop-shadow(0 0 3px color-mix(in srgb, var(--palette-secondary, #39ff14) 60%, transparent)) !important;
+}
+
+:global(body.theme-crt) .button:hover {
+  background: rgba(0, 0, 0, 0.9) !important;
+  border: none !important;
+  box-shadow: none !important;
+  text-shadow: 
+    0 0 8px color-mix(in srgb, var(--palette-primary, #00ff00) 80%, transparent),
+    0 0 15px color-mix(in srgb, var(--palette-primary, #00ff00) 50%, transparent);
+}
+
+:global(body.theme-crt) .button:hover svg,
+:global(body.theme-crt) .button:hover svg path,
+:global(body.theme-crt) .button:hover svg * {
+  color: var(--palette-primary, #00ff00) !important;
+  fill: var(--palette-primary, #00ff00) !important;
+  stroke: var(--palette-primary, #00ff00) !important;
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--palette-primary, #00ff00) 80%, transparent)) !important;
+}
+
+:global(body.theme-crt) .expandable {
+  border: none !important;
+  background: transparent !important;
+}
+
+:global(body.theme-crt) .expandableButton {
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  color: var(--palette-primary, #00ff00) !important;
+  text-shadow: 
+    0 0 5px color-mix(in srgb, var(--palette-primary, #00ff00) 50%, transparent),
+    0 0 10px color-mix(in srgb, var(--palette-primary, #00ff00) 30%, transparent);
+}
+
+:global(body.theme-crt) .expandableButton:hover {
+  background: rgba(0, 0, 0, 0.5) !important;
+  text-shadow: 
+    0 0 8px color-mix(in srgb, var(--palette-primary, #00ff00) 80%, transparent),
+    0 0 15px color-mix(in srgb, var(--palette-primary, #00ff00) 50%, transparent);
+}
+
+:global(body.theme-crt) .subActions {
+  border-left: none !important;
+  padding-left: 12px !important;
+  margin-left: 8px !important;
+  margin-top: 8px !important;
+}
+
+:global(body.theme-crt) .subButton {
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  color: var(--palette-primary, #00ff00) !important;
+  text-shadow: 
+    0 0 5px color-mix(in srgb, var(--palette-primary, #00ff00) 50%, transparent),
+    0 0 10px color-mix(in srgb, var(--palette-primary, #00ff00) 30%, transparent);
+}
+
+:global(body.theme-crt) .subButton:hover {
+  background: rgba(0, 0, 0, 0.6) !important;
+  text-shadow: 
+    0 0 8px color-mix(in srgb, var(--palette-primary, #00ff00) 80%, transparent),
+    0 0 15px color-mix(in srgb, var(--palette-primary, #00ff00) 50%, transparent);
+}
+
+:global(body.theme-crt) .subSectionHeader {
+  color: color-mix(in srgb, var(--palette-primary, #00ff00) 70%, transparent) !important;
+  border-bottom: none !important;
+  text-shadow: 
+    0 0 5px color-mix(in srgb, var(--palette-primary, #00ff00) 40%, transparent),
+    0 0 10px color-mix(in srgb, var(--palette-primary, #00ff00) 20%, transparent);
+}
+
+:global(body.theme-crt) .paletteChip,
+:global(body.theme-crt) .themeChip {
+  background: color-mix(in srgb, var(--palette-bg, #000000) 80%, transparent) !important;
+  border: none !important;
+  border-radius: 0 !important;
+  color: var(--palette-primary, #00ff00) !important;
+  text-shadow: 
+    0 0 5px color-mix(in srgb, var(--palette-primary, #00ff00) 50%, transparent),
+    0 0 10px color-mix(in srgb, var(--palette-primary, #00ff00) 30%, transparent);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+:global(body.theme-crt) .paletteChip:hover,
+:global(body.theme-crt) .themeChip:hover {
+  background: color-mix(in srgb, var(--palette-bg, #000000) 90%, transparent) !important;
+  border: none !important;
+  text-shadow: 
+    0 0 8px color-mix(in srgb, var(--palette-primary, #00ff00) 80%, transparent),
+    0 0 15px color-mix(in srgb, var(--palette-primary, #00ff00) 50%, transparent);
+  box-shadow: none !important;
+}
+
+:global(body.theme-crt) .sidebar::-webkit-scrollbar {
+  width: 8px;
+  background: rgba(0, 0, 0, 0.8);
+}
+
+:global(body.theme-crt) .sidebar::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--palette-primary, #00ff00) 30%, transparent);
+  border: none !important;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+:global(body.theme-crt) .sidebar::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in srgb, var(--palette-primary, #00ff00) 50%, transparent);
+  box-shadow: none !important;
+}
+
+:global(body.theme-crt) .sidebar::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.9);
+  border: none !important;
+}
+
 /* Light palette overrides for grid */
 :global(body[data-color-palette="light"]) .paletteChip,
 :global(body[data-color-palette="light"]) .themeChip {
@@ -1117,7 +1430,7 @@ details[open] .expandIcon {
 :global(body.theme-executive) .button {
   background: color-mix(in srgb, var(--palette-primary, #ffffff) 8%, transparent);
   border: 1px solid color-mix(in srgb, var(--palette-primary, #ffffff) 20%, transparent);
-  color: var(--palette-text, #ffffff);
+  color: var(--palette-text, rgba(255, 255, 255, 0.95));
 }
 
 :global(body.theme-executive) .buttonIcon,

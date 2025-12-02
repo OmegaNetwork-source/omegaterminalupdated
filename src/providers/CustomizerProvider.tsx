@@ -58,6 +58,7 @@ const COLOR_PALETTES: ColorPalette[] = [
   "infrared",
   "xmas",
   "light",
+  "white",
 ];
 
 /**

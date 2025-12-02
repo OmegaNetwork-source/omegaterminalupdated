@@ -665,6 +665,122 @@
 }
 
 /* -----------------------------------------------------------------------------
+   CRT Theme Overrides - Remove all borders, match retro terminal look
+   ----------------------------------------------------------------------------- */
+
+:global(body.theme-crt) .container {
+  background: #000000 !important;
+  border: none !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  color: #00ff00 !important;
+  font-family: "Courier New", "Monaco", "Consolas", "Lucida Console", monospace !important;
+  text-shadow: 
+    0 0 5px rgba(0, 255, 0, 0.5),
+    0 0 10px rgba(0, 255, 0, 0.3),
+    0 0 2px rgba(0, 255, 0, 0.8);
+  box-shadow: none !important;
+}
+
+:global(body.theme-crt) .container * {
+  color: #00ff00 !important;
+  text-shadow: 
+    0 0 5px rgba(0, 255, 0, 0.5),
+    0 0 10px rgba(0, 255, 0, 0.3),
+    0 0 2px rgba(0, 255, 0, 0.8);
+}
+
+:global(body.theme-crt) .terminalWrapper {
+  background: #000000 !important;
+  border: none !important;
+  border-radius: 0 !important;
+  padding: 16px !important;
+  box-shadow: none !important;
+}
+
+:global(body.theme-crt) .terminalWrapper::before,
+:global(body.theme-crt) .terminalWrapper::after {
+  display: none !important;
+}
+
+:global(body.theme-crt) .embedded {
+  background: #000000 !important;
+  border: none !important;
+  border-radius: 0 !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: none !important;
+}
+
+:global(body.theme-crt) .tabBar {
+  background: rgba(0, 0, 0, 0.8) !important;
+  border: none !important;
+  border-bottom: 1px solid rgba(0, 255, 0, 0.2) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+:global(body.theme-crt) .tab {
+  border-right: 1px solid rgba(0, 255, 0, 0.15) !important;
+  color: #00ff00 !important;
+  text-shadow: 
+    0 0 5px rgba(0, 255, 0, 0.5),
+    0 0 10px rgba(0, 255, 0, 0.3);
+}
+
+:global(body.theme-crt) .tab:hover {
+  background: rgba(0, 0, 0, 0.5) !important;
+}
+
+:global(body.theme-crt) .tabActive {
+  color: #39ff14 !important;
+  text-shadow: 
+    0 0 8px rgba(0, 255, 0, 0.8),
+    0 0 15px rgba(0, 255, 0, 0.5);
+}
+
+:global(body.theme-crt) .addTabButton {
+  color: #00ff00 !important;
+  text-shadow: 
+    0 0 5px rgba(0, 255, 0, 0.5),
+    0 0 10px rgba(0, 255, 0, 0.3);
+}
+
+:global(body.theme-crt) .addTabButton:hover {
+  background: rgba(0, 0, 0, 0.5) !important;
+}
+
+:global(body.theme-crt) .infoBox {
+  background: rgba(0, 0, 0, 0.8) !important;
+  border: 1px solid rgba(0, 255, 0, 0.3) !important;
+  border-radius: 0 !important;
+  color: #00ff00 !important;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  box-shadow: 
+    0 0 10px rgba(0, 255, 0, 0.2),
+    inset 0 0 10px rgba(0, 255, 0, 0.1);
+  text-shadow: 
+    0 0 5px rgba(0, 255, 0, 0.5),
+    0 0 10px rgba(0, 255, 0, 0.3);
+}
+
+:global(body.theme-crt) .commandInitBanner,
+:global(body.theme-crt) .commandErrorBanner {
+  background: rgba(0, 0, 0, 0.8) !important;
+  border: 1px solid rgba(0, 255, 0, 0.3) !important;
+  border-radius: 0 !important;
+  color: #00ff00 !important;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  text-shadow: 
+    0 0 5px rgba(0, 255, 0, 0.5),
+    0 0 10px rgba(0, 255, 0, 0.3);
+}
+
+/* -----------------------------------------------------------------------------
    Responsive Breakpoints
    ----------------------------------------------------------------------------- */
 

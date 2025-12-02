@@ -47,6 +47,7 @@ interface YouTubeContextValue {
   searchResults: YouTubeVideo[];
   initializeAPI: () => Promise<void>;
   createPlayer: (elementId: string) => void;
+  resizePlayer: () => void;
   searchVideos: (query: string) => Promise<void>;
   getDefaultChannelVideos: () => Promise<void>;
   playVideo: (videoId: string, index: number) => void;
@@ -143,10 +144,17 @@ export function YouTubeProvider({ children }: { children: ReactNode }) {
     try {
       // Get container element to determine responsive size
       const container = document.getElementById(elementId);
-      const containerWidth = container?.clientWidth || 640;
-      const containerHeight = container?.clientHeight || 390;
+      if (!container) {
+        console.warn("[YouTube] Container not found:", elementId);
+        return;
+      }
+      
+      // Use container's actual size, or fallback to reasonable defaults
+      const containerWidth = container.clientWidth || container.offsetWidth || 640;
+      const containerHeight = container.clientHeight || container.offsetHeight || 390;
       
       // Calculate responsive dimensions (16:9 aspect ratio)
+      // Use container width, calculate height based on aspect ratio
       const width = containerWidth > 0 ? containerWidth : 640;
       const height = Math.round(width * 9 / 16); // 16:9 aspect ratio
       
@@ -577,15 +585,7 @@ export function YouTubeProvider({ children }: { children: ReactNode }) {
   // ==========================================================================
 
   const openPanel = useCallback(() => {
-    // Close other media panels when opening YouTube
-    window.dispatchEvent(new CustomEvent("omega:closeSpotify"));
-    window.dispatchEvent(new CustomEvent("omega:closeNewsReader"));
-    window.dispatchEvent(new CustomEvent("omega:closeBluesPlayer"));
-    window.dispatchEvent(new CustomEvent("omega:closeLoFiPlayer"));
-    window.dispatchEvent(new CustomEvent("omega:closeTechPlayer"));
-    window.dispatchEvent(new CustomEvent("omega:closeFunkyPlayer"));
-    window.dispatchEvent(new CustomEvent("omega:closeOmegaTrancePlayer"));
-    window.dispatchEvent(new CustomEvent("omega:closeOmegaMelodiesPlayer"));
+    // Allow multiple panels to be open simultaneously
     setPlayerState((prev) => ({ ...prev, isPanelOpen: true }));
     if (!apiReadyRef.current) {
       void initializeAPI();
@@ -596,36 +596,47 @@ export function YouTubeProvider({ children }: { children: ReactNode }) {
     setPlayerState((prev) => ({ ...prev, isPanelOpen: false }));
   }, []);
 
+  // Resize player to match container dimensions
+  const resizePlayer = useCallback(() => {
+    if (!ytPlayerRef.current || !playerReadyRef.current) return;
+    
+    try {
+      const container = document.getElementById("youtube-player-iframe");
+      if (!container) return;
+      
+      const containerWidth = container.clientWidth || container.offsetWidth;
+      const containerHeight = container.clientHeight || container.offsetHeight;
+      
+      if (containerWidth > 0 && containerHeight > 0) {
+        // YouTube IFrame API doesn't have a direct resize method
+        // The iframe will scale with CSS (width: 100%, height: 100%)
+        // But we can ensure the container has the right aspect ratio
+        // The CSS aspect-ratio property on .playerContainer handles this
+        
+        // Trigger a resize event which some players listen to
+        window.dispatchEvent(new Event("resize"));
+        
+        // The iframe itself should scale via CSS, so no need to recreate the player
+      }
+    } catch (error) {
+      console.warn("[YouTube] Failed to resize player:", error);
+    }
+  }, []);
+
   // ==========================================================================
   // Lifecycle
   // ==========================================================================
 
-  // Listen for close events from other panels
+  // Listen for close events (but allow multiple panels to be open)
   useEffect(() => {
     const handleClose = () => {
       setPlayerState((prev) => ({ ...prev, isPanelOpen: false }));
     };
 
     window.addEventListener("omega:closeYouTube", handleClose);
-    window.addEventListener("omega:openSpotify", handleClose);
-    window.addEventListener("omega:openNewsReader", handleClose);
-    window.addEventListener("omega:openBluesPlayer", handleClose);
-    window.addEventListener("omega:openLoFiPlayer", handleClose);
-    window.addEventListener("omega:openTechPlayer", handleClose);
-    window.addEventListener("omega:openFunkyPlayer", handleClose);
-    window.addEventListener("omega:openOmegaTrancePlayer", handleClose);
-    window.addEventListener("omega:openOmegaMelodiesPlayer", handleClose);
 
     return () => {
       window.removeEventListener("omega:closeYouTube", handleClose);
-      window.removeEventListener("omega:openSpotify", handleClose);
-      window.removeEventListener("omega:openNewsReader", handleClose);
-      window.removeEventListener("omega:openBluesPlayer", handleClose);
-      window.removeEventListener("omega:openLoFiPlayer", handleClose);
-      window.removeEventListener("omega:openTechPlayer", handleClose);
-      window.removeEventListener("omega:openFunkyPlayer", handleClose);
-      window.removeEventListener("omega:openOmegaTrancePlayer", handleClose);
-      window.removeEventListener("omega:openOmegaMelodiesPlayer", handleClose);
     };
   }, []);
 
@@ -644,6 +655,7 @@ export function YouTubeProvider({ children }: { children: ReactNode }) {
     searchResults,
     initializeAPI,
     createPlayer,
+    resizePlayer,
     searchVideos,
     getDefaultChannelVideos,
     playVideo,

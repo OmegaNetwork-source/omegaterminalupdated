@@ -1151,7 +1151,7 @@ export const helpCommand: Command = {
             font-size: 0.85em;
                font-family: 'Courier New', monospace;
           ">
-            Ω Terminal v3.0.0 - Modern Apple UI • Enhanced Analytics • DeFi Integration • NFT Trading
+            Ω Terminal v3.0.0 - Enhanced Analytics • DeFi Integration • NFT Trading
            </div>
          </div>
        </div>

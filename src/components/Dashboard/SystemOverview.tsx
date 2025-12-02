@@ -465,7 +465,7 @@ export function SystemOverview(): JSX.Element {
           return;
         }
 
-        const data = await response.json();
+          const data = await response.json();
         
         // Check if response has an error field
         if (data.error) {
@@ -485,11 +485,11 @@ export function SystemOverview(): JSX.Element {
 
         console.log("[SystemOverview] Price data received:", data);
 
-        const priceList: PriceData[] = selectedTokens
+          const priceList: PriceData[] = selectedTokens
           .map((symbol): PriceData | null => {
             const upperSymbol = symbol.toUpperCase();
             const coinId = TOKEN_MAP[upperSymbol] || symbol.toLowerCase();
-            const coinData = data[coinId];
+              const coinData = data[coinId];
             
             if (!coinData) {
               console.warn(`[SystemOverview] No data for ${symbol} (coinId: ${coinId})`);
@@ -500,16 +500,16 @@ export function SystemOverview(): JSX.Element {
               console.warn(`[SystemOverview] Invalid price for ${symbol}:`, coinData);
               return null;
             }
-            
-            return {
+              
+              return {
               symbol: upperSymbol,
-              price: coinData.usd,
-              change24h: coinData.usd_24h_change,
-              coinId,
-            };
-          })
+                price: coinData.usd,
+                change24h: coinData.usd_24h_change,
+                coinId,
+              };
+            })
           .filter((p): p is PriceData => p !== null && typeof p.price === "number" && p.price > 0);
-        
+          
         console.log("[SystemOverview] Processed prices:", priceList);
         
         if (priceList.length > 0) {
@@ -1116,8 +1116,8 @@ export function SystemOverview(): JSX.Element {
             <div className={styles.cardContent}>
               <WalletTrackerInput pgt={pgt} />
             </div>
+            </div>
           </div>
-        </div>
         </div>
       </div>
     </section>

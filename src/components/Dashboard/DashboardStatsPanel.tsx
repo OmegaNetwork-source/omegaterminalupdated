@@ -4,9 +4,7 @@ import React, { useEffect, useMemo, useRef, useState, Suspense, useCallback } fr
 import Script from "next/script";
 import dynamic from "next/dynamic";
 import { usePerps } from "@/hooks/usePerps";
-import { useSpotify } from "@/hooks/useSpotify";
-import { useYouTube } from "@/hooks/useYouTube";
-import { useNewsReader } from "@/hooks/useNewsReader";
+// Spotify, YouTube, and News Reader are now handled by GlobalMediaWindows
 import { useBluesPlayer } from "@/hooks/useBluesPlayer";
 import { useLoFiPlayer } from "@/hooks/useLoFiPlayer";
 import { useTechPlayer } from "@/hooks/useTechPlayer";
@@ -93,9 +91,7 @@ export function DashboardStatsPanel(): JSX.Element | null {
   }
   
   const perps = usePerps();
-  const spotify = useSpotify();
-  const youtube = useYouTube();
-  const newsReader = useNewsReader();
+  // Spotify, YouTube, and News Reader are now handled by GlobalMediaWindows
   const bluesPlayer = useBluesPlayer();
   const lofiPlayer = useLoFiPlayer();
   const techPlayer = useTechPlayer();
@@ -144,9 +140,7 @@ export function DashboardStatsPanel(): JSX.Element | null {
   const prevPanelStatesRef = useRef({
     chart: false,
     perps: false,
-    spotify: false,
-    youtube: false,
-    newsReader: false,
+    // Spotify, YouTube, and News Reader are now handled by GlobalMediaWindows
     bluesPlayer: false,
     lofiPlayer: false,
     techPlayer: false,
@@ -312,9 +306,7 @@ export function DashboardStatsPanel(): JSX.Element | null {
     const currentStates = {
       chart: isChartOpen,
       perps: perps.playerState.isPanelOpen,
-      spotify: spotify.playerState.isPanelOpen,
-      youtube: youtube.playerState.isPanelOpen,
-      newsReader: newsReader.readerState.isPanelOpen,
+      // Spotify, YouTube, and News Reader are now handled by GlobalMediaWindows
       bluesPlayer: bluesPlayer.playerState.isPanelOpen,
       lofiPlayer: lofiPlayer.playerState.isPanelOpen,
       techPlayer: techPlayer.playerState.isPanelOpen,
@@ -352,9 +344,7 @@ export function DashboardStatsPanel(): JSX.Element | null {
   }, [
     isChartOpen,
     perps.playerState.isPanelOpen,
-    spotify.playerState.isPanelOpen,
-    youtube.playerState.isPanelOpen,
-    newsReader.readerState.isPanelOpen,
+    // Spotify, YouTube, and News Reader are now handled by GlobalMediaWindows
     bluesPlayer.playerState.isPanelOpen,
     lofiPlayer.playerState.isPanelOpen,
     techPlayer.playerState.isPanelOpen,
@@ -395,9 +385,7 @@ export function DashboardStatsPanel(): JSX.Element | null {
   const hasOpenPanel = 
     isChartOpen ||
     perps.playerState.isPanelOpen ||
-    spotify.playerState.isPanelOpen ||
-    youtube.playerState.isPanelOpen ||
-    newsReader.readerState.isPanelOpen ||
+    // Spotify, YouTube, and News Reader are now handled by GlobalMediaWindows
     bluesPlayer.playerState.isPanelOpen ||
     lofiPlayer.playerState.isPanelOpen ||
     techPlayer.playerState.isPanelOpen ||
@@ -537,38 +525,7 @@ export function DashboardStatsPanel(): JSX.Element | null {
         </section>
       )}
 
-      {/* Spotify Panel - inside stats panel like chart viewer */}
-      {spotify.playerState.isPanelOpen && (
-        <section className={`${styles.section} ${styles.mediaSection}`}>
-          <div className={styles.mediaPanelWrapper}>
-            <Suspense fallback={<div className={styles.panelLoading}>Loading Spotify...</div>}>
-              <SpotifyPanel />
-            </Suspense>
-          </div>
-        </section>
-      )}
-
-      {/* YouTube Panel - inside stats panel like chart viewer */}
-      {youtube.playerState.isPanelOpen && (
-        <section className={`${styles.section} ${styles.mediaSection}`}>
-          <div className={styles.mediaPanelWrapper}>
-            <Suspense fallback={<div className={styles.panelLoading}>Loading YouTube...</div>}>
-              <YouTubePanel />
-            </Suspense>
-          </div>
-        </section>
-      )}
-
-      {/* News Reader Panel - inside stats panel like chart viewer */}
-      {newsReader.readerState.isPanelOpen && (
-        <section className={`${styles.section} ${styles.mediaSection}`}>
-          <div className={styles.mediaPanelWrapper}>
-            <Suspense fallback={<div className={styles.panelLoading}>Loading News...</div>}>
-              <NewsReaderPanel />
-            </Suspense>
-          </div>
-        </section>
-      )}
+      {/* Spotify, YouTube, and News Reader are now rendered as draggable windows via GlobalMediaWindows */}
 
       {/* Blues Player Panel - inside stats panel like chart viewer */}
       {bluesPlayer.playerState.isPanelOpen && (
