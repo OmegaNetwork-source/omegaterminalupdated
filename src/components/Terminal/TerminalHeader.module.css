@@ -923,3 +923,130 @@
   gap: 10px;
   padding-bottom: 10px;
 }
+
+/* -----------------------------------------------------------------------------
+   CRT Theme Overrides - Remove all borders
+   ----------------------------------------------------------------------------- */
+
+:global(body.theme-crt) .header {
+  background: rgba(0, 0, 0, 0.8) !important;
+  border: none !important;
+  border-bottom: 1px solid rgba(0, 255, 0, 0.2) !important;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  color: #00ff00 !important;
+  text-shadow: 
+    0 0 5px rgba(0, 255, 0, 0.5),
+    0 0 10px rgba(0, 255, 0, 0.3);
+}
+
+:global(body.theme-crt) .header * {
+  color: #00ff00 !important;
+  text-shadow: 
+    0 0 5px rgba(0, 255, 0, 0.5),
+    0 0 10px rgba(0, 255, 0, 0.3);
+}
+
+:global(body.theme-crt) .title {
+  background: linear-gradient(
+    135deg,
+    var(--palette-secondary, #39ff14) 0%,
+    var(--palette-primary, #00ff00) 50%,
+    var(--palette-secondary, #39ff14) 100%
+  ) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  color: var(--palette-primary, #00ff00) !important; /* Fallback */
+  text-shadow: 
+    0 0 10px color-mix(in srgb, var(--palette-secondary, #39ff14) 70%, transparent),
+    0 0 20px color-mix(in srgb, var(--palette-primary, #00ff00) 50%, transparent),
+    0 0 30px color-mix(in srgb, var(--palette-secondary, #39ff14) 30%, transparent);
+}
+
+:global(body.theme-crt) .routeLink {
+  color: rgba(0, 255, 0, 0.7) !important;
+  border-bottom: 1px solid transparent !important;
+}
+
+:global(body.theme-crt) .routeLink:hover {
+  color: #39ff14 !important;
+  border-bottom-color: rgba(0, 255, 0, 0.4) !important;
+  text-shadow: 
+    0 0 8px rgba(0, 255, 0, 0.8),
+    0 0 15px rgba(0, 255, 0, 0.5);
+}
+
+:global(body.theme-crt) .controlButton {
+  background: rgba(0, 0, 0, 0.7) !important;
+  border: 1px solid rgba(0, 255, 0, 0.3) !important;
+  border-radius: 0 !important;
+  color: #00ff00 !important;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  box-shadow: 
+    0 0 10px rgba(0, 255, 0, 0.2),
+    inset 0 0 10px rgba(0, 255, 0, 0.1);
+  text-shadow: 
+    0 0 5px rgba(0, 255, 0, 0.5),
+    0 0 10px rgba(0, 255, 0, 0.3);
+}
+
+:global(body.theme-crt) .controlButton:hover {
+  background: rgba(0, 0, 0, 0.9) !important;
+  border-color: rgba(0, 255, 0, 0.6) !important;
+  color: #39ff14 !important;
+  text-shadow: 
+    0 0 8px rgba(0, 255, 0, 0.8),
+    0 0 15px rgba(0, 255, 0, 0.5);
+  box-shadow: 
+    0 0 20px rgba(0, 255, 0, 0.4),
+    inset 0 0 20px rgba(0, 255, 0, 0.15);
+}
+
+:global(body.theme-crt) .socialLink {
+  color: rgba(0, 255, 0, 0.7) !important;
+  text-shadow: 
+    0 0 5px rgba(0, 255, 0, 0.4),
+    0 0 10px rgba(0, 255, 0, 0.2);
+}
+
+:global(body.theme-crt) .socialLink:hover {
+  color: #39ff14 !important;
+  text-shadow: 
+    0 0 8px rgba(0, 255, 0, 0.8),
+    0 0 15px rgba(0, 255, 0, 0.5);
+}
+
+:global(body.theme-crt) .aiSelect,
+:global(body.theme-crt) .aiSelectButton {
+  background: rgba(0, 0, 0, 0.8) !important;
+  border: 1px solid rgba(0, 255, 0, 0.3) !important;
+  border-radius: 0 !important;
+  color: #00ff00 !important;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  text-shadow: 
+    0 0 5px rgba(0, 255, 0, 0.5),
+    0 0 10px rgba(0, 255, 0, 0.3);
+}
+
+:global(body.theme-crt) .connectionStatus {
+  background: rgba(0, 0, 0, 0.8) !important;
+  border: 1px solid rgba(0, 255, 0, 0.3) !important;
+  border-radius: 0 !important;
+  color: #00ff00 !important;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  text-shadow: 
+    0 0 5px rgba(0, 255, 0, 0.5),
+    0 0 10px rgba(0, 255, 0, 0.3);
+}
+
+:global(body.theme-crt) .connectionStatus.connected {
+  color: #39ff14 !important;
+  border-color: rgba(57, 255, 20, 0.4) !important;
+  text-shadow: 
+    0 0 8px rgba(57, 255, 20, 0.8),
+    0 0 15px rgba(57, 255, 20, 0.5);
+}

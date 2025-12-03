@@ -145,3 +145,91 @@
   cursor: nwse-resize;
 }
 
+/* -----------------------------------------------------------------------------
+   CRT Theme Overrides - Remove all borders
+   ----------------------------------------------------------------------------- */
+
+:global(body.theme-crt) .instance {
+  background: #000000 !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  color: #00ff00 !important;
+  text-shadow: 
+    0 0 5px rgba(0, 255, 0, 0.5),
+    0 0 10px rgba(0, 255, 0, 0.3);
+}
+
+:global(body.theme-crt) .instance:hover {
+  border: none !important;
+  box-shadow: none !important;
+}
+
+:global(body.theme-crt) .header {
+  background: rgba(0, 0, 0, 0.8) !important;
+  border: none !important;
+  border-bottom: 1px solid rgba(0, 255, 0, 0.2) !important;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+:global(body.theme-crt) .title {
+  color: #00ff00 !important;
+  text-shadow: 
+    0 0 5px rgba(0, 255, 0, 0.5),
+    0 0 10px rgba(0, 255, 0, 0.3);
+}
+
+:global(body.theme-crt) .title:hover {
+  background: rgba(0, 0, 0, 0.5) !important;
+}
+
+:global(body.theme-crt) .titleInput {
+  background: rgba(0, 0, 0, 0.8) !important;
+  border: 1px solid rgba(0, 255, 0, 0.3) !important;
+  border-radius: 0 !important;
+  color: #00ff00 !important;
+  text-shadow: 
+    0 0 5px rgba(0, 255, 0, 0.5),
+    0 0 10px rgba(0, 255, 0, 0.3);
+}
+
+:global(body.theme-crt) .titleInput:focus {
+  border-color: rgba(0, 255, 0, 0.6) !important;
+  background: rgba(0, 0, 0, 0.9) !important;
+}
+
+:global(body.theme-crt) .headerButton {
+  background: rgba(0, 0, 0, 0.7) !important;
+  border: 1px solid rgba(0, 255, 0, 0.3) !important;
+  border-radius: 0 !important;
+  color: #00ff00 !important;
+  text-shadow: 
+    0 0 5px rgba(0, 255, 0, 0.5),
+    0 0 10px rgba(0, 255, 0, 0.3);
+}
+
+:global(body.theme-crt) .headerButton:hover {
+  background: rgba(0, 0, 0, 0.9) !important;
+  border-color: rgba(0, 255, 0, 0.6) !important;
+  color: #39ff14 !important;
+  text-shadow: 
+    0 0 8px rgba(0, 255, 0, 0.8),
+    0 0 15px rgba(0, 255, 0, 0.5);
+}
+
+:global(body.theme-crt) .resizeHandle {
+  background: linear-gradient(
+    135deg,
+    transparent 0%,
+    transparent 40%,
+    rgba(0, 255, 0, 0.3) 40%,
+    rgba(0, 255, 0, 0.3) 45%,
+    transparent 45%,
+    transparent 60%,
+    rgba(0, 255, 0, 0.3) 60%,
+    rgba(0, 255, 0, 0.3) 65%,
+    transparent 65%
+  ) !important;
+}
+

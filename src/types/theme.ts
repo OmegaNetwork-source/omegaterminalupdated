@@ -13,7 +13,8 @@ export type Theme =
   | "retro"
   | "neo"
   | "elite"
-  | "modern";
+  | "modern"
+  | "crt";
 
 /**
  * Theme context value providing theme state and methods

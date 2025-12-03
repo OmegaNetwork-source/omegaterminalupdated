@@ -82,6 +82,7 @@ export const AVAILABLE_THEMES = [
   "neo",
   "elite",
   "modern",
+  "crt",
 ] as const;
 
 /**

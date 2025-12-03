@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useCallback } from "react";
+import React, { useEffect, useCallback, useRef, useState } from "react";
 import Link from "next/link";
 import { useTerminal } from "@/providers/TerminalProvider";
 import { useSpotify } from "@/hooks/useSpotify";
@@ -47,8 +47,8 @@ interface MenuSection {
  * MobileMenu Component
  * Slide-in drawer menu for quick access to terminal features on mobile devices
  */
-export function MobileMenu({ 
-  isOpen, 
+export function MobileMenu({
+  isOpen,
   onClose,
   onThemeCycle,
   onPaletteCycle,
@@ -58,9 +58,14 @@ export function MobileMenu({
   connectionStatus,
   walletAddress,
 }: MobileMenuProps) {
-  const { executeCommand, aiProvider: terminalAiProvider, setAiProvider } = useTerminal();
+  const {
+    executeCommand,
+    aiProvider: terminalAiProvider,
+    setAiProvider,
+  } = useTerminal();
   // Use prop aiProvider if provided, otherwise use terminal context
-  const currentAiProvider = aiProvider !== undefined ? aiProvider : terminalAiProvider;
+  const currentAiProvider =
+    aiProvider !== undefined ? aiProvider : terminalAiProvider;
   const spotify = useSpotify();
   const youtube = useYouTube();
   const perps = usePerps();
@@ -69,6 +74,16 @@ export function MobileMenu({
   const viewMode = useViewMode();
   const theme = useTheme();
   const customizer = useCustomizer();
+
+  // Swipe gesture state
+  const menuRef = useRef<HTMLDivElement>(null);
+  const [touchStart, setTouchStart] = useState<number | null>(null);
+  const [touchEnd, setTouchEnd] = useState<number | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragOffset, setDragOffset] = useState(0);
+
+  // Minimum swipe distance (in px) to trigger close
+  const minSwipeDistance = 50;
 
   // Handle ESC key to close menu
   useEffect(() => {
@@ -96,6 +111,59 @@ export function MobileMenu({
     return () => {
       document.body.style.overflow = "";
     };
+  }, [isOpen]);
+
+  // Swipe gesture handlers
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+    setIsDragging(true);
+  }, []);
+
+  const handleTouchMove = useCallback(
+    (e: React.TouchEvent) => {
+      if (!isDragging || touchStart === null) return;
+
+      const currentTouch = e.targetTouches[0].clientX;
+      const diff = touchStart - currentTouch;
+
+      // Only allow leftward swipes (to close)
+      if (diff > 0) {
+        setDragOffset(Math.min(diff, 320)); // Max offset is menu width
+      }
+      setTouchEnd(currentTouch);
+    },
+    [isDragging, touchStart]
+  );
+
+  const handleTouchEnd = useCallback(() => {
+    if (!touchStart || !touchEnd) {
+      setIsDragging(false);
+      setDragOffset(0);
+      return;
+    }
+
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > minSwipeDistance;
+
+    if (isLeftSwipe) {
+      onClose();
+    }
+
+    setIsDragging(false);
+    setDragOffset(0);
+    setTouchStart(null);
+    setTouchEnd(null);
+  }, [touchStart, touchEnd, onClose]);
+
+  // Reset drag state when menu closes
+  useEffect(() => {
+    if (!isOpen) {
+      setIsDragging(false);
+      setDragOffset(0);
+      setTouchStart(null);
+      setTouchEnd(null);
+    }
   }, [isOpen]);
 
   const handleSpotify = useCallback(() => {
@@ -153,7 +221,8 @@ export function MobileMenu({
     const providers: ("off" | "near" | "openai")[] = ["off", "near", "openai"];
     const currentProvider = currentAiProvider || "off";
     const currentIndex = providers.indexOf(currentProvider);
-    const nextIndex = currentIndex === -1 ? 0 : (currentIndex + 1) % providers.length;
+    const nextIndex =
+      currentIndex === -1 ? 0 : (currentIndex + 1) % providers.length;
     const nextProvider = providers[nextIndex] || "off";
     if (onAiProviderChange) {
       onAiProviderChange(nextProvider);
@@ -173,15 +242,6 @@ export function MobileMenu({
           iconId: "terminal",
           action: () => {
             window.location.href = "/";
-            onClose();
-          },
-        },
-        {
-          id: "dashboard",
-          label: "Dashboard",
-          iconId: "dashboard",
-          action: () => {
-            window.location.href = "/dashboard";
             onClose();
           },
         },
@@ -265,7 +325,9 @@ export function MobileMenu({
       items: [
         {
           id: "wallet",
-          label: wallet.state.isConnected ? "Wallet Connected" : "Connect Wallet",
+          label: wallet.state.isConnected
+            ? "Wallet Connected"
+            : "Connect Wallet",
           iconId: "wallet",
           action: handleConnectWallet,
           badge: wallet.state.isConnected ? "✓" : undefined,
@@ -376,9 +438,12 @@ export function MobileMenu({
       items: [
         {
           id: "connection",
-          label: connectionStatus === "connected" && walletAddress
-            ? `Wallet: ${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`
-            : `Status: ${connectionStatus?.toUpperCase() || "DISCONNECTED"}`,
+          label:
+            connectionStatus === "connected" && walletAddress
+              ? `Wallet: ${walletAddress.slice(0, 6)}...${walletAddress.slice(
+                  -4
+                )}`
+              : `Status: ${connectionStatus?.toUpperCase() || "DISCONNECTED"}`,
           iconId: "connection",
           action: handleConnectWallet,
           badge: connectionStatus === "connected" ? "✓" : undefined,
@@ -408,10 +473,18 @@ export function MobileMenu({
 
       {/* Menu Drawer */}
       <aside
+        ref={menuRef}
         className={`${styles.menu} ${isOpen ? styles.open : ""}`}
         aria-hidden={!isOpen}
         role="navigation"
         aria-label="Mobile menu"
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        style={{
+          transform: `translateX(-${dragOffset}px)`,
+          transition: isDragging ? "none" : "transform 0.3s ease-out",
+        }}
       >
         <header className={styles.menuHeader}>
           <h2 className={styles.menuTitle}>Omega Terminal</h2>
@@ -439,7 +512,11 @@ export function MobileMenu({
                       aria-label={item.label}
                     >
                       <span className={styles.menuIcon} aria-hidden="true">
-                        {getMenuIcon(item.iconId, styles.menuIconSvg, item.isConnected)}
+                        {getMenuIcon(
+                          item.iconId,
+                          styles.menuIconSvg,
+                          item.isConnected
+                        )}
                       </span>
                       <span className={styles.menuLabel}>{item.label}</span>
                       {item.badge && (
@@ -458,4 +535,3 @@ export function MobileMenu({
     </>
   );
 }
-

@@ -3,6 +3,136 @@
  * Styling for the System Overview panel
  */
 
+/* -----------------------------------------------------------------------------
+   CRT Theme Overrides - Match exact retro terminal look
+   ----------------------------------------------------------------------------- */
+
+:global(body.theme-crt) .section,
+:global(body.theme-crt) .overviewContainer {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+:global(body.theme-crt) .header {
+  border-bottom: 1px solid rgba(0, 255, 0, 0.2) !important;
+}
+
+:global(body.theme-crt) .title {
+  color: #00ff00 !important;
+  text-shadow: 
+    0 0 5px rgba(0, 255, 0, 0.5),
+    0 0 10px rgba(0, 255, 0, 0.3);
+}
+
+:global(body.theme-crt) .card {
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  padding: 12px 0 !important;
+  box-shadow: none !important;
+  border-bottom: 1px solid rgba(0, 255, 0, 0.15) !important;
+  margin-bottom: 12px !important;
+}
+
+:global(body.theme-crt) .card:hover {
+  background: rgba(0, 0, 0, 0.3) !important;
+  border-bottom-color: rgba(0, 255, 0, 0.3) !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+:global(body.theme-crt) .cardHeader {
+  border-bottom: 1px solid rgba(0, 255, 0, 0.2) !important;
+  padding-bottom: 6px !important;
+  margin-bottom: 8px !important;
+}
+
+:global(body.theme-crt) .cardIcon {
+  color: #00ff00 !important;
+  filter: drop-shadow(0 0 5px rgba(0, 255, 0, 0.5));
+}
+
+:global(body.theme-crt) .cardTitle {
+  color: #00ff00 !important;
+  text-shadow: 
+    0 0 5px rgba(0, 255, 0, 0.5),
+    0 0 10px rgba(0, 255, 0, 0.3);
+}
+
+:global(body.theme-crt) .cardContent {
+  color: #00ff00 !important;
+}
+
+:global(body.theme-crt) .cardContent * {
+  color: #00ff00 !important;
+  text-shadow: 
+    0 0 5px rgba(0, 255, 0, 0.5),
+    0 0 10px rgba(0, 255, 0, 0.3),
+    0 0 2px rgba(0, 255, 0, 0.8);
+}
+
+:global(body.theme-crt) .tokenSelector,
+:global(body.theme-crt) .searchInput,
+:global(body.theme-crt) .tokenChip,
+:global(body.theme-crt) .walletInput,
+:global(body.theme-crt) .trackButton {
+  background: rgba(0, 0, 0, 0.8) !important;
+  border: 1px solid rgba(0, 255, 0, 0.3) !important;
+  border-radius: 0 !important;
+  color: #00ff00 !important;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  box-shadow: 
+    0 0 8px rgba(0, 255, 0, 0.2),
+    inset 0 0 8px rgba(0, 255, 0, 0.1);
+  text-shadow: 
+    0 0 5px rgba(0, 255, 0, 0.5),
+    0 0 10px rgba(0, 255, 0, 0.3);
+}
+
+:global(body.theme-crt) .searchInput:focus,
+:global(body.theme-crt) .walletInput:focus {
+  border-color: rgba(0, 255, 0, 0.6) !important;
+  box-shadow: 
+    0 0 15px rgba(0, 255, 0, 0.4),
+    inset 0 0 15px rgba(0, 255, 0, 0.15);
+}
+
+:global(body.theme-crt) .tokenChip:hover,
+:global(body.theme-crt) .trackButton:hover {
+  background: rgba(0, 0, 0, 0.9) !important;
+  border-color: rgba(0, 255, 0, 0.6) !important;
+  text-shadow: 
+    0 0 8px rgba(0, 255, 0, 0.8),
+    0 0 15px rgba(0, 255, 0, 0.5);
+  box-shadow: 
+    0 0 20px rgba(0, 255, 0, 0.4),
+    inset 0 0 20px rgba(0, 255, 0, 0.15);
+}
+
+:global(body.theme-crt) .omegaPlayerButton {
+  background: rgba(0, 0, 0, 0.7) !important;
+  border: 1px solid rgba(0, 255, 0, 0.3) !important;
+  border-radius: 0 !important;
+  color: #00ff00 !important;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  box-shadow: 
+    0 0 10px rgba(0, 255, 0, 0.2),
+    inset 0 0 10px rgba(0, 255, 0, 0.1);
+}
+
+:global(body.theme-crt) .omegaPlayerButton:hover {
+  background: rgba(0, 0, 0, 0.9) !important;
+  border-color: rgba(0, 255, 0, 0.6) !important;
+  box-shadow: 
+    0 0 20px rgba(0, 255, 0, 0.4),
+    inset 0 0 20px rgba(0, 255, 0, 0.15);
+}
+
 .section {
   width: 100%;
   padding: 0;

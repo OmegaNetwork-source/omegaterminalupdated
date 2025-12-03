@@ -13,6 +13,7 @@ If not set, defaults from `src/lib/config.ts` will be used.
 
 Implemented specialized features following established patterns:
 
+
 - Command modules in `src/lib/commands/`: `mixer.ts`, `referral.ts`, `kalshi.ts`, `perps.ts`, `profile.ts`
 - API clients in `src/lib/api/`: `referral.ts`, `kalshi.ts`
 - Specialized components in `src/components/Specialized/`: `PerpsPanel.tsx`, `PerpsPanel.module.css`, `ReferralCard.tsx`, `ReferralCard.module.css` (for Phase 15 integration)

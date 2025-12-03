@@ -1,0 +1,244 @@
+.window {
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  background: color-mix(in srgb, var(--palette-bg, #000000) 95%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid color-mix(in srgb, var(--palette-primary, #00d4ff) 30%, transparent);
+  border-radius: 8px;
+  box-shadow: 
+    0 8px 32px color-mix(in srgb, var(--palette-bg, #000000) 50%, transparent),
+    0 0 20px color-mix(in srgb, var(--palette-primary, #00d4ff) 15%, transparent);
+  overflow: hidden;
+  user-select: none;
+  transition: box-shadow 0.3s ease, border-color 0.3s ease, height 0.3s ease;
+  will-change: transform, opacity;
+  transform: translateZ(0);
+}
+
+.window.minimized {
+  height: 40px !important;
+  overflow: hidden;
+}
+
+.window:hover {
+  box-shadow: 
+    0 12px 40px rgba(0, 0, 0, 0.6),
+    0 0 30px color-mix(in srgb, var(--palette-primary, #00d4ff) 25%, transparent);
+  border-color: color-mix(in srgb, var(--palette-primary, #00d4ff) 50%, transparent);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: color-mix(in srgb, var(--palette-primary, #00d4ff) 8%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--palette-primary, #00d4ff) 20%, transparent);
+  cursor: move;
+  user-select: none;
+  flex-shrink: 0;
+  transition: background 0.3s ease;
+}
+
+.headerButtons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.header:hover {
+  background: color-mix(in srgb, var(--palette-primary, #00d4ff) 12%, transparent);
+}
+
+.title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--palette-primary, #00d4ff);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-family: "Courier New", monospace;
+  transition: color 0.3s ease;
+}
+
+.minimizeButton,
+.closeButton {
+  background: transparent;
+  border: none;
+  color: var(--palette-text, rgba(255, 255, 255, 0.7));
+  font-size: 20px;
+  line-height: 1;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  padding: 0;
+  margin: 0;
+  font-weight: bold;
+}
+
+.minimizeButton:hover {
+  background: color-mix(in srgb, var(--palette-primary, #00d4ff) 20%, transparent);
+  color: var(--palette-primary, #00d4ff);
+  transform: scale(1.1);
+}
+
+.minimizeButton:active {
+  transform: scale(0.95);
+}
+
+.closeButton {
+  font-size: 24px;
+}
+
+.closeButton:hover {
+  background: color-mix(in srgb, var(--palette-error, #ff6666) 20%, transparent);
+  color: var(--palette-error, #ff6666);
+  transform: scale(1.1);
+}
+
+.closeButton:active {
+  transform: scale(0.95);
+}
+
+.content {
+  flex: 1;
+  overflow: auto;
+  min-height: 0;
+  position: relative;
+}
+
+/* Hide close buttons in panels when inside draggable window */
+.content :global(.closeButton),
+.content :global([class*="closeButton"]),
+.content :global([class*="CloseButton"]) {
+  display: none !important;
+}
+
+.resizeHandle {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 20px;
+  height: 20px;
+  cursor: nwse-resize;
+  background: linear-gradient(
+    135deg,
+    transparent 0%,
+    transparent 40%,
+    color-mix(in srgb, var(--palette-primary, #00d4ff) 30%, transparent) 50%,
+    transparent 60%,
+    transparent 100%
+  );
+  z-index: 10;
+}
+
+.resizeHandle:hover {
+  background: linear-gradient(
+    135deg,
+    transparent 0%,
+    transparent 40%,
+    color-mix(in srgb, var(--palette-primary, #00d4ff) 60%, transparent) 50%,
+    transparent 60%,
+    transparent 100%
+  );
+}
+
+/* CRT Theme Overrides */
+:global(body.theme-crt) .window {
+  background: rgba(0, 0, 0, 0.95) !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+:global(body.theme-crt) .window:hover {
+  box-shadow: none !important;
+  border: none !important;
+}
+
+:global(body.theme-crt) .header {
+  background: rgba(0, 0, 0, 0.8) !important;
+  border: none !important;
+  border-bottom: 1px solid color-mix(in srgb, var(--palette-primary, #00ff00) 30%, transparent) !important;
+}
+
+:global(body.theme-crt) .header:hover {
+  background: rgba(0, 0, 0, 0.9) !important;
+}
+
+:global(body.theme-crt) .title {
+  color: var(--palette-primary, #00ff00) !important;
+  text-shadow: 
+    0 0 5px color-mix(in srgb, var(--palette-primary, #00ff00) 50%, transparent),
+    0 0 10px color-mix(in srgb, var(--palette-primary, #00ff00) 30%, transparent);
+}
+
+:global(body.theme-crt) .closeButton {
+  color: var(--palette-primary, #00ff00) !important;
+  text-shadow: 
+    0 0 5px color-mix(in srgb, var(--palette-primary, #00ff00) 50%, transparent),
+    0 0 10px color-mix(in srgb, var(--palette-primary, #00ff00) 30%, transparent);
+}
+
+:global(body.theme-crt) .closeButton:hover {
+  background: rgba(0, 0, 0, 0.5) !important;
+  color: var(--palette-error, #ff4444) !important;
+  text-shadow: 
+    0 0 8px color-mix(in srgb, var(--palette-error, #ff4444) 80%, transparent),
+    0 0 15px color-mix(in srgb, var(--palette-error, #ff4444) 50%, transparent);
+}
+
+:global(body.theme-crt) .resizeHandle {
+  background: linear-gradient(
+    135deg,
+    transparent 0%,
+    transparent 40%,
+    color-mix(in srgb, var(--palette-primary, #00ff00) 30%, transparent) 50%,
+    transparent 60%,
+    transparent 100%
+  ) !important;
+}
+
+:global(body.theme-crt) .resizeHandle:hover {
+  background: linear-gradient(
+    135deg,
+    transparent 0%,
+    transparent 40%,
+    color-mix(in srgb, var(--palette-primary, #00ff00) 60%, transparent) 50%,
+    transparent 60%,
+    transparent 100%
+  ) !important;
+}
+
+/* Light mode overrides */
+:global(body.light-mode) .window {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border-color: color-mix(in srgb, var(--palette-primary, rgba(0, 81, 213, 1)) 30%, transparent) !important;
+}
+
+:global(body.light-mode) .header {
+  background: color-mix(in srgb, var(--palette-primary, rgba(0, 81, 213, 1)) 8%, transparent) !important;
+  border-bottom-color: color-mix(in srgb, var(--palette-primary, rgba(0, 81, 213, 1)) 20%, transparent) !important;
+}
+
+:global(body.light-mode) .title {
+  color: var(--palette-primary, rgba(0, 81, 213, 1)) !important;
+}
+
+:global(body.light-mode) .closeButton {
+  color: rgba(0, 0, 0, 0.7) !important;
+}
+
+:global(body.light-mode) .closeButton:hover {
+  background: color-mix(in srgb, var(--palette-error, #ff6666) 20%, transparent) !important;
+  color: var(--palette-error, #ff6666) !important;
+}
+

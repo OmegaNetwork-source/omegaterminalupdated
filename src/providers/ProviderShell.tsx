@@ -144,6 +144,16 @@ const GlobalParlayBuilder = dynamic(
   }
 );
 
+const GlobalMediaWindows = dynamic(
+  () =>
+    import("@/components/Media/GlobalMediaWindows").then((mod) => ({
+      default: mod.GlobalMediaWindows,
+    })),
+  {
+    ssr: false,
+  }
+);
+
 export function ProviderShell({ children }: { children: ReactNode }) {
   return (
     <Suspense fallback={<ProvidersFallback />}>
@@ -160,6 +170,7 @@ export function ProviderShell({ children }: { children: ReactNode }) {
                           {children}
                           <GlobalGameModal />
                           <GlobalParlayBuilder />
+                          <GlobalMediaWindows />
                           <XmasSnowfall />
                         </TerminalProvider>
                       </ParlayProvider>

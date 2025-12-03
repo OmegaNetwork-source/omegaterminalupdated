@@ -21,6 +21,7 @@ export function YouTubePanel({ mobile = false }: YouTubePanelProps) {
     searchResults,
     initializeAPI,
     createPlayer,
+    resizePlayer,
     searchVideos,
     getDefaultChannelVideos,
     playVideo,
@@ -35,6 +36,7 @@ export function YouTubePanel({ mobile = false }: YouTubePanelProps) {
   const playerContainerRef = useRef<HTMLDivElement>(null);
   const [playerReady, setPlayerReady] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
+  const containerSizeRef = useRef({ width: 0, height: 0 });
 
   // Load minimized state from localStorage on mount (mobile only)
   useEffect(() => {
@@ -104,6 +106,32 @@ export function YouTubePanel({ mobile = false }: YouTubePanelProps) {
     createPlayer,
     getDefaultChannelVideos,
   ]);
+
+  // Resize YouTube player when container size changes (for draggable window)
+  useEffect(() => {
+    if (!playerContainerRef.current || !playerReady) return;
+
+    const resizeObserver = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        const { width, height } = entry.contentRect;
+        const currentSize = containerSizeRef.current;
+        
+        // Only resize if size actually changed significantly (avoid unnecessary resizes)
+        if (Math.abs(width - currentSize.width) > 5 || Math.abs(height - currentSize.height) > 5) {
+          containerSizeRef.current = { width, height };
+          
+          // Call resize method to update player size
+          resizePlayer();
+        }
+      }
+    });
+
+    resizeObserver.observe(playerContainerRef.current);
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, [playerReady, resizePlayer]);
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();

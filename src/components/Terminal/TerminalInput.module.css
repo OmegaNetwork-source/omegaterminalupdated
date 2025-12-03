@@ -30,8 +30,8 @@
 .inputSectionMobile {
   width: 100%;
   margin: 0;
-  padding: 10px 14px;
-  padding-bottom: max(12px, calc(12px + env(safe-area-inset-bottom, 0px)));
+  padding: 6px 10px;
+  padding-bottom: max(8px, calc(8px + env(safe-area-inset-bottom, 0px)));
   border-radius: 0;
   background: transparent;
   backdrop-filter: none;
@@ -42,7 +42,7 @@
   min-height: auto;
   max-height: none;
   flex-direction: column;
-  gap: 10px;
+  gap: 6px;
   align-items: stretch;
   justify-content: stretch;
 }
@@ -591,7 +591,7 @@
 
 @media (max-width: 768px) {
   .inputLine {
-    gap: 8px;
+    gap: 6px;
   }
 
   .input {
@@ -609,17 +609,17 @@
 
 @media (max-width: 480px) {
   .inputSection {
-    padding: 8px 12px; /* Consistent padding */
-    padding-bottom: max(8px, calc(8px + env(safe-area-inset-bottom)));
-    min-height: 55px; /* Consistent height for keyboard positioning */
-    max-height: 60px; /* Consistent max height */
+    padding: 6px 10px; /* Compact padding */
+    padding-bottom: max(6px, calc(6px + env(safe-area-inset-bottom)));
+    min-height: 50px; /* Reduced height for compactness */
+    max-height: 55px; /* Reduced max height */
     height: auto;
   }
 
   .inputLine {
     flex-wrap: nowrap;
-    gap: 8px;
-    padding: 8px 12px;
+    gap: 6px;
+    padding: 6px 10px;
   }
 
   .prompt {
@@ -697,4 +697,98 @@
 
 .iosOptimized {
   height: -webkit-fill-available;
+}
+
+/* -----------------------------------------------------------------------------
+   CRT Theme Overrides - Remove all borders
+   ----------------------------------------------------------------------------- */
+
+:global(body.theme-crt) .inputSection {
+  background: transparent !important;
+  border: none !important;
+  border-top: 1px solid rgba(0, 255, 0, 0.2) !important;
+  border-radius: 0 !important;
+  padding: 12px 16px !important;
+  color: #00ff00 !important;
+  text-shadow: 
+    0 0 5px rgba(0, 255, 0, 0.5),
+    0 0 10px rgba(0, 255, 0, 0.3);
+}
+
+:global(body.theme-crt) .inputSectionMobile {
+  border: none !important;
+  background: transparent !important;
+  border-top: 1px solid rgba(0, 255, 0, 0.2) !important;
+}
+
+:global(body.theme-crt) .inputLine {
+  background: rgba(0, 0, 0, 0.8) !important;
+  border: 1px solid rgba(0, 255, 0, 0.3) !important;
+  border-radius: 0 !important;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  box-shadow: 
+    0 0 8px rgba(0, 255, 0, 0.2),
+    inset 0 0 8px rgba(0, 255, 0, 0.1);
+}
+
+:global(body.theme-crt) .inputLine:focus-within {
+  border-color: rgba(0, 255, 0, 0.6) !important;
+  box-shadow: 
+    0 0 15px rgba(0, 255, 0, 0.4),
+    inset 0 0 15px rgba(0, 255, 0, 0.15);
+}
+
+:global(body.theme-crt) .prompt {
+  color: #00ff00 !important;
+  text-shadow: 
+    0 0 5px rgba(0, 255, 0, 0.5),
+    0 0 10px rgba(0, 255, 0, 0.3);
+}
+
+:global(body.theme-crt) .input {
+  background: transparent !important;
+  border: none !important;
+  color: #00ff00 !important;
+  text-shadow: 
+    0 0 5px rgba(0, 255, 0, 0.5),
+    0 0 10px rgba(0, 255, 0, 0.3);
+}
+
+:global(body.theme-crt) .input::placeholder {
+  color: rgba(0, 255, 0, 0.4) !important;
+}
+
+:global(body.theme-crt) .input:focus {
+  outline: none !important;
+}
+
+:global(body.theme-crt) .suggestions {
+  background: rgba(0, 0, 0, 0.9) !important;
+  border: 1px solid rgba(0, 255, 0, 0.3) !important;
+  border-radius: 0 !important;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  box-shadow: 
+    0 0 20px rgba(0, 255, 0, 0.2),
+    inset 0 0 20px rgba(0, 255, 0, 0.1);
+}
+
+:global(body.theme-crt) .suggestionItem {
+  background: transparent !important;
+  border: none !important;
+  border-bottom: 1px solid rgba(0, 255, 0, 0.15) !important;
+  color: #00ff00 !important;
+  text-shadow: 
+    0 0 5px rgba(0, 255, 0, 0.5),
+    0 0 10px rgba(0, 255, 0, 0.3);
+}
+
+:global(body.theme-crt) .suggestionItem:hover,
+:global(body.theme-crt) .suggestionItem.selected {
+  background: rgba(0, 0, 0, 0.6) !important;
+  color: #39ff14 !important;
+  text-shadow: 
+    0 0 8px rgba(0, 255, 0, 0.8),
+    0 0 15px rgba(0, 255, 0, 0.5);
 }

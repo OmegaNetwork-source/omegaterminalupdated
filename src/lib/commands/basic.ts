@@ -1151,7 +1151,7 @@ export const helpCommand: Command = {
             font-size: 0.85em;
                font-family: 'Courier New', monospace;
           ">
-            Ω Terminal v3.0.0 - Modern Apple UI • Enhanced Analytics • DeFi Integration • NFT Trading
+            Ω Terminal v3.0.0 - Enhanced Analytics • DeFi Integration • NFT Trading
            </div>
          </div>
        </div>
@@ -1779,9 +1779,6 @@ export const quickActionsCommand: Command = {
       const actions = getQuickActions();
       const grouped = groupQuickActionsByCategory(actions);
 
-      context.log("⭐ Your Custom Quick Actions:", "info");
-      context.log("", "output");
-
       if (actions.length === 0) {
         context.log(
           "No custom quick actions set. Use 'quick-actions add' to add some!",
@@ -1790,23 +1787,29 @@ export const quickActionsCommand: Command = {
         return;
       }
 
+      // Build compact HTML for mobile-friendly display
+      let html = `<div style="font-family: monospace; line-height: 1.4;">`;
+      html += `<div style="color: var(--palette-primary, #00d4ff); font-weight: bold; margin-bottom: 8px;">⭐ Your Quick Actions</div>`;
+
       Object.entries(grouped).forEach(([category, categoryActions]) => {
-        context.log(`📁 ${category}:`, "output");
+        html += `<div style="margin-bottom: 10px;">`;
+        html += `<div style="color: var(--palette-primary, #00d4ff); font-size: 0.9em; margin-bottom: 4px;">📁 ${category}</div>`;
+
         categoryActions.forEach((action) => {
-          context.logHtml(
-            `  • ${createCommandLine(action.command, action.label)} ${
-              action.description ? `→ ${action.description}` : ""
-            }`
-          );
+          html += `  • ${createCommandLine(action.command, action.label)}`;
+          if (action.description) {
+            html += ` → ${action.description}`;
+          }
+          html += `<br>`;
         });
-        context.log("", "output");
+
+        html += `</div>`;
       });
 
-      context.log("💡 Click any command above to execute it", "info");
-      context.log(
-        "💡 Use 'quick-actions add <command> <label> [description]' to add more",
-        "info"
-      );
+      html += `<div style="color: var(--palette-muted, #888); font-size: 0.9em; margin-top: 10px;">💡 Click any command to execute • 'qa add' to add more</div>`;
+      html += `</div>`;
+
+      context.logHtml(html);
     } else if (subcommand === "add") {
       const command = args[2];
       if (!command) {
@@ -2008,8 +2011,14 @@ export const multiterminalCommand: Command = {
         context.log("❌ Invalid terminal mode", "error");
         const helpHtml = `
           <div style="margin: 8px 0;">
-            ${createCommandLine("multiterminal single", "Switch to single terminal mode")}
-            ${createCommandLine("multiterminal multi", "Switch to multi-terminal mode")}
+            ${createCommandLine(
+              "multiterminal single",
+              "Switch to single terminal mode"
+            )}
+            ${createCommandLine(
+              "multiterminal multi",
+              "Switch to multi-terminal mode"
+            )}
             ${createCommandLine("multiterminal toggle", "Toggle between modes")}
           </div>
         `;

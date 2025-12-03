@@ -696,6 +696,215 @@
 }
 
 /* -----------------------------------------------------------------------------
+   CRT Theme Overrides - Match exact retro terminal look
+   ----------------------------------------------------------------------------- */
+
+:global(body.theme-crt) .statsPanel {
+  background: #000000 !important;
+  border: none !important;
+  border-radius: 0 !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  padding: 16px !important;
+  color: var(--palette-primary, #00ff00) !important;
+  font-family: "Courier New", "Monaco", "Consolas", "Lucida Console", monospace !important;
+  font-size: 13px !important;
+  letter-spacing: 0.05em !important;
+  text-shadow: 
+    0 0 5px color-mix(in srgb, var(--palette-primary, #00ff00) 50%, transparent),
+    0 0 10px color-mix(in srgb, var(--palette-primary, #00ff00) 30%, transparent),
+    0 0 2px color-mix(in srgb, var(--palette-primary, #00ff00) 80%, transparent);
+  box-shadow: none !important;
+}
+
+:global(body.theme-crt) .statsPanel * {
+  color: var(--palette-primary, #00ff00) !important;
+  text-shadow: 
+    0 0 5px color-mix(in srgb, var(--palette-primary, #00ff00) 50%, transparent),
+    0 0 10px color-mix(in srgb, var(--palette-primary, #00ff00) 30%, transparent),
+    0 0 2px color-mix(in srgb, var(--palette-primary, #00ff00) 80%, transparent);
+}
+
+:global(body.theme-crt) .section {
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  padding: 12px 0 !important;
+  box-shadow: none !important;
+  margin-bottom: 16px !important;
+}
+
+:global(body.theme-crt) .header {
+  color: var(--palette-primary, #00ff00) !important;
+  border: none !important;
+  border-bottom: none !important;
+  text-shadow: 
+    0 0 5px color-mix(in srgb, var(--palette-primary, #00ff00) 50%, transparent),
+    0 0 10px color-mix(in srgb, var(--palette-primary, #00ff00) 30%, transparent);
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+:global(body.theme-crt) .sectionTitle {
+  color: var(--palette-primary, #00ff00) !important;
+  border: none !important;
+  border-bottom: none !important;
+  text-shadow: 
+    0 0 5px color-mix(in srgb, var(--palette-primary, #00ff00) 50%, transparent),
+    0 0 10px color-mix(in srgb, var(--palette-primary, #00ff00) 30%, transparent);
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+:global(body.theme-crt) .statLabel {
+  color: color-mix(in srgb, var(--palette-primary, #00ff00) 70%, transparent) !important;
+  text-shadow: 
+    0 0 5px color-mix(in srgb, var(--palette-primary, #00ff00) 40%, transparent),
+    0 0 10px color-mix(in srgb, var(--palette-primary, #00ff00) 20%, transparent);
+}
+
+:global(body.theme-crt) .statValue {
+  color: var(--palette-primary, #00ff00) !important;
+  text-shadow: 
+    0 0 5px color-mix(in srgb, var(--palette-primary, #00ff00) 50%, transparent),
+    0 0 10px color-mix(in srgb, var(--palette-primary, #00ff00) 30%, transparent);
+}
+
+:global(body.theme-crt) .statValueHighlight {
+  color: var(--palette-secondary, #39ff14) !important;
+  text-shadow: 
+    0 0 8px color-mix(in srgb, var(--palette-primary, #00ff00) 80%, transparent),
+    0 0 15px color-mix(in srgb, var(--palette-primary, #00ff00) 50%, transparent);
+}
+
+:global(body.theme-crt) .statValueMuted {
+  color: color-mix(in srgb, var(--palette-primary, #00ff00) 50%, transparent) !important;
+}
+
+:global(body.theme-crt) .chartPanel {
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  padding: 12px 0 !important;
+  box-shadow: none !important;
+}
+
+:global(body.theme-crt) .chartHeader {
+  border: none !important;
+  border-bottom: none !important;
+  color: var(--palette-primary, #00ff00) !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+:global(body.theme-crt) .chartSymbol {
+  color: var(--palette-primary, #00ff00) !important;
+  text-shadow: 
+    0 0 5px color-mix(in srgb, var(--palette-primary, #00ff00) 50%, transparent),
+    0 0 10px color-mix(in srgb, var(--palette-primary, #00ff00) 30%, transparent);
+}
+
+:global(body.theme-crt) .chartContainer {
+  background: rgba(0, 0, 0, 0.9) !important;
+  border: none !important;
+  border-radius: 0 !important;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+:global(body.theme-crt) .chartContainer:hover {
+  border: none !important;
+  box-shadow: none !important;
+}
+
+:global(body.theme-crt) .infoBar {
+  color: color-mix(in srgb, var(--palette-primary, #00ff00) 70%, transparent) !important;
+  text-shadow: 
+    0 0 5px color-mix(in srgb, var(--palette-primary, #00ff00) 40%, transparent),
+    0 0 10px color-mix(in srgb, var(--palette-primary, #00ff00) 20%, transparent);
+}
+
+:global(body.theme-crt) .activityEntry {
+  border: none !important;
+  border-bottom: none !important;
+  color: color-mix(in srgb, var(--palette-primary, #00ff00) 70%, transparent) !important;
+}
+
+:global(body.theme-crt) .activityEntryRecent {
+  color: var(--palette-secondary, #39ff14) !important;
+  text-shadow: 
+    0 0 8px color-mix(in srgb, var(--palette-primary, #00ff00) 80%, transparent),
+    0 0 15px color-mix(in srgb, var(--palette-primary, #00ff00) 50%, transparent);
+}
+
+:global(body.theme-crt) .activityEntryOld {
+  color: color-mix(in srgb, var(--palette-primary, #00ff00) 40%, transparent) !important;
+}
+
+:global(body.theme-crt) .progressBar {
+  background: rgba(0, 0, 0, 0.8) !important;
+  border: none !important;
+  border-radius: 0 !important;
+}
+
+:global(body.theme-crt) .progressTrack {
+  background: color-mix(in srgb, var(--palette-primary, #00ff00) 10%, transparent) !important;
+}
+
+:global(body.theme-crt) .progressFill {
+  background: linear-gradient(90deg, var(--palette-primary, #00ff00), var(--palette-secondary, #39ff14)) !important;
+  box-shadow: none !important;
+}
+
+:global(body.theme-crt) .progressText {
+  color: color-mix(in srgb, var(--palette-primary, #00ff00) 70%, transparent) !important;
+  text-shadow: 
+    0 0 5px color-mix(in srgb, var(--palette-primary, #00ff00) 40%, transparent),
+    0 0 10px color-mix(in srgb, var(--palette-primary, #00ff00) 20%, transparent);
+}
+
+:global(body.theme-crt) .statsPanel::-webkit-scrollbar {
+  width: 8px;
+  background: rgba(0, 0, 0, 0.8);
+}
+
+:global(body.theme-crt) .statsPanel::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--palette-primary, #00ff00) 30%, transparent);
+  border: none !important;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+:global(body.theme-crt) .statsPanel::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in srgb, var(--palette-primary, #00ff00) 50%, transparent);
+  box-shadow: none !important;
+}
+
+:global(body.theme-crt) .statsPanel::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.9);
+  border: none !important;
+}
+
+:global(body.theme-crt) .mediaSection {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+:global(body.theme-crt) .mediaSection .mediaPanelWrapper :global(.panel) {
+  background: rgba(0, 0, 0, 0.9) !important;
+  border: none !important;
+  border-radius: 0 !important;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  box-shadow: none !important;
+}
+
+/* -----------------------------------------------------------------------------
    Light Palette Overrides - Ensure stats panel works with light background
    ----------------------------------------------------------------------------- */
 

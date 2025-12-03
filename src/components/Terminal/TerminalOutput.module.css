@@ -63,28 +63,34 @@
 
 @media (max-width: 768px) {
   .container {
-    padding: 12px 16px;
+    padding: 8px 10px;
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 6px;
   }
 
   .line {
     max-width: 90%;
-    padding: 12px 16px;
-    border-radius: 16px;
+    padding: 6px 10px;
+    border-radius: 12px;
     margin-bottom: 0;
     word-break: break-word;
-    font-size: 14px;
-    line-height: 1.5;
+    font-size: 12px;
+    line-height: 1.4;
     position: relative;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Hide empty lines on mobile to avoid empty bubbles */
+  .line:empty,
+  .line.output:empty {
+    display: none;
   }
 
   /* User Commands (Right side) */
   .line.command {
     align-self: flex-end;
-    max-width: 60%;
+    max-width: 75%;
     background: color-mix(
       in srgb,
       var(--palette-primary, #00d4ff) 25%,
@@ -101,7 +107,7 @@
 
   .line.command .prompt {
     display: inline-block;
-    margin-right: 8px;
+    margin-right: 4px;
     opacity: 0.8;
   }
 
@@ -173,16 +179,41 @@
     border: none;
     padding: 0;
     box-shadow: none;
-    margin-bottom: 8px;
+    margin-bottom: 4px;
   }
 
-  /* Adjust code blocks within messages */
+  /* Mobile-optimized HTML content - minimal override since optimizer handles it */
+  .line.html :global(div) {
+    max-width: 100%;
+  }
+
+  /* Ensure clickable elements are touch-friendly */
+  .line.html :global(.omega-help-command),
+  .line.html :global(.omega-execute-command) {
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: rgba(0, 212, 255, 0.2);
+    transition: opacity 0.15s ease;
+  }
+
+  .line.html :global(.omega-help-command):active,
+  .line.html :global(.omega-execute-command):active {
+    opacity: 0.7;
+  }
+
+  /* Code blocks */
   .codeBlock {
     background: rgba(0, 0, 0, 0.3);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    margin: 8px 0;
-    padding: 10px;
-    font-size: 12px;
+    margin: 2px 0;
+    padding: 4px 6px;
+    font-size: 10px;
+    overflow-x: auto;
+  }
+
+  /* Links */
+  .line.html :global(a) {
+    word-break: break-all;
   }
 }
 
@@ -191,7 +222,7 @@
    ----------------------------------------------------------------------------- */
 
 .line {
-  margin-bottom: 5px;
+  margin-bottom: 3px;
   word-wrap: break-word;
 }
 
@@ -921,4 +952,394 @@
 :global(body.light-mode) .omega-terminal-swap-card__link:hover {
   color: rgba(15, 125, 255, 0.95);
   border-color: rgba(15, 125, 255, 0.4);
+}
+
+/* -----------------------------------------------------------------------------
+   CRT Theme Overrides - Remove all borders, match retro terminal look
+   ----------------------------------------------------------------------------- */
+
+:global(body.theme-crt) .container {
+  background: var(--palette-bg, #000000) !important;
+  border: none !important;
+  padding: 16px !important;
+  color: var(--palette-primary, #00ff00) !important;
+  font-family: "Courier New", "Monaco", "Consolas", "Lucida Console", monospace !important;
+  text-shadow: 
+    0 0 5px color-mix(in srgb, var(--palette-primary, #00ff00) 50%, transparent),
+    0 0 10px color-mix(in srgb, var(--palette-primary, #00ff00) 30%, transparent),
+    0 0 2px color-mix(in srgb, var(--palette-primary, #00ff00) 80%, transparent);
+}
+
+:global(body.theme-crt) .container * {
+  color: var(--palette-primary, #00ff00) !important;
+  text-shadow: 
+    0 0 5px color-mix(in srgb, var(--palette-primary, #00ff00) 50%, transparent),
+    0 0 10px color-mix(in srgb, var(--palette-primary, #00ff00) 30%, transparent),
+    0 0 2px color-mix(in srgb, var(--palette-primary, #00ff00) 80%, transparent);
+}
+
+/* White palette overrides for CRT terminal output */
+:global(body.theme-crt[data-color-palette="white"]) .container {
+  background: #ffffff !important;
+  color: #000000 !important;
+  text-shadow: none !important;
+}
+
+:global(body.theme-crt[data-color-palette="white"]) .container * {
+  color: #000000 !important;
+  text-shadow: none !important;
+}
+
+:global(body.theme-crt[data-color-palette="white"]) .line {
+  color: #000000 !important;
+  text-shadow: none !important;
+}
+
+:global(body.theme-crt[data-color-palette="white"]) .line.command {
+  color: #1e3a8a !important;
+  text-shadow: none !important;
+}
+
+:global(body.theme-crt[data-color-palette="white"]) .line.output {
+  color: #000000 !important;
+  text-shadow: none !important;
+}
+
+:global(body.theme-crt[data-color-palette="white"]) .line.error {
+  color: #dc2626 !important;
+  text-shadow: none !important;
+}
+
+:global(body.theme-crt[data-color-palette="white"]) .line.success {
+  color: #059669 !important;
+  text-shadow: none !important;
+}
+
+:global(body.theme-crt[data-color-palette="white"]) .line.info {
+  color: #1e40af !important;
+  text-shadow: none !important;
+}
+
+:global(body.theme-crt[data-color-palette="white"]) .line.warning {
+  color: #d97706 !important;
+  text-shadow: none !important;
+}
+
+:global(body.theme-crt[data-color-palette="white"]) .prompt {
+  color: #1e3a8a !important;
+  text-shadow: none !important;
+}
+
+:global(body.theme-crt) .container::-webkit-scrollbar {
+  width: 8px;
+  background: rgba(0, 0, 0, 0.8);
+}
+
+:global(body.theme-crt) .container::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--palette-primary, #00ff00) 30%, transparent) !important;
+  border: none !important;
+  border-radius: 0;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+:global(body.theme-crt) .container::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in srgb, var(--palette-primary, #00ff00) 50%, transparent) !important;
+  box-shadow: none !important;
+}
+
+:global(body.theme-crt) .container::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.9);
+  border: none !important;
+}
+
+:global(body.theme-crt) .line {
+  border: none !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  color: var(--palette-primary, #00ff00) !important;
+  text-shadow: 
+    0 0 5px color-mix(in srgb, var(--palette-primary, #00ff00) 50%, transparent),
+    0 0 10px color-mix(in srgb, var(--palette-primary, #00ff00) 30%, transparent);
+  box-shadow: none !important;
+}
+
+:global(body.theme-crt) .line.command {
+  background: transparent !important;
+  border: none !important;
+  color: var(--palette-primary, #00ff00) !important;
+  text-shadow: 
+    0 0 5px color-mix(in srgb, var(--palette-primary, #00ff00) 50%, transparent),
+    0 0 10px color-mix(in srgb, var(--palette-primary, #00ff00) 30%, transparent);
+}
+
+:global(body.theme-crt) .line.output {
+  background: transparent !important;
+  border: none !important;
+  color: var(--palette-primary, #00ff00) !important;
+  text-shadow: 
+    0 0 5px color-mix(in srgb, var(--palette-primary, #00ff00) 50%, transparent),
+    0 0 10px color-mix(in srgb, var(--palette-primary, #00ff00) 30%, transparent);
+}
+
+:global(body.theme-crt) .line.error {
+  background: transparent !important;
+  border: none !important;
+  color: var(--palette-error, #ff4444) !important;
+  text-shadow: 
+    0 0 5px color-mix(in srgb, var(--palette-error, #ff4444) 50%, transparent),
+    0 0 10px color-mix(in srgb, var(--palette-error, #ff4444) 30%, transparent);
+}
+
+:global(body.theme-crt) .line.success {
+  background: transparent !important;
+  border: none !important;
+  color: var(--palette-success, #16c782) !important;
+  text-shadow: 
+    0 0 5px color-mix(in srgb, var(--palette-success, #16c782) 50%, transparent),
+    0 0 10px color-mix(in srgb, var(--palette-success, #16c782) 30%, transparent);
+}
+
+:global(body.theme-crt) .line.info {
+  background: transparent !important;
+  border: none !important;
+  color: color-mix(in srgb, var(--palette-primary, #00ff00) 70%, transparent) !important;
+  text-shadow: 
+    0 0 5px color-mix(in srgb, var(--palette-primary, #00ff00) 40%, transparent),
+    0 0 10px color-mix(in srgb, var(--palette-primary, #00ff00) 20%, transparent);
+}
+
+:global(body.theme-crt) .line.warning {
+  background: transparent !important;
+  border: none !important;
+  color: var(--palette-warning, #f2b705) !important;
+  text-shadow: 
+    0 0 5px color-mix(in srgb, var(--palette-warning, #f2b705) 50%, transparent),
+    0 0 10px color-mix(in srgb, var(--palette-warning, #f2b705) 30%, transparent);
+}
+
+/* Prompt styling for CRT theme */
+:global(body.theme-crt) .prompt {
+  color: var(--palette-primary, #00ff00) !important;
+  text-shadow: 
+    0 0 5px color-mix(in srgb, var(--palette-primary, #00ff00) 50%, transparent),
+    0 0 10px color-mix(in srgb, var(--palette-primary, #00ff00) 30%, transparent);
+}
+
+/* Code blocks for CRT theme */
+:global(body.theme-crt) .codeBlock,
+:global(body.theme-crt) .lineHtml :global(code),
+:global(body.theme-crt) .lineHtml :global(pre) {
+  background: rgba(0, 0, 0, 0.8) !important;
+  border: none !important;
+  border-radius: 0 !important;
+  color: var(--palette-primary, #00ff00) !important;
+  text-shadow: 
+    0 0 5px color-mix(in srgb, var(--palette-primary, #00ff00) 50%, transparent),
+    0 0 10px color-mix(in srgb, var(--palette-primary, #00ff00) 30%, transparent);
+  box-shadow: none !important;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+/* Copyable links for CRT theme */
+:global(body.theme-crt) .copyable {
+  color: var(--palette-primary, #00ff00) !important;
+  text-shadow: 
+    0 0 5px color-mix(in srgb, var(--palette-primary, #00ff00) 50%, transparent),
+    0 0 10px color-mix(in srgb, var(--palette-primary, #00ff00) 30%, transparent);
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  border-bottom: none !important;
+}
+
+:global(body.theme-crt) .copyable:hover {
+  color: var(--palette-secondary, #39ff14) !important;
+  text-shadow: 
+    0 0 8px color-mix(in srgb, var(--palette-primary, #00ff00) 80%, transparent),
+    0 0 15px color-mix(in srgb, var(--palette-primary, #00ff00) 50%, transparent);
+}
+
+/* Tables for CRT theme */
+:global(body.theme-crt) .table {
+  background: rgba(0, 0, 0, 0.8) !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+:global(body.theme-crt) .tableRow {
+  border: none !important;
+  border-bottom: none !important;
+  background: transparent !important;
+}
+
+:global(body.theme-crt) .tableRow:hover {
+  background: rgba(0, 0, 0, 0.5) !important;
+}
+
+:global(body.theme-crt) .tableCell {
+  color: var(--palette-primary, #00ff00) !important;
+  text-shadow: 
+    0 0 5px color-mix(in srgb, var(--palette-primary, #00ff00) 50%, transparent),
+    0 0 10px color-mix(in srgb, var(--palette-primary, #00ff00) 30%, transparent);
+  border: none !important;
+}
+
+:global(body.theme-crt) .tableHeader {
+  color: var(--palette-primary, #00ff00) !important;
+  text-shadow: 
+    0 0 5px color-mix(in srgb, var(--palette-primary, #00ff00) 50%, transparent),
+    0 0 10px color-mix(in srgb, var(--palette-primary, #00ff00) 30%, transparent);
+  border: none !important;
+  background: transparent !important;
+}
+
+/* Preformatted text for CRT theme */
+:global(body.theme-crt) .preformatted {
+  background: rgba(0, 0, 0, 0.8) !important;
+  border: none !important;
+  border-radius: 0 !important;
+  color: var(--palette-primary, #00ff00) !important;
+  text-shadow: 
+    0 0 5px color-mix(in srgb, var(--palette-primary, #00ff00) 50%, transparent),
+    0 0 10px color-mix(in srgb, var(--palette-primary, #00ff00) 30%, transparent);
+  box-shadow: none !important;
+}
+
+/* HTML content for CRT theme */
+:global(body.theme-crt) .line.html {
+  background: transparent !important;
+  border: none !important;
+  color: var(--palette-primary, #00ff00) !important;
+  text-shadow: 
+    0 0 5px color-mix(in srgb, var(--palette-primary, #00ff00) 50%, transparent),
+    0 0 10px color-mix(in srgb, var(--palette-primary, #00ff00) 30%, transparent);
+  box-shadow: none !important;
+}
+
+/* Line timestamp for CRT theme */
+:global(body.theme-crt) .lineTimestamp {
+  color: color-mix(in srgb, var(--palette-primary, #00ff00) 50%, transparent) !important;
+  text-shadow: 
+    0 0 3px color-mix(in srgb, var(--palette-primary, #00ff00) 30%, transparent),
+    0 0 6px color-mix(in srgb, var(--palette-primary, #00ff00) 15%, transparent);
+}
+
+/* Global overrides for HTML content in CRT theme - targets inline styles */
+:global(body.theme-crt) .line.html *,
+:global(body.theme-crt) .line.html div,
+:global(body.theme-crt) .line.html span,
+:global(body.theme-crt) .line.html p,
+:global(body.theme-crt) .line.html code,
+:global(body.theme-crt) .line.html pre {
+  color: var(--palette-primary, #00ff00) !important;
+  text-shadow: 
+    0 0 5px color-mix(in srgb, var(--palette-primary, #00ff00) 50%, transparent),
+    0 0 10px color-mix(in srgb, var(--palette-primary, #00ff00) 30%, transparent) !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
+
+/* Override borders and backgrounds in HTML content */
+:global(body.theme-crt) .line.html [style*="border"],
+:global(body.theme-crt) .line.html [style*="background"] {
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+/* Buttons and clickable elements in HTML content */
+:global(body.theme-crt) .line.html button,
+:global(body.theme-crt) .line.html a,
+:global(body.theme-crt) .line.html [class*="button"],
+:global(body.theme-crt) .line.html [class*="Button"] {
+  background: rgba(0, 0, 0, 0.7) !important;
+  border: none !important;
+  border-radius: 0 !important;
+  color: var(--palette-primary, #00ff00) !important;
+  text-shadow: 
+    0 0 5px color-mix(in srgb, var(--palette-primary, #00ff00) 50%, transparent),
+    0 0 10px color-mix(in srgb, var(--palette-primary, #00ff00) 30%, transparent) !important;
+  box-shadow: none !important;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+:global(body.theme-crt) .line.html button:hover,
+:global(body.theme-crt) .line.html a:hover {
+  background: rgba(0, 0, 0, 0.9) !important;
+  color: var(--palette-secondary, #39ff14) !important;
+  text-shadow: 
+    0 0 8px color-mix(in srgb, var(--palette-primary, #00ff00) 80%, transparent),
+    0 0 15px color-mix(in srgb, var(--palette-primary, #00ff00) 50%, transparent) !important;
+}
+
+/* Tables in HTML content */
+:global(body.theme-crt) .line.html table,
+:global(body.theme-crt) .line.html .table {
+  background: transparent !important;
+  border: none !important;
+  border-collapse: collapse !important;
+}
+
+:global(body.theme-crt) .line.html th,
+:global(body.theme-crt) .line.html td,
+:global(body.theme-crt) .line.html .tableCell,
+:global(body.theme-crt) .line.html .tableHeader {
+  border: none !important;
+  background: transparent !important;
+  color: var(--palette-primary, #00ff00) !important;
+  text-shadow: 
+    0 0 5px color-mix(in srgb, var(--palette-primary, #00ff00) 50%, transparent),
+    0 0 10px color-mix(in srgb, var(--palette-primary, #00ff00) 30%, transparent) !important;
+}
+
+/* Headers and titles in HTML content */
+:global(body.theme-crt) .line.html h1,
+:global(body.theme-crt) .line.html h2,
+:global(body.theme-crt) .line.html h3,
+:global(body.theme-crt) .line.html h4,
+:global(body.theme-crt) .line.html h5,
+:global(body.theme-crt) .line.html h6 {
+  color: var(--palette-primary, #00ff00) !important;
+  text-shadow: 
+    0 0 8px color-mix(in srgb, var(--palette-primary, #00ff00) 80%, transparent),
+    0 0 15px color-mix(in srgb, var(--palette-primary, #00ff00) 50%, transparent) !important;
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+/* Lists in HTML content */
+:global(body.theme-crt) .line.html ul,
+:global(body.theme-crt) .line.html ol,
+:global(body.theme-crt) .line.html li {
+  color: var(--palette-primary, #00ff00) !important;
+  text-shadow: 
+    0 0 5px color-mix(in srgb, var(--palette-primary, #00ff00) 50%, transparent),
+    0 0 10px color-mix(in srgb, var(--palette-primary, #00ff00) 30%, transparent) !important;
+  border: none !important;
+  background: transparent !important;
+}
+
+/* Help command specific styles */
+:global(body.theme-crt) .line.html .omega-help-command {
+  color: var(--palette-secondary, #39ff14) !important;
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  text-shadow: 
+    0 0 5px color-mix(in srgb, var(--palette-secondary, #39ff14) 50%, transparent),
+    0 0 10px color-mix(in srgb, var(--palette-secondary, #39ff14) 30%, transparent) !important;
+  box-shadow: none !important;
+}
+
+:global(body.theme-crt) .line.html .omega-help-command:hover {
+  background: rgba(0, 0, 0, 0.5) !important;
+  text-shadow: 
+    0 0 8px color-mix(in srgb, var(--palette-secondary, #39ff14) 80%, transparent),
+    0 0 15px color-mix(in srgb, var(--palette-secondary, #39ff14) 50%, transparent) !important;
 }

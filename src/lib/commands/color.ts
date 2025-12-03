@@ -41,6 +41,7 @@ const COLOR_PALETTES: Record<string, string> = {
   infrared: "Infrared - Deep red and hot pink thermal vision",
   xmas: "Xmas - Classic Christmas red, green, and white festive spirit",
   light: "Light - White background with dark text and accents",
+  white: "White - Solid white background with black and dark blue text",
 };
 
 /**
@@ -157,6 +158,7 @@ function listPalettes(context: CommandContext): void {
 
   context.log("LIGHT MODE:", "info");
   context.log("  color light        Light - White background with dark text", "output");
+  context.log("  color white        White - Solid white background with black and dark blue text", "output");
   context.log("", "output");
 
   context.log("WARM TONES:", "info");

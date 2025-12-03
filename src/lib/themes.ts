@@ -16,6 +16,7 @@ export const THEME_DESCRIPTIONS: Record<Theme, string> = {
   neo: "Neo Matrix - Digital rain with cyberpunk green glow",
   elite: "Elite Prestige - Luxury gold and premium serif typography",
   modern: "Modern Cyber - Futuristic glassmorphism with electric neon",
+  crt: "CRT Terminal - Classic green-on-black with glassmorphism text effects",
 };
 
 /**
@@ -41,6 +42,7 @@ export function getThemeClassNames(theme: Theme): string[] {
     neo: ["theme-matrix"], // Uses existing matrix theme CSS
     elite: ["theme-executive"], // Uses existing executive theme CSS
     modern: ["modern-ui-futuristic", "modern-terminal-ui"], // Uses existing modern theme CSS
+    crt: ["theme-crt"], // New CRT theme with glassmorphism
   };
 
   return themeClassMap[theme] || [`theme-${theme}`];

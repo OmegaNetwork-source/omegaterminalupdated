@@ -66,7 +66,8 @@ export type ColorPalette =
   | "radioactive"
   | "infrared"
   | "xmas"
-  | "light";
+  | "light"
+  | "white";
 
 /**
  * Visibility toggles for major dashboard panels.

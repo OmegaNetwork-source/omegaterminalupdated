@@ -10,7 +10,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: rgba(0, 0, 0, 0.3);
+  background: color-mix(in srgb, var(--palette-bg, #000000) 30%, transparent);
   flex-shrink: 0;
   position: relative;
   z-index: 10;
@@ -58,7 +58,7 @@
   align-items: center;
   gap: 6px;
   font-size: 11px;
-  color: rgba(255, 255, 255, 0.9);
+  color: var(--palette-text, rgba(255, 255, 255, 0.9));
   font-family: "Courier New", monospace;
   font-weight: 600;
   padding: 4px 10px;
@@ -77,7 +77,7 @@
   align-items: center;
   gap: 0;
   font-size: 11px;
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--palette-text, rgba(255, 255, 255, 0.7));
   font-family: "Courier New", monospace;
   font-weight: 600;
   letter-spacing: 0.5px;
@@ -127,7 +127,7 @@
   justify-content: center;
   width: 20px;
   height: 20px;
-  background: rgba(0, 0, 0, 0.9);
+  background: color-mix(in srgb, var(--palette-bg, #000000) 90%, transparent);
   border-radius: 50%;
   font-size: 14px;
   font-weight: bold;
@@ -302,11 +302,11 @@
 }
 
 :global(body.light-mode) .statusIndicator {
-  color: rgba(0, 0, 0, 0.7);
+  color: color-mix(in srgb, var(--palette-text, #000000) 70%, transparent);
 }
 
 :global(body.light-mode) .walletInfo {
-  color: rgba(0, 0, 0, 0.9);
+  color: color-mix(in srgb, var(--palette-text, #000000) 90%, transparent);
   background: color-mix(in srgb, var(--palette-primary, rgba(0, 81, 213, 1)) 5%, transparent);
   border-color: color-mix(in srgb, var(--palette-primary, rgba(0, 81, 213, 1)) 20%, transparent);
 }
@@ -412,4 +412,117 @@
   background: color-mix(in srgb, var(--palette-primary, rgba(0, 81, 213, 1)) 15%, transparent);
   border-color: var(--palette-primary, var(--cyber-blue, #0051d5));
   box-shadow: 0 0 10px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, rgba(0, 81, 213, 1)) 20%, transparent));
+}
+
+/* -----------------------------------------------------------------------------
+   CRT Theme Overrides - Remove all borders
+   ----------------------------------------------------------------------------- */
+
+:global(body.theme-crt) .terminalHeader {
+  background: rgba(0, 0, 0, 0.8) !important;
+  border: none !important;
+  border-bottom: 1px solid rgba(0, 255, 0, 0.2) !important;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  color: #00ff00 !important;
+  text-shadow: 
+    0 0 5px rgba(0, 255, 0, 0.5),
+    0 0 10px rgba(0, 255, 0, 0.3);
+}
+
+:global(body.theme-crt) .terminalHeader * {
+  color: #00ff00 !important;
+  text-shadow: 
+    0 0 5px rgba(0, 255, 0, 0.5),
+    0 0 10px rgba(0, 255, 0, 0.3);
+}
+
+:global(body.theme-crt) .terminalTitle {
+  background: linear-gradient(
+    135deg,
+    var(--palette-secondary, #39ff14) 0%,
+    var(--palette-primary, #00ff00) 50%,
+    var(--palette-secondary, #39ff14) 100%
+  ) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  color: var(--palette-primary, #00ff00) !important; /* Fallback */
+  text-shadow: 
+    0 0 8px color-mix(in srgb, var(--palette-secondary, #39ff14) 60%, transparent),
+    0 0 15px color-mix(in srgb, var(--palette-primary, #00ff00) 40%, transparent),
+    0 0 20px color-mix(in srgb, var(--palette-secondary, #39ff14) 25%, transparent);
+}
+
+/* Terminal title SVG/icon - Use accent color */
+:global(body.theme-crt) .terminalTitle svg,
+:global(body.theme-crt) .terminalTitle span:first-child {
+  color: var(--palette-secondary, #39ff14) !important;
+  filter: drop-shadow(0 0 4px color-mix(in srgb, var(--palette-secondary, #39ff14) 70%, transparent)) !important;
+}
+
+:global(body.theme-crt) .terminalTitle svg path,
+:global(body.theme-crt) .terminalTitle svg * {
+  fill: var(--palette-secondary, #39ff14) !important;
+  stroke: var(--palette-secondary, #39ff14) !important;
+  color: var(--palette-secondary, #39ff14) !important;
+}
+
+:global(body.theme-crt) .walletInfo {
+  background: rgba(0, 0, 0, 0.8) !important;
+  border: 1px solid rgba(0, 255, 0, 0.3) !important;
+  border-radius: 0 !important;
+  color: #00ff00 !important;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  text-shadow: 
+    0 0 5px rgba(0, 255, 0, 0.5),
+    0 0 10px rgba(0, 255, 0, 0.3);
+}
+
+:global(body.theme-crt) .statusIndicator {
+  color: rgba(0, 255, 0, 0.7) !important;
+  text-shadow: 
+    0 0 5px rgba(0, 255, 0, 0.4),
+    0 0 10px rgba(0, 255, 0, 0.2);
+}
+
+:global(body.theme-crt) .statusDot {
+  background: rgba(0, 255, 0, 0.5) !important;
+  box-shadow: 0 0 8px rgba(0, 255, 0, 0.5);
+}
+
+:global(body.theme-crt) .statusDot.statusConnected {
+  background: #39ff14 !important;
+  box-shadow: 0 0 12px rgba(57, 255, 20, 0.8);
+}
+
+:global(body.theme-crt) .terminalIconBtn {
+  background: rgba(0, 0, 0, 0.7) !important;
+  border: 1px solid rgba(0, 255, 0, 0.3) !important;
+  border-radius: 0 !important;
+  color: #00ff00 !important;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  text-shadow: 
+    0 0 5px rgba(0, 255, 0, 0.5),
+    0 0 10px rgba(0, 255, 0, 0.3);
+}
+
+:global(body.theme-crt) .terminalIconBtn:hover {
+  background: rgba(0, 0, 0, 0.9) !important;
+  border-color: rgba(0, 255, 0, 0.6) !important;
+  color: #39ff14 !important;
+  text-shadow: 
+    0 0 8px rgba(0, 255, 0, 0.8),
+    0 0 15px rgba(0, 255, 0, 0.5);
+}
+
+:global(body.theme-crt) .terminalIconBtn.active {
+  background: rgba(0, 0, 0, 0.9) !important;
+  border-color: rgba(0, 255, 0, 0.6) !important;
+  color: #39ff14 !important;
+  box-shadow: 
+    0 0 20px rgba(0, 255, 0, 0.4),
+    inset 0 0 20px rgba(0, 255, 0, 0.15);
 }
