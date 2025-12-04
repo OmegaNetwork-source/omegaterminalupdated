@@ -204,21 +204,10 @@ export const TerminalInput = forwardRef<TerminalInputRef, TerminalInputProps>(
               isMobile ? styles.inputLineMobile : ""
             }`}
           >
-            {!isMobile ? (
+            {!isMobile && (
               <span className={styles.prompt}>{TERMINAL_PROMPT}</span>
-            ) : (
-              <span
-                className={`${styles.prompt} ${styles.promptMinimal}`}
-                aria-hidden="true"
-              >
-                ›
-              </span>
             )}
-            <div
-              className={`${styles.inputFieldContainer} ${
-                isMobile ? styles.inputFieldContainerMobile : ""
-              }`}
-            >
+            <div className={styles.inputWrapper}>
               <input
                 ref={inputRef}
                 type="text"
@@ -231,22 +220,26 @@ export const TerminalInput = forwardRef<TerminalInputRef, TerminalInputProps>(
                 autoCapitalize="none"
                 autoCorrect="off"
                 spellCheck={false}
-                className={`${styles.input} ${
-                  isMobile ? styles.mobileInput : ""
-                }`}
+                className={styles.input}
                 inputMode="text"
               />
-              {isMobile && (
-                <button
-                  type="button"
-                  className={styles.sendButton}
-                  onClick={attemptSubmit}
-                  disabled={isSendDisabled}
-                  aria-label="Send command"
+              <button
+                type="button"
+                className={styles.sendButton}
+                onClick={attemptSubmit}
+                disabled={isSendDisabled}
+                aria-label="Send command"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  width="20"
+                  height="20"
                 >
-                  <span aria-hidden="true">➤</span>
-                </button>
-              )}
+                  <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
+                </svg>
+              </button>
             </div>
           </div>
         </div>

@@ -9,16 +9,14 @@
    ----------------------------------------------------------------------------- */
 
 .inputSection {
-  padding: 16px 24px;
+  padding: 16px 20px;
   background: transparent;
   border-top: 1px solid var(--palette-border, rgba(0, 212, 255, 0.15));
   display: flex;
   flex-direction: column;
   align-items: stretch;
   justify-content: flex-start;
-  gap: 12px;
   flex-shrink: 0;
-  min-height: 70px;
   width: 100%;
   box-sizing: border-box;
   position: relative;
@@ -28,75 +26,9 @@
 }
 
 .inputSectionMobile {
-  width: 100%;
-  margin: 0;
-  padding: 6px 10px;
-  padding-bottom: max(8px, calc(8px + env(safe-area-inset-bottom, 0px)));
-  border-radius: 0;
-  background: transparent;
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
-  border-top: none;
-  box-shadow: none;
-  box-sizing: border-box;
-  min-height: auto;
-  max-height: none;
-  flex-direction: column;
-  gap: 6px;
-  align-items: stretch;
-  justify-content: stretch;
-}
-
-@media (min-width: 769px) {
-  /* Basic mode overrides */
-  :global(.container:not(.embedded)) .inputSection {
-    border: 1px solid #ffffff !important;
-    padding: 15px !important;
-    background: rgba(255, 255, 255, 0.05) !important;
-    border-radius: 5px !important;
-    width: calc(100vw - 40px) !important;
-    min-width: calc(100vw - 40px) !important;
-    max-width: calc(100vw - 40px) !important;
-    border-top: none;
-  }
-
-  :global(.container:not(.embedded)) .inputSectionMobile {
-    border: none !important;
-    background: var(--palette-bg, rgba(0, 0, 0, 0.95)) !important;
-    border-radius: 0 !important;
-    padding: 8px 12px !important;
-    padding-bottom: max(
-      8px,
-      calc(8px + env(safe-area-inset-bottom))
-    ) !important;
-    width: 100% !important;
-    min-width: 100% !important;
-    max-width: 100% !important;
-  }
-
-  :global(.container:not(.embedded)) .inputLine {
-    background: none !important;
-    border: none !important;
-    padding: 0 !important;
-    border-radius: 0 !important;
-  }
-
-  :global(.container:not(.embedded)) .prompt {
-    color: #ffffff;
-    font-size: 16px;
-    margin-right: 10px;
-  }
-
-  :global(.container:not(.embedded)) .input {
-    color: #ffffff !important;
-    font-size: 16px !important;
-    padding: 0 !important;
-    padding-right: 50px !important;
-  }
-
-  :global(.container:not(.embedded)) .input::placeholder {
-    color: #555555;
-  }
+  padding: 12px 16px;
+  padding-bottom: max(12px, calc(12px + env(safe-area-inset-bottom, 0px)));
+  border-top: 1px solid var(--palette-border, rgba(0, 212, 255, 0.1));
 }
 
 .inputLine {
@@ -104,15 +36,11 @@
   align-items: center;
   gap: 12px;
   width: 100%;
-  padding: 0;
-  border: none;
-  background: transparent;
   box-sizing: border-box;
 }
 
 .inputLineMobile {
-  gap: 8px;
-  align-items: flex-end;
+  gap: 0;
 }
 
 .prompt {
@@ -126,116 +54,93 @@
   transition: color 0.3s ease;
 }
 
+/* Input Wrapper - Contains input and send button */
+.inputWrapper {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--palette-border, rgba(0, 212, 255, 0.25));
+  background: color-mix(
+    in srgb,
+    var(--palette-bg, #000) 85%,
+    var(--palette-primary, #00d4ff) 5%
+  );
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.inputWrapper:focus-within {
+  border-color: var(--palette-primary, #00d4ff);
+  background: color-mix(
+    in srgb,
+    var(--palette-bg, #000) 80%,
+    var(--palette-primary, #00d4ff) 8%
+  );
+  box-shadow: 0 0 0 2px
+    color-mix(in srgb, var(--palette-primary, #00d4ff) 15%, transparent);
+}
+
+/* Input Field */
 .input {
   flex: 1;
   width: 100%;
   min-width: 0;
   background: transparent;
   border: none;
-  color: var(--palette-primary, #00d4ff);
+  color: var(--palette-text, #ffffff);
   font-family: "Courier New", monospace;
   font-size: 14px;
   outline: none;
-  padding: 4px 0;
+  padding: 0;
   letter-spacing: 0.3px;
-  caret-color: var(--palette-primary, #00ffff) !important;
-  cursor: text;
-  text-align: left;
-  direction: ltr;
+  caret-color: var(--palette-primary, #00d4ff);
+  transition: color 0.3s ease;
+}
+
+.input::placeholder {
+  color: color-mix(in srgb, var(--palette-text, #ffffff) 40%, transparent);
   opacity: 1;
-  position: relative;
-  z-index: 1;
-  transition: color 0.3s ease, caret-color 0.3s ease;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
 }
 
-.mobileInput {
-  font-size: 16px;
-}
-
-.inputFieldContainer {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 16px;
-  border-radius: 14px;
-  border: 1px solid var(--palette-border, rgba(0, 212, 255, 0.2));
-  background: color-mix(
-    in srgb,
-    var(--palette-primary, #00bcf2) 6%,
-    transparent
-  );
-  transition: border-color 0.2s ease, box-shadow 0.2s ease,
-    background-color 0.2s ease;
-}
-
-.inputFieldContainer:focus-within {
-  border-color: var(--palette-primary, #00d4ff);
-  box-shadow: 0 0 0 2px
-    var(
-      --palette-primary-glow,
-      color-mix(in srgb, var(--palette-primary, #00bcf2) 18%, transparent)
-    );
-  background: color-mix(
-    in srgb,
-    var(--palette-primary, #00bcf2) 10%,
-    transparent
-  );
-}
-
-.inputFieldContainerMobile {
-  border-radius: 0 !important;
-  padding: 0 !important;
-  border: none !important;
-  background: transparent !important;
-  box-shadow: none !important;
-}
-
-.inputFieldContainerMobile:focus-within {
-  border: none !important;
-  box-shadow: none !important;
-  background: transparent !important;
-}
-
+/* Send Button */
 .sendButton {
-  min-width: 44px;
-  min-height: 44px;
-  border-radius: 999px;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
   border: none;
-  background: linear-gradient(
-    135deg,
-    var(--palette-primary, #00d4ff),
-    var(--palette-secondary, #00ff88)
-  );
-  color: #020617;
-  font-size: 16px;
-  font-weight: 600;
-  display: inline-flex;
+  background: var(--palette-primary, #00d4ff);
+  color: var(--palette-bg, #000);
+  display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.35);
-  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+  transition: all 0.2s ease;
+  padding: 0;
+}
+
+.sendButton:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--palette-primary, #00d4ff) 90%, #fff);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px
+    color-mix(in srgb, var(--palette-primary, #00d4ff) 30%, transparent);
+}
+
+.sendButton:active:not(:disabled) {
+  transform: scale(0.95);
 }
 
 .sendButton:disabled {
-  opacity: 0.4;
+  opacity: 0.3;
   cursor: not-allowed;
-  box-shadow: none;
 }
 
-.sendButton:not(:disabled):active {
-  transform: scale(0.96);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
-}
-
-.promptMinimal {
-  font-size: 20px;
-  font-weight: 600;
-  color: var(--palette-primary, #00d4ff);
-  margin-right: 2px;
+.sendButton svg {
+  width: 20px;
+  height: 20px;
 }
 
 .input::placeholder {
@@ -362,19 +267,27 @@
    Theme Variants (global selectors)
    ----------------------------------------------------------------------------- */
 
-:global(body.theme-executive) .inputSection {
-  background: color-mix(
+:global(body.theme-executive) .inputWrapper {
+  border-color: color-mix(
     in srgb,
-    var(--palette-bg, rgba(12, 12, 18, 1)) 92%,
+    var(--palette-primary, rgba(255, 215, 0, 1)) 30%,
     transparent
   );
-  border: 1px solid
+  background: color-mix(
+    in srgb,
+    var(--palette-bg, rgba(12, 12, 18, 1)) 85%,
+    var(--palette-primary, rgba(255, 215, 0, 1)) 5%
+  );
+}
+
+:global(body.theme-executive) .inputWrapper:focus-within {
+  border-color: var(--palette-primary, rgba(255, 215, 0, 1));
+  box-shadow: 0 0 0 2px
     color-mix(
       in srgb,
-      var(--palette-primary, rgba(255, 215, 0, 1)) 30%,
+      var(--palette-primary, rgba(255, 215, 0, 1)) 15%,
       transparent
     );
-  color: var(--palette-text, rgba(245, 238, 220, 0.92));
 }
 
 :global(body.theme-executive) .prompt {
@@ -382,39 +295,34 @@
 }
 
 :global(body.theme-executive) .input {
-  color: var(--palette-primary, rgba(255, 215, 0, 0.95));
+  color: var(--palette-text, rgba(245, 238, 220, 0.92));
 }
 
-:global(body.theme-executive) .input::placeholder {
-  color: color-mix(
+:global(body.theme-executive) .sendButton {
+  background: var(--palette-primary, rgba(255, 215, 0, 1));
+  color: var(--palette-bg, rgba(12, 12, 18, 1));
+}
+
+:global(body.theme-modern) .inputWrapper {
+  border-color: color-mix(
     in srgb,
-    var(--palette-primary, rgba(255, 215, 0, 1)) 45%,
+    var(--palette-primary, rgba(98, 0, 255, 1)) 30%,
     transparent
   );
+  background: color-mix(
+    in srgb,
+    var(--palette-bg, rgba(18, 20, 36, 1)) 85%,
+    var(--palette-primary, rgba(98, 0, 255, 1)) 5%
+  );
 }
 
-:global(body.theme-modern) .inputSection {
-  background: linear-gradient(
-    160deg,
-    color-mix(in srgb, var(--palette-bg, rgba(18, 20, 36, 1)) 92%, transparent)
-      0%,
-    color-mix(in srgb, var(--palette-bg, rgba(12, 15, 28, 1)) 92%, transparent)
-      100%
-  );
-  border: 1px solid
+:global(body.theme-modern) .inputWrapper:focus-within {
+  border-color: var(--palette-primary, rgba(98, 0, 255, 1));
+  box-shadow: 0 0 0 2px
     color-mix(
       in srgb,
-      var(--palette-primary, rgba(98, 0, 255, 1)) 40%,
+      var(--palette-primary, rgba(98, 0, 255, 1)) 15%,
       transparent
-    );
-  box-shadow: 0 24px 48px
-    var(
-      --palette-primary-glow,
-      color-mix(
-        in srgb,
-        var(--palette-primary, rgba(98, 0, 255, 1)) 18%,
-        transparent
-      )
     );
 }
 
@@ -426,24 +334,29 @@
   color: var(--palette-text, rgba(220, 220, 245, 0.95));
 }
 
-:global(body.theme-modern) .input::placeholder {
-  color: color-mix(
+:global(body.theme-modern) .sendButton {
+  background: var(--palette-primary, rgba(98, 0, 255, 1));
+}
+
+:global(body.theme-matrix) .inputWrapper {
+  border-color: color-mix(
     in srgb,
-    var(--palette-primary, rgba(98, 0, 255, 1)) 45%,
+    var(--palette-primary, rgba(57, 255, 20, 1)) 30%,
     transparent
+  );
+  background: color-mix(
+    in srgb,
+    var(--palette-bg, rgba(0, 6, 0, 1)) 85%,
+    var(--palette-primary, rgba(57, 255, 20, 1)) 5%
   );
 }
 
-:global(body.theme-matrix) .inputSection {
-  background: color-mix(
-    in srgb,
-    var(--palette-bg, rgba(0, 6, 0, 1)) 92%,
-    transparent
-  );
-  border: 1px solid
+:global(body.theme-matrix) .inputWrapper:focus-within {
+  border-color: var(--palette-primary, rgba(57, 255, 20, 1));
+  box-shadow: 0 0 0 2px
     color-mix(
       in srgb,
-      var(--palette-primary, rgba(57, 255, 20, 1)) 35%,
+      var(--palette-primary, rgba(57, 255, 20, 1)) 15%,
       transparent
     );
 }
@@ -453,64 +366,103 @@
   color: var(--palette-primary, rgba(57, 255, 20, 0.95));
 }
 
-:global(body.theme-retro) .inputSection {
-  background: color-mix(
+:global(body.theme-matrix) .sendButton {
+  background: var(--palette-primary, rgba(57, 255, 20, 1));
+  color: var(--palette-bg, rgba(0, 6, 0, 1));
+}
+
+:global(body.theme-retro) .inputWrapper {
+  border-color: color-mix(
     in srgb,
-    var(--palette-bg, rgba(24, 18, 0, 1)) 90%,
+    var(--palette-primary, rgba(255, 170, 0, 1)) 30%,
     transparent
   );
-  border: 1px solid
+  background: color-mix(
+    in srgb,
+    var(--palette-bg, rgba(24, 18, 0, 1)) 85%,
+    var(--palette-primary, rgba(255, 170, 0, 1)) 5%
+  );
+}
+
+:global(body.theme-retro) .inputWrapper:focus-within {
+  border-color: var(--palette-primary, rgba(255, 170, 0, 1));
+  box-shadow: 0 0 0 2px
     color-mix(
       in srgb,
-      var(--palette-primary, rgba(255, 170, 0, 1)) 35%,
+      var(--palette-primary, rgba(255, 170, 0, 1)) 15%,
       transparent
     );
 }
 
-:global(body.theme-retro) .prompt {
-  color: var(--palette-primary, rgba(255, 170, 0, 0.95));
-}
-
+:global(body.theme-retro) .prompt,
 :global(body.theme-retro) .input {
   color: var(--palette-primary, rgba(255, 170, 0, 0.95));
 }
 
-:global(body.theme-powershell) .inputSection {
-  background: color-mix(
+:global(body.theme-retro) .sendButton {
+  background: var(--palette-primary, rgba(255, 170, 0, 1));
+  color: var(--palette-bg, rgba(24, 18, 0, 1));
+}
+
+:global(body.theme-powershell) .inputWrapper {
+  border-color: color-mix(
     in srgb,
-    var(--palette-bg, rgba(1, 36, 86, 1)) 90%,
+    var(--palette-primary, rgba(0, 188, 242, 1)) 30%,
     transparent
   );
-  border: 1px solid
+  background: color-mix(
+    in srgb,
+    var(--palette-bg, rgba(1, 36, 86, 1)) 85%,
+    var(--palette-primary, rgba(0, 188, 242, 1)) 5%
+  );
+}
+
+:global(body.theme-powershell) .inputWrapper:focus-within {
+  border-color: var(--palette-primary, rgba(0, 188, 242, 1));
+  box-shadow: 0 0 0 2px
     color-mix(
       in srgb,
-      var(--palette-primary, rgba(0, 188, 242, 1)) 35%,
+      var(--palette-primary, rgba(0, 188, 242, 1)) 15%,
       transparent
     );
 }
 
-:global(body.theme-powershell) .prompt {
-  color: var(--palette-primary, rgba(249, 241, 165, 0.95));
-}
-
+:global(body.theme-powershell) .prompt,
 :global(body.theme-powershell) .input {
   color: var(--palette-primary, rgba(249, 241, 165, 0.95));
 }
 
-:global(body.basic-terminal-mode) .inputSection {
-  background: rgba(0, 0, 0, 0.85);
-  border: 1px solid rgba(255, 255, 255, 0.22);
+:global(body.theme-powershell) .sendButton {
+  background: var(--palette-primary, rgba(249, 241, 165, 1));
+  color: var(--palette-bg, rgba(1, 36, 86, 1));
 }
 
-:global(body.light-mode) .inputSection {
+:global(body.light-mode) .inputWrapper {
+  border-color: color-mix(
+    in srgb,
+    var(--palette-primary, #0051d5) 25%,
+    transparent
+  );
   background: color-mix(
     in srgb,
     var(--palette-bg, rgba(250, 252, 255, 1)) 90%,
-    transparent
+    var(--palette-primary, #0051d5) 3%
   );
-  border: 1px solid
-    color-mix(in srgb, var(--palette-primary, #0051d5) 20%, transparent);
+}
+
+:global(body.light-mode) .inputWrapper:focus-within {
+  border-color: var(--palette-primary, #0051d5);
+  box-shadow: 0 0 0 2px
+    color-mix(in srgb, var(--palette-primary, #0051d5) 15%, transparent);
+}
+
+:global(body.light-mode) .input {
   color: var(--palette-text, rgba(14, 18, 36, 0.92));
+}
+
+:global(body.light-mode) .sendButton {
+  background: var(--palette-primary, #0051d5);
+  color: #ffffff;
 }
 
 :global(body.light-mode) .prompt {
@@ -589,45 +541,52 @@
   }
 }
 
+/* -----------------------------------------------------------------------------
+   Responsive Mobile Styles
+   ----------------------------------------------------------------------------- */
+
 @media (max-width: 768px) {
-  .inputLine {
-    gap: 6px;
+  .inputSection {
+    padding: 8px 12px;
+    padding-bottom: max(8px, calc(8px + env(safe-area-inset-bottom, 0px)));
+  }
+
+  .inputWrapper {
+    padding: 12px 14px;
+  }
+
+  .input {
+    font-size: 16px; /* Prevent zoom on iOS */
+  }
+
+  .sendButton {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+@media (max-width: 480px) {
+  .inputSection {
+    padding: 10px 12px;
+    padding-bottom: max(10px, calc(10px + env(safe-area-inset-bottom, 0px)));
+  }
+
+  .inputWrapper {
+    padding: 10px 12px;
   }
 
   .input {
     font-size: 16px;
   }
 
-  .prompt {
-    font-size: 14px;
+  .sendButton {
+    width: 38px;
+    height: 38px;
   }
 
-  .inputFieldContainerMobile {
-    width: 100%;
-  }
-}
-
-@media (max-width: 480px) {
-  .inputSection {
-    padding: 6px 10px; /* Compact padding */
-    padding-bottom: max(6px, calc(6px + env(safe-area-inset-bottom)));
-    min-height: 50px; /* Reduced height for compactness */
-    max-height: 55px; /* Reduced max height */
-    height: auto;
-  }
-
-  .inputLine {
-    flex-wrap: nowrap;
-    gap: 6px;
-    padding: 6px 10px;
-  }
-
-  .prompt {
-    font-size: 14px;
-  }
-
-  .input {
-    font-size: 15px;
+  .sendButton svg {
+    width: 18px;
+    height: 18px;
   }
 }
 
@@ -710,9 +669,7 @@
   border-radius: 0 !important;
   padding: 12px 16px !important;
   color: #00ff00 !important;
-  text-shadow: 
-    0 0 5px rgba(0, 255, 0, 0.5),
-    0 0 10px rgba(0, 255, 0, 0.3);
+  text-shadow: 0 0 5px rgba(0, 255, 0, 0.5), 0 0 10px rgba(0, 255, 0, 0.3);
 }
 
 :global(body.theme-crt) .inputSectionMobile {
@@ -727,32 +684,25 @@
   border-radius: 0 !important;
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
-  box-shadow: 
-    0 0 8px rgba(0, 255, 0, 0.2),
-    inset 0 0 8px rgba(0, 255, 0, 0.1);
+  box-shadow: 0 0 8px rgba(0, 255, 0, 0.2), inset 0 0 8px rgba(0, 255, 0, 0.1);
 }
 
 :global(body.theme-crt) .inputLine:focus-within {
   border-color: rgba(0, 255, 0, 0.6) !important;
-  box-shadow: 
-    0 0 15px rgba(0, 255, 0, 0.4),
+  box-shadow: 0 0 15px rgba(0, 255, 0, 0.4),
     inset 0 0 15px rgba(0, 255, 0, 0.15);
 }
 
 :global(body.theme-crt) .prompt {
   color: #00ff00 !important;
-  text-shadow: 
-    0 0 5px rgba(0, 255, 0, 0.5),
-    0 0 10px rgba(0, 255, 0, 0.3);
+  text-shadow: 0 0 5px rgba(0, 255, 0, 0.5), 0 0 10px rgba(0, 255, 0, 0.3);
 }
 
 :global(body.theme-crt) .input {
   background: transparent !important;
   border: none !important;
   color: #00ff00 !important;
-  text-shadow: 
-    0 0 5px rgba(0, 255, 0, 0.5),
-    0 0 10px rgba(0, 255, 0, 0.3);
+  text-shadow: 0 0 5px rgba(0, 255, 0, 0.5), 0 0 10px rgba(0, 255, 0, 0.3);
 }
 
 :global(body.theme-crt) .input::placeholder {
@@ -769,9 +719,7 @@
   border-radius: 0 !important;
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
-  box-shadow: 
-    0 0 20px rgba(0, 255, 0, 0.2),
-    inset 0 0 20px rgba(0, 255, 0, 0.1);
+  box-shadow: 0 0 20px rgba(0, 255, 0, 0.2), inset 0 0 20px rgba(0, 255, 0, 0.1);
 }
 
 :global(body.theme-crt) .suggestionItem {
@@ -779,16 +727,12 @@
   border: none !important;
   border-bottom: 1px solid rgba(0, 255, 0, 0.15) !important;
   color: #00ff00 !important;
-  text-shadow: 
-    0 0 5px rgba(0, 255, 0, 0.5),
-    0 0 10px rgba(0, 255, 0, 0.3);
+  text-shadow: 0 0 5px rgba(0, 255, 0, 0.5), 0 0 10px rgba(0, 255, 0, 0.3);
 }
 
 :global(body.theme-crt) .suggestionItem:hover,
 :global(body.theme-crt) .suggestionItem.selected {
   background: rgba(0, 0, 0, 0.6) !important;
   color: #39ff14 !important;
-  text-shadow: 
-    0 0 8px rgba(0, 255, 0, 0.8),
-    0 0 15px rgba(0, 255, 0, 0.5);
+  text-shadow: 0 0 8px rgba(0, 255, 0, 0.8), 0 0 15px rgba(0, 255, 0, 0.5);
 }

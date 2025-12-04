@@ -363,17 +363,6 @@ export function MobileMenu({
           action: handleCyclePalette,
         },
         {
-          id: "dashboard-toggle",
-          label: "Toggle Dashboard",
-          iconId: "dashboard-toggle",
-          action: () => {
-            if (onDashboardToggle) {
-              onDashboardToggle();
-            }
-            onClose();
-          },
-        },
-        {
           id: "ai",
           label: `AI: ${currentAiProvider || "off"}`,
           iconId: "ai",

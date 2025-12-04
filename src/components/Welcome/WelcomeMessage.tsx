@@ -5,6 +5,7 @@ import { getQuickActions, groupQuickActionsByCategory } from '@/lib/quick-action
 import { createCommandLine } from '@/lib/commands/command-output-helpers';
 import { WelcomeHeader } from './WelcomeHeader';
 import { useTerminal } from '@/providers/TerminalProvider';
+import styles from './WelcomeMessage.module.css';
 
 const lightbulbIcon = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 8px;"><path d="M9 21h6"></path><path d="M12 3a6 6 0 0 0 6 6c0 2.5-1.5 4.5-3 6H9c-1.5-1.5-3-3.5-3-6a6 6 0 0 1 6-6z"></path><line x1="12" y1="9" x2="12" y2="15"></line></svg>`;
 
@@ -265,7 +266,7 @@ export function WelcomeMessage() {
                     <span dangerouslySetInnerHTML={{ __html: icon }} />
                     <span>{category}</span>
                   </div>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '10px' }}>
+                  <div className={styles.quickActionsGrid}>
                     {categoryActions.map((action, actionIndex) => {
                       const escapedCommand = action.command.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
                       return (

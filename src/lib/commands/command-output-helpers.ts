@@ -60,6 +60,67 @@ export function createClickableCommand(
 }
 
 /**
+ * Command suggestion interface
+ */
+export interface CommandSuggestion {
+  command: string;
+  label?: string;
+  description?: string;
+}
+
+/**
+ * Creates a grid of command suggestion cards using help command styling
+ * Responsive: 2 columns on mobile, auto-fit on desktop
+ * 
+ * @param suggestions - Array of command suggestions
+ * @returns HTML string with command suggestion grid
+ */
+export function createCommandSuggestions(suggestions: CommandSuggestion[]): string {
+  if (!suggestions || suggestions.length === 0) {
+    return "";
+  }
+
+  const cards = suggestions.map((suggestion) => {
+    const escapedCommand = suggestion.command.replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+    const label = suggestion.label || suggestion.command;
+    const escapedLabel = escapeHtml(label);
+    const escapedDescription = suggestion.description ? escapeHtml(suggestion.description) : "";
+
+    return `
+      <div class="help-command-card">
+        <div class="help-command-header">
+          <span 
+            class="help-command-name omega-help-command"
+            data-command="${escapedCommand}"
+            title="Click to add '${escapedCommand}' to terminal input"
+          >${escapedLabel}</span>
+        </div>
+        ${escapedDescription ? `<div class="help-command-description">${escapedDescription}</div>` : ""}
+      </div>
+    `;
+  }).join("");
+
+  return `
+    <div class="help-container">
+      <div class="help-grid">
+        ${cards}
+      </div>
+    </div>
+  `;
+}
+
+/**
+ * Creates a single command suggestion card using help command styling
+ * 
+ * @param command - The command string
+ * @param description - Optional description
+ * @returns HTML string for single command suggestion
+ */
+export function createSingleCommandSuggestion(command: string, description?: string): string {
+  return createCommandSuggestions([{ command, description }]);
+}
+
+/**
  * Creates a clickable command with full line wrapper (for help outputs)
  * 
  * @param command - The command string

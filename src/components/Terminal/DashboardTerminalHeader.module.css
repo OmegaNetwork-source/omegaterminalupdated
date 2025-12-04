@@ -6,7 +6,8 @@
 
 .terminalHeader {
   padding: 12px 20px;
-  border-bottom: 1px solid color-mix(in srgb, var(--palette-primary, #00d4ff) 15%, transparent);
+  border-bottom: 1px solid
+    color-mix(in srgb, var(--palette-primary, #00d4ff) 15%, transparent);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -14,6 +15,7 @@
   flex-shrink: 0;
   position: relative;
   z-index: 10;
+  box-sizing: border-box;
   transition: border-color 0.3s ease;
 }
 
@@ -22,6 +24,7 @@
   align-items: center;
   gap: 16px;
   flex: 1;
+  box-sizing: border-box;
 }
 
 .terminalTitle {
@@ -62,8 +65,13 @@
   font-family: "Courier New", monospace;
   font-weight: 600;
   padding: 4px 10px;
-  background: color-mix(in srgb, var(--palette-primary, #00d4ff) 5%, transparent);
-  border: 1px solid color-mix(in srgb, var(--palette-primary, #00d4ff) 20%, transparent);
+  background: color-mix(
+    in srgb,
+    var(--palette-primary, #00d4ff) 5%,
+    transparent
+  );
+  border: 1px solid
+    color-mix(in srgb, var(--palette-primary, #00d4ff) 20%, transparent);
   border-radius: 6px;
   transition: all 0.3s ease;
 }
@@ -94,20 +102,32 @@
 
 .statusConnected {
   background: var(--palette-success, #00ff00);
-  box-shadow: 0 0 10px var(--palette-success-glow, color-mix(in srgb, var(--palette-success, #00ff00) 50%, transparent));
+  box-shadow: 0 0 10px
+    var(
+      --palette-success-glow,
+      color-mix(in srgb, var(--palette-success, #00ff00) 50%, transparent)
+    );
   transition: background 0.3s ease, box-shadow 0.3s ease;
 }
 
 .statusConnecting {
   background: var(--palette-warning, #ffaa00);
-  box-shadow: 0 0 10px var(--palette-warning-glow, color-mix(in srgb, var(--palette-warning, #ffaa00) 50%, transparent));
+  box-shadow: 0 0 10px
+    var(
+      --palette-warning-glow,
+      color-mix(in srgb, var(--palette-warning, #ffaa00) 50%, transparent)
+    );
   animation: pulse 1.5s ease-in-out infinite;
   transition: background 0.3s ease, box-shadow 0.3s ease;
 }
 
 .statusDisconnected {
   background: var(--palette-error, #ff0000);
-  box-shadow: 0 0 10px var(--palette-error-glow, color-mix(in srgb, var(--palette-error, #ff0000) 50%, transparent));
+  box-shadow: 0 0 10px
+    var(
+      --palette-error-glow,
+      color-mix(in srgb, var(--palette-error, #ff0000) 50%, transparent)
+    );
   transition: background 0.3s ease, box-shadow 0.3s ease;
 }
 
@@ -141,7 +161,11 @@
 .terminalDivider {
   width: 1px;
   height: 20px;
-  background: color-mix(in srgb, var(--palette-primary, #00d4ff) 15%, transparent);
+  background: color-mix(
+    in srgb,
+    var(--palette-primary, #00d4ff) 15%,
+    transparent
+  );
   margin: 0 4px;
   transition: background 0.3s ease;
 }
@@ -158,8 +182,13 @@
 }
 
 .aiSelect {
-  background: color-mix(in srgb, var(--palette-primary, #00d4ff) 8%, transparent);
-  border: 1px solid color-mix(in srgb, var(--palette-primary, #00d4ff) 30%, transparent);
+  background: color-mix(
+    in srgb,
+    var(--palette-primary, #00d4ff) 8%,
+    transparent
+  );
+  border: 1px solid
+    color-mix(in srgb, var(--palette-primary, #00d4ff) 30%, transparent);
   border-radius: 6px;
   padding: 5px 24px 5px 8px;
   color: var(--palette-primary, #00d4ff);
@@ -172,8 +201,16 @@
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
-  background-image: linear-gradient(45deg, transparent 50%, var(--palette-primary, #00d4ff) 50%),
-    linear-gradient(135deg, var(--palette-primary, #00d4ff) 50%, transparent 50%);
+  background-image: linear-gradient(
+      45deg,
+      transparent 50%,
+      var(--palette-primary, #00d4ff) 50%
+    ),
+    linear-gradient(
+      135deg,
+      var(--palette-primary, #00d4ff) 50%,
+      transparent 50%
+    );
   background-position: calc(100% - 12px) calc(50% + 1px),
     calc(100% - 8px) calc(50% + 1px);
   background-size: 4px 4px, 4px 4px;
@@ -183,14 +220,22 @@
 }
 
 .aiSelect:hover {
-  background-color: color-mix(in srgb, var(--palette-primary, #00d4ff) 15%, transparent);
+  background-color: color-mix(
+    in srgb,
+    var(--palette-primary, #00d4ff) 15%,
+    transparent
+  );
   border-color: var(--palette-primary, #00d4ff);
 }
 
 .aiSelect:focus {
   outline: none;
   border-color: var(--palette-primary, #00d4ff);
-  box-shadow: 0 0 10px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #00d4ff) 30%, transparent));
+  box-shadow: 0 0 10px
+    var(
+      --palette-primary-glow,
+      color-mix(in srgb, var(--palette-primary, #00d4ff) 30%, transparent)
+    );
 }
 
 /* AI Select State Indicators - Red when OFF, Green when ON */
@@ -227,8 +272,13 @@
 }
 
 .terminalIconBtn {
-  background: color-mix(in srgb, var(--palette-primary, #00d4ff) 8%, transparent);
-  border: 1px solid color-mix(in srgb, var(--palette-primary, #00d4ff) 15%, transparent);
+  background: color-mix(
+    in srgb,
+    var(--palette-primary, #00d4ff) 8%,
+    transparent
+  );
+  border: 1px solid
+    color-mix(in srgb, var(--palette-primary, #00d4ff) 15%, transparent);
   border-radius: 4px;
   width: 28px;
   height: 28px;
@@ -242,9 +292,17 @@
 }
 
 .terminalIconBtn:hover {
-  background: color-mix(in srgb, var(--palette-primary, #00d4ff) 15%, transparent);
+  background: color-mix(
+    in srgb,
+    var(--palette-primary, #00d4ff) 15%,
+    transparent
+  );
   border-color: var(--palette-primary, #00d4ff);
-  box-shadow: 0 0 10px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #00d4ff) 20%, transparent));
+  box-shadow: 0 0 10px
+    var(
+      --palette-primary-glow,
+      color-mix(in srgb, var(--palette-primary, #00d4ff) 20%, transparent)
+    );
   transform: translateY(-2px);
 }
 
@@ -263,7 +321,11 @@
 /* Light mode overrides */
 :global(body.light-mode) .terminalHeader {
   background: rgba(255, 255, 255, 0.3);
-  border-bottom-color: color-mix(in srgb, var(--palette-primary, rgba(0, 81, 213, 1)) 20%, transparent);
+  border-bottom-color: color-mix(
+    in srgb,
+    var(--palette-primary, rgba(0, 81, 213, 1)) 20%,
+    transparent
+  );
 }
 
 :global(body.light-mode) .terminalTitle {
@@ -275,30 +337,66 @@
 }
 
 :global(body.light-mode) .aiSelect {
-  background: color-mix(in srgb, var(--palette-primary, rgba(0, 81, 213, 1)) 8%, transparent);
-  border-color: color-mix(in srgb, var(--palette-primary, rgba(0, 81, 213, 1)) 20%, transparent);
+  background: color-mix(
+    in srgb,
+    var(--palette-primary, rgba(0, 81, 213, 1)) 8%,
+    transparent
+  );
+  border-color: color-mix(
+    in srgb,
+    var(--palette-primary, rgba(0, 81, 213, 1)) 20%,
+    transparent
+  );
   color: var(--palette-primary, var(--cyber-blue, #0051d5));
 }
 
 :global(body.light-mode) .aiSelect:hover {
-  background: color-mix(in srgb, var(--palette-primary, rgba(0, 81, 213, 1)) 15%, transparent);
+  background: color-mix(
+    in srgb,
+    var(--palette-primary, rgba(0, 81, 213, 1)) 15%,
+    transparent
+  );
   border-color: var(--palette-primary, var(--cyber-blue, #0051d5));
 }
 
 :global(body.light-mode) .terminalIconBtn {
-  background: color-mix(in srgb, var(--palette-primary, rgba(0, 81, 213, 1)) 8%, transparent);
-  border-color: color-mix(in srgb, var(--palette-primary, rgba(0, 81, 213, 1)) 20%, transparent);
+  background: color-mix(
+    in srgb,
+    var(--palette-primary, rgba(0, 81, 213, 1)) 8%,
+    transparent
+  );
+  border-color: color-mix(
+    in srgb,
+    var(--palette-primary, rgba(0, 81, 213, 1)) 20%,
+    transparent
+  );
   color: var(--palette-primary, var(--cyber-blue, #0051d5));
 }
 
 :global(body.light-mode) .terminalIconBtn:hover {
-  background: color-mix(in srgb, var(--palette-primary, rgba(0, 81, 213, 1)) 15%, transparent);
+  background: color-mix(
+    in srgb,
+    var(--palette-primary, rgba(0, 81, 213, 1)) 15%,
+    transparent
+  );
   border-color: var(--palette-primary, var(--cyber-blue, #0051d5));
-  box-shadow: 0 0 10px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, rgba(0, 81, 213, 1)) 20%, transparent));
+  box-shadow: 0 0 10px
+    var(
+      --palette-primary-glow,
+      color-mix(
+        in srgb,
+        var(--palette-primary, rgba(0, 81, 213, 1)) 20%,
+        transparent
+      )
+    );
 }
 
 :global(body.light-mode) .terminalDivider {
-  background: color-mix(in srgb, var(--palette-primary, rgba(0, 81, 213, 1)) 20%, transparent);
+  background: color-mix(
+    in srgb,
+    var(--palette-primary, rgba(0, 81, 213, 1)) 20%,
+    transparent
+  );
 }
 
 :global(body.light-mode) .statusIndicator {
@@ -307,8 +405,16 @@
 
 :global(body.light-mode) .walletInfo {
   color: color-mix(in srgb, var(--palette-text, #000000) 90%, transparent);
-  background: color-mix(in srgb, var(--palette-primary, rgba(0, 81, 213, 1)) 5%, transparent);
-  border-color: color-mix(in srgb, var(--palette-primary, rgba(0, 81, 213, 1)) 20%, transparent);
+  background: color-mix(
+    in srgb,
+    var(--palette-primary, rgba(0, 81, 213, 1)) 5%,
+    transparent
+  );
+  border-color: color-mix(
+    in srgb,
+    var(--palette-primary, rgba(0, 81, 213, 1)) 20%,
+    transparent
+  );
 }
 
 /* Settings Menu */
@@ -321,11 +427,13 @@
   top: calc(100% + 10px);
   right: 0;
   background: rgba(0, 0, 0, 0.95);
-  border: 1px solid color-mix(in srgb, var(--palette-primary, #00d4ff) 30%, transparent);
+  border: 1px solid
+    color-mix(in srgb, var(--palette-primary, #00d4ff) 30%, transparent);
   border-radius: 8px;
   min-width: 200px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5),
-              0 0 20px color-mix(in srgb, var(--palette-primary, #00d4ff) 15%, transparent);
+    0 0 20px
+      color-mix(in srgb, var(--palette-primary, #00d4ff) 15%, transparent);
   overflow: hidden;
   z-index: 1000;
   animation: dropdownFadeIn 0.2s ease-out;
@@ -364,7 +472,11 @@
 }
 
 .settingsMenuItem:hover {
-  background: color-mix(in srgb, var(--palette-primary, #00d4ff) 15%, transparent);
+  background: color-mix(
+    in srgb,
+    var(--palette-primary, #00d4ff) 15%,
+    transparent
+  );
   color: var(--palette-primary, #00d4ff);
 }
 
@@ -377,22 +489,43 @@
 
 .settingsMenuDivider {
   height: 1px;
-  background: color-mix(in srgb, var(--palette-primary, #00d4ff) 15%, transparent);
+  background: color-mix(
+    in srgb,
+    var(--palette-primary, #00d4ff) 15%,
+    transparent
+  );
   margin: 4px 0;
 }
 
 .terminalIconBtn.active {
-  background: color-mix(in srgb, var(--palette-primary, #00d4ff) 15%, transparent);
+  background: color-mix(
+    in srgb,
+    var(--palette-primary, #00d4ff) 15%,
+    transparent
+  );
   border-color: var(--palette-primary, #00d4ff);
-  box-shadow: 0 0 10px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #00d4ff) 20%, transparent));
+  box-shadow: 0 0 10px
+    var(
+      --palette-primary-glow,
+      color-mix(in srgb, var(--palette-primary, #00d4ff) 20%, transparent)
+    );
 }
 
 /* Light mode for settings dropdown */
 :global(body.light-mode) .settingsDropdown {
   background: rgba(255, 255, 255, 0.95);
-  border-color: color-mix(in srgb, var(--palette-primary, rgba(0, 81, 213, 1)) 30%, transparent);
+  border-color: color-mix(
+    in srgb,
+    var(--palette-primary, rgba(0, 81, 213, 1)) 30%,
+    transparent
+  );
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15),
-              0 0 20px color-mix(in srgb, var(--palette-primary, rgba(0, 81, 213, 1)) 15%, transparent);
+    0 0 20px
+      color-mix(
+        in srgb,
+        var(--palette-primary, rgba(0, 81, 213, 1)) 15%,
+        transparent
+      );
 }
 
 :global(body.light-mode) .settingsMenuItem {
@@ -400,18 +533,38 @@
 }
 
 :global(body.light-mode) .settingsMenuItem:hover {
-  background: color-mix(in srgb, var(--palette-primary, rgba(0, 81, 213, 1)) 15%, transparent);
+  background: color-mix(
+    in srgb,
+    var(--palette-primary, rgba(0, 81, 213, 1)) 15%,
+    transparent
+  );
   color: var(--palette-primary, var(--cyber-blue, #0051d5));
 }
 
 :global(body.light-mode) .settingsMenuDivider {
-  background: color-mix(in srgb, var(--palette-primary, rgba(0, 81, 213, 1)) 15%, transparent);
+  background: color-mix(
+    in srgb,
+    var(--palette-primary, rgba(0, 81, 213, 1)) 15%,
+    transparent
+  );
 }
 
 :global(body.light-mode) .terminalIconBtn.active {
-  background: color-mix(in srgb, var(--palette-primary, rgba(0, 81, 213, 1)) 15%, transparent);
+  background: color-mix(
+    in srgb,
+    var(--palette-primary, rgba(0, 81, 213, 1)) 15%,
+    transparent
+  );
   border-color: var(--palette-primary, var(--cyber-blue, #0051d5));
-  box-shadow: 0 0 10px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, rgba(0, 81, 213, 1)) 20%, transparent));
+  box-shadow: 0 0 10px
+    var(
+      --palette-primary-glow,
+      color-mix(
+        in srgb,
+        var(--palette-primary, rgba(0, 81, 213, 1)) 20%,
+        transparent
+      )
+    );
 }
 
 /* -----------------------------------------------------------------------------
@@ -425,16 +578,12 @@
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
   color: #00ff00 !important;
-  text-shadow: 
-    0 0 5px rgba(0, 255, 0, 0.5),
-    0 0 10px rgba(0, 255, 0, 0.3);
+  text-shadow: 0 0 5px rgba(0, 255, 0, 0.5), 0 0 10px rgba(0, 255, 0, 0.3);
 }
 
 :global(body.theme-crt) .terminalHeader * {
   color: #00ff00 !important;
-  text-shadow: 
-    0 0 5px rgba(0, 255, 0, 0.5),
-    0 0 10px rgba(0, 255, 0, 0.3);
+  text-shadow: 0 0 5px rgba(0, 255, 0, 0.5), 0 0 10px rgba(0, 255, 0, 0.3);
 }
 
 :global(body.theme-crt) .terminalTitle {
@@ -448,17 +597,22 @@
   background-clip: text !important;
   -webkit-text-fill-color: transparent !important;
   color: var(--palette-primary, #00ff00) !important; /* Fallback */
-  text-shadow: 
-    0 0 8px color-mix(in srgb, var(--palette-secondary, #39ff14) 60%, transparent),
-    0 0 15px color-mix(in srgb, var(--palette-primary, #00ff00) 40%, transparent),
-    0 0 20px color-mix(in srgb, var(--palette-secondary, #39ff14) 25%, transparent);
+  text-shadow: 0 0 8px
+      color-mix(in srgb, var(--palette-secondary, #39ff14) 60%, transparent),
+    0 0 15px
+      color-mix(in srgb, var(--palette-primary, #00ff00) 40%, transparent),
+    0 0 20px
+      color-mix(in srgb, var(--palette-secondary, #39ff14) 25%, transparent);
 }
 
 /* Terminal title SVG/icon - Use accent color */
 :global(body.theme-crt) .terminalTitle svg,
 :global(body.theme-crt) .terminalTitle span:first-child {
   color: var(--palette-secondary, #39ff14) !important;
-  filter: drop-shadow(0 0 4px color-mix(in srgb, var(--palette-secondary, #39ff14) 70%, transparent)) !important;
+  filter: drop-shadow(
+    0 0 4px
+      color-mix(in srgb, var(--palette-secondary, #39ff14) 70%, transparent)
+  ) !important;
 }
 
 :global(body.theme-crt) .terminalTitle svg path,
@@ -475,16 +629,12 @@
   color: #00ff00 !important;
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
-  text-shadow: 
-    0 0 5px rgba(0, 255, 0, 0.5),
-    0 0 10px rgba(0, 255, 0, 0.3);
+  text-shadow: 0 0 5px rgba(0, 255, 0, 0.5), 0 0 10px rgba(0, 255, 0, 0.3);
 }
 
 :global(body.theme-crt) .statusIndicator {
   color: rgba(0, 255, 0, 0.7) !important;
-  text-shadow: 
-    0 0 5px rgba(0, 255, 0, 0.4),
-    0 0 10px rgba(0, 255, 0, 0.2);
+  text-shadow: 0 0 5px rgba(0, 255, 0, 0.4), 0 0 10px rgba(0, 255, 0, 0.2);
 }
 
 :global(body.theme-crt) .statusDot {
@@ -504,25 +654,255 @@
   color: #00ff00 !important;
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
-  text-shadow: 
-    0 0 5px rgba(0, 255, 0, 0.5),
-    0 0 10px rgba(0, 255, 0, 0.3);
+  text-shadow: 0 0 5px rgba(0, 255, 0, 0.5), 0 0 10px rgba(0, 255, 0, 0.3);
 }
 
 :global(body.theme-crt) .terminalIconBtn:hover {
   background: rgba(0, 0, 0, 0.9) !important;
   border-color: rgba(0, 255, 0, 0.6) !important;
   color: #39ff14 !important;
-  text-shadow: 
-    0 0 8px rgba(0, 255, 0, 0.8),
-    0 0 15px rgba(0, 255, 0, 0.5);
+  text-shadow: 0 0 8px rgba(0, 255, 0, 0.8), 0 0 15px rgba(0, 255, 0, 0.5);
 }
 
 :global(body.theme-crt) .terminalIconBtn.active {
   background: rgba(0, 0, 0, 0.9) !important;
   border-color: rgba(0, 255, 0, 0.6) !important;
   color: #39ff14 !important;
-  box-shadow: 
-    0 0 20px rgba(0, 255, 0, 0.4),
+  box-shadow: 0 0 20px rgba(0, 255, 0, 0.4),
     inset 0 0 20px rgba(0, 255, 0, 0.15);
+}
+/* -----------------------------------------------------------------------------
+   Mobile Responsive Styles
+   ----------------------------------------------------------------------------- */
+
+@media (max-width: 768px) {
+  .terminalHeader {
+    padding: 12px 16px;
+    min-height: 56px;
+    max-height: 56px;
+    box-sizing: border-box;
+    gap: 12px;
+  }
+
+  .terminalLeft {
+    flex: 1;
+    min-width: 0;
+    gap: 12px;
+    justify-content: center;
+  }
+
+  .terminalTitle {
+    font-size: 11px;
+    gap: 6px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .terminalTitle span:first-child {
+    font-size: 16px;
+  }
+
+  .terminalTitleText {
+    font-size: 10px;
+    display: none; /* Hide version text on very small screens */
+  }
+
+  .terminalControls {
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
+  .walletInfo {
+    font-size: 10px;
+    padding: 4px 8px;
+  }
+
+  .walletAddress {
+    max-width: 80px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .statusIndicator {
+    font-size: 10px;
+  }
+
+  .statusDot {
+    width: 6px;
+    height: 6px;
+  }
+
+  .terminalIconBtn {
+    min-width: 32px;
+    min-height: 32px;
+    width: 32px;
+    height: 32px;
+    padding: 6px;
+  }
+
+  .terminalIconBtn svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .settingsMenu {
+    right: 0;
+    left: auto;
+    min-width: 200px;
+  }
+}
+
+@media (max-width: 480px) {
+  .terminalHeader {
+    padding: 10px 12px;
+    min-height: 52px;
+    max-height: 52px;
+    gap: 10px;
+  }
+
+  .terminalLeft {
+    gap: 8px;
+  }
+
+  .terminalTitle {
+    font-size: 10px;
+    gap: 4px;
+  }
+
+  .terminalTitle span:first-child {
+    font-size: 14px;
+  }
+
+  .terminalControls {
+    gap: 6px;
+  }
+
+  .walletInfo {
+    font-size: 9px;
+    padding: 3px 6px;
+  }
+
+  .walletAddress {
+    max-width: 60px;
+  }
+
+  .terminalIconBtn {
+    min-width: 28px;
+    min-height: 28px;
+    width: 28px;
+    height: 28px;
+    padding: 4px;
+  }
+
+  .terminalIconBtn svg {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+/* -----------------------------------------------------------------------------
+   Theme-Specific Mobile Overrides
+   ----------------------------------------------------------------------------- */
+
+/* Light Mode Mobile */
+@media (max-width: 768px) {
+  :global(body.light-mode) .terminalHeader {
+    padding: 12px 16px;
+    min-height: 56px;
+    max-height: 56px;
+    gap: 12px;
+  }
+
+  :global(body.light-mode) .terminalTitle {
+    font-size: 11px;
+  }
+
+  :global(body.light-mode) .terminalTitle span:first-child {
+    font-size: 16px;
+  }
+
+  :global(body.light-mode) .terminalIconBtn {
+    min-width: 32px;
+    min-height: 32px;
+    width: 32px;
+    height: 32px;
+    padding: 6px;
+  }
+}
+
+@media (max-width: 480px) {
+  :global(body.light-mode) .terminalHeader {
+    padding: 10px 12px;
+    min-height: 52px;
+    max-height: 52px;
+    gap: 10px;
+  }
+
+  :global(body.light-mode) .terminalTitle {
+    font-size: 10px;
+  }
+
+  :global(body.light-mode) .terminalTitle span:first-child {
+    font-size: 14px;
+  }
+
+  :global(body.light-mode) .terminalIconBtn {
+    min-width: 28px;
+    min-height: 28px;
+    width: 28px;
+    height: 28px;
+    padding: 4px;
+  }
+}
+
+/* CRT Theme Mobile */
+@media (max-width: 768px) {
+  :global(body.theme-crt) .terminalHeader {
+    padding: 12px 16px !important;
+    min-height: 56px !important;
+    max-height: 56px !important;
+    gap: 12px !important;
+  }
+
+  :global(body.theme-crt) .terminalTitle {
+    font-size: 11px !important;
+  }
+
+  :global(body.theme-crt) .terminalTitle span:first-child {
+    font-size: 16px !important;
+  }
+
+  :global(body.theme-crt) .terminalIconBtn {
+    min-width: 32px !important;
+    min-height: 32px !important;
+    width: 32px !important;
+    height: 32px !important;
+    padding: 6px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  :global(body.theme-crt) .terminalHeader {
+    padding: 10px 12px !important;
+    min-height: 52px !important;
+    max-height: 52px !important;
+    gap: 10px !important;
+  }
+
+  :global(body.theme-crt) .terminalTitle {
+    font-size: 10px !important;
+  }
+
+  :global(body.theme-crt) .terminalTitle span:first-child {
+    font-size: 14px !important;
+  }
+
+  :global(body.theme-crt) .terminalIconBtn {
+    min-width: 28px !important;
+    min-height: 28px !important;
+    width: 28px !important;
+    height: 28px !important;
+    padding: 4px !important;
+  }
 }
