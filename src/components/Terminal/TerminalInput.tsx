@@ -217,9 +217,9 @@ export const TerminalInput = forwardRef<TerminalInputRef, TerminalInputProps>(
                 placeholder={placeholder}
                 disabled={disabled}
                 autoComplete="off"
-                autoCapitalize="none"
-                autoCorrect="off"
-                spellCheck={false}
+                autoCapitalize={isMobile ? "sentences" : "none"}
+                autoCorrect={isMobile ? "on" : "off"}
+                spellCheck={isMobile}
                 className={styles.input}
                 inputMode="text"
               />

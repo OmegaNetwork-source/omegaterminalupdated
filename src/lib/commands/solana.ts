@@ -7,6 +7,7 @@ import type { Command, CommandContext } from "@/types/commands";
 import { config } from "@/lib/config";
 import * as solana from "@/lib/multichain/solana";
 import { createCommandLine, createUsageError } from "./command-output-helpers";
+import { isAppMode } from "@/lib/utils/url-utils";
 
 /**
  * Solana command - Main entry point for all Solana operations
@@ -44,11 +45,17 @@ export const solanaCommand: Command = {
         await getSwapQuote(context, args.slice(2));
         break;
       case "swap":
-        if (args[2] === "execute" && args.length >= 6) {
-          await executeSwap(context, args.slice(3));
-        } else {
-          await showSwapInterface(context);
-        }
+      // Check if app mode is enabled
+      if (isAppMode()) {
+        context.log("❌ Swap is not supported on mobile app version", "error");
+        return;
+      }
+      
+      if (args.length > 2) {
+        await executeSwap(context, args.slice(2));
+      } else {
+        await showSwapInterface(context);
+      }
         break;
       default:
         context.log(`Unknown Solana subcommand: ${subcommand}.`, "error");

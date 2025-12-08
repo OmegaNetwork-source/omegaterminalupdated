@@ -10,6 +10,7 @@ import { AVAILABLE_THEMES, APP_TITLE, APP_VERSION } from "@/lib/constants";
 import type { Theme } from "@/types";
 import { commandRegistry } from "./CommandRegistry";
 import { createCommandLine, createUsageError, createSingleCommandSuggestion, createCommandSuggestions } from "./command-output-helpers";
+import { isAppMode } from "@/lib/utils/url-utils";
 import {
   getQuickActions,
   saveQuickActions,

@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useEffect, useCallback, useRef, useState } from "react";
+import React, { useEffect, useCallback, useRef, useState, useMemo } from "react";
+import { isAppMode } from "@/lib/utils/url-utils";
 import Link from "next/link";
 import { useTerminal } from "@/providers/TerminalProvider";
 import { useSpotify } from "@/hooks/useSpotify";
@@ -201,6 +202,11 @@ export function MobileMenu({
     onClose();
   }, [executeCommand, onClose]);
 
+  const handleMarkets = useCallback(() => {
+    void executeCommand("markets");
+    onClose();
+  }, [executeCommand, onClose]);
+
   const handleCycleTheme = useCallback(() => {
     if (onThemeCycle) {
       onThemeCycle();
@@ -230,6 +236,76 @@ export function MobileMenu({
       setAiProvider(nextProvider);
     }
   }, [currentAiProvider, setAiProvider, onAiProviderChange]);
+
+  const dynamicSections = useMemo(() => {
+    const allDynamicSections: MenuSection[] = [
+      {
+        id: "media",
+        title: "Media Players",
+        items: [
+          {
+            id: "spotify",
+            label: "Spotify",
+            iconId: "spotify",
+            action: handleSpotify,
+          },
+          {
+            id: "youtube",
+            label: "YouTube",
+            iconId: "youtube",
+            action: handleYouTube,
+          },
+          {
+            id: "news",
+            label: "News Reader",
+            iconId: "news",
+            action: handleNews,
+          },
+        ],
+      },
+      {
+        id: "trading",
+        title: "Trading",
+        items: [
+          {
+            id: "markets",
+            label: "Markets",
+            iconId: "markets",
+            action: handleMarkets,
+          },
+          {
+            id: "perps",
+            label: "Perps",
+            iconId: "perps",
+            action: handlePerps,
+          },
+          {
+            id: "chart",
+            label: "Charts",
+            iconId: "chart",
+            action: () => {
+              void executeCommand("chart");
+              onClose();
+            },
+          },
+        ],
+      },
+    ];
+
+    if (isAppMode()) {
+      return allDynamicSections
+        .map((section) => ({
+          ...section,
+          items: section.items.filter(
+            (item) =>
+              item.id !== "youtube" && item.id !== "spotify" && item.id !== "perps"
+          ),
+        }))
+        .filter((section) => section.items.length > 0);
+    }
+
+    return allDynamicSections;
+  }, [handleSpotify, handleYouTube, handleNews, handleMarkets, handlePerps, executeCommand, onClose]);
 
   const sections: MenuSection[] = [
     {
@@ -274,51 +350,7 @@ export function MobileMenu({
         },
       ],
     },
-    {
-      id: "media",
-      title: "Media Players",
-      items: [
-        {
-          id: "spotify",
-          label: "Spotify",
-          iconId: "spotify",
-          action: handleSpotify,
-        },
-        {
-          id: "youtube",
-          label: "YouTube",
-          iconId: "youtube",
-          action: handleYouTube,
-        },
-        {
-          id: "news",
-          label: "News Reader",
-          iconId: "news",
-          action: handleNews,
-        },
-      ],
-    },
-    {
-      id: "trading",
-      title: "Trading",
-      items: [
-        {
-          id: "perps",
-          label: "Perps",
-          iconId: "perps",
-          action: handlePerps,
-        },
-        {
-          id: "chart",
-          label: "Charts",
-          iconId: "chart",
-          action: () => {
-            void executeCommand("chart");
-            onClose();
-          },
-        },
-      ],
-    },
+    ...dynamicSections,
     {
       id: "quick",
       title: "Quick Actions",

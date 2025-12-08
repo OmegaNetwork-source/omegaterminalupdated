@@ -7,6 +7,7 @@ import type { Command, CommandContext } from "@/types/commands";
 import { config } from "@/lib/config";
 import * as near from "@/lib/multichain/near";
 import { createCommandLine, createUsageError, createSwapStatusNotice } from "./command-output-helpers";
+import { isAppMode } from "@/lib/utils/url-utils";
 
 /**
  * NEAR command - Main entry point for all NEAR Protocol operations
@@ -41,6 +42,11 @@ export const nearCommand: Command = {
         await getValidators(context);
         break;
       case "swap":
+        // Check if app mode is enabled
+        if (isAppMode()) {
+          context.log("❌ Swap is not supported on mobile app version", "error");
+          return;
+        }
         await swapTokens(context, args.slice(2));
         break;
       case "tokens":
