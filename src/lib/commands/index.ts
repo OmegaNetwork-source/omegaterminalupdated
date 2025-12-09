@@ -76,6 +76,7 @@ import { web3telegramCommands } from "./web3telegram";
 import { rubicCommands } from "./rubic";
 import { parlayCommand, parlayCreateCommand, parlayListCommand } from "./parlay";
 import { extractCommands } from "./extract";
+import { yumiCommand } from "./yumi";
 
 export interface CommandRegistrationResult {
   registeredGroups: string[];
@@ -164,6 +165,7 @@ const COMMAND_GROUPS: Array<{ label: string; commands: Command[] }> = [
   { label: "rubic", commands: rubicCommands },
   { label: "parlay", commands: [parlayCommand, parlayCreateCommand, parlayListCommand] },
   { label: "extract", commands: extractCommands },
+  { label: "yumi", commands: [yumiCommand] },
 ];
 
 let registrationAttempted = false;

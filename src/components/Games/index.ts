@@ -46,4 +46,6 @@ export type { BashidoGameProps } from "./BashidoGame";
 export { PGTanksGame } from "./PGTanksGame";
 export type { PGTanksGameProps } from "./PGTanksGame";
 
+export { YumiGame } from "./YumiGame";
+
 export { GlobalGameModal } from "./GlobalGameModal";

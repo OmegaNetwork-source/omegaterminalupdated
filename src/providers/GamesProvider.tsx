@@ -227,6 +227,10 @@ const baseGameEntries = GAMES_METADATA.reduce<Record<string, GameEntry>>(
       acc[game.id] = createGameEntry(async () => ({
         default: (await import("@/components/Games/ForecastArenaGame")).ForecastArenaGame,
       }));
+    } else if (game.id === "yumi-pop") {
+      acc[game.id] = createGameEntry(async () => ({
+        default: (await import("@/components/Games/YumiGame")).YumiGame,
+      }));
     } else {
       acc[game.id] = createPlaceholderEntry(
         game.name,

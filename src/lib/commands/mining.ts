@@ -21,7 +21,7 @@ import {
   formatEther,
   BrowserProvider,
 } from "ethers";
-import { createCommandLine, createUsageError } from "./command-output-helpers";
+import { createCommandLine, createUsageError, createClickableCommand } from "./command-output-helpers";
 import { SVG_ICONS } from "@/lib/utils/svg-icons";
 
 const isExpectedOmegaChain = (
@@ -127,7 +127,7 @@ function createMiningStatusHtml(
 /**
  * Create mining success HTML
  */
-function createMiningSuccessHtml(reward: string, txHash?: string): string {
+function createMiningSuccessHtml(reward: string, txHash?: string, blockNumber?: number): string {
   let txLink = "";
   if (txHash) {
     const explorerUrl = `https://0x4e454228.explorer.aurora-cloud.dev/tx/${txHash}`;
@@ -171,7 +171,7 @@ function createMiningSuccessHtml(reward: string, txHash?: string): string {
           color: var(--palette-secondary, #00ff88);
           font-size: 1em;
           margin-bottom: 4px;
-        ">Mining Successful!</div>
+        ">✅ Mining Successful!${blockNumber ? ` - Block #${blockNumber}` : ''}</div>
         <div style="
           color: var(--palette-text, #ccd4e0);
           font-size: 0.95em;
@@ -186,10 +186,23 @@ function createMiningSuccessHtml(reward: string, txHash?: string): string {
         ${txLink}
         <div style="display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap;">
           <button onclick="(function() {
-            if (window.__omegaGuiExecuteCommand) {
-              window.__omegaGuiExecuteCommand('stop');
-            } else if (window.terminal && window.terminal.executeCommand) {
-              window.terminal.executeCommand('stop');
+            try {
+              if (window.__omegaExecuteCommand) {
+                window.__omegaExecuteCommand('stop');
+                // Auto-scroll terminal to show output
+                if (window.__omegaScrollTerminalToBottom) {
+                  setTimeout(() => window.__omegaScrollTerminalToBottom(), 100);
+                  setTimeout(() => window.__omegaScrollTerminalToBottom(), 500);
+                }
+              } else if (window.__omegaGuiExecuteCommand) {
+                window.__omegaGuiExecuteCommand('stop');
+              } else if (window.terminal && window.terminal.executeCommand) {
+                window.terminal.executeCommand('stop');
+              } else {
+                console.error('No command execution method available');
+              }
+            } catch (error) {
+              console.error('Error executing stop command:', error);
             }
           })()" style="
             background: linear-gradient(135deg, color-mix(in srgb, var(--palette-error, #ff4757) 80%, transparent), color-mix(in srgb, var(--palette-error, #ff4757) 60%, transparent));
@@ -208,10 +221,23 @@ function createMiningSuccessHtml(reward: string, txHash?: string): string {
             ⏹️ Stop Mining
           </button>
           <button onclick="(function() {
-            if (window.__omegaGuiExecuteCommand) {
-              window.__omegaGuiExecuteCommand('claim');
-            } else if (window.terminal && window.terminal.executeCommand) {
-              window.terminal.executeCommand('claim');
+            try {
+              if (window.__omegaExecuteCommand) {
+                window.__omegaExecuteCommand('claim');
+                // Auto-scroll terminal to show output
+                if (window.__omegaScrollTerminalToBottom) {
+                  setTimeout(() => window.__omegaScrollTerminalToBottom(), 100);
+                  setTimeout(() => window.__omegaScrollTerminalToBottom(), 500);
+                }
+              } else if (window.__omegaGuiExecuteCommand) {
+                window.__omegaGuiExecuteCommand('claim');
+              } else if (window.terminal && window.terminal.executeCommand) {
+                window.terminal.executeCommand('claim');
+              } else {
+                console.error('No command execution method available');
+              }
+            } catch (error) {
+              console.error('Error executing claim command:', error);
             }
           })()" style="
             background: linear-gradient(135deg, color-mix(in srgb, var(--palette-secondary, #00ff88) 80%, transparent), color-mix(in srgb, var(--palette-secondary, #00ff88) 60%, transparent));
@@ -292,7 +318,7 @@ function createMiningStartHtml(): string {
         gap: 8px;
       ">
         ${SVG_ICONS.activity}
-        <span>Mining will continue automatically. Use ${createCommandLine(
+        <span>Mining will continue automatically. Use ${createClickableCommand(
           "stop",
           "stop"
         )} to stop.</span>
@@ -341,7 +367,7 @@ const mineCommand: Command = {
               margin-bottom: 8px;
             ">No Wallet Connected</div>
             <div style="color: var(--palette-text, #ccd4e0); font-size: 0.95em;">
-              ${createCommandLine("connect", "Connect a wallet first")}
+              ${createClickableCommand("connect", "connect", "Connect a wallet first")}
             </div>
           </div>
         </div>
@@ -417,31 +443,170 @@ const mineCommand: Command = {
         return;
       }
 
+      // Show immediate mining status - users see this right away
+      const initialMiningStatusHtml = `
+        <div style="
+          background: linear-gradient(135deg, color-mix(in srgb, var(--palette-primary, #00d4ff) 8%, transparent), color-mix(in srgb, var(--palette-secondary, #00ff88) 5%, transparent));
+          border: 1px solid color-mix(in srgb, var(--palette-primary, #00d4ff) 25%, transparent);
+          border-radius: 8px;
+          padding: 12px 16px;
+          margin: 8px 0;
+          font-family: 'Courier New', monospace;
+          display: flex;
+          align-items: center;
+          gap: 12px;
+        ">
+          <div style="
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--palette-primary, #00d4ff);
+            animation: pulse 2s ease-in-out infinite;
+          ">
+            ${SVG_ICONS.pickaxe.replace(
+              'style="display: inline-block; vertical-align: middle;"',
+              'style="display: inline-block; vertical-align: middle; animation: rotate 2s linear infinite;"'
+            )}
+            <span style="font-weight: 600; font-size: 0.9em;">Initializing Mining...</span>
+          </div>
+          <div style="
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--palette-text, #ccd4e0);
+            font-size: 0.85em;
+          ">
+            <span style="
+              display: inline-block;
+              width: 20px;
+              text-align: center;
+              font-weight: bold;
+              color: var(--palette-secondary, #00ff88);
+            ">|</span>
+            <span style="
+              font-family: 'Courier New', monospace;
+              color: color-mix(in srgb, var(--palette-text, #ccd4e0) 70%, transparent);
+            ">Preparing mining session...</span>
+          </div>
+        </div>
+        <style>
+          @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+          }
+          @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+          }
+        </style>
+      `;
+      context.logHtml(initialMiningStatusHtml);
+
+      // Wait a moment to ensure updaters are set up, then start mining
+      // Use setTimeout to ensure the loop starts asynchronously
+      await new Promise((resolve) => setTimeout(resolve, 200));
+
+      // Verify updaters are available before starting
+      const updaters = (window as any).__omegaMiningUpdaters;
+      console.log("[Mine] Checking updaters:", {
+        hasUpdaters: !!updaters,
+        hasMiningActiveRef: !!updaters?.miningActiveRef,
+        miningActive: updaters?.miningActiveRef?.current,
+      });
+      
+      if (!updaters) {
+        const errorHtml = `
+          <div style="
+            background: linear-gradient(135deg, color-mix(in srgb, var(--palette-error, #ff4757) 15%, transparent), color-mix(in srgb, var(--palette-warning, #ffa502) 10%, transparent));
+            border: 1px solid color-mix(in srgb, var(--palette-error, #ff4757) 30%, transparent);
+            border-radius: 12px;
+            padding: 16px;
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+          ">
+            <div style="color: var(--palette-error, #ff4757);">
+              ${SVG_ICONS.error}
+            </div>
+            <div style="flex: 1;">
+              <div style="
+                font-size: 16px;
+                font-weight: 600;
+                color: var(--palette-error, #ff4757);
+              ">Mining System Not Ready</div>
+              <div style="color: var(--palette-text, #ccd4e0); font-size: 0.95em; margin-top: 8px;">
+                Please refresh the page and try again.
+              </div>
+            </div>
+          </div>
+        `;
+        context.logHtml(errorHtml);
+        context.miningState?.stopMining();
+        return;
+      }
+
+      // Ensure mining is marked as active
+      if (!updaters.miningActiveRef?.current) {
+        updaters.miningActiveRef.current = true;
+        console.log("[Mine] Set miningActiveRef to true");
+      }
+
+      // Show that mining is starting
+      const startingHtml = `
+        <div style="
+          background: linear-gradient(135deg, color-mix(in srgb, var(--palette-secondary, #00ff88) 10%, transparent), color-mix(in srgb, var(--palette-primary, #00d4ff) 6%, transparent));
+          border: 1px solid color-mix(in srgb, var(--palette-secondary, #00ff88) 25%, transparent);
+          border-radius: 8px;
+          padding: 12px 16px;
+          margin: 8px 0;
+          display: flex;
+          align-items: center;
+          gap: 12px;
+        ">
+          <div style="color: var(--palette-secondary, #00ff88);">
+            ${SVG_ICONS.success}
+          </div>
+          <div style="flex: 1; color: var(--palette-text, #ccd4e0);">
+            <strong style="color: var(--palette-secondary, #00ff88);">Mining Started!</strong> The mining process will continue automatically.
+          </div>
+        </div>
+      `;
+      context.logHtml(startingHtml);
+      console.log("[Mine] Starting mining loop...");
+
       // Define mining loop
       const mineLoop = async () => {
-        // Get updaters from window
+        // Get updaters from window (refresh on each iteration)
         const updaters = (window as any).__omegaMiningUpdaters;
 
         // Check if still mining using the boolean ref
-        if (!updaters?.miningActiveRef?.current) return;
+        if (!updaters?.miningActiveRef?.current) {
+          console.log("[Mine] Mining stopped, exiting loop");
+          return;
+        }
+
+        console.log("[Mine] Starting mining attempt...");
 
         try {
-          if (updaters) {
-            updaters.incrementMineCount();
-          }
-
           const currentCount = context.miningState?.mineCount || 0;
+          const nextBlockNumber = currentCount + 1;
 
-          // Show mining animation
+          // Show mining animation with status updates - VISUAL FEEDBACK FOR USERS
           const spinnerFrames = ["|", "/", "-", "\\"];
           let spinnerIndex = 0;
+          // Show mining status updates - display progress in terminal LIVE
+          // This creates the visual mining effect users see
           for (let i = 0; i < 8; i++) {
             if (!updaters?.miningActiveRef?.current) break;
-            await new Promise((resolve) => setTimeout(resolve, 100));
+            await new Promise((resolve) => setTimeout(resolve, 150));
             const hash = generateFakeHash();
             const spinner = spinnerFrames[spinnerIndex] || "|";
+            // Show mining status in terminal - LIVE VISUAL FEEDBACK
+            // Users see this happening in real-time
             context.logHtml(
-              createMiningStatusHtml(currentCount, hash, spinner)
+              createMiningStatusHtml(nextBlockNumber, hash, spinner)
             );
             spinnerIndex = (spinnerIndex + 1) % spinnerFrames.length;
           }
@@ -556,8 +721,30 @@ const mineCommand: Command = {
             return;
           }
 
-          if (data.success && data.reward && data.reward > 0) {
-            // Verify transaction exists on-chain if we have a txHash
+          if (data.success && data.reward && (typeof data.reward === 'number' ? data.reward > 0 : parseFloat(String(data.reward)) > 0)) {
+            // Format reward for display
+            const rewardValue = typeof data.reward === 'string' ? parseFloat(data.reward) : Number(data.reward);
+            const formattedReward = formatBalance(rewardValue);
+
+            // Increment mine count and update total earned on success
+            if (updaters) {
+              updaters.incrementMineCount();
+              updaters.addToTotalEarned(rewardValue);
+            }
+
+            // Get the block number for display
+            const blockNumber = data.blockNumber || (context.miningState?.mineCount || 0) + 1;
+
+            // Show success message IMMEDIATELY - this is what users see first
+            context.logHtml(
+              createMiningSuccessHtml(
+                formattedReward,
+                data.txHash || data.transactionHash,
+                blockNumber
+              )
+            );
+
+            // Verify transaction exists on-chain if we have a txHash (happens in background)
             if (data.txHash || data.transactionHash) {
               const txHash = data.txHash || data.transactionHash;
               const explorerUrl = `https://0x4e454228.explorer.aurora-cloud.dev/tx/${txHash}`;
@@ -830,18 +1017,6 @@ const mineCommand: Command = {
                 );
               }
             }
-
-            // Update total earned
-            if (updaters) {
-              updaters.addToTotalEarned(parseFloat(data.reward));
-            }
-
-            context.logHtml(
-              createMiningSuccessHtml(
-                data.reward,
-                data.txHash || data.transactionHash
-              )
-            );
           } else {
             const noRewardHtml = `
               <div style="
@@ -864,37 +1039,128 @@ const mineCommand: Command = {
           }
         } catch (error) {
           // Handle mining failures gracefully
-          const noRewardHtml = `
+          console.error("[Mine] Error in mining loop:", error);
+          const errorMessage = error instanceof Error ? error.message : String(error);
+          const errorHtml = `
             <div style="
-              background: color-mix(in srgb, var(--palette-text, #ccd4e0) 5%, transparent);
-              border: 1px solid color-mix(in srgb, var(--palette-text, #ccd4e0) 15%, transparent);
+              background: color-mix(in srgb, var(--palette-warning, #ffa502) 10%, transparent);
+              border: 1px solid color-mix(in srgb, var(--palette-warning, #ffa502) 25%, transparent);
               border-radius: 8px;
               padding: 10px 14px;
               margin: 6px 0;
               display: flex;
               align-items: center;
               gap: 10px;
-              color: color-mix(in srgb, var(--palette-text, #ccd4e0) 70%, transparent);
+              color: var(--palette-text, #ccd4e0);
               font-size: 0.9em;
             ">
-              ${SVG_ICONS.pickaxe}
-              <span>Block mined (no reward this time)</span>
+              ${SVG_ICONS.warning}
+              <span>Mining attempt failed: ${escapeHtml(errorMessage)}. Will retry...</span>
             </div>
           `;
-          context.logHtml(noRewardHtml);
+          context.logHtml(errorHtml);
         }
 
-        // Continue mining loop
-        if (updaters?.miningActiveRef?.current) {
-          const timeoutId = setTimeout(mineLoop, 8000); // 8 second intervals (matches vanilla implementation)
-          if (updaters?.miningTimeoutRef) {
-            updaters.miningTimeoutRef.current = timeoutId as unknown as number;
+        // Continue mining loop - show next attempt immediately with visual feedback
+        const currentUpdaters = (window as any).__omegaMiningUpdaters;
+        if (currentUpdaters?.miningActiveRef?.current) {
+          // Show that we're preparing for next mining attempt
+          const nextAttemptHtml = `
+            <div style="
+              background: color-mix(in srgb, var(--palette-primary, #00d4ff) 5%, transparent);
+              border: 1px solid color-mix(in srgb, var(--palette-primary, #00d4ff) 15%, transparent);
+              border-radius: 8px;
+              padding: 10px 14px;
+              margin: 6px 0;
+              display: flex;
+              align-items: center;
+              gap: 10px;
+              color: var(--palette-text, #ccd4e0);
+              font-size: 0.85em;
+            ">
+              ${SVG_ICONS.activity}
+              <span>Preparing next mining attempt...</span>
+            </div>
+          `;
+          context.logHtml(nextAttemptHtml);
+          
+          // Schedule next mining attempt
+          const timeoutId = setTimeout(() => {
+            // Double-check mining is still active before continuing
+            const checkUpdaters = (window as any).__omegaMiningUpdaters;
+            if (checkUpdaters?.miningActiveRef?.current) {
+              mineLoop().catch((error) => {
+                console.error("[Mine] Error in mining loop:", error);
+                const errorHtml = `
+                  <div style="
+                    background: color-mix(in srgb, var(--palette-error, #ff4757) 10%, transparent);
+                    border: 1px solid color-mix(in srgb, var(--palette-error, #ff4757) 25%, transparent);
+                    border-radius: 8px;
+                    padding: 10px 14px;
+                    margin: 6px 0;
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                    color: var(--palette-text, #ccd4e0);
+                    font-size: 0.9em;
+                  ">
+                    ${SVG_ICONS.warning}
+                    <span>Mining error occurred. Retrying in 8 seconds...</span>
+                  </div>
+                `;
+                context.logHtml(errorHtml);
+                // Retry after error
+                if (checkUpdaters?.miningActiveRef?.current) {
+                  const retryTimeoutId = setTimeout(mineLoop, 8000);
+                  if (checkUpdaters?.miningTimeoutRef) {
+                    checkUpdaters.miningTimeoutRef.current = retryTimeoutId as unknown as number;
+                  }
+                }
+              });
+            }
+          }, 8000); // 8 second intervals (matches vanilla implementation)
+          
+          if (currentUpdaters?.miningTimeoutRef) {
+            currentUpdaters.miningTimeoutRef.current = timeoutId as unknown as number;
           }
+        } else {
+          console.log("[Mine] Mining stopped, not continuing loop");
         }
       };
 
-      // Start the mining loop
-      mineLoop();
+      // Start the mining loop IMMEDIATELY - users see mining happening right away
+      // Wrap in try-catch to handle any startup errors
+      mineLoop().catch((error) => {
+        console.error("[Mine] Failed to start mining loop:", error);
+        const errorHtml = `
+          <div style="
+            background: linear-gradient(135deg, color-mix(in srgb, var(--palette-error, #ff4757) 15%, transparent), color-mix(in srgb, var(--palette-warning, #ffa502) 10%, transparent));
+            border: 1px solid color-mix(in srgb, var(--palette-error, #ff4757) 30%, transparent);
+            border-radius: 12px;
+            padding: 16px;
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+          ">
+            <div style="color: var(--palette-error, #ff4757);">
+              ${SVG_ICONS.error}
+            </div>
+            <div style="flex: 1;">
+              <div style="
+                font-size: 16px;
+                font-weight: 600;
+                color: var(--palette-error, #ff4757);
+              ">Failed to Start Mining</div>
+              <div style="color: var(--palette-text, #ccd4e0); font-size: 0.95em; margin-top: 8px;">
+                ${escapeHtml(error instanceof Error ? error.message : String(error))}
+              </div>
+            </div>
+          </div>
+        `;
+        context.logHtml(errorHtml);
+        context.miningState?.stopMining();
+      });
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : String(error);
@@ -945,7 +1211,7 @@ const claimCommand: Command = {
     // Check wallet connection
     if (!context.wallet.state.isConnected) {
       context.log("❌ No wallet connected.", "error");
-      const helpHtml = createCommandLine("connect", "Connect a wallet first");
+      const helpHtml = `<div style="margin: 8px 0;">${createClickableCommand("connect", "connect", "Connect a wallet first")}</div>`;
       context.logHtml(helpHtml);
       return;
     }
@@ -988,14 +1254,63 @@ const claimCommand: Command = {
       // Handle response (matches vanilla implementation)
       if (data.success) {
         const amount = data.amount || "0";
-        context.log(`✅ Claimed ${amount} OMEGA to your wallet!`, "success");
-
-        if (data.txHash) {
-          context.log(`📤 Claim tx sent: ${data.txHash}`, "info");
-          context.logHtml(
-            `🔍 <a href="https://0x4e454228.explorer.aurora-cloud.dev/tx/${data.txHash}" target="_blank">View transaction</a>`
-          );
-        }
+        const formattedAmount = formatBalance(parseFloat(amount));
+        
+        // Show success message with rich HTML formatting
+        const claimSuccessHtml = `
+          <div style="
+            background: linear-gradient(135deg, color-mix(in srgb, var(--palette-secondary, #00ff88) 12%, transparent), color-mix(in srgb, var(--palette-success, #00ff88) 8%, transparent));
+            border: 1px solid color-mix(in srgb, var(--palette-secondary, #00ff88) 30%, transparent);
+            border-radius: 8px;
+            padding: 14px 16px;
+            margin: 8px 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+          ">
+            <div style="color: var(--palette-secondary, #00ff88);">
+              ${SVG_ICONS.success}
+            </div>
+            <div style="flex: 1;">
+              <div style="
+                font-weight: 600;
+                color: var(--palette-secondary, #00ff88);
+                font-size: 1em;
+                margin-bottom: 4px;
+              ">Claim Successful!</div>
+              <div style="
+                color: var(--palette-text, #ccd4e0);
+                font-size: 0.95em;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                margin-bottom: 8px;
+              ">
+                ${SVG_ICONS.coin}
+                <span>Claimed: <strong style="color: var(--palette-secondary, #00ff88);">${formattedAmount}</strong></span>
+              </div>
+              ${data.txHash ? `
+                <div style="margin-top: 8px;">
+                  <a href="https://0x4e454228.explorer.aurora-cloud.dev/tx/${data.txHash}" target="_blank" style="
+                    color: var(--palette-primary, #00d4ff);
+                    text-decoration: none;
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 6px;
+                    font-size: 0.9em;
+                    padding: 4px 8px;
+                    border-radius: 4px;
+                    transition: all 0.2s ease;
+                  " onmouseover="this.style.background = 'color-mix(in srgb, var(--palette-primary, #00d4ff) 15%, transparent)';" onmouseout="this.style.background = 'transparent';">
+                    ${SVG_ICONS.search}
+                    View Transaction
+                  </a>
+                </div>
+              ` : ''}
+            </div>
+          </div>
+        `;
+        context.logHtml(claimSuccessHtml);
       } else {
         const errorMessage = data.error || data.message || "Claim failed";
         context.log(`❌ Claim failed: ${errorMessage}`, "error");
@@ -1097,7 +1412,7 @@ const faucetCommand: Command = {
     // Check wallet connection
     if (!context.wallet.state.isConnected) {
       context.log("❌ No wallet connected.", "error");
-      const helpHtml = createCommandLine("connect", "Connect a wallet first");
+      const helpHtml = `<div style="margin: 8px 0;">${createClickableCommand("connect", "connect", "Connect a wallet first")}</div>`;
       context.logHtml(helpHtml);
       return;
     }
@@ -1212,7 +1527,7 @@ const statsCommand: Command = {
     // Check wallet connection
     if (!context.wallet.state.isConnected) {
       context.log("❌ No wallet connected.", "error");
-      const helpHtml = createCommandLine("connect", "Connect a wallet first");
+      const helpHtml = `<div style="margin: 8px 0;">${createClickableCommand("connect", "connect", "Connect a wallet first")}</div>`;
       context.logHtml(helpHtml);
       return;
     }

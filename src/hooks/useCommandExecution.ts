@@ -1171,6 +1171,7 @@ export function useCommandExecution(): UseCommandExecutionReturn {
         }
 
         // Add command to terminal output
+        console.log("📝 Adding command to terminal output:", trimmedCommand);
         addLine("command", trimmedCommand);
 
         // Emit chart open event when relevant to update dashboard stats panel
@@ -1501,8 +1502,11 @@ export function useCommandExecution(): UseCommandExecutionReturn {
             commandRegistry: commandRegistry,
           };
           
+          console.log("🚀 Executing command via registry:", trimmedCommand);
           await commandRegistry.execute(trimmedCommand, enhancedContext, fromAI);
+          console.log("✅ Command execution completed:", trimmedCommand);
         } catch (error) {
+          console.error("❌ Error executing command:", trimmedCommand, error);
           const errorMessage =
             error instanceof Error ? error.message : String(error);
           log(`Error: ${errorMessage}`, "error");

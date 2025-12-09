@@ -29,6 +29,7 @@ export enum GameType {
   BASHIDO = 13,
   PG_TANKS = 14,
   OMEGA_FORECAST_ARENA = 15,
+  YUMI_POP = 16,
 }
 
 /**

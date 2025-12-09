@@ -14,6 +14,15 @@ export function FarmingSection(): JSX.Element {
   const handleCommand = useCallback(
     (command: string) => {
       void executeCommand(command);
+      // Auto-scroll terminal to bottom to show command output
+      if (typeof window !== "undefined" && (window as any).__omegaScrollTerminalToBottom) {
+        setTimeout(() => {
+          (window as any).__omegaScrollTerminalToBottom();
+        }, 100);
+        setTimeout(() => {
+          (window as any).__omegaScrollTerminalToBottom();
+        }, 500);
+      }
     },
     [executeCommand]
   );

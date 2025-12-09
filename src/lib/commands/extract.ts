@@ -603,10 +603,11 @@ export const extractCommand: Command = {
   name: "extract",
   description: "Extract audio/sound from YouTube videos",
   usage: "extract <subcommand> [options]",
-  execute: handleExtract,
+  handler: handleExtract,
 };
 
 export const extractCommands: Command[] = [extractCommand];
 
 export default extractCommands;
+
 

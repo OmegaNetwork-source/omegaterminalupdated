@@ -97,6 +97,18 @@ export const GAMES_METADATA: GameMetadata[] = [
     hasOnChainLeaderboard: false,
   },
   {
+    id: "yumi-pop",
+    name: "Yumi Pop",
+    type: GameType.YUMI_POP,
+    category: "arcade",
+    description: "Terminal-optimized bubble popping game - Pop bubbles before they reach the bottom!",
+    command: "yumi start",
+    aliases: ["yumi", "yumipop", "bubbles", "pop"],
+    icon: "🫧",
+    difficulty: "medium",
+    hasOnChainLeaderboard: false,
+  },
+  {
     id: "snake",
     name: "Snake",
     type: GameType.SNAKE,

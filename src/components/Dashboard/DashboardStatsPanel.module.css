@@ -33,6 +33,11 @@
   z-index: 1;
 }
 
+/* When companion is open, ensure proper stacking */
+.statsPanel:has(.companionSection) {
+  /* Keep isolation to maintain stacking context, but companion will be on top */
+}
+
 /* Hide scrollbars from media panels - only statsPanel should scroll */
 .mediaSection .mediaPanelWrapper :global(.panel),
 .mediaSection .mediaPanelWrapper :global(.panel .content),
@@ -52,6 +57,38 @@
   order: -1;
   flex-shrink: 0;
   width: 100%;
+}
+
+/* Companion section appears at the top when open, replaces SystemOverview */
+.section.companionSection,
+.companionSection.mediaSection,
+.companionSection {
+  order: -2 !important; /* Even higher priority than SystemOverview */
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  margin-bottom: 0 !important;
+  padding: 0 !important;
+  height: 100% !important;
+  position: relative !important;
+  z-index: 100 !important; /* Much higher than cubes background (0) and other sections (10-20) */
+  isolation: isolate !important;
+  background: transparent !important; /* Let the wrapper handle background */
+  transform: translateZ(0) !important; /* Force new stacking context above cubes */
+  will-change: transform !important; /* Hint to browser for optimization */
+}
+
+/* Companion panel wrapper takes full available space */
+.companionSection .mediaPanelWrapper {
+  flex: 1 1 auto !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  position: relative !important;
+  z-index: 101 !important; /* Even higher than companion section */
+  isolation: isolate !important;
+  background: transparent !important;
+  transform: translateZ(0) !important; /* Force new stacking context above cubes */
 }
 
 .statsPanel::-webkit-scrollbar {
@@ -115,7 +152,7 @@
 .cubesBackground {
   position: absolute;
   inset: 0;
-  z-index: 0;
+  z-index: 0 !important; /* Keep cubes at the bottom */
   pointer-events: none;
   border-radius: 12px;
   overflow: hidden;
@@ -149,6 +186,12 @@
 
 .mediaSection {
   z-index: 15;
+}
+
+/* Companion section must override mediaSection z-index - more specific selectors */
+.section.companionSection.mediaSection,
+.companionSection.mediaSection {
+  z-index: 100 !important; /* Override the default mediaSection z-index (15) and section z-index (10) */
 }
 
 /* System Overview States */
@@ -505,6 +548,11 @@
   flex: 1 1 auto;
 }
 
+/* Companion panel wrapper must have higher z-index */
+.companionSection .mediaPanelWrapper {
+  z-index: 101 !important; /* Override default mediaPanelWrapper z-index */
+}
+
 /* Media sections don't need section titles - panels have their own headers */
 .mediaSection {
   padding: 0 !important;
@@ -546,6 +594,22 @@
   transform: none !important;
   z-index: auto !important;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3) !important; /* Add shadow for depth */
+}
+
+/* Companion panel takes full height when open */
+.companionSection .mediaPanelWrapper :global(.container) {
+  min-height: calc(100vh - 32px) !important; /* Account for stats panel padding (16px top + 16px bottom) */
+  max-height: calc(100vh - 32px) !important;
+  height: calc(100vh - 32px) !important;
+  flex: 1 1 auto !important;
+  position: relative !important;
+  z-index: 102 !important; /* Highest z-index to ensure it's above everything including cubes */
+  isolation: isolate !important;
+  background: var(--palette-surface, rgba(21, 21, 32, 1)) !important; /* Ensure solid background to cover cubes */
+  background-color: var(--palette-surface, rgba(21, 21, 32, 1)) !important; /* Explicit background-color */
+  box-shadow: 0 0 0 1px var(--palette-border, rgba(0, 212, 255, 0.15)) !important; /* Visual separation */
+  /* Ensure it's above cubes animation */
+  transform: translateZ(0) !important; /* Force hardware acceleration and new stacking context */
 }
 
 /* Remove scrollbars from panel content when inside stats panel */

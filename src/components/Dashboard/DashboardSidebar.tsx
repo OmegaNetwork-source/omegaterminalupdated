@@ -440,22 +440,32 @@ export function DashboardSidebar(): JSX.Element {
   const handleCommandClick = useCallback(
     (cmd: string) => {
       console.log("🔘 Sidebar button clicked:", cmd);
+      console.log("🔘 executeCommand function:", executeCommand);
+      console.log("🔘 commandsInitialized:", commandsInitialized);
       try {
-      void executeCommand(cmd);
-      // Auto-scroll terminal to bottom to show command output
-      if (typeof window !== "undefined" && (window as any).__omegaScrollTerminalToBottom) {
-        setTimeout(() => {
-          (window as any).__omegaScrollTerminalToBottom();
-        }, 100);
-        setTimeout(() => {
-          (window as any).__omegaScrollTerminalToBottom();
-        }, 500);
+        if (!executeCommand) {
+          console.error("❌ executeCommand is not available!");
+          return;
+        }
+        if (!commandsInitialized) {
+          console.warn("⚠️ Commands not initialized yet, but attempting to execute:", cmd);
+        }
+        console.log("✅ Calling executeCommand with:", cmd);
+        void executeCommand(cmd);
+        // Auto-scroll terminal to bottom to show command output
+        if (typeof window !== "undefined" && (window as any).__omegaScrollTerminalToBottom) {
+          setTimeout(() => {
+            (window as any).__omegaScrollTerminalToBottom();
+          }, 100);
+          setTimeout(() => {
+            (window as any).__omegaScrollTerminalToBottom();
+          }, 500);
         }
       } catch (error) {
-        console.error("Error executing command:", cmd, error);
+        console.error("❌ Error executing command:", cmd, error);
       }
     },
-    [executeCommand]
+    [executeCommand, commandsInitialized]
   );
 
   // Special handlers for actions that don't use commands

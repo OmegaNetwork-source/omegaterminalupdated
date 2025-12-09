@@ -381,7 +381,7 @@ export function DashboardStatsPanel(): JSX.Element | null {
     }
   }, []);
 
-  // Check if any panel is open
+  // Check if any panel is open (excluding companion - it has special handling)
   const hasOpenPanel = 
     isChartOpen ||
     perps.playerState.isPanelOpen ||
@@ -391,8 +391,7 @@ export function DashboardStatsPanel(): JSX.Element | null {
     techPlayer.playerState.isPanelOpen ||
     funkyPlayer.playerState.isPanelOpen ||
     trancePlayer.playerState.isPanelOpen ||
-    melodiesPlayer.playerState.isPanelOpen ||
-    companion.isPanelOpen;
+    melodiesPlayer.playerState.isPanelOpen;
 
   return (
     <aside ref={statsPanelRef} className={styles.statsPanel} onClick={handleStatsPanelClick}>
@@ -414,10 +413,12 @@ export function DashboardStatsPanel(): JSX.Element | null {
         className={styles.cubesBackground}
       />
 
-      {/* System Overview - Always visible at the top */}
-      <div className={hasOpenPanel ? styles.systemOverviewCompact : styles.systemOverviewFull}>
-        <SystemOverview />
-      </div>
+      {/* System Overview - Hidden when companion is open */}
+      {!companion.isPanelOpen && (
+        <div className={hasOpenPanel ? styles.systemOverviewCompact : styles.systemOverviewFull}>
+          <SystemOverview />
+        </div>
+      )}
 
       {/* TradingView Script - Load once, use many times */}
       <Script
@@ -593,9 +594,9 @@ export function DashboardStatsPanel(): JSX.Element | null {
         </section>
       )}
 
-      {/* Companion Panel - inside stats panel like chart viewer */}
+      {/* Companion Panel - at the top when open, replaces SystemOverview */}
       {companion.isPanelOpen && (
-        <section className={`${styles.section} ${styles.mediaSection}`}>
+        <section className={`${styles.section} ${styles.mediaSection} ${styles.companionSection}`}>
           <div className={styles.mediaPanelWrapper}>
             <Suspense fallback={<div className={styles.panelLoading}>Loading Companion...</div>}>
               <CompanionPanel />

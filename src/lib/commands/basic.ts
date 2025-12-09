@@ -1516,6 +1516,35 @@ export const stopCommand: Command = {
     if (context.miningState?.isMining) {
       context.miningState.stopMining();
       stoppedActivities.push("mining");
+      
+      // Show clear confirmation that mining stopped
+      const stopHtml = `
+        <div style="
+          background: linear-gradient(135deg, color-mix(in srgb, var(--palette-error, #ff4757) 12%, transparent), color-mix(in srgb, var(--palette-warning, #ffa502) 8%, transparent));
+          border: 1px solid color-mix(in srgb, var(--palette-error, #ff4757) 30%, transparent);
+          border-radius: 8px;
+          padding: 14px 16px;
+          margin: 8px 0;
+          display: flex;
+          align-items: center;
+          gap: 12px;
+        ">
+          <div style="color: var(--palette-error, #ff4757); font-size: 1.2em;">⏹️</div>
+          <div style="flex: 1;">
+            <div style="
+              font-weight: 600;
+              color: var(--palette-error, #ff4757);
+              font-size: 1em;
+              margin-bottom: 4px;
+            ">Mining Stopped</div>
+            <div style="
+              color: var(--palette-text, #ccd4e0);
+              font-size: 0.9em;
+            ">The mining process has been stopped. Your session earnings have been preserved.</div>
+          </div>
+        </div>
+      `;
+      context.logHtml(stopHtml);
     }
 
     // Clear animations (if any running)
@@ -1524,9 +1553,12 @@ export const stopCommand: Command = {
       stoppedActivities.push("animations");
     }
 
-    if (stoppedActivities.length > 0) {
-      context.log(`⏹️ Stopped: ${stoppedActivities.join(", ")}`, "success");
-    } else {
+    if (stoppedActivities.length > 0 && !context.miningState?.isMining) {
+      // Already showed HTML for mining, just log text for other activities
+      if (stoppedActivities.length > 1 || !stoppedActivities.includes("mining")) {
+        context.log(`⏹️ Stopped: ${stoppedActivities.filter(a => a !== "mining").join(", ")}`, "success");
+      }
+    } else if (stoppedActivities.length === 0) {
       context.log("ℹ️ No activities currently running", "info");
     }
   },

@@ -37,6 +37,19 @@ export function WelcomeMessage() {
     void executeCommand("help");
   }, [executeCommand]);
 
+  const handleQuickActionClick = useCallback((command: string) => {
+    void executeCommand(command);
+    // Auto-scroll terminal to bottom to show command output
+    if (typeof window !== "undefined" && (window as any).__omegaScrollTerminalToBottom) {
+      setTimeout(() => {
+        (window as any).__omegaScrollTerminalToBottom();
+      }, 100);
+      setTimeout(() => {
+        (window as any).__omegaScrollTerminalToBottom();
+      }, 500);
+    }
+  }, [executeCommand]);
+
   const grouped = groupQuickActionsByCategory(actions);
   
   const categoryIcons: Record<string, string> = {
@@ -268,11 +281,13 @@ export function WelcomeMessage() {
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '10px' }}>
                     {categoryActions.map((action, actionIndex) => {
                       const escapedCommand = action.command.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+                      
                       return (
                         <div
                           key={`${category}-${action.id}-${actionIndex}`}
                           className="omega-execute-command"
                           data-command={escapedCommand}
+                          onClick={() => handleQuickActionClick(action.command)}
                           style={{
                             color: 'var(--palette-secondary, #00ff88)',
                             fontWeight: 'bold',

@@ -37,6 +37,7 @@ async function handleList(context: CommandContext): Promise<void> {
     "brick-breaker",
     "perfect-circle",
     "forecast-arena",
+    "yumi-pop",
   ]);
 
   // Separate games into working and coming soon
@@ -668,6 +669,45 @@ async function handlePlay(
           <div style="margin-bottom: 4px;"><strong>Objective:</strong> Destroy all enemy tanks using artillery!</div>
           <div style="margin-bottom: 4px;"><strong>Game Modes:</strong> Free-for-All, Team Battle, Campaign</div>
           <div><strong>Scoring:</strong> +100 points per kill, bonus for remaining health</div>
+        </div>
+      </div>
+    `;
+  } else if (game.id === "yumi-pop") {
+    instructions = `
+      <div style="
+        background: linear-gradient(135deg, color-mix(in srgb, var(--palette-primary, #00bcf2) 5%, transparent) 0%, color-mix(in srgb, var(--palette-primary, #00bcf2) 2%, transparent) 100%);
+        border: 1px solid var(--palette-border, color-mix(in srgb, var(--palette-primary, #00bcf2) 20%, transparent));
+        border-radius: 8px;
+        padding: 16px;
+        margin-bottom: 12px;
+      ">
+        <div style="color: var(--palette-primary, #00bcf2); font-weight: 600; margin-bottom: 12px; font-size: 14px;">🫧 Yumi Pop - Game Instructions:</div>
+        <div style="color: var(--palette-text, #e0e0e0); font-size: 12px;">
+          <div style="margin-bottom: 4px;"><strong>Controls:</strong></div>
+          <div style="margin-left: 12px; margin-bottom: 8px;">
+            • ← → Arrow Keys: Move player left/right<br/>
+            • SPACE: Shoot projectiles<br/>
+            • ESC: Pause/Resume game
+          </div>
+          <div style="margin-bottom: 4px;"><strong>Objective:</strong> Pop all bubbles before they reach the bottom!</div>
+          <div style="margin-bottom: 4px;"><strong>Gameplay:</strong></div>
+          <div style="margin-left: 12px; margin-bottom: 4px;">
+            • Bubbles split into smaller bubbles when hit<br/>
+            • Build combos for higher scores<br/>
+            • Lose a life if bubbles reach the bottom<br/>
+            • Progress through levels with increasing difficulty
+          </div>
+          <div style="margin-bottom: 4px;"><strong>Scoring:</strong></div>
+          <div style="margin-left: 12px; margin-bottom: 4px;">
+            • Huge: 100 points × combo<br/>
+            • Large: 50 points × combo<br/>
+            • Medium: 25 points × combo<br/>
+            • Small: 10 points × combo<br/>
+            • Tiny: 5 points × combo
+          </div>
+          <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid color-mix(in srgb, var(--palette-border, rgba(0, 212, 255, 0.3)) 50%, transparent);">
+            <strong>💡 Tip:</strong> Keep your combo going for maximum points! Don't let bubbles reach the bottom!
+          </div>
         </div>
       </div>
     `;

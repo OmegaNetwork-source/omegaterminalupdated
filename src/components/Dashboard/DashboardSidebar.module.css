@@ -1139,8 +1139,8 @@ details[open] .expandIcon {
   border: none !important;
   border-radius: 0 !important;
   color: var(--palette-primary, #00ff00) !important;
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
   box-shadow: none !important;
 }
 
@@ -1237,8 +1237,8 @@ details[open] .expandIcon {
   border: none !important;
   border-radius: 0 !important;
   color: var(--palette-primary, #00ff00) !important;
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
   box-shadow: none !important;
   text-shadow: 
     0 0 5px color-mix(in srgb, var(--palette-primary, #00ff00) 50%, transparent),
@@ -1336,8 +1336,8 @@ details[open] .expandIcon {
   text-shadow: 
     0 0 5px color-mix(in srgb, var(--palette-primary, #00ff00) 50%, transparent),
     0 0 10px color-mix(in srgb, var(--palette-primary, #00ff00) 30%, transparent);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
 }
 
 :global(body.theme-crt) .paletteChip:hover,
@@ -1358,8 +1358,8 @@ details[open] .expandIcon {
 :global(body.theme-crt) .sidebar::-webkit-scrollbar-thumb {
   background: color-mix(in srgb, var(--palette-primary, #00ff00) 30%, transparent);
   border: none !important;
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
 }
 
 :global(body.theme-crt) .sidebar::-webkit-scrollbar-thumb:hover {

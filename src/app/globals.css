@@ -864,14 +864,14 @@ body.theme-crt [class*="Header"] {
   box-shadow: none !important;
 }
 
-/* Terminal output glassmorphism - No borders */
+/* Terminal output glassmorphism - No borders, NO BLUR */
 body.theme-crt [class*="terminal"],
 body.theme-crt [class*="Terminal"],
 body.theme-crt [class*="output"],
 body.theme-crt [class*="Output"] {
   background: rgba(0, 0, 0, 0.9) !important;
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
   border: none !important;
 }
 
@@ -902,8 +902,8 @@ body.theme-crt input[type="email"],
 body.theme-crt input[type="number"],
 body.theme-crt textarea {
   background: rgba(0, 0, 0, 0.8) !important;
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
   border: none !important;
   color: var(--palette-primary, #00ff00) !important;
   box-shadow: none !important;
@@ -955,8 +955,8 @@ body.theme-crt ::-webkit-scrollbar {
 body.theme-crt ::-webkit-scrollbar-thumb {
   background: color-mix(in srgb, var(--palette-primary, #00ff00) 30%, transparent);
   border: none !important;
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
 }
 
 body.theme-crt ::-webkit-scrollbar-thumb:hover {
