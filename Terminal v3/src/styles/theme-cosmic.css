@@ -1,0 +1,212 @@
+/**
+ * Cosmic Theme Styles
+ * Deep space nebula theme with purple, blue, and pink gradients
+ * Applied via body.theme-cosmic class
+ */
+
+body.theme-cosmic {
+  /* Base Colors - Deep space background */
+  background: #0a0a1a;
+  color: #e0e0ff;
+  
+  /* Typography */
+  font-family: "Courier New", Monaco, monospace;
+  text-shadow: 0 0 10px rgba(138, 43, 226, 0.5), 0 0 20px rgba(75, 0, 130, 0.3);
+  
+  /* Cosmic gradient background */
+  background-image: 
+    radial-gradient(ellipse at top, rgba(138, 43, 226, 0.15) 0%, transparent 50%),
+    radial-gradient(ellipse at bottom, rgba(75, 0, 130, 0.15) 0%, transparent 50%),
+    radial-gradient(ellipse at left, rgba(0, 191, 255, 0.1) 0%, transparent 50%),
+    linear-gradient(180deg, #0a0a1a 0%, #1a0a2a 50%, #0a0a1a 100%);
+  background-attachment: fixed;
+  background-size: 100% 100%;
+}
+
+/* Cosmic theme with color palettes */
+body.theme-cosmic[data-color-palette="default"],
+body.theme-cosmic[data-color-palette="purple"],
+body.theme-cosmic[data-color-palette="violet"] {
+  --palette-primary: #9d4edd;
+  --palette-secondary: #7b2cbf;
+  --palette-accent: #c77dff;
+  --palette-bg: #0a0a1a;
+  --palette-surface: #1a0a2a;
+  --palette-text: #e0e0ff;
+  --palette-muted: #a0a0d0;
+  --palette-border: #3d1a5a;
+  --palette-success: #00ff88;
+  --palette-warning: #ffaa00;
+  --palette-error: #ff4d4f;
+  --palette-primary-glow: rgba(157, 78, 221, 0.5);
+  --palette-secondary-glow: rgba(123, 44, 191, 0.4);
+  --palette-accent-glow: rgba(199, 125, 255, 0.45);
+}
+
+/* Enhanced glassmorphism for cosmic theme */
+body.theme-cosmic button,
+body.theme-cosmic [class*="button"],
+body.theme-cosmic [class*="Button"],
+body.theme-cosmic input,
+body.theme-cosmic textarea,
+body.theme-cosmic select,
+body.theme-cosmic a {
+  background: rgba(26, 10, 42, 0.8) !important;
+  backdrop-filter: blur(12px) saturate(150%);
+  -webkit-backdrop-filter: blur(12px) saturate(150%);
+  border: 1px solid rgba(157, 78, 221, 0.3) !important;
+  box-shadow: 
+    0 0 20px rgba(157, 78, 221, 0.2),
+    inset 0 0 20px rgba(199, 125, 255, 0.1) !important;
+  color: var(--palette-primary, #9d4edd) !important;
+  transition: all 0.3s ease !important;
+}
+
+body.theme-cosmic button:hover,
+body.theme-cosmic [class*="button"]:hover,
+body.theme-cosmic [class*="Button"]:hover {
+  background: rgba(157, 78, 221, 0.2) !important;
+  border-color: rgba(199, 125, 255, 0.6) !important;
+  box-shadow: 
+    0 0 30px rgba(157, 78, 221, 0.4),
+    inset 0 0 30px rgba(199, 125, 255, 0.2) !important;
+  transform: translateY(-2px);
+}
+
+/* Cosmic terminal text effects */
+body.theme-cosmic [class*="terminal"],
+body.theme-cosmic [class*="Terminal"],
+body.theme-cosmic code,
+body.theme-cosmic pre {
+  color: #e0e0ff;
+  text-shadow: 
+    0 0 5px rgba(157, 78, 221, 0.8),
+    0 0 10px rgba(123, 44, 191, 0.6),
+    0 0 15px rgba(199, 125, 255, 0.4);
+}
+
+/* Cosmic panel styling */
+body.theme-cosmic [class*="panel"],
+body.theme-cosmic [class*="Panel"],
+body.theme-cosmic [class*="sidebar"],
+body.theme-cosmic [class*="Sidebar"],
+body.theme-cosmic [class*="header"],
+body.theme-cosmic [class*="Header"] {
+  background: rgba(26, 10, 42, 0.85) !important;
+  backdrop-filter: blur(15px) saturate(150%);
+  -webkit-backdrop-filter: blur(15px) saturate(150%);
+  border: 1px solid rgba(157, 78, 221, 0.2) !important;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    inset 0 0 40px rgba(157, 78, 221, 0.1) !important;
+}
+
+/* Cosmic title effects */
+body.theme-cosmic [class*="title"],
+body.theme-cosmic [class*="Title"],
+body.theme-cosmic h1,
+body.theme-cosmic h2,
+body.theme-cosmic h3,
+body.theme-cosmic h4,
+body.theme-cosmic h5,
+body.theme-cosmic h6 {
+  background: linear-gradient(
+    135deg,
+    #9d4edd 0%,
+    #c77dff 25%,
+    #00bfff 50%,
+    #c77dff 75%,
+    #9d4edd 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: #9d4edd; /* Fallback */
+  text-shadow: 
+    0 0 20px rgba(157, 78, 221, 0.8),
+    0 0 40px rgba(199, 125, 255, 0.6);
+  filter: drop-shadow(0 0 10px rgba(157, 78, 221, 0.5));
+}
+
+/* Cosmic input styling */
+body.theme-cosmic input[type="text"],
+body.theme-cosmic input[type="search"],
+body.theme-cosmic textarea {
+  background: rgba(10, 10, 26, 0.9) !important;
+  border: 1px solid rgba(157, 78, 221, 0.4) !important;
+  color: #e0e0ff !important;
+  box-shadow: 
+    inset 0 0 10px rgba(157, 78, 221, 0.2),
+    0 0 15px rgba(199, 125, 255, 0.1) !important;
+}
+
+body.theme-cosmic input[type="text"]:focus,
+body.theme-cosmic input[type="search"]:focus,
+body.theme-cosmic textarea:focus {
+  border-color: rgba(199, 125, 255, 0.8) !important;
+  box-shadow: 
+    inset 0 0 15px rgba(157, 78, 221, 0.3),
+    0 0 25px rgba(199, 125, 255, 0.3) !important;
+  outline: none;
+}
+
+/* Cosmic scrollbar */
+body.theme-cosmic ::-webkit-scrollbar-track {
+  background: rgba(26, 10, 42, 0.5) !important;
+}
+
+body.theme-cosmic ::-webkit-scrollbar-thumb {
+  background: linear-gradient(
+    180deg,
+    #9d4edd 0%,
+    #7b2cbf 50%,
+    #9d4edd 100%
+  ) !important;
+  border-radius: 4px;
+  box-shadow: 0 0 10px rgba(157, 78, 221, 0.5);
+}
+
+body.theme-cosmic ::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(
+    180deg,
+    #c77dff 0%,
+    #9d4edd 50%,
+    #c77dff 100%
+  ) !important;
+  box-shadow: 0 0 15px rgba(199, 125, 255, 0.7);
+}
+
+/* Cosmic animations */
+@keyframes cosmic-pulse {
+  0%, 100% {
+    opacity: 1;
+    box-shadow: 0 0 20px rgba(157, 78, 221, 0.5);
+  }
+  50% {
+    opacity: 0.8;
+    box-shadow: 0 0 40px rgba(199, 125, 255, 0.7);
+  }
+}
+
+@keyframes cosmic-glow {
+  0%, 100% {
+    text-shadow: 
+      0 0 10px rgba(157, 78, 221, 0.8),
+      0 0 20px rgba(123, 44, 191, 0.6);
+  }
+  50% {
+    text-shadow: 
+      0 0 20px rgba(199, 125, 255, 1),
+      0 0 40px rgba(157, 78, 221, 0.8),
+      0 0 60px rgba(123, 44, 191, 0.6);
+  }
+}
+
+body.theme-cosmic [class*="pulse"] {
+  animation: cosmic-pulse 2s ease-in-out infinite;
+}
+
+body.theme-cosmic [class*="glow"] {
+  animation: cosmic-glow 3s ease-in-out infinite;
+}
+

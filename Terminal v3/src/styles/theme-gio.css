@@ -1,0 +1,194 @@
+/**
+ * Gio Theme Styles
+ * Simple pride theme with unicorn cursor and pride flag on terminal screen
+ * Applied via body.theme-gio class
+ */
+
+body.theme-gio {
+  /* Base Colors - Dark theme */
+  background: #0a0a0a;
+  color: #ffffff;
+  
+  /* Typography */
+  font-family: "Courier New", Monaco, monospace;
+  
+  /* Unicorn cursor */
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🦄%3C/text%3E%3C/svg%3E"), auto;
+}
+
+/* Unicorn cursor for all interactive elements */
+body.theme-gio button,
+body.theme-gio [class*="button"],
+body.theme-gio [class*="Button"],
+body.theme-gio input,
+body.theme-gio textarea,
+body.theme-gio select,
+body.theme-gio a,
+body.theme-gio [class*="chip"],
+body.theme-gio [class*="Chip"] {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🦄%3C/text%3E%3C/svg%3E"), auto !important;
+}
+
+/* Pride flag on main terminal output container (above input) */
+body.theme-gio [data-testid="terminal-container"] {
+  position: relative;
+}
+
+/* Pride flag image covering most of the terminal output area */
+body.theme-gio [data-testid="terminal-container"]::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: calc(100% - 100px); /* Takes up most space, leaves ~100px at bottom for content */
+  min-height: 400px; /* Ensure minimum visibility */
+  background-image: url("https://assets.aclu.org/live/uploads/2019/09/blog_rainbowflag1.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: 0;
+  opacity: 0.85;
+  pointer-events: none;
+  border-radius: 8px 8px 0 0;
+}
+
+/* Ensure terminal content appears above the flag */
+body.theme-gio [data-testid="terminal-container"] > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Standard dark theme styling for panels */
+body.theme-gio button,
+body.theme-gio [class*="button"],
+body.theme-gio [class*="Button"],
+body.theme-gio input,
+body.theme-gio textarea,
+body.theme-gio select,
+body.theme-gio a {
+  background: rgba(26, 26, 26, 0.8) !important;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  color: #ffffff !important;
+  transition: all 0.3s ease !important;
+}
+
+body.theme-gio button:hover,
+body.theme-gio [class*="button"]:hover,
+body.theme-gio [class*="Button"]:hover {
+  background: rgba(40, 40, 40, 0.9) !important;
+  border-color: rgba(255, 255, 255, 0.4) !important;
+  transform: translateY(-1px);
+}
+
+/* Standard text styling */
+body.theme-gio [class*="title"],
+body.theme-gio [class*="Title"],
+body.theme-gio h1,
+body.theme-gio h2,
+body.theme-gio h3,
+body.theme-gio h4,
+body.theme-gio h5,
+body.theme-gio h6 {
+  color: #ffffff;
+}
+
+/* Terminal text */
+body.theme-gio [class*="terminal"],
+body.theme-gio [class*="Terminal"],
+body.theme-gio code,
+body.theme-gio pre {
+  color: #ffffff;
+}
+
+/* Panel styling */
+body.theme-gio [class*="panel"],
+body.theme-gio [class*="Panel"],
+body.theme-gio [class*="header"],
+body.theme-gio [class*="Header"] {
+  background: rgba(20, 20, 20, 0.9) !important;
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Left Sidebar - Subtle Rainbow Gradient */
+body.theme-gio [class*="sidebar"],
+body.theme-gio [class*="Sidebar"] {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 0, 0, 0.05) 0%,
+    rgba(255, 127, 0, 0.05) 14%,
+    rgba(255, 255, 0, 0.05) 28%,
+    rgba(0, 255, 0, 0.05) 42%,
+    rgba(0, 0, 255, 0.05) 57%,
+    rgba(75, 0, 130, 0.05) 71%,
+    rgba(148, 0, 211, 0.05) 85%,
+    rgba(255, 0, 0, 0.05) 100%
+  ) !important;
+  background-size: 200% 200% !important;
+  animation: rainbow-shimmer-sidebar 8s ease infinite !important;
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  position: relative;
+}
+
+/* Add base dark background behind the gradient */
+body.theme-gio [class*="sidebar"]::before,
+body.theme-gio [class*="Sidebar"]::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(20, 20, 20, 0.85);
+  z-index: -1;
+  border-radius: inherit;
+}
+
+/* Rainbow shimmer animation for sidebar */
+@keyframes rainbow-shimmer-sidebar {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Input styling */
+body.theme-gio input[type="text"],
+body.theme-gio input[type="search"],
+body.theme-gio textarea {
+  background: rgba(15, 15, 15, 0.9) !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  color: #ffffff !important;
+}
+
+body.theme-gio input[type="text"]:focus,
+body.theme-gio input[type="search"]:focus,
+body.theme-gio textarea:focus {
+  border-color: rgba(255, 255, 255, 0.5) !important;
+  outline: none;
+}
+
+/* Standard scrollbar */
+body.theme-gio ::-webkit-scrollbar-track {
+  background: rgba(20, 20, 20, 0.5) !important;
+}
+
+body.theme-gio ::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3) !important;
+  border-radius: 4px;
+}
+
+body.theme-gio ::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5) !important;
+}

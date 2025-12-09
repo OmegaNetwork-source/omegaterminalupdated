@@ -1,0 +1,217 @@
+/**
+ * GioPridePanel Styles
+ * Styles for YouTube video, flashing messages, and rainbow emojis
+ */
+
+.gioPridePanel {
+  position: relative;
+  width: 100%;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 100%;
+  z-index: 10;
+  background: rgba(20, 20, 20, 0.95);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+}
+
+.videoContainer {
+  width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.video {
+  width: 100%;
+  height: 200px;
+  border: none;
+  min-height: 200px;
+}
+
+.messageContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 60px;
+  margin: 16px 0;
+}
+
+/* Queer Theme Section - Fills the blank space */
+.queerThemeSection {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px;
+  background: rgba(26, 10, 42, 0.6);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 12px;
+  border: 2px solid rgba(255, 192, 203, 0.3);
+  margin: 16px 0;
+  overflow-y: auto;
+}
+
+.queerTitle {
+  text-align: center;
+  font-size: 28px;
+  font-weight: bold;
+  color: #ffffff;
+  text-shadow: 
+    0 0 10px rgba(255, 192, 203, 0.8),
+    0 0 20px rgba(255, 192, 203, 0.6);
+  margin: 0 0 20px 0;
+  animation: title-pulse 2s ease-in-out infinite;
+}
+
+@keyframes title-pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.9;
+  }
+}
+
+.queerContent {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 1;
+}
+
+.queerCard {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+.queerCard:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 192, 203, 0.5);
+  transform: translateX(5px);
+  box-shadow: 0 4px 12px rgba(255, 192, 203, 0.3);
+}
+
+.queerIcon {
+  font-size: 40px;
+  filter: drop-shadow(0 0 8px rgba(255, 192, 203, 0.6));
+  animation: icon-float 3s ease-in-out infinite;
+}
+
+@keyframes icon-float {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-5px) rotate(10deg);
+  }
+}
+
+.queerText {
+  flex: 1;
+  color: #ffffff;
+}
+
+.queerText strong {
+  display: block;
+  font-size: 18px;
+  margin-bottom: 4px;
+  color: #ffffff;
+  text-shadow: 0 0 8px rgba(255, 192, 203, 0.6);
+}
+
+.queerText p {
+  margin: 0;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.4;
+}
+
+.queerQuote {
+  text-align: center;
+  font-size: 16px;
+  font-style: italic;
+  color: #ffffff;
+  padding: 16px;
+  background: rgba(255, 192, 203, 0.2);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 192, 203, 0.4);
+  text-shadow: 0 0 10px rgba(255, 192, 203, 0.8);
+  animation: quote-glow 2s ease-in-out infinite;
+}
+
+@keyframes quote-glow {
+  0%, 100% {
+    box-shadow: 0 0 10px rgba(255, 192, 203, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(255, 192, 203, 0.6);
+  }
+}
+
+.flashingMessage {
+  font-size: 24px;
+  font-weight: bold;
+  text-align: center;
+  padding: 12px 24px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  text-shadow: 
+    0 0 10px rgba(255, 255, 255, 0.8),
+    0 0 20px rgba(255, 192, 203, 0.6);
+  color: #ffffff;
+}
+
+.flashingMessage.show {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.flashingMessage.hide {
+  opacity: 0;
+  transform: scale(0.8);
+}
+
+.rainbowEmojis {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-top: auto;
+  padding: 16px 0;
+}
+
+.emoji {
+  font-size: 32px;
+  display: inline-block;
+  animation: emoji-bounce 2s ease-in-out infinite;
+  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.5));
+}
+
+@keyframes emoji-bounce {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 1;
+  }
+  50% {
+    transform: translateY(-10px) rotate(180deg);
+    opacity: 0.8;
+  }
+}
+

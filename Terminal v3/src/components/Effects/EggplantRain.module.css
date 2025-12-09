@@ -1,0 +1,48 @@
+/**
+ * EggplantRain Styles
+ * Animation for eggplant emojis on click
+ */
+
+.container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+.eggplant {
+  position: absolute;
+  font-size: 50px;
+  user-select: none;
+  pointer-events: none;
+  animation: eggplant-fly 2.5s ease-out forwards;
+  transform-origin: center;
+  filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.5));
+}
+
+@keyframes eggplant-fly {
+  0% {
+    opacity: 1;
+    transform: translateY(0) translateX(0) rotate(0deg) scale(1);
+  }
+  25% {
+    opacity: 1;
+    transform: translateY(-50px) translateX(var(--random-x, 0px)) rotate(90deg) scale(1.1);
+  }
+  50% {
+    opacity: 0.9;
+    transform: translateY(-120px) translateX(calc(var(--random-x, 0px) * 1.5)) rotate(180deg) scale(1.2);
+  }
+  75% {
+    opacity: 0.6;
+    transform: translateY(-180px) translateX(calc(var(--random-x, 0px) * 2)) rotate(270deg) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-250px) translateX(calc(var(--random-x, 0px) * 2.5)) rotate(360deg) scale(0.3);
+  }
+}
+
