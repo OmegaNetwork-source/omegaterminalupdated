@@ -13,6 +13,7 @@ import { MultiNetworkConnectorHost } from "@/components/Wallet/MultiNetworkConne
 import { AptosWalletProvider } from "@/providers/AptosWalletProvider";
 import { ParlayProvider } from "@/providers/ParlayProvider";
 import { TradingAccountsProvider } from "@/providers/TradingAccountsProvider";
+import { AnalyticsProvider } from "@/providers/AnalyticsProvider";
 import ContextProvider from "../../context";
 import { headers } from "next/headers";
 import WebVitals from "./_components/WebVitals";
@@ -86,30 +87,32 @@ export default async function RootLayout({
       </head>
       <body suppressHydrationWarning data-omega-hydrated="true">
         <WebVitals />
-        <ContextProvider cookies={cookies}>
-          <SoundEffectsProvider>
-            <ThemeProvider>
-              <CustomizerProvider>
-                <ViewModeProvider>
-                  <GUIThemeProvider>
-                    <WalletProvider>
-                      <MultiNetworkConnectorHost />
-                      <MultiChainProvider>
-                        <AptosWalletProvider>
-                          <TradingAccountsProvider>
-                            <ParlayProvider>
-                              <ProviderShell>{children}</ProviderShell>
-                            </ParlayProvider>
-                          </TradingAccountsProvider>
-                        </AptosWalletProvider>
-                      </MultiChainProvider>
-                    </WalletProvider>
-                  </GUIThemeProvider>
-                </ViewModeProvider>
-              </CustomizerProvider>
-            </ThemeProvider>
-          </SoundEffectsProvider>
-        </ContextProvider>
+        <AnalyticsProvider>
+          <ContextProvider cookies={cookies}>
+            <SoundEffectsProvider>
+              <ThemeProvider>
+                <CustomizerProvider>
+                  <ViewModeProvider>
+                    <GUIThemeProvider>
+                      <WalletProvider>
+                        <MultiNetworkConnectorHost />
+                        <MultiChainProvider>
+                          <AptosWalletProvider>
+                            <TradingAccountsProvider>
+                              <ParlayProvider>
+                                <ProviderShell>{children}</ProviderShell>
+                              </ParlayProvider>
+                            </TradingAccountsProvider>
+                          </AptosWalletProvider>
+                        </MultiChainProvider>
+                      </WalletProvider>
+                    </GUIThemeProvider>
+                  </ViewModeProvider>
+                </CustomizerProvider>
+              </ThemeProvider>
+            </SoundEffectsProvider>
+          </ContextProvider>
+        </AnalyticsProvider>
       </body>
     </html>
   );

@@ -159,6 +159,7 @@ export class CommandRegistry {
     }
 
     const commandName = args[0]!.toLowerCase();
+    const startTime = Date.now();
 
     // Look up command in registry
     const command = this.commands.get(commandName);
@@ -167,11 +168,43 @@ export class CommandRegistry {
       // Execute command handler
       try {
         await command.handler(context, args);
+        
+        // Track successful command execution
+        if (typeof window !== "undefined") {
+          try {
+            const { trackCommand } = await import("@/lib/firebase/analytics");
+            const executionTime = Date.now() - startTime;
+            trackCommand(commandName, {
+              category: command.category,
+              success: true,
+              executionTimeMs: executionTime,
+            });
+          } catch (analyticsError) {
+            // Fail silently - don't break command execution if analytics fails
+            console.debug("[Analytics] Error tracking command:", analyticsError);
+          }
+        }
       } catch (error) {
         // Log execution errors
         const errorMessage =
           error instanceof Error ? error.message : String(error);
         context.log(`Error executing command: ${errorMessage}`, "error");
+        
+        // Track failed command execution
+        if (typeof window !== "undefined") {
+          try {
+            const { trackCommand } = await import("@/lib/firebase/analytics");
+            const executionTime = Date.now() - startTime;
+            trackCommand(commandName, {
+              category: command.category,
+              success: false,
+              executionTimeMs: executionTime,
+              errorMessage,
+            });
+          } catch (analyticsError) {
+            console.debug("[Analytics] Error tracking command:", analyticsError);
+          }
+        }
       }
     } else {
       // Command not found - check if AI mode should handle it
@@ -222,6 +255,20 @@ export class CommandRegistry {
             "💡 Enable AI Mode for natural language assistance!",
             "info"
           );
+        }
+      }
+      
+      // Track unknown command attempt
+      if (typeof window !== "undefined") {
+        try {
+          const { trackCommand } = await import("@/lib/firebase/analytics");
+          trackCommand(commandName, {
+            category: "unknown",
+            success: false,
+            errorMessage: "Command not found",
+          });
+        } catch (analyticsError) {
+          console.debug("[Analytics] Error tracking command:", analyticsError);
         }
       }
     }
