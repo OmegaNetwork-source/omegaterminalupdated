@@ -1,0 +1,27 @@
+{
+  "extends": ["next/core-web-vitals", "next/typescript"],
+  "rules": {
+    "no-restricted-imports": [
+      "error",
+      {
+        "paths": [
+          {
+            "name": "ethers",
+            "importNames": ["*"],
+            "message": "Avoid namespace imports from ethers; prefer named imports for better tree shaking."
+          },
+          {
+            "name": "near-api-js",
+            "importNames": ["*"],
+            "message": "Avoid namespace imports from near-api-js; import only the functions you need."
+          },
+          {
+            "name": "@solana/web3.js",
+            "importNames": ["*"],
+            "message": "Avoid namespace imports from @solana/web3.js; use named imports to reduce bundle size."
+          }
+        ]
+      }
+    ]
+  }
+}

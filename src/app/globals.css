@@ -1,0 +1,2630 @@
+/**
+ * Omega Terminal - Global Styles
+ * Base styles and CSS variables for the application
+ */
+
+/* =============================================================================
+   CSS Reset and Base Styles
+   ============================================================================= */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  position: relative;
+}
+
+html {
+  overflow-x: hidden;
+  background: #000000;
+}
+
+body {
+  overflow-x: hidden;
+  overflow-y: auto;
+  font-family: "Courier New", Monaco, monospace;
+  font-size: 14px;
+  line-height: 1.4;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  margin: 0;
+  padding: 0;
+  /* Safe area insets for notched devices */
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  padding-left: env(safe-area-inset-left, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
+}
+
+/* =============================================================================
+   CSS Custom Properties (Variables)
+   ============================================================================= */
+
+:root {
+  /* Primary Colors */
+  --color-primary: #00bcf2;
+  --color-secondary: #00ff88;
+  --color-accent: #ff00ff;
+
+  /* Background Colors */
+  --color-bg-primary: #0a0a0f;
+  --color-bg-secondary: #1a1a1f;
+  --color-bg-tertiary: #2a2a2f;
+
+  /* Text Colors */
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #cccccc;
+  --color-text-muted: #888888;
+
+  /* Status Colors */
+  --color-success: #00ff88;
+  --color-error: #ff3333;
+  --color-warning: #ffaa00;
+  --color-info: #00bcf2;
+
+  /* Terminal Colors */
+  --color-terminal-bg: #000000;
+  --color-terminal-text: #ffffff;
+  --color-terminal-prompt: #00bcf2;
+  --color-terminal-input: #ffffff;
+
+  /* Border and Shadow */
+  --color-border: #ffffff;
+  --shadow-glow: 0 0 15px var(--color-primary);
+
+  /* Spacing */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+
+  /* Border Radius */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+
+  /* Transitions */
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.3s ease;
+  --transition-slow: 0.5s ease;
+}
+
+/* =============================================================================
+   Typography
+   ============================================================================= */
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+code,
+pre {
+  font-family: "Courier New", Monaco, monospace;
+}
+
+/* =============================================================================
+   Scrollbar Styling
+   ============================================================================= */
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-bg-primary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-primary);
+  border-radius: var(--radius-sm);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-secondary);
+}
+
+/* Light palette scrollbar overrides (already defined above but ensuring it works) */
+body[data-color-palette="light"] ::-webkit-scrollbar-track {
+  background: var(--palette-surface, #f8fafc) !important;
+}
+
+body[data-color-palette="light"] ::-webkit-scrollbar-thumb {
+  background: var(--palette-border, #e2e8f0) !important;
+}
+
+body[data-color-palette="light"] ::-webkit-scrollbar-thumb:hover {
+  background: var(--palette-primary, #1e40af) !important;
+}
+
+/* =============================================================================
+   Animation Keyframes
+   ============================================================================= */
+
+/* =============================================================================
+   Optimized Animations - GPU Accelerated
+   ============================================================================= */
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translate3d(0, -20px, 0);
+    opacity: 0;
+  }
+  to {
+    transform: translate3d(0, 0, 0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translate3d(0, 20px, 0);
+    opacity: 0;
+  }
+  to {
+    transform: translate3d(0, 0, 0);
+    opacity: 1;
+  }
+}
+
+@keyframes glow {
+  0%,
+  100% {
+    text-shadow: 0 0 5px var(--color-primary), 0 0 10px var(--color-primary);
+  }
+  50% {
+    text-shadow: 0 0 10px var(--color-primary), 0 0 20px var(--color-primary),
+      0 0 30px var(--color-primary);
+  }
+}
+
+@keyframes loadingProgress {
+  0% {
+    width: 0%;
+  }
+  100% {
+    width: 100%;
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes modalSlideIn {
+  from {
+    transform: translate3d(0, -50px, 0);
+    opacity: 0;
+  }
+  to {
+    transform: translate3d(0, 0, 0);
+    opacity: 1;
+  }
+}
+
+/* GPU-accelerated animation classes */
+.animate-fadeIn,
+.animate-slideIn,
+.animate-slideUp,
+.animate-modalSlideIn {
+  will-change: transform, opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+/* Respect reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* =============================================================================
+   MOBILE OPTIMIZATIONS
+   Safe area insets and mobile-specific adjustments
+   ============================================================================= */
+
+@media (max-width: 640px) {
+  html {
+    font-size: 16px; /* Prevent zoom on iOS when focusing inputs */
+  }
+}
+
+/* Keyboard-open state adjustments */
+body.keyboard-open {
+  /* Adjust layout when mobile keyboard is open */
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* =============================================================================
+   COMPREHENSIVE THEME SYSTEM
+   Each theme has unique typography, fonts, spacing, and visual styling
+   ============================================================================= */
+
+/* -----------------------------------------------------------------------------
+   VOID THEME - Deep Void Terminal
+   Pure darkness with vibrant neon accents, enhanced glow effects
+   ----------------------------------------------------------------------------- */
+body.theme-dark {
+  /* Base Colors */
+  background: #000000;
+  color: #ffffff;
+  
+  /* Typography */
+  font-family: "Courier New", "Monaco", "Consolas", "Liberation Mono", monospace;
+  font-size: 14px;
+  line-height: 1.4;
+  letter-spacing: 0.05em;
+  font-weight: 400;
+  
+  /* Theme Variables */
+  --theme-font-primary: "Courier New", "Monaco", "Consolas", monospace;
+  --theme-font-heading: "Courier New", "Monaco", monospace;
+  --theme-font-mono: "Courier New", "Monaco", "Consolas", monospace;
+  --theme-font-body: "Courier New", "Monaco", monospace;
+  --theme-letter-spacing: 0.05em;
+  --theme-line-height: 1.4;
+  --theme-font-weight-normal: 400;
+  --theme-font-weight-bold: 700;
+  --theme-spacing-xs: 4px;
+  --theme-spacing-sm: 8px;
+  --theme-spacing-md: 16px;
+  --theme-spacing-lg: 24px;
+  --theme-spacing-xl: 32px;
+  --theme-radius-sm: 4px;
+  --theme-radius-md: 8px;
+  --theme-radius-lg: 12px;
+  --theme-radius-xl: 16px;
+  --theme-text-transform: none;
+  
+  /* Enhanced Void effects - subtle depth and glow */
+  box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.5);
+}
+
+/* -----------------------------------------------------------------------------
+   LIGHT THEME - Clean Professional
+   System fonts, comfortable spacing, modern light interface
+   ----------------------------------------------------------------------------- */
+body.theme-light {
+  /* Base Colors */
+  background: #ffffff;
+  color: #111111;
+  
+  /* Typography */
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+  letter-spacing: 0;
+  font-weight: 400;
+  
+  /* Theme Variables */
+  --theme-font-primary: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", sans-serif;
+  --theme-font-heading: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --theme-font-mono: "SF Mono", "Monaco", "Cascadia Code", "Consolas", monospace;
+  --theme-font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --theme-letter-spacing: 0;
+  --theme-line-height: 1.6;
+  --theme-font-weight-normal: 400;
+  --theme-font-weight-bold: 600;
+  --theme-spacing-xs: 4px;
+  --theme-spacing-sm: 8px;
+  --theme-spacing-md: 16px;
+  --theme-spacing-lg: 24px;
+  --theme-spacing-xl: 32px;
+  --theme-radius-sm: 6px;
+  --theme-radius-md: 8px;
+  --theme-radius-lg: 12px;
+  --theme-radius-xl: 16px;
+  --theme-text-transform: none;
+}
+
+/* -----------------------------------------------------------------------------
+   NEO THEME - Matrix Digital Rain
+   Enhanced cyberpunk green glow, authentic Matrix aesthetic
+   ----------------------------------------------------------------------------- */
+body.theme-matrix {
+  /* Base Colors */
+  background: #000000;
+  color: #ffffff;
+  
+  /* Typography */
+  font-family: "Courier New", "Monaco", monospace;
+  font-size: 13px;
+  line-height: 1.3;
+  letter-spacing: 0.08em;
+  font-weight: 400;
+  text-transform: uppercase;
+  
+  /* Theme Variables */
+  --theme-font-primary: "Courier New", "Monaco", monospace;
+  --theme-font-heading: "Courier New", monospace;
+  --theme-font-mono: "Courier New", "Monaco", monospace;
+  --theme-font-body: "Courier New", monospace;
+  --theme-letter-spacing: 0.08em;
+  --theme-line-height: 1.3;
+  --theme-font-weight-normal: 400;
+  --theme-font-weight-bold: 700;
+  --theme-spacing-xs: 4px;
+  --theme-spacing-sm: 8px;
+  --theme-spacing-md: 12px;
+  --theme-spacing-lg: 16px;
+  --theme-spacing-xl: 24px;
+  --theme-radius-sm: 0px;
+  --theme-radius-md: 2px;
+  --theme-radius-lg: 4px;
+  --theme-radius-xl: 6px;
+  --theme-text-transform: uppercase;
+  
+  /* Enhanced Neo Matrix effects - white glow */
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.8), 0 0 20px rgba(255, 255, 255, 0.4);
+}
+
+/* -----------------------------------------------------------------------------
+   RETRO THEME - Vintage CRT Terminal
+   Amber/orange glow, VT323 font, retro aesthetic
+   ----------------------------------------------------------------------------- */
+body.theme-retro {
+  /* Base Colors */
+  background: #181200;
+  color: #ffaa00;
+  
+  /* Typography */
+  font-family: "VT323", "Courier New", monospace;
+  font-size: 16px;
+  line-height: 1.4;
+  letter-spacing: 0.05em;
+  font-weight: 400;
+  
+  /* Theme Variables */
+  --theme-font-primary: "VT323", "Courier New", monospace;
+  --theme-font-heading: "VT323", "Courier New", monospace;
+  --theme-font-mono: "VT323", "Courier New", monospace;
+  --theme-font-body: "VT323", "Courier New", monospace;
+  --theme-letter-spacing: 0.05em;
+  --theme-line-height: 1.4;
+  --theme-font-weight-normal: 400;
+  --theme-font-weight-bold: 400;
+  --theme-spacing-xs: 4px;
+  --theme-spacing-sm: 8px;
+  --theme-spacing-md: 12px;
+  --theme-spacing-lg: 16px;
+  --theme-spacing-xl: 24px;
+  --theme-radius-sm: 0px;
+  --theme-radius-md: 2px;
+  --theme-radius-lg: 4px;
+  --theme-radius-xl: 6px;
+  --theme-text-transform: none;
+}
+
+/* -----------------------------------------------------------------------------
+   POWERSHELL THEME - Windows PowerShell
+   Microsoft styling, Windows fonts, blue theme
+   ----------------------------------------------------------------------------- */
+body.theme-powershell {
+  /* Base Colors */
+  background: #012456;
+  color: #ffffff;
+  
+  /* Typography */
+  font-family: "Segoe UI", "Microsoft Sans Serif", sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  letter-spacing: 0;
+  font-weight: 400;
+  
+  /* Theme Variables */
+  --theme-font-primary: "Segoe UI", "Microsoft Sans Serif", sans-serif;
+  --theme-font-heading: "Segoe UI", "Microsoft Sans Serif", sans-serif;
+  --theme-font-mono: "Consolas", "Courier New", monospace;
+  --theme-font-body: "Segoe UI", "Microsoft Sans Serif", sans-serif;
+  --theme-letter-spacing: 0;
+  --theme-line-height: 1.5;
+  --theme-font-weight-normal: 400;
+  --theme-font-weight-bold: 600;
+  --theme-spacing-xs: 4px;
+  --theme-spacing-sm: 8px;
+  --theme-spacing-md: 16px;
+  --theme-spacing-lg: 24px;
+  --theme-spacing-xl: 32px;
+  --theme-radius-sm: 4px;
+  --theme-radius-md: 6px;
+  --theme-radius-lg: 8px;
+  --theme-radius-xl: 12px;
+  --theme-text-transform: none;
+}
+
+/* -----------------------------------------------------------------------------
+   ELITE THEME - Elite Prestige
+   Luxury gold accents, premium serif typography, sophisticated elegance
+   ----------------------------------------------------------------------------- */
+body.theme-executive {
+  /* Base Colors */
+  background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 50%, #0a0a0f 100%);
+  color: #ffffff;
+  
+  /* Typography */
+  font-family: "Playfair Display", "Georgia", "Times New Roman", serif;
+  font-size: 15px;
+  line-height: 1.65;
+  letter-spacing: 0.015em;
+  font-weight: 400;
+  
+  /* Theme Variables */
+  --theme-font-primary: "Playfair Display", "Georgia", "Times New Roman", serif;
+  --theme-font-heading: "Playfair Display", "Georgia", serif;
+  --theme-font-mono: "SF Mono", "Monaco", "Cascadia Code", "Fira Code", monospace;
+  --theme-font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", "SF Pro Display", sans-serif;
+  --theme-letter-spacing: 0.015em;
+  --theme-line-height: 1.65;
+  --theme-font-weight-normal: 400;
+  --theme-font-weight-bold: 600;
+  --theme-spacing-xs: 6px;
+  --theme-spacing-sm: 12px;
+  --theme-spacing-md: 20px;
+  --theme-spacing-lg: 32px;
+  --theme-spacing-xl: 48px;
+  --theme-radius-sm: 6px;
+  --theme-radius-md: 10px;
+  --theme-radius-lg: 14px;
+  --theme-radius-xl: 20px;
+  --theme-text-transform: none;
+  
+  /* Enhanced Elite effects - luxury gold shimmer */
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* -----------------------------------------------------------------------------
+   NEON THEME - Neon Cyber Futuristic
+   Enhanced glassmorphism, electric neon glow, futuristic aesthetics
+   ----------------------------------------------------------------------------- */
+body.theme-modern,
+body.modern-ui-futuristic,
+body.modern-terminal-ui {
+  /* Base Colors */
+  background: linear-gradient(135deg, #000000 0%, #0a0a1a 50%, #000000 100%);
+  color: #ffffff;
+  
+  /* Typography */
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", "Roboto", sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  letter-spacing: -0.01em;
+  font-weight: 400;
+  
+  /* Theme Variables */
+  --theme-font-primary: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", "Roboto", sans-serif;
+  --theme-font-heading: "SF Pro Display", -apple-system, BlinkMacSystemFont, sans-serif;
+  --theme-font-mono: "SF Mono", "Monaco", "Cascadia Code", "Fira Code", monospace;
+  --theme-font-body: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+  --theme-letter-spacing: -0.01em;
+  --theme-line-height: 1.5;
+  --theme-font-weight-normal: 400;
+  --theme-font-weight-bold: 600;
+  --theme-spacing-xs: 4px;
+  --theme-spacing-sm: 8px;
+  --theme-spacing-md: 16px;
+  --theme-spacing-lg: 24px;
+  --theme-spacing-xl: 32px;
+  --theme-radius-sm: 8px;
+  --theme-radius-md: 12px;
+  --theme-radius-lg: 16px;
+  --theme-radius-xl: 24px;
+  --theme-text-transform: none;
+  
+  /* Enhanced Neon effects - glassmorphism and neon glow */
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+}
+
+/* -----------------------------------------------------------------------------
+   CRT THEME - Classic Green-on-Black Terminal
+   Glassmorphism text effects, scanlines, CRT curvature, retro aesthetic
+   ----------------------------------------------------------------------------- */
+body.theme-crt {
+  /* Base Colors - Use palette colors for text, keep black background by default */
+  background: var(--palette-bg, #000000) !important;
+  color: var(--palette-primary, #00ff00) !important;
+  
+  /* CRT Scanlines Effect */
+  position: relative;
+  overflow: hidden;
+}
+
+/* White palette overrides for CRT theme - Solid white background */
+body.theme-crt[data-color-palette="white"] {
+  background: #ffffff !important;
+  color: #000000 !important;
+}
+
+body.theme-crt[data-color-palette="white"]::before {
+  /* Lighter scanlines for white background */
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.05),
+    rgba(0, 0, 0, 0.05) 1px,
+    transparent 1px,
+    transparent 2px
+  );
+}
+
+body.theme-crt[data-color-palette="white"]::after {
+  /* Lighter curvature for white background */
+  background: radial-gradient(
+    ellipse at center,
+    transparent 0%,
+    rgba(0, 0, 0, 0.1) 100%
+  );
+}
+
+body.theme-crt::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.15),
+    rgba(0, 0, 0, 0.15) 1px,
+    transparent 1px,
+    transparent 2px
+  );
+  pointer-events: none;
+  z-index: 9999;
+  mix-blend-mode: overlay;
+}
+
+/* CRT Curvature Effect */
+body.theme-crt::after {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 0%,
+    rgba(0, 0, 0, 0.3) 100%
+  );
+  pointer-events: none;
+  z-index: 9998;
+}
+
+/* Typography - Pixelated monospace */
+body.theme-crt {
+  font-family: "Courier New", "Monaco", "Consolas", "Lucida Console", monospace;
+  font-size: 14px;
+  line-height: 1.5;
+  letter-spacing: 0.05em;
+  font-weight: 400;
+  text-rendering: optimizeSpeed;
+  -webkit-font-smoothing: none;
+  -moz-osx-font-smoothing: grayscale;
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+}
+
+/* Theme Variables */
+body.theme-crt {
+  --theme-font-primary: "Courier New", "Monaco", "Consolas", "Lucida Console", monospace;
+  --theme-font-heading: "Courier New", "Monaco", "Consolas", "Lucida Console", monospace;
+  --theme-font-mono: "Courier New", "Monaco", "Consolas", "Lucida Console", monospace;
+  --theme-font-body: "Courier New", "Monaco", "Consolas", "Lucida Console", monospace;
+  --theme-letter-spacing: 0.05em;
+  --theme-line-height: 1.5;
+  --theme-font-weight-normal: 400;
+  --theme-font-weight-bold: 700;
+  --theme-spacing-xs: 4px;
+  --theme-spacing-sm: 8px;
+  --theme-spacing-md: 12px;
+  --theme-spacing-lg: 16px;
+  --theme-spacing-xl: 24px;
+  --theme-radius-sm: 0px;
+  --theme-radius-md: 0px;
+  --theme-radius-lg: 0px;
+  --theme-radius-xl: 0px;
+  --theme-text-transform: none;
+  
+  /* CRT Color Variables - Use palette colors */
+  --crt-green: var(--palette-primary, #00ff00);
+  --crt-green-bright: var(--palette-secondary, #39ff14);
+  --crt-green-dim: color-mix(in srgb, var(--palette-primary, #00ff00) 80%, transparent);
+  --crt-black: #000000;
+  --crt-bg: #000000;
+}
+
+/* Glassmorphism Text Effects - All text gets glass effect using palette colors */
+body.theme-crt *,
+body.theme-crt *::before,
+body.theme-crt *::after {
+  color: var(--palette-primary, #00ff00) !important;
+  text-shadow: 
+    0 0 5px color-mix(in srgb, var(--palette-primary, #00ff00) 50%, transparent),
+    0 0 10px color-mix(in srgb, var(--palette-primary, #00ff00) 30%, transparent),
+    0 0 15px color-mix(in srgb, var(--palette-primary, #00ff00) 20%, transparent),
+    0 0 2px color-mix(in srgb, var(--palette-primary, #00ff00) 80%, transparent);
+  backdrop-filter: blur(0.5px);
+  -webkit-backdrop-filter: blur(0.5px);
+}
+
+/* White palette overrides for CRT theme - Solid white background with black and dark blue text */
+body.theme-crt[data-color-palette="white"] {
+  background: #ffffff !important;
+  color: #000000 !important;
+}
+
+body.theme-crt[data-color-palette="white"] *,
+body.theme-crt[data-color-palette="white"] *::before,
+body.theme-crt[data-color-palette="white"] *::after {
+  color: #000000 !important;
+  text-shadow: none !important;
+}
+
+body.theme-crt[data-color-palette="white"] [class*="title"],
+body.theme-crt[data-color-palette="white"] [class*="Title"],
+body.theme-crt[data-color-palette="white"] h1,
+body.theme-crt[data-color-palette="white"] h2,
+body.theme-crt[data-color-palette="white"] h3,
+body.theme-crt[data-color-palette="white"] h4,
+body.theme-crt[data-color-palette="white"] h5,
+body.theme-crt[data-color-palette="white"] h6 {
+  background: linear-gradient(
+    135deg,
+    #1e3a8a 0%,
+    #1e40af 50%,
+    #1e3a8a 100%
+  ) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  color: #1e3a8a !important; /* Fallback */
+  text-shadow: none !important;
+}
+
+body.theme-crt[data-color-palette="white"] [class*="title"] svg,
+body.theme-crt[data-color-palette="white"] [class*="Title"] svg,
+body.theme-crt[data-color-palette="white"] [class*="header"] svg,
+body.theme-crt[data-color-palette="white"] [class*="Header"] svg {
+  color: #1e40af !important;
+  fill: #1e40af !important;
+  filter: none !important;
+}
+
+body.theme-crt[data-color-palette="white"] [class*="panel"],
+body.theme-crt[data-color-palette="white"] [class*="Panel"],
+body.theme-crt[data-color-palette="white"] [class*="container"],
+body.theme-crt[data-color-palette="white"] [class*="Container"],
+body.theme-crt[data-color-palette="white"] [class*="sidebar"],
+body.theme-crt[data-color-palette="white"] [class*="Sidebar"],
+body.theme-crt[data-color-palette="white"] [class*="header"],
+body.theme-crt[data-color-palette="white"] [class*="Header"] {
+  background: #ffffff !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+body.theme-crt[data-color-palette="white"] button,
+body.theme-crt[data-color-palette="white"] [class*="button"],
+body.theme-crt[data-color-palette="white"] [class*="Button"] {
+  background: #ffffff !important;
+  border: 1px solid #1e3a8a !important;
+  color: #1e3a8a !important;
+  text-shadow: none !important;
+}
+
+body.theme-crt[data-color-palette="white"] button:hover,
+body.theme-crt[data-color-palette="white"] [class*="button"]:hover {
+  background: #1e3a8a !important;
+  color: #ffffff !important;
+  border-color: #1e40af !important;
+}
+
+/* Enhanced glassmorphism for interactive elements - No borders, minimal shadows */
+body.theme-crt button,
+body.theme-crt [class*="button"],
+body.theme-crt [class*="Button"],
+body.theme-crt input,
+body.theme-crt textarea,
+body.theme-crt select,
+body.theme-crt a {
+  background: rgba(0, 0, 0, 0.7) !important;
+  backdrop-filter: blur(8px) saturate(120%);
+  -webkit-backdrop-filter: blur(8px) saturate(120%);
+  border: none !important;
+  box-shadow: none !important;
+  color: var(--palette-primary, #00ff00) !important;
+}
+
+/* Glassmorphism for panels and containers - No borders, no shadows */
+body.theme-crt [class*="panel"],
+body.theme-crt [class*="Panel"],
+body.theme-crt [class*="container"],
+body.theme-crt [class*="Container"],
+body.theme-crt [class*="sidebar"],
+body.theme-crt [class*="Sidebar"],
+body.theme-crt [class*="header"],
+body.theme-crt [class*="Header"] {
+  background: rgba(0, 0, 0, 0.85) !important;
+  backdrop-filter: blur(12px) saturate(110%);
+  -webkit-backdrop-filter: blur(12px) saturate(110%);
+}
+
+/* Advanced multi-color gradient for all titles and headers in CRT theme */
+body.theme-crt h1,
+body.theme-crt h2,
+body.theme-crt h3,
+body.theme-crt h4,
+body.theme-crt h5,
+body.theme-crt h6,
+body.theme-crt [class*="title"],
+body.theme-crt [class*="Title"],
+body.theme-crt [class*="header"] [class*="title"],
+body.theme-crt [class*="Header"] [class*="Title"] {
+  background: linear-gradient(
+    135deg,
+    var(--palette-secondary, #39ff14) 0%,
+    var(--palette-primary, #00ff00) 50%,
+    var(--palette-secondary, #39ff14) 100%
+  ) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  color: var(--palette-primary, #00ff00) !important; /* Fallback */
+  text-shadow: 
+    0 0 8px color-mix(in srgb, var(--palette-secondary, #39ff14) 60%, transparent),
+    0 0 15px color-mix(in srgb, var(--palette-primary, #00ff00) 40%, transparent),
+    0 0 20px color-mix(in srgb, var(--palette-secondary, #39ff14) 25%, transparent);
+}
+
+/* SVG icons in titles/headers - Use secondary/accent color */
+body.theme-crt [class*="title"] svg,
+body.theme-crt [class*="Title"] svg,
+body.theme-crt [class*="header"] svg,
+body.theme-crt [class*="Header"] svg,
+body.theme-crt h1 svg,
+body.theme-crt h2 svg,
+body.theme-crt h3 svg,
+body.theme-crt h4 svg,
+body.theme-crt h5 svg,
+body.theme-crt h6 svg {
+  color: var(--palette-secondary, #39ff14) !important;
+  fill: var(--palette-secondary, #39ff14) !important;
+  filter: drop-shadow(0 0 4px color-mix(in srgb, var(--palette-secondary, #39ff14) 70%, transparent)) !important;
+}
+
+body.theme-crt [class*="title"] svg path,
+body.theme-crt [class*="Title"] svg path,
+body.theme-crt [class*="header"] svg path,
+body.theme-crt [class*="Header"] svg path,
+body.theme-crt [class*="title"] svg *,
+body.theme-crt [class*="Title"] svg *,
+body.theme-crt [class*="header"] svg *,
+body.theme-crt [class*="Header"] svg * {
+  fill: var(--palette-secondary, #39ff14) !important;
+  stroke: var(--palette-secondary, #39ff14) !important;
+  color: var(--palette-secondary, #39ff14) !important;
+}
+
+body.theme-crt [class*="container"],
+body.theme-crt [class*="Container"],
+body.theme-crt [class*="sidebar"],
+body.theme-crt [class*="Sidebar"],
+body.theme-crt [class*="header"],
+body.theme-crt [class*="Header"] {
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Terminal output glassmorphism - No borders, NO BLUR */
+body.theme-crt [class*="terminal"],
+body.theme-crt [class*="Terminal"],
+body.theme-crt [class*="output"],
+body.theme-crt [class*="Output"] {
+  background: rgba(0, 0, 0, 0.9) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: none !important;
+}
+
+/* Override inline styles in command output HTML - high specificity */
+body.theme-crt [class*="line"] [style*="border"],
+body.theme-crt [class*="line"] [style*="background"],
+body.theme-crt [class*="Output"] [style*="border"],
+body.theme-crt [class*="Output"] [style*="background"] {
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
+
+/* Force text colors in HTML command outputs */
+body.theme-crt [class*="line"] [style*="color"],
+body.theme-crt [class*="Output"] [style*="color"] {
+  color: var(--palette-primary, #00ff00) !important;
+  text-shadow: 
+    0 0 5px color-mix(in srgb, var(--palette-primary, #00ff00) 50%, transparent),
+    0 0 10px color-mix(in srgb, var(--palette-primary, #00ff00) 30%, transparent) !important;
+}
+
+/* Input fields with glassmorphism - No borders, minimal shadows */
+body.theme-crt input[type="text"],
+body.theme-crt input[type="password"],
+body.theme-crt input[type="email"],
+body.theme-crt input[type="number"],
+body.theme-crt textarea {
+  background: rgba(0, 0, 0, 0.8) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: none !important;
+  color: var(--palette-primary, #00ff00) !important;
+  box-shadow: none !important;
+}
+
+body.theme-crt input:focus,
+body.theme-crt textarea:focus {
+  border: none !important;
+  box-shadow: none !important;
+  outline: none;
+  background: rgba(0, 0, 0, 0.9) !important;
+}
+
+/* Links with glassmorphism - Use palette colors */
+body.theme-crt a {
+  color: var(--palette-secondary, #39ff14) !important;
+  text-decoration: none;
+  border-bottom: none !important;
+  transition: all 0.2s ease;
+}
+
+body.theme-crt a:hover {
+  color: var(--palette-primary, #00ff00) !important;
+  text-shadow: 
+    0 0 8px color-mix(in srgb, var(--palette-primary, #00ff00) 80%, transparent),
+    0 0 15px color-mix(in srgb, var(--palette-primary, #00ff00) 50%, transparent);
+  border-bottom-color: rgba(0, 255, 0, 0.6);
+}
+
+/* Code blocks and pre-formatted text */
+body.theme-crt code,
+body.theme-crt pre {
+  background: rgba(0, 0, 0, 0.9) !important;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border: none !important;
+  color: var(--palette-primary, #00ff00) !important;
+  padding: 8px;
+  border-radius: 0;
+}
+
+/* Scrollbars with CRT styling - Use palette colors, no borders */
+body.theme-crt ::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+  background: rgba(0, 0, 0, 0.8);
+}
+
+body.theme-crt ::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--palette-primary, #00ff00) 30%, transparent);
+  border: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+body.theme-crt ::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in srgb, var(--palette-primary, #00ff00) 50%, transparent);
+  box-shadow: none !important;
+}
+
+body.theme-crt ::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.9);
+  border: none !important;
+}
+
+/* Selection styling - Use palette colors */
+body.theme-crt ::selection {
+  background: color-mix(in srgb, var(--palette-primary, #00ff00) 30%, transparent);
+  color: var(--palette-secondary, #39ff14);
+  text-shadow: 0 0 5px color-mix(in srgb, var(--palette-primary, #00ff00) 80%, transparent);
+}
+
+body.theme-crt ::-moz-selection {
+  background: color-mix(in srgb, var(--palette-primary, #00ff00) 30%, transparent);
+  color: var(--palette-secondary, #39ff14);
+  text-shadow: 0 0 5px color-mix(in srgb, var(--palette-primary, #00ff00) 80%, transparent);
+}
+
+/* CRT Theme Buttons - Glassmorphism with palette colors, no borders, no shadows */
+body.theme-crt button,
+body.theme-crt [class*="button"],
+body.theme-crt [class*="Button"] {
+  font-family: var(--theme-font-mono, "Courier New", monospace);
+  font-weight: var(--theme-font-weight-bold, 700);
+  letter-spacing: var(--theme-letter-spacing, 0.05em);
+  border-radius: var(--theme-radius-md, 0px);
+  padding: var(--theme-spacing-sm, 8px) var(--theme-spacing-md, 16px);
+  transition: all 0.2s ease;
+  background: rgba(0, 0, 0, 0.8) !important;
+  backdrop-filter: blur(8px) saturate(120%);
+  -webkit-backdrop-filter: blur(8px) saturate(120%);
+  border: none !important;
+  color: var(--palette-primary, #00ff00) !important;
+  box-shadow: none !important;
+  text-shadow: 
+    0 0 5px color-mix(in srgb, var(--palette-primary, #00ff00) 50%, transparent),
+    0 0 10px color-mix(in srgb, var(--palette-primary, #00ff00) 30%, transparent);
+}
+
+body.theme-crt button:hover,
+body.theme-crt [class*="button"]:hover,
+body.theme-crt [class*="Button"]:hover {
+  background: rgba(0, 0, 0, 0.9) !important;
+  border: none !important;
+  box-shadow: none !important;
+  text-shadow: 
+    0 0 8px color-mix(in srgb, var(--palette-primary, #00ff00) 80%, transparent),
+    0 0 15px color-mix(in srgb, var(--palette-primary, #00ff00) 50%, transparent);
+  transform: none;
+}
+
+body.theme-crt button:active,
+body.theme-crt [class*="button"]:active,
+body.theme-crt [class*="Button"]:active {
+  background: rgba(0, 0, 0, 0.95) !important;
+  box-shadow: none !important;
+  transform: none;
+}
+
+/* =============================================================================
+   THEME-SPECIFIC BUTTON STYLING
+   Buttons adapt to each theme's unique style and typography
+   ============================================================================= */
+
+/* Void Theme Buttons - Enhanced with vibrant glow */
+body.theme-dark button,
+body.theme-dark [class*="button"],
+body.theme-dark [class*="Button"] {
+  font-family: var(--theme-font-mono, "Courier New", monospace);
+  font-weight: var(--theme-font-weight-bold, 700);
+  letter-spacing: var(--theme-letter-spacing, 0.05em);
+  border-radius: var(--theme-radius-md, 8px);
+  padding: var(--theme-spacing-sm, 8px) var(--theme-spacing-md, 16px);
+  transition: all var(--transition-normal, 0.3s ease);
+  border: 1px solid var(--palette-border, color-mix(in srgb, var(--palette-primary, #00d4ff) 30%, transparent));
+  background: color-mix(in srgb, var(--palette-primary, #00d4ff) 8%, transparent);
+  color: var(--palette-primary, #00d4ff);
+}
+
+body.theme-dark button:hover,
+body.theme-dark [class*="button"]:hover {
+  background: color-mix(in srgb, var(--palette-primary, #00d4ff) 15%, transparent);
+  box-shadow: 0 0 15px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #00d4ff) 40%, transparent));
+  transform: translateY(-1px);
+}
+
+body.theme-dark button:focus,
+body.theme-dark button:focus-visible,
+body.theme-dark [class*="button"]:focus,
+body.theme-dark [class*="button"]:focus-visible,
+body.theme-dark [class*="Button"]:focus,
+body.theme-dark [class*="Button"]:focus-visible {
+  outline: 2px solid var(--palette-primary, #00d4ff);
+  outline-offset: 2px;
+  box-shadow: 
+    0 0 15px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #00d4ff) 40%, transparent)),
+    0 0 0 2px var(--palette-primary, #00d4ff);
+}
+
+/* Light Theme Buttons */
+body.theme-light button,
+body.theme-light [class*="button"],
+body.theme-light [class*="Button"] {
+  font-family: var(--theme-font-body, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif);
+  font-weight: var(--theme-font-weight-bold, 600);
+  letter-spacing: var(--theme-letter-spacing, 0);
+  border-radius: var(--theme-radius-md, 8px);
+  padding: var(--theme-spacing-sm, 8px) var(--theme-spacing-md, 16px);
+  transition: all var(--transition-normal, 0.3s ease);
+}
+
+/* Neo Theme Buttons - White glow */
+body.theme-matrix button,
+body.theme-matrix [class*="button"],
+body.theme-matrix [class*="Button"] {
+  font-family: var(--theme-font-mono, "Courier New", monospace);
+  font-weight: var(--theme-font-weight-bold, 700);
+  letter-spacing: var(--theme-letter-spacing, 0.08em);
+  text-transform: uppercase;
+  border-radius: var(--theme-radius-sm, 0px);
+  padding: var(--theme-spacing-sm, 8px) var(--theme-spacing-md, 12px);
+  transition: all var(--transition-fast, 0.15s ease);
+  border: 1px solid var(--palette-primary, #ffffff);
+  background: color-mix(in srgb, var(--palette-primary, #ffffff) 10%, transparent);
+  color: var(--palette-primary, #ffffff);
+  text-shadow: 0 0 8px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #ffffff) 60%, transparent));
+}
+
+body.theme-matrix button:hover,
+body.theme-matrix [class*="button"]:hover {
+  background: color-mix(in srgb, var(--palette-primary, #ffffff) 25%, transparent);
+  box-shadow: 0 0 15px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #ffffff) 50%, transparent)), 
+              0 0 30px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #ffffff) 25%, transparent));
+  transform: translateY(-1px);
+}
+
+body.theme-matrix button:focus,
+body.theme-matrix button:focus-visible,
+body.theme-matrix [class*="button"]:focus,
+body.theme-matrix [class*="button"]:focus-visible {
+  outline: 2px solid var(--palette-primary, #ffffff);
+  outline-offset: 2px;
+  box-shadow: 
+    0 0 15px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #ffffff) 50%, transparent)), 
+    0 0 30px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #ffffff) 25%, transparent)),
+    0 0 0 2px var(--palette-primary, #ffffff);
+}
+
+/* Retro Theme Buttons */
+body.theme-retro button,
+body.theme-retro [class*="button"],
+body.theme-retro [class*="Button"] {
+  font-family: var(--theme-font-body, "VT323", "Courier New", monospace);
+  font-weight: var(--theme-font-weight-normal, 400);
+  letter-spacing: var(--theme-letter-spacing, 0.05em);
+  border-radius: var(--theme-radius-md, 2px);
+  padding: var(--theme-spacing-sm, 8px) var(--theme-spacing-md, 12px);
+  transition: all var(--transition-normal, 0.3s ease);
+  border: 1px solid var(--palette-primary, #ffaa00);
+  background: color-mix(in srgb, var(--palette-primary, #ffaa00) 10%, transparent);
+  color: var(--palette-primary, #ffaa00);
+}
+
+body.theme-retro button:hover,
+body.theme-retro [class*="button"]:hover {
+  background: color-mix(in srgb, var(--palette-primary, #ffaa00) 20%, transparent);
+  box-shadow: 0 0 10px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #ffaa00) 30%, transparent));
+}
+
+/* PowerShell Theme Buttons */
+body.theme-powershell button,
+body.theme-powershell [class*="button"],
+body.theme-powershell [class*="Button"] {
+  font-family: var(--theme-font-body, "Segoe UI", "Microsoft Sans Serif", sans-serif);
+  font-weight: var(--theme-font-weight-bold, 600);
+  letter-spacing: var(--theme-letter-spacing, 0);
+  border-radius: var(--theme-radius-md, 6px);
+  padding: var(--theme-spacing-sm, 8px) var(--theme-spacing-md, 16px);
+  transition: all var(--transition-normal, 0.3s ease);
+  border: 1px solid var(--palette-primary, rgba(0, 188, 242, 0.3));
+  background: color-mix(in srgb, var(--palette-primary, rgba(0, 188, 242, 1)) 10%, transparent);
+  color: var(--palette-primary, #00bcf2);
+}
+
+body.theme-powershell button:hover,
+body.theme-powershell [class*="button"]:hover {
+  background: color-mix(in srgb, var(--palette-primary, rgba(0, 188, 242, 1)) 20%, transparent);
+  box-shadow: 0 0 10px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, rgba(0, 188, 242, 1)) 30%, transparent));
+}
+
+/* Elite Theme Buttons - Enhanced luxury gold effects */
+body.theme-executive button,
+body.theme-executive [class*="button"],
+body.theme-executive [class*="Button"] {
+  font-family: var(--theme-font-body, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif);
+  font-weight: var(--theme-font-weight-bold, 600);
+  letter-spacing: var(--theme-letter-spacing, 0.015em);
+  border-radius: var(--theme-radius-md, 10px);
+  padding: var(--theme-spacing-sm, 12px) var(--theme-spacing-md, 20px);
+  transition: all var(--transition-normal, 0.4s cubic-bezier(0.4, 0, 0.2, 1));
+  border: 2px solid var(--palette-border, color-mix(in srgb, var(--palette-primary, rgba(255, 215, 0, 1)) 35%, transparent));
+  background: linear-gradient(135deg, 
+    color-mix(in srgb, var(--palette-primary, rgba(255, 215, 0, 1)) 12%, transparent) 0%, 
+    color-mix(in srgb, var(--palette-primary, rgba(255, 215, 0, 1)) 6%, transparent) 100%);
+  color: var(--palette-primary, rgba(255, 215, 0, 0.98));
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+body.theme-executive button:hover,
+body.theme-executive [class*="button"]:hover {
+  background: linear-gradient(135deg, 
+    color-mix(in srgb, var(--palette-primary, rgba(255, 215, 0, 1)) 20%, transparent) 0%, 
+    color-mix(in srgb, var(--palette-primary, rgba(255, 215, 0, 1)) 12%, transparent) 100%);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4), 
+              0 0 25px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, rgba(255, 215, 0, 1)) 40%, transparent)), 
+              inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
+  border-color: var(--palette-primary, rgba(255, 215, 0, 0.6));
+}
+
+/* Neon Theme Buttons - Enhanced futuristic glassmorphism */
+body.theme-modern button,
+body.modern-ui-futuristic button,
+body.modern-terminal-ui button,
+body.theme-modern [class*="button"],
+body.modern-ui-futuristic [class*="button"],
+body.modern-terminal-ui [class*="button"] {
+  font-family: var(--theme-font-body, -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif);
+  font-weight: var(--theme-font-weight-bold, 600);
+  letter-spacing: var(--theme-letter-spacing, -0.01em);
+  border-radius: var(--theme-radius-md, 12px);
+  padding: var(--theme-spacing-sm, 8px) var(--theme-spacing-md, 16px);
+  transition: all var(--transition-normal, 0.4s cubic-bezier(0.4, 0, 0.2, 1));
+  border: 1px solid var(--palette-border, color-mix(in srgb, var(--palette-primary, rgba(0, 255, 210, 1)) 25%, transparent));
+  background: linear-gradient(135deg, 
+    color-mix(in srgb, var(--palette-primary, rgba(0, 255, 210, 1)) 12%, rgba(255, 255, 255, 0.05)) 0%, 
+    color-mix(in srgb, var(--palette-primary, rgba(0, 255, 210, 1)) 6%, rgba(255, 255, 255, 0.02)) 100%);
+  color: var(--palette-primary, rgba(0, 255, 210, 0.98));
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+body.theme-modern button:hover,
+body.modern-ui-futuristic button:hover,
+body.modern-terminal-ui button:hover,
+body.theme-modern [class*="button"]:hover,
+body.modern-ui-futuristic [class*="button"]:hover,
+body.modern-terminal-ui [class*="button"]:hover {
+  background: linear-gradient(135deg, 
+    color-mix(in srgb, var(--palette-primary, rgba(0, 255, 210, 1)) 20%, rgba(255, 255, 255, 0.08)) 0%, 
+    color-mix(in srgb, var(--palette-primary, rgba(0, 255, 210, 1)) 12%, rgba(255, 255, 255, 0.04)) 100%);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3), 
+              0 0 30px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, rgba(0, 255, 210, 1)) 35%, transparent)), 
+              inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
+  border-color: var(--palette-primary, rgba(0, 255, 210, 0.5));
+}
+
+/* =============================================================================
+   THEME-SPECIFIC HEADINGS
+   Headings adapt to each theme's typography
+   ============================================================================= */
+
+body.theme-dark h1,
+body.theme-dark h2,
+body.theme-dark h3,
+body.theme-dark [class*="title"],
+body.theme-dark [class*="Title"] {
+  font-family: var(--theme-font-heading, "Courier New", monospace);
+  font-weight: var(--theme-font-weight-bold, 700);
+  letter-spacing: var(--theme-letter-spacing, 0.05em);
+  color: var(--palette-primary, #00bcf2);
+  text-shadow: 0 0 15px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #00bcf2) 40%, transparent));
+}
+
+body.theme-light h1,
+body.theme-light h2,
+body.theme-light h3,
+body.theme-light [class*="title"],
+body.theme-light [class*="Title"] {
+  font-family: var(--theme-font-heading, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif);
+  font-weight: var(--theme-font-weight-bold, 600);
+  letter-spacing: var(--theme-letter-spacing, 0);
+  color: var(--palette-primary, #0051d5);
+}
+
+body.theme-matrix h1,
+body.theme-matrix h2,
+body.theme-matrix h3,
+body.theme-matrix [class*="title"],
+body.theme-matrix [class*="Title"] {
+  font-family: var(--theme-font-heading, "Courier New", monospace);
+  font-weight: var(--theme-font-weight-bold, 700);
+  letter-spacing: var(--theme-letter-spacing, 0.08em);
+  text-transform: uppercase;
+  color: var(--palette-primary, #ffffff);
+  text-shadow: 0 0 10px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #ffffff) 50%, transparent));
+}
+
+body.theme-retro h1,
+body.theme-retro h2,
+body.theme-retro h3,
+body.theme-retro [class*="title"],
+body.theme-retro [class*="Title"] {
+  font-family: var(--theme-font-heading, "VT323", "Courier New", monospace);
+  font-weight: var(--theme-font-weight-normal, 400);
+  letter-spacing: var(--theme-letter-spacing, 0.05em);
+  color: var(--palette-primary, #ffaa00);
+  text-shadow: 0 0 10px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #ffaa00) 50%, transparent));
+}
+
+body.theme-powershell h1,
+body.theme-powershell h2,
+body.theme-powershell h3,
+body.theme-powershell [class*="title"],
+body.theme-powershell [class*="Title"] {
+  font-family: var(--theme-font-heading, "Segoe UI", "Microsoft Sans Serif", sans-serif);
+  font-weight: var(--theme-font-weight-bold, 600);
+  letter-spacing: var(--theme-letter-spacing, 0);
+  color: var(--palette-primary, #00bcf2);
+}
+
+body.theme-executive h1,
+body.theme-executive h2,
+body.theme-executive h3,
+body.theme-executive [class*="title"],
+body.theme-executive [class*="Title"] {
+  font-family: var(--theme-font-heading, "Playfair Display", "Georgia", serif);
+  font-weight: var(--theme-font-weight-bold, 600);
+  letter-spacing: var(--theme-letter-spacing, 0.015em);
+  color: var(--palette-primary, rgba(255, 215, 0, 0.98));
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4), 0 0 15px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, rgba(255, 215, 0, 1)) 25%, transparent));
+}
+
+body.theme-modern h1,
+body.modern-ui-futuristic h1,
+body.modern-terminal-ui h1,
+body.theme-modern h2,
+body.modern-ui-futuristic h2,
+body.modern-terminal-ui h2,
+body.theme-modern h3,
+body.modern-ui-futuristic h3,
+body.modern-terminal-ui h3,
+body.theme-modern [class*="title"],
+body.modern-ui-futuristic [class*="title"],
+body.modern-terminal-ui [class*="title"] {
+  font-family: var(--theme-font-heading, "SF Pro Display", -apple-system, BlinkMacSystemFont, sans-serif);
+  font-weight: var(--theme-font-weight-bold, 600);
+  letter-spacing: var(--theme-letter-spacing, -0.01em);
+  color: var(--palette-primary, rgba(0, 255, 210, 0.98));
+  text-shadow: 0 0 20px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, rgba(0, 255, 210, 1)) 30%, transparent));
+}
+
+/* =============================================================================
+   THEME-SPECIFIC INPUTS
+   Inputs adapt to theme styling
+   ============================================================================= */
+
+body.theme-dark input,
+body.theme-dark textarea,
+body.theme-dark [class*="input"],
+body.theme-dark [class*="Input"] {
+  font-family: var(--theme-font-mono, "Courier New", monospace);
+  letter-spacing: var(--theme-letter-spacing, 0.05em);
+  border-radius: var(--theme-radius-md, 8px);
+}
+
+body.theme-light input,
+body.theme-light textarea,
+body.theme-light [class*="input"],
+body.theme-light [class*="Input"] {
+  font-family: var(--theme-font-body, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif);
+  letter-spacing: var(--theme-letter-spacing, 0);
+  border-radius: var(--theme-radius-md, 8px);
+}
+
+body.theme-matrix input,
+body.theme-matrix textarea,
+body.theme-matrix [class*="input"],
+body.theme-matrix [class*="Input"] {
+  font-family: var(--theme-font-mono, "Courier New", monospace);
+  letter-spacing: var(--theme-letter-spacing, 0.08em);
+  text-transform: uppercase;
+  border-radius: var(--theme-radius-sm, 0px);
+}
+
+body.theme-retro input,
+body.theme-retro textarea,
+body.theme-retro [class*="input"],
+body.theme-retro [class*="Input"] {
+  font-family: var(--theme-font-body, "VT323", "Courier New", monospace);
+  letter-spacing: var(--theme-letter-spacing, 0.05em);
+  border-radius: var(--theme-radius-md, 2px);
+}
+
+body.theme-powershell input,
+body.theme-powershell textarea,
+body.theme-powershell [class*="input"],
+body.theme-powershell [class*="Input"] {
+  font-family: var(--theme-font-body, "Segoe UI", "Microsoft Sans Serif", sans-serif);
+  letter-spacing: var(--theme-letter-spacing, 0);
+  border-radius: var(--theme-radius-md, 6px);
+}
+
+body.theme-executive input,
+body.theme-executive textarea,
+body.theme-executive [class*="input"],
+body.theme-executive [class*="Input"] {
+  font-family: var(--theme-font-body, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif);
+  letter-spacing: var(--theme-letter-spacing, 0.015em);
+  border-radius: var(--theme-radius-md, 10px);
+  border: 1px solid var(--palette-border, color-mix(in srgb, var(--palette-primary, rgba(255, 215, 0, 1)) 25%, transparent));
+  background: color-mix(in srgb, var(--palette-primary, rgba(255, 215, 0, 1)) 5%, transparent);
+  color: var(--palette-text, #ffffff);
+}
+
+body.theme-modern input,
+body.modern-ui-futuristic input,
+body.modern-terminal-ui input,
+body.theme-modern textarea,
+body.modern-ui-futuristic textarea,
+body.modern-terminal-ui textarea,
+body.theme-modern [class*="input"],
+body.modern-ui-futuristic [class*="input"],
+body.modern-terminal-ui [class*="input"] {
+  font-family: var(--theme-font-body, -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif);
+  letter-spacing: var(--theme-letter-spacing, -0.01em);
+  border-radius: var(--theme-radius-md, 12px);
+  border: 1px solid var(--palette-border, color-mix(in srgb, var(--palette-primary, rgba(0, 255, 210, 1)) 20%, transparent));
+  background: color-mix(in srgb, var(--palette-primary, rgba(0, 255, 210, 1)) 5%, rgba(255, 255, 255, 0.02));
+  color: var(--palette-text, #ffffff);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+}
+
+/* =============================================================================
+   THEME-SPECIFIC SIDEBAR STYLING
+   Sidebar elements adapt to each theme's unique style
+   ============================================================================= */
+
+body.theme-dark [class*="sidebar"],
+body.theme-dark [class*="Sidebar"] {
+  font-family: var(--theme-font-mono, "Courier New", monospace);
+  letter-spacing: var(--theme-letter-spacing, 0.05em);
+}
+
+body.theme-light [class*="sidebar"],
+body.theme-light [class*="Sidebar"] {
+  font-family: var(--theme-font-body, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif);
+  letter-spacing: var(--theme-letter-spacing, 0);
+}
+
+body.theme-matrix [class*="sidebar"],
+body.theme-matrix [class*="Sidebar"],
+body.theme-matrix [class*="sectionTitle"],
+body.theme-matrix [class*="SectionTitle"] {
+  font-family: var(--theme-font-mono, "Courier New", monospace);
+  letter-spacing: var(--theme-letter-spacing, 0.08em);
+  text-transform: uppercase;
+}
+
+body.theme-retro [class*="sidebar"],
+body.theme-retro [class*="Sidebar"] {
+  font-family: var(--theme-font-body, "VT323", "Courier New", monospace);
+  letter-spacing: var(--theme-letter-spacing, 0.05em);
+}
+
+body.theme-powershell [class*="sidebar"],
+body.theme-powershell [class*="Sidebar"] {
+  font-family: var(--theme-font-body, "Segoe UI", "Microsoft Sans Serif", sans-serif);
+  letter-spacing: var(--theme-letter-spacing, 0);
+}
+
+body.theme-executive [class*="sidebar"],
+body.theme-executive [class*="Sidebar"] {
+  font-family: var(--theme-font-body, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif);
+  letter-spacing: var(--theme-letter-spacing, 0.015em);
+  background: linear-gradient(135deg, rgba(10, 10, 15, 0.95) 0%, rgba(26, 26, 46, 0.95) 100%);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+body.theme-modern [class*="sidebar"],
+body.modern-ui-futuristic [class*="sidebar"],
+body.modern-terminal-ui [class*="sidebar"],
+body.theme-modern [class*="Sidebar"],
+body.modern-ui-futuristic [class*="Sidebar"],
+body.modern-terminal-ui [class*="Sidebar"] {
+  font-family: var(--theme-font-body, -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif);
+  letter-spacing: var(--theme-letter-spacing, -0.01em);
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.7) 0%, rgba(10, 10, 26, 0.8) 100%);
+  backdrop-filter: blur(30px) saturate(180%);
+  -webkit-backdrop-filter: blur(30px) saturate(180%);
+  border-right: 1px solid var(--palette-border, color-mix(in srgb, var(--palette-primary, rgba(0, 255, 210, 1)) 15%, transparent));
+}
+
+/* =============================================================================
+   PRESERVE THEME STYLES WHEN PALETTE IS ACTIVE
+   Theme fonts, letter-spacing, and text-transform must persist with palettes
+   ============================================================================= */
+
+/* Dark Theme - Preserve fonts when palette active */
+body[data-color-palette].theme-dark button,
+body[data-color-palette].theme-dark [class*="button"],
+body[data-color-palette].theme-dark [class*="Button"],
+body[data-color-palette].theme-dark [class*="sidebar"] button,
+body[data-color-palette].theme-dark [class*="Sidebar"] button {
+  font-family: var(--theme-font-mono, "Courier New", monospace) !important;
+  letter-spacing: var(--theme-letter-spacing, 0.05em) !important;
+  font-weight: var(--theme-font-weight-bold, 700) !important;
+}
+
+/* Light Theme - Preserve fonts when palette active */
+body[data-color-palette].theme-light button,
+body[data-color-palette].theme-light [class*="button"],
+body[data-color-palette].theme-light [class*="Button"],
+body[data-color-palette].theme-light [class*="sidebar"] button,
+body[data-color-palette].theme-light [class*="Sidebar"] button {
+  font-family: var(--theme-font-body, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif) !important;
+  letter-spacing: var(--theme-letter-spacing, 0) !important;
+  font-weight: var(--theme-font-weight-bold, 600) !important;
+}
+
+/* =============================================================================
+   Color Palette Variables
+   Applied via body[data-color-palette="<name>"]
+   Variables referenced by components: --palette-primary, --palette-secondary,
+   --palette-accent, --palette-bg, --palette-surface, --palette-text,
+   --palette-muted, --palette-border, --palette-success, --palette-warning,
+   --palette-error
+   ============================================================================= */
+
+:root {
+  --palette-primary: #e8e8e8;
+  --palette-secondary: #c8c8c8;
+  --palette-accent: #ffffff;
+  --palette-bg: #0a0a0a;
+  --palette-surface: #151515;
+  --palette-text: #f0f0f0;
+  --palette-muted: #707070;
+  --palette-border: #2d2d2d;
+  --palette-success: #b8b8b8;
+  --palette-warning: #d0d0d0;
+  --palette-error: #e0e0e0;
+  /* Glow effects for palette colors */
+  --palette-primary-glow: rgba(232, 232, 232, 0.25);
+  --palette-secondary-glow: rgba(200, 200, 200, 0.2);
+  --palette-accent-glow: rgba(255, 255, 255, 0.3);
+  --palette-success-glow: rgba(184, 184, 184, 0.25);
+  --palette-warning-glow: rgba(208, 208, 208, 0.25);
+  --palette-error-glow: rgba(224, 224, 224, 0.25);
+}
+
+body[data-color-palette="default"] {
+  --palette-primary: #e8e8e8;
+  --palette-secondary: #c8c8c8;
+  --palette-accent: #ffffff;
+  --palette-bg: #0a0a0a;
+  --palette-surface: #151515;
+  --palette-text: #f0f0f0;
+  --palette-muted: #707070;
+  --palette-border: #2d2d2d;
+  --palette-success: #b8b8b8;
+  --palette-warning: #d0d0d0;
+  --palette-error: #e0e0e0;
+}
+
+body[data-color-palette="red"] {
+  --palette-primary: #ff4d4f;
+  --palette-secondary: #ff7875;
+  --palette-accent: #ff9aa2;
+  --palette-bg: #130a0a;
+  --palette-surface: #1c1010;
+  --palette-text: #ffffff;
+  --palette-muted: #e0bcbc;
+  --palette-border: #3a1b1b;
+  --palette-success: #16c782;
+  --palette-warning: #f2b705;
+  --palette-error: #ff4d4f;
+}
+
+body[data-color-palette="crimson"] {
+  --palette-primary: #dc143c;
+  --palette-secondary: #ff6b81;
+  --palette-accent: #ff8fab;
+  --palette-bg: #14080c;
+  --palette-surface: #1b0c12;
+  --palette-text: #ffffff;
+  --palette-muted: #e7bcc8;
+  --palette-border: #3a1622;
+  --palette-success: #16c782;
+  --palette-warning: #f2b705;
+  --palette-error: #ff4d4f;
+}
+
+body[data-color-palette="anime"] {
+  /* Neon Pastel Anime - Synthwave candy vibes */
+  --palette-primary: #ff66e5;
+  --palette-secondary: #7af8ff;
+  --palette-accent: #ffd86f;
+  --palette-bg: #07040f;
+  --palette-surface: #140a1e;
+  --palette-text: #fff7ff;
+  --palette-muted: #d7c5ff;
+  --palette-border: #2f1b4b;
+  --palette-success: #7af8ff;
+  --palette-warning: #ffd86f;
+  --palette-error: #ff4fa7;
+  --palette-primary-glow: rgba(255, 102, 229, 0.45);
+  --palette-secondary-glow: rgba(122, 248, 255, 0.45);
+  --palette-accent-glow: rgba(255, 216, 111, 0.4);
+}
+
+body[data-color-palette="ocean"] {
+  /* Abyssal Ocean - Deep teal currents */
+  --palette-primary: #00c2ff;
+  --palette-secondary: #0066ff;
+  --palette-accent: #00ffd5;
+  --palette-bg: #02111f;
+  --palette-surface: #061b2d;
+  --palette-text: #e1f7ff;
+  --palette-muted: #9cc7dd;
+  --palette-border: #123147;
+  --palette-success: #00ffd5;
+  --palette-warning: #ffd479;
+  --palette-error: #ff5d73;
+  --palette-primary-glow: rgba(0, 194, 255, 0.45);
+  --palette-secondary-glow: rgba(0, 102, 255, 0.4);
+  --palette-accent-glow: rgba(0, 255, 213, 0.4);
+}
+
+body[data-color-palette="blue"] {
+  --palette-primary: #2f80ed;
+  --palette-secondary: #56ccf2;
+  --palette-accent: #90e0ff;
+  --palette-bg: #0a0f18;
+  --palette-surface: #0f1624;
+  --palette-text: #ffffff;
+  --palette-muted: #b6c8e1;
+  --palette-border: #1c2942;
+  --palette-success: #16c782;
+  --palette-warning: #f2b705;
+  --palette-error: #ff4d4f;
+}
+
+body[data-color-palette="forest"] {
+  --palette-primary: #2ecc71;
+  --palette-secondary: #27ae60;
+  --palette-accent: #a8e6cf;
+  --palette-bg: #07120f;
+  --palette-surface: #0d1c17;
+  --palette-text: #e9fff6;
+  --palette-muted: #b5d9cd;
+  --palette-border: #173428;
+  --palette-success: #2ecc71;
+  --palette-warning: #f2b705;
+  --palette-error: #ff4d4f;
+}
+
+body[data-color-palette="green"] {
+  --palette-primary: #27ae60;
+  --palette-secondary: #2ecc71;
+  --palette-accent: #7bed9f;
+  --palette-bg: #08110c;
+  --palette-surface: #0e1a13;
+  --palette-text: #eafff3;
+  --palette-muted: #bfe5d1;
+  --palette-border: #173724;
+  --palette-success: #27ae60;
+  --palette-warning: #f2b705;
+  --palette-error: #ff4d4f;
+}
+
+body[data-color-palette="sunset"] {
+  --palette-primary: #ff7e67;
+  --palette-secondary: #ffbd69;
+  --palette-accent: #ffd36b;
+  --palette-bg: #140d0a;
+  --palette-surface: #1f1410;
+  --palette-text: #fff6f0;
+  --palette-muted: #e9c9b9;
+  --palette-border: #3a231b;
+  --palette-success: #16c782;
+  --palette-warning: #ffbd69;
+  --palette-error: #ff4d4f;
+}
+
+body[data-color-palette="purple"] {
+  --palette-primary: #9b59b6;
+  --palette-secondary: #8e44ad;
+  --palette-accent: #c39bd3;
+  --palette-bg: #110b14;
+  --palette-surface: #1a1220;
+  --palette-text: #f7ecff;
+  --palette-muted: #d9c4e6;
+  --palette-border: #2c1f36;
+  --palette-success: #16c782;
+  --palette-warning: #f2b705;
+  --palette-error: #ff4d4f;
+}
+
+body[data-color-palette="violet"] {
+  --palette-primary: #7c4dff;
+  --palette-secondary: #b388ff;
+  --palette-accent: #ea80fc;
+  --palette-bg: #0f0a16;
+  --palette-surface: #170f21;
+  --palette-text: #f2e9ff;
+  --palette-muted: #d6c6f5;
+  --palette-border: #2a1f3d;
+  --palette-success: #16c782;
+  --palette-warning: #f2b705;
+  --palette-error: #ff4d4f;
+}
+
+body[data-color-palette="cyber"] {
+  /* Cyber Grid - Electric cyan x ultraviolet */
+  --palette-primary: #00d4ff;
+  --palette-secondary: #8c3bff;
+  --palette-accent: #00ffba;
+  --palette-bg: #010414;
+  --palette-surface: #050c1f;
+  --palette-text: #dff9ff;
+  --palette-muted: #a6c4ff;
+  --palette-border: #15253f;
+  --palette-success: #00ffba;
+  --palette-warning: #ffb347;
+  --palette-error: #ff4dd6;
+  --palette-primary-glow: rgba(0, 212, 255, 0.45);
+  --palette-secondary-glow: rgba(140, 59, 255, 0.45);
+  --palette-accent-glow: rgba(0, 255, 186, 0.45);
+}
+
+body[data-color-palette="neon"] {
+  /* Neon Color Palette - Electric Cyberpunk Aesthetic */
+  /* Vibrant electric colors: Electric Cyan, Hot Pink, Electric Lime */
+  --palette-primary: #00ffff;
+  --palette-secondary: #ff00ff;
+  --palette-accent: #00ff41;
+  --palette-bg: #000000;
+  --palette-surface: #0a0514;
+  --palette-text: #ffffff;
+  --palette-muted: #b8a0ff;
+  --palette-border: #1a0d2e;
+  --palette-success: #00ff41;
+  --palette-warning: #ffaa00;
+  --palette-error: #ff0066;
+  /* Glow effects for neon - intense electric glows */
+  --palette-primary-glow: rgba(0, 255, 255, 0.5);
+  --palette-secondary-glow: rgba(255, 0, 255, 0.5);
+  --palette-accent-glow: rgba(0, 255, 65, 0.5);
+  --palette-success-glow: rgba(0, 255, 65, 0.5);
+  --palette-warning-glow: rgba(255, 170, 0, 0.45);
+  --palette-error-glow: rgba(255, 0, 102, 0.4);
+}
+
+body[data-color-palette="gold"] {
+  --palette-primary: #f2c94c;
+  --palette-secondary: #f2994a;
+  --palette-accent: #ffd166;
+  --palette-bg: #110f08;
+  --palette-surface: #1a170c;
+  --palette-text: #fff9e6;
+  --palette-muted: #e9ddba;
+  --palette-border: #3a3315;
+  --palette-success: #16c782;
+  --palette-warning: #f2c94c;
+  --palette-error: #ff4d4f;
+}
+
+body[data-color-palette="luxury"] {
+  --palette-primary: #c0a062;
+  --palette-secondary: #8c7853;
+  --palette-accent: #d9c4a1;
+  --palette-bg: #0b0a08;
+  --palette-surface: #15130f;
+  --palette-text: #f7f2e7;
+  --palette-muted: #d7ccb8;
+  --palette-border: #2a261d;
+  --palette-success: #53d88b;
+  --palette-warning: #f2c94c;
+  --palette-error: #ff6b6b;
+}
+
+body[data-color-palette="ice"] {
+  /* Glacier Ice - Arctic chrome blues */
+  --palette-primary: #9bddff;
+  --palette-secondary: #6eb7ff;
+  --palette-accent: #c1fff7;
+  --palette-bg: #030b15;
+  --palette-surface: #0a1724;
+  --palette-text: #f2fbff;
+  --palette-muted: #c7dfee;
+  --palette-border: #183249;
+  --palette-success: #6fffd7;
+  --palette-warning: #ffe3a3;
+  --palette-error: #ff6b9f;
+  --palette-primary-glow: rgba(155, 221, 255, 0.4);
+  --palette-secondary-glow: rgba(110, 183, 255, 0.4);
+  --palette-accent-glow: rgba(193, 255, 247, 0.35);
+}
+
+body[data-color-palette="frost"] {
+  --palette-primary: #7dd3fc;
+  --palette-secondary: #bae6fd;
+  --palette-accent: #a7f3d0;
+  --palette-bg: #061016;
+  --palette-surface: #0b1922;
+  --palette-text: #e6f7ff;
+  --palette-muted: #cbe7f5;
+  --palette-border: #153040;
+  --palette-success: #86efac;
+  --palette-warning: #fde68a;
+  --palette-error: #fca5a5;
+}
+
+body[data-color-palette="fire"] {
+  /* Firestorm - Lava core heat */
+  --palette-primary: #ff4b0f;
+  --palette-secondary: #ff9a1a;
+  --palette-accent: #ffd44d;
+  --palette-bg: #140401;
+  --palette-surface: #210a04;
+  --palette-text: #fff3e5;
+  --palette-muted: #f2c4a3;
+  --palette-border: #3c1506;
+  --palette-success: #ffd44d;
+  --palette-warning: #ff9a1a;
+  --palette-error: #ff2c2c;
+  --palette-primary-glow: rgba(255, 75, 15, 0.4);
+  --palette-secondary-glow: rgba(255, 154, 26, 0.4);
+  --palette-accent-glow: rgba(255, 212, 77, 0.4);
+}
+
+body[data-color-palette="flame"] {
+  /* Plasma Flame - Magma orange + neon magenta */
+  --palette-primary: #ff1767;
+  --palette-secondary: #ff7300;
+  --palette-accent: #ffb347;
+  --palette-bg: #150108;
+  --palette-surface: #23060d;
+  --palette-text: #ffeaf4;
+  --palette-muted: #f9b7c6;
+  --palette-border: #3b0f1b;
+  --palette-success: #ffb347;
+  --palette-warning: #ff7300;
+  --palette-error: #ff2f7d;
+  --palette-primary-glow: rgba(255, 23, 103, 0.45);
+  --palette-secondary-glow: rgba(255, 115, 0, 0.4);
+  --palette-accent-glow: rgba(255, 179, 71, 0.4);
+}
+
+body[data-color-palette="mint"] {
+  --palette-primary: #2ee6a6;
+  --palette-secondary: #a7f3d0;
+  --palette-accent: #7dd3fc;
+  --palette-bg: #07120f;
+  --palette-surface: #0d1c17;
+  --palette-text: #e9fff6;
+  --palette-muted: #c2f1de;
+  --palette-border: #173428;
+  --palette-success: #2ee6a6;
+  --palette-warning: #fde68a;
+  --palette-error: #fca5a5;
+}
+
+body[data-color-palette="turquoise"] {
+  --palette-primary: #00d1b2;
+  --palette-secondary: #6ee7e7;
+  --palette-accent: #7dd3fc;
+  --palette-bg: #061312;
+  --palette-surface: #0c1e1d;
+  --palette-text: #eafffb;
+  --palette-muted: #c1ece7;
+  --palette-border: #153230;
+  --palette-success: #34d399;
+  --palette-warning: #fde68a;
+  --palette-error: #f87171;
+}
+
+body[data-color-palette="rose"] {
+  --palette-primary: #f43f5e;
+  --palette-secondary: #fb7185;
+  --palette-accent: #fda4af;
+  --palette-bg: #160a0e;
+  --palette-surface: #210f15;
+  --palette-text: #fff1f4;
+  --palette-muted: #f0c4cd;
+  --palette-border: #3a1a24;
+  --palette-success: #34d399;
+  --palette-warning: #fbbf24;
+  --palette-error: #ef4444;
+}
+
+body[data-color-palette="pink"] {
+  --palette-primary: #ec4899;
+  --palette-secondary: #f472b6;
+  --palette-accent: #fbcfe8;
+  --palette-bg: #150a12;
+  --palette-surface: #1f0f1a;
+  --palette-text: #fff1f8;
+  --palette-muted: #f3c4db;
+  --palette-border: #331a29;
+  --palette-success: #34d399;
+  --palette-warning: #fbbf24;
+  --palette-error: #ef4444;
+}
+
+body[data-color-palette="amber"] {
+  --palette-primary: #f59e0b;
+  --palette-secondary: #fbbf24;
+  --palette-accent: #fde68a;
+  --palette-bg: #120d08;
+  --palette-surface: #1a140f;
+  --palette-text: #fff9e6;
+  --palette-muted: #f3d9a6;
+  --palette-border: #2e2215;
+  --palette-success: #34d399;
+  --palette-warning: #f59e0b;
+  --palette-error: #ef4444;
+}
+
+body[data-color-palette="honey"] {
+  --palette-primary: #d97706;
+  --palette-secondary: #f59e0b;
+  --palette-accent: #fbbf24;
+  --palette-bg: #100d08;
+  --palette-surface: #18140f;
+  --palette-text: #fff8e6;
+  --palette-muted: #f0d9a6;
+  --palette-border: #2a2215;
+  --palette-success: #34d399;
+  --palette-warning: #d97706;
+  --palette-error: #ef4444;
+}
+
+body[data-color-palette="slate"] {
+  --palette-primary: #64748b;
+  --palette-secondary: #94a3b8;
+  --palette-accent: #cbd5e1;
+  --palette-bg: #0f1115;
+  --palette-surface: #151821;
+  --palette-text: #f1f5f9;
+  --palette-muted: #cbd5e1;
+  --palette-border: #1e293b;
+  --palette-success: #34d399;
+  --palette-warning: #fbbf24;
+  --palette-error: #ef4444;
+}
+
+body[data-color-palette="silver"] {
+  --palette-primary: #94a3b8;
+  --palette-secondary: #cbd5e1;
+  --palette-accent: #e2e8f0;
+  --palette-bg: #0f1115;
+  --palette-surface: #151821;
+  --palette-text: #f8fafc;
+  --palette-muted: #e2e8f0;
+  --palette-border: #1e293b;
+  --palette-success: #34d399;
+  --palette-warning: #fbbf24;
+  --palette-error: #ef4444;
+}
+
+body[data-color-palette="lavender"] {
+  --palette-primary: #a78bfa;
+  --palette-secondary: #c4b5fd;
+  --palette-accent: #ddd6fe;
+  --palette-bg: #0f0a16;
+  --palette-surface: #190f21;
+  --palette-text: #f9f5ff;
+  --palette-muted: #e6d7fb;
+  --palette-border: #2a1f3d;
+  --palette-success: #34d399;
+  --palette-warning: #fbbf24;
+  --palette-error: #ef4444;
+}
+
+body[data-color-palette="lilac"] {
+  --palette-primary: #c8a2c8;
+  --palette-secondary: #e2c6e2;
+  --palette-accent: #f7e9f7;
+  --palette-bg: #100b12;
+  --palette-surface: #190f1d;
+  --palette-text: #fbf5ff;
+  --palette-muted: #ecd9f0;
+  --palette-border: #2a1f33;
+  --palette-success: #34d399;
+  --palette-warning: #fbbf24;
+  --palette-error: #ef4444;
+}
+
+body[data-color-palette="toxic"] {
+  /* Biohazard Toxic - Neon lime & hazard violet */
+  --palette-primary: #b7ff2f;
+  --palette-secondary: #00ffa6;
+  --palette-accent: #ff2fe3;
+  --palette-bg: #030c05;
+  --palette-surface: #07180d;
+  --palette-text: #edffe8;
+  --palette-muted: #c6ffce;
+  --palette-border: #13351f;
+  --palette-success: #00ffa6;
+  --palette-warning: #ffe04d;
+  --palette-error: #ff2f73;
+  --palette-primary-glow: rgba(183, 255, 47, 0.45);
+  --palette-secondary-glow: rgba(0, 255, 166, 0.4);
+  --palette-accent-glow: rgba(255, 47, 227, 0.4);
+}
+
+body[data-color-palette="infrared"] {
+  /* Thermal Vision Color Palette - Authentic Infrared Look */
+  /* Hot objects: White/Yellow, Warm: Red/Orange, Cool: Dark Red, Cold: Black */
+  --palette-primary: #ffff00;
+  --palette-secondary: #ff6600;
+  --palette-accent: #ff3300;
+  --palette-bg: #000000;
+  --palette-surface: #0a0000;
+  --palette-text: #ffcccc;
+  --palette-muted: #ff9999;
+  --palette-border: #330000;
+  --palette-success: #ffff00;
+  --palette-warning: #ff9900;
+  --palette-error: #cc0000;
+  /* Glow effects for thermal vision - hot white/yellow glows */
+  --palette-primary-glow: rgba(255, 255, 0, 0.4);
+  --palette-secondary-glow: rgba(255, 102, 0, 0.35);
+  --palette-accent-glow: rgba(255, 51, 0, 0.3);
+  --palette-success-glow: rgba(255, 255, 0, 0.4);
+  --palette-warning-glow: rgba(255, 153, 0, 0.35);
+  --palette-error-glow: rgba(204, 0, 0, 0.3);
+}
+
+body[data-color-palette="radioactive"] {
+  /* Radioactive Reactor - Chartreuse core with ion blue sparks */
+  --palette-primary: #9dff00;
+  --palette-secondary: #00f0ff;
+  --palette-accent: #fff727;
+  --palette-bg: #040806;
+  --palette-surface: #08110d;
+  --palette-text: #e7ffe8;
+  --palette-muted: #c1ffc9;
+  --palette-border: #142818;
+  --palette-success: #9dff00;
+  --palette-warning: #fff727;
+  --palette-error: #ff4b8f;
+  --palette-primary-glow: rgba(157, 255, 0, 0.45);
+  --palette-secondary-glow: rgba(0, 240, 255, 0.45);
+  --palette-accent-glow: rgba(255, 247, 39, 0.4);
+}
+
+body[data-color-palette="xmas"] {
+  /* Christmas Color Palette - Festive Holiday Spirit */
+  /* Classic Christmas: Red, Green, White */
+  --palette-primary: #dc143c;
+  --palette-secondary: #228b22;
+  --palette-accent: #ffffff;
+  --palette-bg: #0a0f0a;
+  --palette-surface: #141914;
+  --palette-text: #ffffff;
+  --palette-muted: #c8e6c9;
+  --palette-border: #2d4a2d;
+  --palette-success: #228b22;
+  --palette-warning: #ffffff;
+  --palette-error: #dc143c;
+  /* Glow effects for Christmas - warm festive glows */
+  --palette-primary-glow: rgba(220, 20, 60, 0.4);
+  --palette-secondary-glow: rgba(34, 139, 34, 0.35);
+  --palette-accent-glow: rgba(255, 255, 255, 0.4);
+  --palette-success-glow: rgba(34, 139, 34, 0.35);
+  --palette-warning-glow: rgba(255, 255, 255, 0.4);
+  --palette-error-glow: rgba(220, 20, 60, 0.3);
+}
+
+body[data-color-palette="light"] {
+  --palette-primary: #1e40af;
+  --palette-secondary: #059669;
+  --palette-accent: #7c3aed;
+  --palette-bg: #ffffff;
+  --palette-surface: #f8fafc;
+  --palette-text: #1e293b;
+  --palette-muted: #64748b;
+  --palette-border: #e2e8f0;
+  --palette-success: #059669;
+  --palette-warning: #d97706;
+  --palette-error: #dc2626;
+  /* Glow effects for light mode - subtle shadows instead */
+  --palette-primary-glow: rgba(30, 64, 175, 0.15);
+  --palette-secondary-glow: rgba(5, 150, 105, 0.15);
+  --palette-accent-glow: rgba(124, 58, 237, 0.15);
+  --palette-success-glow: rgba(5, 150, 105, 0.15);
+  --palette-warning-glow: rgba(217, 119, 6, 0.15);
+  --palette-error-glow: rgba(220, 38, 38, 0.15);
+}
+
+body[data-color-palette="white"] {
+  /* White Color Palette - Solid white background with black and dark blue text */
+  --palette-primary: #1e3a8a;
+  --palette-secondary: #1e40af;
+  --palette-accent: #3b82f6;
+  --palette-bg: #ffffff;
+  --palette-surface: #ffffff;
+  --palette-text: #000000;
+  --palette-muted: #1e3a8a;
+  --palette-border: #1e3a8a;
+  --palette-success: #059669;
+  --palette-warning: #d97706;
+  --palette-error: #dc2626;
+  /* Glow effects for white palette - subtle shadows */
+  --palette-primary-glow: rgba(30, 58, 138, 0.2);
+  --palette-secondary-glow: rgba(30, 64, 175, 0.2);
+  --palette-accent-glow: rgba(59, 130, 246, 0.2);
+  --palette-success-glow: rgba(5, 150, 105, 0.2);
+  --palette-warning-glow: rgba(217, 119, 6, 0.2);
+  --palette-error-glow: rgba(220, 38, 38, 0.2);
+}
+
+/* Light palette theme overrides - ensures light background works with all themes */
+body[data-color-palette="light"].theme-dark,
+body[data-color-palette="light"].theme-matrix,
+body[data-color-palette="light"].theme-retro,
+body[data-color-palette="light"].theme-powershell,
+body[data-color-palette="light"].theme-executive,
+body[data-color-palette="light"].theme-modern,
+body[data-color-palette="light"].modern-ui-futuristic,
+body[data-color-palette="light"].modern-terminal-ui {
+  background: var(--palette-bg, #ffffff) !important;
+  color: var(--palette-text, #1e293b) !important;
+}
+
+/* Light palette global text color overrides for all UI elements */
+body[data-color-palette="light"] {
+  color: var(--palette-text, #1e293b) !important;
+}
+
+/* Ensure readable text colors in light mode */
+body[data-color-palette="light"] p,
+body[data-color-palette="light"] span,
+body[data-color-palette="light"] div:not([class*="button"]):not([class*="Button"]),
+body[data-color-palette="light"] label {
+  color: var(--palette-text, #1e293b);
+}
+
+/* Light palette links and interactive elements */
+body[data-color-palette="light"] a {
+  color: var(--palette-primary, #1e40af);
+}
+
+body[data-color-palette="light"] a:hover {
+  color: var(--palette-secondary, #059669);
+}
+
+body.futuristic-mode {
+  /* Futuristic dashboard background */
+  background: var(--void-black, #0a0a0f);
+  color: var(--color-text-primary, #ffffff);
+}
+
+/* Light palette overrides for futuristic mode */
+body[data-color-palette="light"].futuristic-mode {
+  background: var(--palette-bg, #ffffff) !important;
+  color: var(--palette-text, #1e293b) !important;
+}
+
+body.basic-terminal-mode {
+  /* Basic mode uses the terminal full-screen */
+  background: var(--color-terminal-bg, #000000);
+  color: var(--color-terminal-text, #ffffff);
+}
+
+/* Light palette overrides for basic terminal mode */
+body[data-color-palette="light"].basic-terminal-mode {
+  background: var(--palette-bg, #ffffff) !important;
+  color: var(--palette-text, #1e293b) !important;
+}
+
+/* =============================================================================
+   TERMINAL PALETTE OVERRIDES
+   High-specificity rules to ensure terminal elements update with color palettes
+   ============================================================================= */
+
+/* Terminal Input Elements - Palette Overrides */
+body[data-color-palette] [class*="inputSection"],
+body[data-color-palette] [class*="InputSection"] {
+  border-top-color: var(--palette-border, rgba(0, 212, 255, 0.15)) !important;
+  transition: border-color 0.3s ease !important;
+}
+
+body[data-color-palette] [class*="inputLine"],
+body[data-color-palette] [class*="InputLine"] {
+  background: color-mix(in srgb, var(--palette-primary, #00bcf2) 5%, transparent) !important;
+  border-color: var(--palette-border, rgba(0, 212, 255, 0.2)) !important;
+  transition: background 0.3s ease, border-color 0.3s ease !important;
+}
+
+body[data-color-palette] [class*="inputLine"]:focus-within,
+body[data-color-palette] [class*="InputLine"]:focus-within {
+  border-color: var(--palette-primary, #00d4ff) !important;
+  box-shadow: 0 0 0 3px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #00bcf2) 15%, transparent)) !important;
+  background: color-mix(in srgb, var(--palette-primary, #00bcf2) 8%, transparent) !important;
+}
+
+body[data-color-palette] [class*="prompt"],
+body[data-color-palette] [class*="Prompt"] {
+  color: var(--palette-primary, #00d4ff) !important;
+  transition: color 0.3s ease !important;
+}
+
+body[data-color-palette] [class*="input"]:not([type="checkbox"]):not([type="radio"]),
+body[data-color-palette] input[type="text"],
+body[data-color-palette] textarea {
+  color: var(--palette-primary, #00d4ff) !important;
+  caret-color: var(--palette-primary, #00ffff) !important;
+  transition: color 0.3s ease, caret-color 0.3s ease !important;
+}
+
+body[data-color-palette] [class*="input"]::placeholder,
+body[data-color-palette] input::placeholder,
+body[data-color-palette] textarea::placeholder {
+  color: color-mix(in srgb, var(--palette-primary, #00bcf2) 50%, transparent) !important;
+  transition: color 0.3s ease !important;
+}
+
+/* Terminal Output Elements - Palette Overrides */
+body[data-color-palette] [class*="container"][class*="terminal"] [class*="prompt"],
+body[data-color-palette] [class*="TerminalOutput"] [class*="prompt"],
+body[data-color-palette] [class*="prompt"]:not([class*="input"]) {
+  color: var(--palette-primary, #00d4ff) !important;
+  transition: color 0.3s ease !important;
+}
+
+body[data-color-palette] [class*="container"][class*="terminal"] [class*="command"],
+body[data-color-palette] [class*="TerminalOutput"] [class*="command"] {
+  color: var(--palette-text, #ffffff) !important;
+  transition: color 0.3s ease !important;
+}
+
+body[data-color-palette] [class*="container"][class*="terminal"] [class*="output"],
+body[data-color-palette] [class*="TerminalOutput"] [class*="output"] {
+  color: var(--palette-muted, #cccccc) !important;
+  transition: color 0.3s ease !important;
+}
+
+body[data-color-palette] [class*="error"],
+body[data-color-palette] [data-line-type="error"] {
+  color: var(--palette-error, #ff6666) !important;
+  transition: color 0.3s ease !important;
+}
+
+body[data-color-palette] [class*="success"],
+body[data-color-palette] [data-line-type="success"] {
+  color: var(--palette-success, #16c782) !important;
+  transition: color 0.3s ease !important;
+}
+
+body[data-color-palette] [class*="warning"],
+body[data-color-palette] [data-line-type="warning"] {
+  color: var(--palette-warning, #f2b705) !important;
+  transition: color 0.3s ease !important;
+}
+
+body[data-color-palette] [class*="info"],
+body[data-color-palette] [data-line-type="info"] {
+  color: var(--palette-primary, #00bcf2) !important;
+  transition: color 0.3s ease !important;
+}
+
+body[data-color-palette] [class*="copyable"],
+body[data-color-palette] [class*="Copyable"] {
+  color: var(--palette-primary, rgba(0, 188, 242, 0.98)) !important;
+  transition: color 0.3s ease !important;
+}
+
+body[data-color-palette] [class*="copyable"]:hover,
+body[data-color-palette] [class*="Copyable"]:hover {
+  color: var(--palette-secondary, rgba(0, 255, 216, 0.95)) !important;
+}
+
+body[data-color-palette] [class*="lineTimestamp"],
+body[data-color-palette] [class*="LineTimestamp"] {
+  color: var(--palette-muted, rgba(255, 255, 255, 0.35)) !important;
+  transition: color 0.3s ease !important;
+}
+
+/* Terminal Code Blocks and Tables */
+body[data-color-palette] [class*="codeBlock"],
+body[data-color-palette] [class*="CodeBlock"],
+body[data-color-palette] code,
+body[data-color-palette] pre {
+  background: color-mix(in srgb, var(--palette-bg, rgba(0, 8, 18, 1)) 60%, transparent) !important;
+  border-color: color-mix(in srgb, var(--palette-primary, rgba(0, 188, 242, 1)) 20%, transparent) !important;
+  transition: background 0.3s ease, border-color 0.3s ease !important;
+}
+
+body[data-color-palette] [class*="table"],
+body[data-color-palette] table {
+  background: color-mix(in srgb, var(--palette-bg, rgba(0, 8, 18, 1)) 60%, transparent) !important;
+  transition: background 0.3s ease !important;
+}
+
+body[data-color-palette] [class*="tableRow"],
+body[data-color-palette] tr {
+  border-bottom-color: color-mix(in srgb, var(--palette-primary, rgba(0, 188, 242, 1)) 18%, transparent) !important;
+  transition: border-color 0.3s ease !important;
+}
+
+body[data-color-palette] [class*="tableRow"]:hover,
+body[data-color-palette] tr:hover {
+  background: color-mix(in srgb, var(--palette-primary, rgba(0, 188, 242, 1)) 8%, transparent) !important;
+  transition: background 0.3s ease !important;
+}
+
+body[data-color-palette] [class*="tableHeader"],
+body[data-color-palette] th {
+  color: var(--palette-primary, rgba(0, 188, 242, 0.95)) !important;
+  transition: color 0.3s ease !important;
+}
+
+body[data-color-palette] [class*="tableCell"],
+body[data-color-palette] td {
+  color: var(--palette-text, rgba(220, 225, 235, 0.85)) !important;
+  transition: color 0.3s ease !important;
+}
+
+/* Terminal Container Wrapper */
+body[data-color-palette] [class*="terminalWrapper"],
+body[data-color-palette] [class*="TerminalWrapper"] {
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--palette-bg, rgba(0, 12, 28, 1)) 70%, transparent) 0%,
+    color-mix(in srgb, var(--palette-bg, rgba(0, 6, 14, 1)) 95%, transparent) 100%
+  ) !important;
+  border-color: var(--palette-border, rgba(0, 188, 242, 0.25)) !important;
+  transition: background 0.3s ease, border-color 0.3s ease !important;
+}
+
+body[data-color-palette] [class*="tabBar"],
+body[data-color-palette] [class*="TabBar"] {
+  background: color-mix(in srgb, var(--palette-bg, rgba(17, 17, 17, 1)) 95%, transparent) !important;
+  border-bottom-color: var(--palette-primary, #00bcf2) !important;
+  box-shadow: 0 1px 10px var(--palette-primary-glow, rgba(0, 188, 242, 0.3)) !important;
+  transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease !important;
+}
+
+/* Matrix Theme - Preserve fonts and uppercase when palette active */
+body[data-color-palette].theme-matrix button,
+body[data-color-palette].theme-matrix [class*="button"],
+body[data-color-palette].theme-matrix [class*="Button"],
+body[data-color-palette].theme-matrix [class*="sidebar"] button,
+body[data-color-palette].theme-matrix [class*="Sidebar"] button,
+body[data-color-palette].theme-matrix [class*="sectionTitle"],
+body[data-color-palette].theme-matrix [class*="SectionTitle"] {
+  font-family: var(--theme-font-mono, "Courier New", monospace) !important;
+  letter-spacing: var(--theme-letter-spacing, 0.08em) !important;
+  text-transform: uppercase !important;
+  font-weight: var(--theme-font-weight-bold, 700) !important;
+}
+
+/* Retro Theme - Preserve fonts when palette active */
+body[data-color-palette].theme-retro button,
+body[data-color-palette].theme-retro [class*="button"],
+body[data-color-palette].theme-retro [class*="Button"],
+body[data-color-palette].theme-retro [class*="sidebar"] button,
+body[data-color-palette].theme-retro [class*="Sidebar"] button {
+  font-family: var(--theme-font-body, "VT323", "Courier New", monospace) !important;
+  letter-spacing: var(--theme-letter-spacing, 0.05em) !important;
+  font-weight: var(--theme-font-weight-normal, 400) !important;
+}
+
+/* PowerShell Theme - Preserve fonts when palette active */
+body[data-color-palette].theme-powershell button,
+body[data-color-palette].theme-powershell [class*="button"],
+body[data-color-palette].theme-powershell [class*="Button"],
+body[data-color-palette].theme-powershell [class*="sidebar"] button,
+body[data-color-palette].theme-powershell [class*="Sidebar"] button {
+  font-family: var(--theme-font-body, "Segoe UI", "Microsoft Sans Serif", sans-serif) !important;
+  letter-spacing: var(--theme-letter-spacing, 0) !important;
+  font-weight: var(--theme-font-weight-bold, 600) !important;
+}
+
+/* Executive Theme - Preserve fonts when palette active */
+body[data-color-palette].theme-executive button,
+body[data-color-palette].theme-executive [class*="button"],
+body[data-color-palette].theme-executive [class*="Button"],
+body[data-color-palette].theme-executive [class*="sidebar"] button,
+body[data-color-palette].theme-executive [class*="Sidebar"] button {
+  font-family: var(--theme-font-body, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif) !important;
+  letter-spacing: var(--theme-letter-spacing, 0.01em) !important;
+  font-weight: var(--theme-font-weight-bold, 600) !important;
+}
+
+/* Modern Theme - Preserve fonts when palette active */
+body[data-color-palette].theme-modern button,
+body[data-color-palette].modern-ui-futuristic button,
+body[data-color-palette].modern-terminal-ui button,
+body[data-color-palette].theme-modern [class*="button"],
+body[data-color-palette].modern-ui-futuristic [class*="button"],
+body[data-color-palette].modern-terminal-ui [class*="button"],
+body[data-color-palette].theme-modern [class*="sidebar"] button,
+body[data-color-palette].modern-ui-futuristic [class*="sidebar"] button,
+body[data-color-palette].modern-terminal-ui [class*="sidebar"] button {
+  font-family: var(--theme-font-body, -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif) !important;
+  letter-spacing: var(--theme-letter-spacing, -0.01em) !important;
+  font-weight: var(--theme-font-weight-bold, 600) !important;
+}
+
+/* Preserve theme input styles when palette active */
+body[data-color-palette].theme-dark input,
+body[data-color-palette].theme-dark textarea,
+body[data-color-palette].theme-dark [class*="input"],
+body[data-color-palette].theme-dark [class*="Input"] {
+  font-family: var(--theme-font-mono, "Courier New", monospace) !important;
+  letter-spacing: var(--theme-letter-spacing, 0.05em) !important;
+}
+
+body[data-color-palette].theme-light input,
+body[data-color-palette].theme-light textarea,
+body[data-color-palette].theme-light [class*="input"],
+body[data-color-palette].theme-light [class*="Input"] {
+  font-family: var(--theme-font-body, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif) !important;
+  letter-spacing: var(--theme-letter-spacing, 0) !important;
+}
+
+body[data-color-palette].theme-matrix input,
+body[data-color-palette].theme-matrix textarea,
+body[data-color-palette].theme-matrix [class*="input"],
+body[data-color-palette].theme-matrix [class*="Input"] {
+  font-family: var(--theme-font-mono, "Courier New", monospace) !important;
+  letter-spacing: var(--theme-letter-spacing, 0.08em) !important;
+  text-transform: uppercase !important;
+}
+
+body[data-color-palette].theme-retro input,
+body[data-color-palette].theme-retro textarea,
+body[data-color-palette].theme-retro [class*="input"],
+body[data-color-palette].theme-retro [class*="Input"] {
+  font-family: var(--theme-font-body, "VT323", "Courier New", monospace) !important;
+  letter-spacing: var(--theme-letter-spacing, 0.05em) !important;
+}
+
+body[data-color-palette].theme-powershell input,
+body[data-color-palette].theme-powershell textarea,
+body[data-color-palette].theme-powershell [class*="input"],
+body[data-color-palette].theme-powershell [class*="Input"] {
+  font-family: var(--theme-font-body, "Segoe UI", "Microsoft Sans Serif", sans-serif) !important;
+  letter-spacing: var(--theme-letter-spacing, 0) !important;
+}
+
+body[data-color-palette].theme-executive input,
+body[data-color-palette].theme-executive textarea,
+body[data-color-palette].theme-executive [class*="input"],
+body[data-color-palette].theme-executive [class*="Input"] {
+  font-family: var(--theme-font-body, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif) !important;
+  letter-spacing: var(--theme-letter-spacing, 0.01em) !important;
+}
+
+body[data-color-palette].theme-modern input,
+body[data-color-palette].modern-ui-futuristic input,
+body[data-color-palette].modern-terminal-ui input,
+body[data-color-palette].theme-modern textarea,
+body[data-color-palette].modern-ui-futuristic textarea,
+body[data-color-palette].modern-terminal-ui textarea,
+body[data-color-palette].theme-modern [class*="input"],
+body[data-color-palette].modern-ui-futuristic [class*="input"],
+body[data-color-palette].modern-terminal-ui [class*="input"] {
+  font-family: var(--theme-font-body, -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif) !important;
+  letter-spacing: var(--theme-letter-spacing, -0.01em) !important;
+}
+
+/* Preserve theme heading styles when palette active */
+body[data-color-palette].theme-dark h1,
+body[data-color-palette].theme-dark h2,
+body[data-color-palette].theme-dark h3,
+body[data-color-palette].theme-dark [class*="title"],
+body[data-color-palette].theme-dark [class*="Title"] {
+  font-family: var(--theme-font-heading, "Courier New", monospace) !important;
+  letter-spacing: var(--theme-letter-spacing, 0.05em) !important;
+  font-weight: var(--theme-font-weight-bold, 700) !important;
+}
+
+body[data-color-palette].theme-light h1,
+body[data-color-palette].theme-light h2,
+body[data-color-palette].theme-light h3,
+body[data-color-palette].theme-light [class*="title"],
+body[data-color-palette].theme-light [class*="Title"] {
+  font-family: var(--theme-font-heading, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif) !important;
+  letter-spacing: var(--theme-letter-spacing, 0) !important;
+  font-weight: var(--theme-font-weight-bold, 600) !important;
+}
+
+body[data-color-palette].theme-matrix h1,
+body[data-color-palette].theme-matrix h2,
+body[data-color-palette].theme-matrix h3,
+body[data-color-palette].theme-matrix [class*="title"],
+body[data-color-palette].theme-matrix [class*="Title"] {
+  font-family: var(--theme-font-heading, "Courier New", monospace) !important;
+  letter-spacing: var(--theme-letter-spacing, 0.08em) !important;
+  text-transform: uppercase !important;
+  font-weight: var(--theme-font-weight-bold, 700) !important;
+}
+
+body[data-color-palette].theme-retro h1,
+body[data-color-palette].theme-retro h2,
+body[data-color-palette].theme-retro h3,
+body[data-color-palette].theme-retro [class*="title"],
+body[data-color-palette].theme-retro [class*="Title"] {
+  font-family: var(--theme-font-heading, "VT323", "Courier New", monospace) !important;
+  letter-spacing: var(--theme-letter-spacing, 0.05em) !important;
+  font-weight: var(--theme-font-weight-normal, 400) !important;
+}
+
+body[data-color-palette].theme-powershell h1,
+body[data-color-palette].theme-powershell h2,
+body[data-color-palette].theme-powershell h3,
+body[data-color-palette].theme-powershell [class*="title"],
+body[data-color-palette].theme-powershell [class*="Title"] {
+  font-family: var(--theme-font-heading, "Segoe UI", "Microsoft Sans Serif", sans-serif) !important;
+  letter-spacing: var(--theme-letter-spacing, 0) !important;
+  font-weight: var(--theme-font-weight-bold, 600) !important;
+}
+
+body[data-color-palette].theme-executive h1,
+body[data-color-palette].theme-executive h2,
+body[data-color-palette].theme-executive h3,
+body[data-color-palette].theme-executive [class*="title"],
+body[data-color-palette].theme-executive [class*="Title"] {
+  font-family: var(--theme-font-heading, "Playfair Display", "Georgia", serif) !important;
+  letter-spacing: var(--theme-letter-spacing, 0.01em) !important;
+  font-weight: var(--theme-font-weight-bold, 600) !important;
+}
+
+body[data-color-palette].theme-modern h1,
+body[data-color-palette].modern-ui-futuristic h1,
+body[data-color-palette].modern-terminal-ui h1,
+body[data-color-palette].theme-modern h2,
+body[data-color-palette].modern-ui-futuristic h2,
+body[data-color-palette].modern-terminal-ui h2,
+body[data-color-palette].theme-modern h3,
+body[data-color-palette].modern-ui-futuristic h3,
+body[data-color-palette].modern-terminal-ui h3,
+body[data-color-palette].theme-modern [class*="title"],
+body[data-color-palette].modern-ui-futuristic [class*="title"],
+body[data-color-palette].modern-terminal-ui [class*="title"] {
+  font-family: var(--theme-font-heading, "SF Pro Display", -apple-system, BlinkMacSystemFont, sans-serif) !important;
+  letter-spacing: var(--theme-letter-spacing, -0.01em) !important;
+  font-weight: var(--theme-font-weight-bold, 600) !important;
+}
+
+/* =============================================================================
+   NAV BAR ICON BUTTONS - Theme-Aware Styling
+   Ensure all toggle icons work correctly across all themes
+   ============================================================================= */
+
+/* Base icon button styling - works with all themes */
+body [class*="terminalIconBtn"],
+body [class*="TerminalIconBtn"],
+body [class*="controlButton"],
+body [class*="ControlButton"] {
+  color: var(--palette-primary, #00bcf2);
+  transition: all 0.3s ease;
+}
+
+body [class*="terminalIconBtn"] svg,
+body [class*="TerminalIconBtn"] svg,
+body [class*="controlButton"] svg,
+body [class*="ControlButton"] svg {
+  fill: currentColor;
+  width: 14px;
+  height: 14px;
+  display: block;
+  flex-shrink: 0;
+}
+
+body [class*="terminalIconBtn"] svg path,
+body [class*="TerminalIconBtn"] svg path,
+body [class*="controlButton"] svg path,
+body [class*="ControlButton"] svg path {
+  fill: currentColor;
+}
+
+/* Theme-specific icon button colors */
+body.theme-dark [class*="terminalIconBtn"],
+body.theme-dark [class*="controlButton"] {
+  color: var(--palette-primary, #00bcf2);
+}
+
+body.theme-light [class*="terminalIconBtn"],
+body.theme-light [class*="controlButton"] {
+  color: var(--palette-primary, #0051d5);
+}
+
+body.theme-matrix [class*="terminalIconBtn"],
+body.theme-matrix [class*="controlButton"] {
+  color: var(--palette-primary, #ffffff);
+}
+
+body.theme-retro [class*="terminalIconBtn"],
+body.theme-retro [class*="controlButton"] {
+  color: var(--palette-primary, #ffaa00);
+}
+
+body.theme-powershell [class*="terminalIconBtn"],
+body.theme-powershell [class*="controlButton"] {
+  color: var(--palette-primary, #00bcf2);
+}
+
+body.theme-executive [class*="terminalIconBtn"],
+body.theme-executive [class*="controlButton"] {
+  color: var(--palette-primary, #ffffff);
+}
+
+body.theme-modern [class*="terminalIconBtn"],
+body.modern-ui-futuristic [class*="terminalIconBtn"],
+body.modern-terminal-ui [class*="terminalIconBtn"],
+body.theme-modern [class*="controlButton"],
+body.modern-ui-futuristic [class*="controlButton"],
+body.modern-terminal-ui [class*="controlButton"] {
+  color: var(--palette-primary, rgba(0, 255, 210, 0.95));
+}
+
+/* Preserve icon colors when palette is active */
+body[data-color-palette] [class*="terminalIconBtn"],
+body[data-color-palette] [class*="TerminalIconBtn"],
+body[data-color-palette] [class*="controlButton"],
+body[data-color-palette] [class*="ControlButton"] {
+  color: var(--palette-primary, #00bcf2) !important;
+}
+
+body[data-color-palette] [class*="terminalIconBtn"] svg,
+body[data-color-palette] [class*="TerminalIconBtn"] svg,
+body[data-color-palette] [class*="controlButton"] svg,
+body[data-color-palette] [class*="ControlButton"] svg {
+  fill: currentColor !important;
+}
+
+body[data-color-palette] [class*="terminalIconBtn"] svg path,
+body[data-color-palette] [class*="TerminalIconBtn"] svg path,
+body[data-color-palette] [class*="controlButton"] svg path,
+body[data-color-palette] [class*="ControlButton"] svg path {
+  fill: currentColor !important;
+}
+/* Help command clickable elements */
+.omega-help-command {
+  color: var(--palette-secondary, #00ff88) !important;
+  font-weight: bold !important;
+  cursor: pointer !important;
+  display: inline-block !important;
+  padding: 2px 4px !important;
+  border-radius: 3px !important;
+  transition: all 0.2s ease !important;
+  user-select: none !important;
+}
+
+.omega-help-command:hover {
+  background: color-mix(in srgb, var(--palette-secondary, #00ff88) 15%, transparent) !important;
+  text-shadow: 0 0 8px var(--palette-secondary-glow, rgba(0, 255, 136, 0.5)) !important;
+}
+
+.omega-help-command:active {
+  transform: scale(0.95) !important;
+}
+

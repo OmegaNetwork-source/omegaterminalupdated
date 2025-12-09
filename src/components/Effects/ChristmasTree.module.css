@@ -1,0 +1,147 @@
+.treeContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 8px;
+  margin: 0;
+  position: relative;
+}
+
+.treeSvg {
+  width: 60px;
+  height: 90px;
+  max-width: 100%;
+  filter: drop-shadow(0 0 6px rgba(34, 139, 34, 0.4));
+}
+
+/* Rotating animation for tree layers */
+.layer {
+  transform-origin: 100px 100px;
+  animation: rotateTree 8s ease-in-out infinite;
+}
+
+@keyframes rotateTree {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(2deg);
+  }
+  50% {
+    transform: rotate(0deg);
+  }
+  75% {
+    transform: rotate(-2deg);
+  }
+}
+
+/* Branch styling */
+.branch {
+  stroke: var(--palette-secondary, #228b22);
+  stroke-width: 2;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 3px rgba(34, 139, 34, 0.6));
+  animation: branchGlow 3s ease-in-out infinite;
+}
+
+@keyframes branchGlow {
+  0%,
+  100% {
+    opacity: 0.9;
+    stroke-width: 2;
+  }
+  50% {
+    opacity: 1;
+    stroke-width: 2.5;
+  }
+}
+
+/* Trunk styling */
+.trunk {
+  fill: #8b4513;
+  stroke: #654321;
+  stroke-width: 1;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+/* Star/Topper styling */
+.star {
+  transform-origin: 100px 40px;
+  animation: starTwinkle 2s ease-in-out infinite;
+}
+
+.starPath {
+  fill: var(--palette-accent, #ffffff);
+  stroke: var(--palette-accent, #ffffff);
+  stroke-width: 1;
+  filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.8));
+  animation: starGlow 1.5s ease-in-out infinite;
+}
+
+@keyframes starTwinkle {
+  0%,
+  100% {
+    transform: rotate(0deg) scale(1);
+  }
+  50% {
+    transform: rotate(180deg) scale(1.1);
+  }
+}
+
+@keyframes starGlow {
+  0%,
+  100% {
+    opacity: 0.9;
+    filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.8));
+  }
+  50% {
+    opacity: 1;
+    filter: drop-shadow(0 0 12px rgba(255, 255, 255, 1));
+  }
+}
+
+/* Ornament styling */
+.ornament {
+  fill: var(--palette-primary, #dc143c);
+  stroke: var(--palette-accent, #ffffff);
+  stroke-width: 0.5;
+  filter: drop-shadow(0 0 4px rgba(220, 20, 60, 0.6));
+  animation: ornamentPulse 2s ease-in-out infinite;
+  transform-origin: center;
+}
+
+@keyframes ornamentPulse {
+  0%,
+  100% {
+    opacity: 0.8;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .treeSvg {
+    width: 50px;
+    height: 75px;
+  }
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .layer,
+  .star,
+  .starPath,
+  .ornament {
+    animation: none;
+  }
+  
+  .branch {
+    animation: none;
+  }
+}
+

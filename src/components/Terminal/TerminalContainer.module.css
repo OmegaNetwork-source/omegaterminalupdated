@@ -1,0 +1,1032 @@
+/**
+ * @file TerminalContainer.module.css
+ * @description Comprehensive container layout styling with theme and responsive variants.
+ * @sources styles/base.css, styles/futuristic-theme.css, styles/mobile-terminal-fix.css
+ */
+
+/* -----------------------------------------------------------------------------
+   Core Container Layout
+   ----------------------------------------------------------------------------- */
+
+.container {
+  width: 100vw;
+  min-height: 100vh;
+  height: 100vh;
+  height: 100dvh;
+  padding: 20px;
+  background: linear-gradient(
+    135deg,
+    var(--palette-bg, #000) 0%,
+    color-mix(
+        in srgb,
+        var(--palette-bg, #000) 90%,
+        var(--palette-primary, #00bcf2) 10%
+      )
+      100%
+  );
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  color: var(--palette-text, #ffffff);
+  font-family: "Courier New", monospace;
+  font-size: 14px;
+  line-height: 1.4;
+  overflow: hidden;
+  box-sizing: border-box;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+.loadingShell {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(
+    circle at center,
+    var(
+      --palette-primary-glow,
+      color-mix(in srgb, var(--palette-primary, #00bcf2) 18%, transparent)
+    ),
+    color-mix(in srgb, var(--palette-bg, #000) 92%, transparent)
+  );
+  color: var(--palette-secondary, rgba(0, 255, 214, 0.95));
+  font-family: "IBM Plex Mono", "Courier New", monospace;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+.loadingIndicator {
+  padding: 18px 32px;
+  border: 1px solid var(--palette-secondary, rgba(0, 255, 214, 0.42));
+  border-radius: 16px;
+  background: color-mix(
+    in srgb,
+    var(--palette-primary, #00bcf2) 8%,
+    transparent
+  );
+  box-shadow: 0 24px 48px var(--palette-primary-glow, rgba(0, 188, 242, 0.25));
+  animation: pulseGlow 1.6s ease-in-out infinite;
+  transition: border-color 0.3s ease, background-color 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+@keyframes pulseGlow {
+  0%,
+  100% {
+    box-shadow: 0 24px 48px var(--palette-primary-glow, rgba(0, 188, 242, 0.2));
+    transform: translateY(0);
+  }
+
+  50% {
+    box-shadow: 0 24px 60px
+      var(--palette-secondary-glow, rgba(0, 255, 214, 0.35));
+    transform: translateY(-4px);
+  }
+}
+
+.terminalWrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--palette-bg, rgba(0, 12, 28, 1)) 70%, transparent)
+      0%,
+    color-mix(in srgb, var(--palette-bg, rgba(0, 6, 14, 1)) 95%, transparent)
+      100%
+  );
+  border: 1px solid var(--palette-border, rgba(0, 188, 242, 0.25));
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: none;
+  overflow: hidden;
+  position: relative;
+  min-height: 0;
+  transition: border-color 0.3s ease, background 0.3s ease;
+}
+
+.embedded .terminalWrapper {
+  border-radius: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+}
+
+.terminalWrapper::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: transparent;
+  opacity: 0;
+  pointer-events: none;
+  transition: background 0.3s ease;
+}
+
+.terminalWrapper::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.08),
+    transparent 45%
+  );
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+.embedded {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  background: color-mix(
+    in srgb,
+    var(--palette-bg, rgba(21, 21, 32, 1)) 70%,
+    transparent
+  );
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--palette-border, rgba(0, 212, 255, 0.15));
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 0;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-height: 0;
+  max-height: 100%;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.embedded::before {
+  display: none;
+}
+
+/* Hide tab bar in dashboard mode */
+.embedded .tabBar {
+  display: none;
+}
+
+/* Hide info box in dashboard mode */
+.embedded .infoBox {
+  display: none;
+}
+
+/* -----------------------------------------------------------------------------
+   Tab Bar Styling
+   ----------------------------------------------------------------------------- */
+
+.tabBar {
+  display: flex;
+  align-items: center;
+  background: color-mix(
+    in srgb,
+    var(--palette-bg, rgba(17, 17, 17, 1)) 95%,
+    transparent
+  );
+  border-bottom: 1px solid var(--palette-primary, #00bcf2);
+  box-shadow: 0 1px 10px var(--palette-primary-glow, rgba(0, 188, 242, 0.3));
+  transition: border-color 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+}
+
+.tab {
+  padding: 8px 18px;
+  cursor: pointer;
+  border-right: 1px solid #333;
+  color: #fff;
+  font-weight: bold;
+  font-family: "Courier New", monospace;
+}
+
+.tab:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.tabActive {
+  color: #fff;
+  font-weight: bold;
+}
+
+.addTabButton {
+  padding: 8px 18px;
+  cursor: pointer;
+  color: #00bcf2;
+  font-size: 1.3em;
+  background: transparent;
+  border: none;
+  font-family: "Courier New", monospace;
+}
+
+.addTabButton:hover {
+  background: rgba(0, 188, 242, 0.1);
+}
+
+/* -----------------------------------------------------------------------------
+   Informational Banners
+   ----------------------------------------------------------------------------- */
+
+.infoBox {
+  background: color-mix(
+    in srgb,
+    var(--palette-primary, #00bcf2) 10%,
+    transparent
+  );
+  border: 1px solid var(--palette-primary, #00bcf2);
+  color: var(--palette-primary, #00bcf2);
+  padding: 10px 16px;
+  border-radius: 6px;
+  margin: 0 0 12px 0;
+  font-size: 15px;
+  box-shadow: 0 0 10px var(--palette-primary-glow, rgba(0, 188, 242, 0.3));
+  transition: background-color 0.3s ease, border-color 0.3s ease,
+    color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.commandInitBanner {
+  margin-bottom: 16px;
+  padding: 12px 18px;
+  border-radius: 12px;
+  border: 1px dashed var(--palette-secondary, rgba(0, 255, 214, 0.4));
+  background: color-mix(
+    in srgb,
+    var(--palette-primary, #00bcf2) 8%,
+    transparent
+  );
+  color: var(--palette-secondary, rgba(0, 255, 214, 0.95));
+  font-size: 0.95rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-align: center;
+  transition: border-color 0.3s ease, background-color 0.3s ease,
+    color 0.3s ease;
+}
+
+.commandErrorBanner {
+  margin-bottom: 16px;
+  padding: 16px 20px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 85, 122, 0.4);
+  background: rgba(255, 85, 122, 0.08);
+  color: rgba(255, 176, 189, 0.95);
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.commandErrorBanner strong {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 1rem;
+  color: rgba(255, 205, 214, 0.98);
+}
+
+.commandErrorBanner ul {
+  margin: 8px 0;
+  padding-left: 20px;
+  list-style: disc;
+}
+
+.commandErrorBanner li {
+  margin-bottom: 4px;
+}
+
+.commandErrorBanner code {
+  background: rgba(255, 255, 255, 0.08);
+  padding: 2px 6px;
+  border-radius: 6px;
+  font-family: inherit;
+}
+
+.infoBox > div {
+  margin-bottom: 0;
+}
+
+.infoBox > div:not(:last-child) {
+  margin-bottom: 6px;
+}
+
+/* -----------------------------------------------------------------------------
+   Mobile & Touch Enhancements
+   ----------------------------------------------------------------------------- */
+
+.mobileOptimized {
+  width: 100vw;
+  height: 100vh;
+  padding: 16px;
+  background: #000000;
+  overflow: hidden;
+}
+
+.touchFriendly {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: rgba(255, 255, 255, 0.2);
+}
+
+.iosOptimized {
+  height: -webkit-fill-available;
+  min-height: -webkit-fill-available;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* -----------------------------------------------------------------------------
+   Theme Variants (global body selectors)
+   ----------------------------------------------------------------------------- */
+
+:global(body.theme-executive) .container {
+  background: linear-gradient(
+    160deg,
+    var(--palette-bg, rgba(10, 10, 20, 0.98)) 0%,
+    color-mix(
+        in srgb,
+        var(--palette-bg, rgba(10, 10, 20, 0.98)) 90%,
+        var(--palette-primary, #00bcf2) 10%
+      )
+      100%
+  );
+  color: var(--palette-text, rgba(245, 238, 220, 0.98));
+  border: 1px solid
+    var(
+      --palette-border,
+      color-mix(
+        in srgb,
+        var(--palette-primary, rgba(255, 215, 0, 1)) 30%,
+        transparent
+      )
+    );
+  box-shadow: 0 28px 64px
+    var(
+      --palette-primary-glow,
+      color-mix(in srgb, var(--palette-primary, #00bcf2) 18%, transparent)
+    );
+  transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+:global(body.theme-executive) .terminalWrapper {
+  background: linear-gradient(
+    135deg,
+    color-mix(
+        in srgb,
+        var(--palette-surface, rgba(18, 22, 36, 1)) 90%,
+        transparent
+      )
+      0%,
+    color-mix(
+        in srgb,
+        var(--palette-surface, rgba(8, 10, 16, 1)) 90%,
+        transparent
+      )
+      100%
+  );
+  border: 1px solid
+    var(
+      --palette-border,
+      color-mix(
+        in srgb,
+        var(--palette-primary, rgba(255, 215, 0, 1)) 35%,
+        transparent
+      )
+    );
+  box-shadow: none;
+  transition: border-color 0.3s ease, background 0.3s ease;
+}
+
+:global(body.theme-modern) .container {
+  background: linear-gradient(
+    160deg,
+    var(--palette-bg, rgba(10, 12, 18, 0.92)) 0%,
+    color-mix(
+        in srgb,
+        var(--palette-bg, rgba(10, 12, 18, 0.92)) 90%,
+        var(--palette-primary, #00bcf2) 10%
+      )
+      100%
+  );
+  color: var(--palette-text, rgba(235, 242, 255, 0.92));
+  border: 1px solid
+    var(
+      --palette-border,
+      color-mix(
+        in srgb,
+        var(--palette-primary, rgba(98, 0, 255, 1)) 30%,
+        transparent
+      )
+    );
+  box-shadow: none;
+  transition: background 0.3s ease, border-color 0.3s ease;
+}
+
+:global(body.theme-modern) .tabBar {
+  background: color-mix(
+    in srgb,
+    var(--palette-surface, rgba(10, 12, 22, 1)) 80%,
+    transparent
+  );
+  border: 1px solid
+    color-mix(
+      in srgb,
+      var(--palette-primary, rgba(98, 0, 255, 1)) 35%,
+      transparent
+    );
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 16px 32px
+      var(
+        --palette-primary-glow,
+        color-mix(
+          in srgb,
+          var(--palette-primary, rgba(98, 0, 255, 1)) 18%,
+          transparent
+        )
+      );
+  transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+:global(body.theme-matrix) .container {
+  background: linear-gradient(
+    135deg,
+    var(--palette-bg, rgba(0, 0, 0, 0.95)) 0%,
+    color-mix(
+        in srgb,
+        var(--palette-bg, rgba(0, 0, 0, 0.95)) 95%,
+        var(--palette-primary, rgba(57, 255, 20, 1)) 5%
+      )
+      100%
+  );
+  color: var(--palette-primary, #39ff14);
+  border: 1px solid
+    var(
+      --palette-border,
+      color-mix(
+        in srgb,
+        var(--palette-primary, rgba(57, 255, 20, 1)) 30%,
+        transparent
+      )
+    );
+  box-shadow: none;
+  transition: background 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+:global(body.theme-matrix) .tabActive {
+  color: var(--palette-primary, #39ff14);
+  transition: color 0.3s ease;
+}
+
+:global(body.theme-retro) .container {
+  background: linear-gradient(
+    135deg,
+    var(--palette-bg, rgba(24, 18, 0, 0.97)) 0%,
+    color-mix(
+        in srgb,
+        var(--palette-bg, rgba(24, 18, 0, 0.97)) 95%,
+        var(--palette-primary, rgba(255, 170, 0, 1)) 5%
+      )
+      100%
+  );
+  color: var(--palette-primary, #ffa000);
+  border: 1px solid
+    var(
+      --palette-border,
+      color-mix(
+        in srgb,
+        var(--palette-primary, rgba(255, 170, 0, 1)) 30%,
+        transparent
+      )
+    );
+  box-shadow: none;
+  transition: background 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+:global(body.theme-powershell) .container {
+  background: linear-gradient(
+    135deg,
+    var(--palette-bg, rgba(1, 36, 86, 0.96)) 0%,
+    color-mix(
+        in srgb,
+        var(--palette-bg, rgba(1, 36, 86, 0.96)) 95%,
+        var(--palette-primary, rgba(0, 188, 242, 1)) 5%
+      )
+      100%
+  );
+  color: var(--palette-text, #ecf6ff);
+  border: 1px solid
+    var(
+      --palette-border,
+      color-mix(
+        in srgb,
+        var(--palette-primary, rgba(0, 188, 242, 1)) 30%,
+        transparent
+      )
+    );
+  box-shadow: none;
+  transition: background 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+/* Futuristic dashboard override */
+:global(body.futuristic-mode) .container {
+  background: linear-gradient(
+    135deg,
+    var(--palette-bg, rgba(16, 26, 46, 0.9)) 0%,
+    color-mix(
+        in srgb,
+        var(--palette-bg, rgba(16, 26, 46, 0.9)) 90%,
+        var(--palette-primary, #00bcf2) 10%
+      )
+      100%
+  );
+  border: 1px solid var(--palette-border, rgba(0, 188, 242, 0.32));
+  transition: border-color 0.3s ease, background 0.3s ease;
+}
+
+:global(body.light-mode) .container {
+  background: var(--palette-bg, rgba(248, 250, 255, 0.95));
+  border: 1px solid
+    var(
+      --palette-border,
+      color-mix(
+        in srgb,
+        var(--palette-primary, rgba(0, 81, 213, 1)) 20%,
+        transparent
+      )
+    );
+  color: var(--palette-text, rgba(18, 22, 38, 0.92));
+  box-shadow: none;
+  transition: background 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+:global(body.light-mode) .terminalWrapper {
+  background: color-mix(
+    in srgb,
+    var(--palette-surface, rgba(240, 244, 255, 1)) 92%,
+    transparent
+  );
+  border: 1px solid
+    var(
+      --palette-border,
+      color-mix(
+        in srgb,
+        var(--palette-primary, rgba(0, 81, 213, 1)) 20%,
+        transparent
+      )
+    );
+  box-shadow: none;
+  transition: background 0.3s ease, border-color 0.3s ease;
+}
+
+:global(body.light-mode) .tabBar {
+  background: color-mix(
+    in srgb,
+    var(--palette-surface, rgba(240, 244, 255, 1)) 85%,
+    transparent
+  );
+  border: 1px solid
+    var(
+      --palette-border,
+      color-mix(
+        in srgb,
+        var(--palette-primary, rgba(0, 81, 213, 1)) 20%,
+        transparent
+      )
+    );
+  transition: background 0.3s ease, border-color 0.3s ease;
+}
+
+:global(body.modern-ui-futuristic) .container {
+  background: var(--modern-bg-primary, rgba(8, 14, 32, 0.9));
+  border: 1px solid
+    var(
+      --palette-border,
+      color-mix(
+        in srgb,
+        var(--palette-primary, var(--modern-border, rgba(0, 255, 210, 1))) 32%,
+        transparent
+      )
+    );
+  color: var(--modern-text-primary, rgba(245, 250, 255, 0.95));
+  box-shadow: none;
+  transition: border-color 0.3s ease, background 0.3s ease;
+}
+
+:global(body.modern-ui-futuristic) .terminalWrapper {
+  background: var(--modern-bg-secondary, rgba(6, 12, 28, 0.92));
+  border: 1px solid
+    var(
+      --palette-border,
+      color-mix(
+        in srgb,
+        var(--palette-primary, var(--modern-border, rgba(0, 255, 210, 1))) 28%,
+        transparent
+      )
+    );
+  box-shadow: none;
+  transition: border-color 0.3s ease, background 0.3s ease;
+}
+
+:global(body.modern-ui-futuristic) .tabBar {
+  background: color-mix(
+    in srgb,
+    var(--palette-surface, rgba(8, 18, 36, 1)) 85%,
+    transparent
+  );
+  border: 1px solid
+    var(
+      --palette-border,
+      color-mix(
+        in srgb,
+        var(--palette-primary, rgba(0, 255, 210, 1)) 25%,
+        transparent
+      )
+    );
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 18px 32px
+      var(
+        --palette-primary-glow,
+        color-mix(
+          in srgb,
+          var(--palette-primary, rgba(0, 255, 210, 1)) 12%,
+          transparent
+        )
+      );
+  transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+:global(body.modern-ui-futuristic) .infoBox {
+  background: color-mix(
+    in srgb,
+    var(--palette-primary, rgba(0, 255, 210, 1)) 8%,
+    transparent
+  );
+  border: 1px solid var(--palette-primary, rgba(0, 255, 210, 0.28));
+  color: var(--modern-text-primary, rgba(245, 250, 255, 0.95));
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+/* -----------------------------------------------------------------------------
+   CRT Theme Overrides - Remove all borders, match retro terminal look
+   ----------------------------------------------------------------------------- */
+
+:global(body.theme-crt) .container {
+  background: #000000 !important;
+  border: none !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  color: #00ff00 !important;
+  font-family: "Courier New", "Monaco", "Consolas", "Lucida Console", monospace !important;
+  text-shadow: 
+    0 0 5px rgba(0, 255, 0, 0.5),
+    0 0 10px rgba(0, 255, 0, 0.3),
+    0 0 2px rgba(0, 255, 0, 0.8);
+  box-shadow: none !important;
+}
+
+:global(body.theme-crt) .container * {
+  color: #00ff00 !important;
+  text-shadow: 
+    0 0 5px rgba(0, 255, 0, 0.5),
+    0 0 10px rgba(0, 255, 0, 0.3),
+    0 0 2px rgba(0, 255, 0, 0.8);
+}
+
+:global(body.theme-crt) .terminalWrapper {
+  background: #000000 !important;
+  border: none !important;
+  border-radius: 0 !important;
+  padding: 16px !important;
+  box-shadow: none !important;
+}
+
+:global(body.theme-crt) .terminalWrapper::before,
+:global(body.theme-crt) .terminalWrapper::after {
+  display: none !important;
+}
+
+:global(body.theme-crt) .embedded {
+  background: #000000 !important;
+  border: none !important;
+  border-radius: 0 !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: none !important;
+}
+
+:global(body.theme-crt) .tabBar {
+  background: rgba(0, 0, 0, 0.8) !important;
+  border: none !important;
+  border-bottom: 1px solid rgba(0, 255, 0, 0.2) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+:global(body.theme-crt) .tab {
+  border-right: 1px solid rgba(0, 255, 0, 0.15) !important;
+  color: #00ff00 !important;
+  text-shadow: 
+    0 0 5px rgba(0, 255, 0, 0.5),
+    0 0 10px rgba(0, 255, 0, 0.3);
+}
+
+:global(body.theme-crt) .tab:hover {
+  background: rgba(0, 0, 0, 0.5) !important;
+}
+
+:global(body.theme-crt) .tabActive {
+  color: #39ff14 !important;
+  text-shadow: 
+    0 0 8px rgba(0, 255, 0, 0.8),
+    0 0 15px rgba(0, 255, 0, 0.5);
+}
+
+:global(body.theme-crt) .addTabButton {
+  color: #00ff00 !important;
+  text-shadow: 
+    0 0 5px rgba(0, 255, 0, 0.5),
+    0 0 10px rgba(0, 255, 0, 0.3);
+}
+
+:global(body.theme-crt) .addTabButton:hover {
+  background: rgba(0, 0, 0, 0.5) !important;
+}
+
+:global(body.theme-crt) .infoBox {
+  background: rgba(0, 0, 0, 0.8) !important;
+  border: 1px solid rgba(0, 255, 0, 0.3) !important;
+  border-radius: 0 !important;
+  color: #00ff00 !important;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  box-shadow: 
+    0 0 10px rgba(0, 255, 0, 0.2),
+    inset 0 0 10px rgba(0, 255, 0, 0.1);
+  text-shadow: 
+    0 0 5px rgba(0, 255, 0, 0.5),
+    0 0 10px rgba(0, 255, 0, 0.3);
+}
+
+:global(body.theme-crt) .commandInitBanner,
+:global(body.theme-crt) .commandErrorBanner {
+  background: rgba(0, 0, 0, 0.8) !important;
+  border: 1px solid rgba(0, 255, 0, 0.3) !important;
+  border-radius: 0 !important;
+  color: #00ff00 !important;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  text-shadow: 
+    0 0 5px rgba(0, 255, 0, 0.5),
+    0 0 10px rgba(0, 255, 0, 0.3);
+}
+
+/* -----------------------------------------------------------------------------
+   Responsive Breakpoints
+   ----------------------------------------------------------------------------- */
+
+@media (max-width: 1400px) {
+  .container {
+    padding: 18px;
+  }
+
+  .terminalWrapper {
+    padding: 18px;
+  }
+
+  .tab {
+    padding: 9px 18px;
+    font-size: 0.95rem;
+  }
+
+  .infoBox {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .container {
+    padding: 16px;
+  }
+
+  .terminalWrapper {
+    padding: 16px;
+  }
+
+  .tabBar {
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 8px;
+    border-radius: 10px;
+  }
+
+  .tab {
+    flex: 1 1 auto;
+    text-align: center;
+    padding: 8px 14px;
+    font-size: 0.9rem;
+  }
+
+  .addTabButton {
+    flex: 0 0 auto;
+    min-width: 44px;
+    min-height: 44px;
+    font-size: 1.2rem;
+  }
+
+  .infoBox {
+    padding: 12px 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    width: 100%;
+    height: 100vh;
+    height: -webkit-fill-available; /* iOS fix */
+    padding: 0;
+    margin: 0;
+    /* Compensate for body's safe-area-inset padding to ensure proper centering */
+    margin-left: calc(-1 * env(safe-area-inset-left, 0px));
+    margin-right: calc(-1 * env(safe-area-inset-right, 0px));
+    border-radius: 0;
+    background: var(--palette-bg, #000000);
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    /* Reserve space at bottom for input + keyboard */
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  .terminalWrapper {
+    padding: 0;
+    border-radius: 0;
+    border: none;
+    box-shadow: none;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    flex: 1;
+    min-height: 0;
+    background: transparent;
+  }
+
+  .tabBar {
+    display: none; /* Hide tab bar on mobile */
+  }
+
+  .tab {
+    flex: 1;
+    padding: 8px 10px;
+    font-size: 0.88rem;
+  }
+
+  .addTabButton {
+    min-width: 44px;
+    min-height: 44px;
+    font-size: 1.1rem;
+    border: 1px solid rgba(0, 188, 242, 0.3);
+  }
+
+  .infoBox {
+    padding: 8px 12px;
+    font-size: 0.8rem;
+    line-height: 1.4;
+    border-radius: 8px;
+    margin: 8px 12px;
+    display: none; /* Hide info box on mobile for cleaner look */
+  }
+
+  .mobileOptimized {
+    padding: 0;
+  }
+
+  .touchFriendly {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Hide command init banner on mobile */
+  .commandInitBanner,
+  .commandErrorBanner {
+    margin: 8px 12px;
+    padding: 10px 12px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 0;
+  }
+
+  .terminalWrapper {
+    padding: 0;
+  }
+
+  .tabBar {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .tab,
+  .addTabButton {
+    width: 100%;
+    padding: 10px;
+    font-size: 0.84rem;
+  }
+
+  .infoBox {
+    font-size: 0.82rem;
+  }
+}
+
+@media (max-height: 600px) and (orientation: landscape) {
+  .container {
+    height: 100vh;
+    padding: 12px;
+  }
+
+  .terminalWrapper {
+    padding: 12px;
+  }
+
+  .tab {
+    padding: 6px 10px;
+    font-size: 0.82rem;
+  }
+
+  .infoBox {
+    margin-bottom: 10px;
+  }
+}
+
+/* -----------------------------------------------------------------------------
+   Feature Queries & Touch Handling
+   ----------------------------------------------------------------------------- */
+
+@supports (-webkit-touch-callout: none) {
+  .iosOptimized {
+    height: -webkit-fill-available;
+    min-height: -webkit-fill-available;
+  }
+}
+
+@supports (padding: max(0px)) {
+  .container {
+    padding-top: max(16px, env(safe-area-inset-top));
+    padding-bottom: max(16px, env(safe-area-inset-bottom));
+    padding-left: max(16px, env(safe-area-inset-left));
+    padding-right: max(16px, env(safe-area-inset-right));
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-right: env(safe-area-inset-right, 0px);
+    padding-bottom: 0;
+    padding-left: env(safe-area-inset-left, 0px);
+  }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .tab,
+  .addTabButton {
+    min-height: 48px;
+  }
+
+  .tab::after {
+    height: 3px;
+  }
+}
+
+/* -----------------------------------------------------------------------------
+   Utility Modifiers
+   ----------------------------------------------------------------------------- */
+
+.noGlow {
+  box-shadow: none !important;
+}
+
+.noScanline::after,
+.noScanline::before {
+  display: none !important;
+}
+
+.switchingTheme {
+  pointer-events: none;
+  opacity: 0.7;
+  transition: opacity 0.3s ease;
+}
+
+.forceBasicMode {
+  display: none !important;
+}
+
+:global(body.basic-terminal-mode) .forceBasicMode {
+  display: block !important;
+}

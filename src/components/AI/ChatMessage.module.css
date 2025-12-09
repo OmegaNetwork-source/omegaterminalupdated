@@ -1,0 +1,116 @@
+/**
+ * ChatMessage Component Styles
+ * 
+ * Styles for AI chat message display with role-based theming
+ */
+
+/* Message container */
+.container {
+  display: flex;
+  margin-bottom: 16px;
+  gap: 12px;
+}
+
+.containerUser {
+  flex-direction: row-reverse;
+}
+
+.containerAssistant {
+  flex-direction: row;
+}
+
+/* Avatar */
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.avatarUser {
+  background: linear-gradient(135deg, #007aff, #00bcf2);
+}
+
+.avatarAssistant {
+  background: linear-gradient(135deg, #00bcf2, #00ff88);
+}
+
+/* Message bubble */
+.bubble {
+  max-width: 70%;
+  padding: 12px 16px;
+  border-radius: 16px;
+  position: relative;
+}
+
+.bubbleUser {
+  background: rgba(0, 122, 255, 0.1);
+  border: 1px solid rgba(0, 122, 255, 0.3);
+  border-bottom-right-radius: 4px;
+}
+
+.bubbleAssistant {
+  background: rgba(0, 188, 242, 0.1);
+  border: 1px solid rgba(0, 188, 242, 0.3);
+  border-bottom-left-radius: 4px;
+}
+
+/* Message content */
+.content {
+  color: #ffffff;
+  font-size: 14px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+/* Timestamp */
+.timestamp {
+  font-size: 11px;
+  color: #888888;
+  margin-top: 4px;
+}
+
+/* Streaming indicator */
+.streamingIndicator {
+  display: inline-flex;
+  gap: 4px;
+  margin-left: 8px;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #00bcf2;
+  animation: pulse 1.4s infinite;
+}
+
+.dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .bubble {
+    max-width: 85%;
+  }
+}

@@ -1,0 +1,1675 @@
+/**
+ * @file DashboardSidebar.module.css
+ * @description Sidebar navigation styling with theme variants, collapsible sections, and mobile overlays.
+ * @sources styles/futuristic-theme.css, styles/mobile-terminal-fix.css
+ */
+
+/* -----------------------------------------------------------------------------
+   Sidebar Shell
+   ----------------------------------------------------------------------------- */
+
+.sidebar {
+  grid-area: sidebar;
+  background: color-mix(in srgb, var(--palette-surface, rgba(21, 21, 32, 1)) 70%, transparent);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--palette-border, rgba(0, 212, 255, 0.15));
+  border-radius: 12px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  overflow-y: auto;
+  font-family: var(--theme-font-body, "Courier New", monospace);
+  letter-spacing: var(--theme-letter-spacing, 0.05em);
+  transition: border-color 0.3s ease;
+  color: var(--palette-text, rgba(255, 255, 255, 0.95));
+}
+
+/* Search Container */
+.searchContainer {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: color-mix(in srgb, var(--palette-surface, rgba(21, 21, 32, 1)) 90%, transparent);
+  backdrop-filter: blur(10px);
+  padding-bottom: 12px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid var(--palette-border, rgba(0, 212, 255, 0.15));
+}
+
+.searchInputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 10px;
+  width: 16px;
+  height: 16px;
+  color: var(--palette-muted, rgba(153, 204, 255, 0.5));
+  pointer-events: none;
+  z-index: 1;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 8px 12px 8px 36px;
+  background: color-mix(in srgb, var(--palette-bg, rgba(15, 20, 35, 0.9)) 80%, transparent);
+  border: 1px solid var(--palette-border, rgba(0, 212, 255, 0.3));
+  border-radius: 6px;
+  color: var(--palette-text, rgba(255, 255, 255, 0.95));
+  font-family: var(--theme-font-body, "Courier New", monospace);
+  font-size: 12px;
+  letter-spacing: 0.05em;
+  transition: all 0.3s ease;
+  outline: none;
+}
+
+.searchInput:focus {
+  border-color: var(--palette-primary, #00d4ff);
+  box-shadow: 0 0 8px var(--palette-primary-glow, rgba(0, 212, 255, 0.3));
+  background: color-mix(in srgb, var(--palette-bg, rgba(15, 20, 35, 0.95)) 90%, transparent);
+}
+
+.searchInput::placeholder {
+  color: var(--palette-muted, rgba(153, 204, 255, 0.4));
+}
+
+.searchClear {
+  position: absolute;
+  right: 8px;
+  background: none;
+  border: none;
+  color: var(--palette-muted, rgba(153, 204, 255, 0.6));
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  width: 20px;
+  height: 20px;
+}
+
+.searchClear:hover {
+  color: var(--palette-primary, #00d4ff);
+  background: color-mix(in srgb, var(--palette-primary, rgba(0, 212, 255, 0.1)) 20%, transparent);
+}
+
+.searchClear svg {
+  width: 14px;
+  height: 14px;
+}
+
+.searchResults {
+  margin-top: 8px;
+  font-size: 10px;
+  color: var(--palette-muted, rgba(153, 204, 255, 0.6));
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding-left: 4px;
+}
+
+/* Ensure all SVG icons inherit colors properly and have no background */
+.sidebar svg {
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  color: inherit;
+  display: block !important;
+  vertical-align: middle;
+  overflow: visible !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  /* Remove any visible bounding box */
+  shape-rendering: geometricPrecision;
+  text-rendering: geometricPrecision;
+}
+
+.sidebar svg path,
+.sidebar svg * {
+  fill: currentColor !important;
+  stroke: none !important;
+  vector-effect: non-scaling-stroke;
+  shape-rendering: geometricPrecision;
+}
+
+/* Fallback: if currentColor fails, use the palette primary color */
+.sidebar .button svg path,
+.sidebar .button svg *,
+.sidebar .expandableButton svg path,
+.sidebar .expandableButton svg *,
+.sidebar .subButton svg path,
+.sidebar .subButton svg * {
+  fill: var(--palette-primary, #00d4ff) !important;
+}
+
+/* Override with currentColor when it's available */
+.sidebar .button svg,
+.sidebar .expandableButton svg,
+.sidebar .subButton svg {
+  color: var(--palette-primary, #00d4ff);
+}
+
+.sidebar .button svg path,
+.sidebar .button svg *,
+.sidebar .expandableButton svg path,
+.sidebar .expandableButton svg *,
+.sidebar .subButton svg path,
+.sidebar .subButton svg * {
+  fill: currentColor !important;
+}
+
+/* Force SVG visibility - ensure paths are always visible */
+.sidebar .button svg,
+.sidebar .expandableButton svg,
+.sidebar .subButton svg {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+.sidebar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  background: linear-gradient(
+    180deg,
+    var(--palette-primary, rgba(0, 188, 242, 0.7)),
+    var(--palette-secondary, rgba(0, 255, 210, 0.7))
+  );
+  border-radius: 3px;
+  transition: background 0.3s ease;
+}
+
+.sidebarCollapsed {
+  transform: translateX(-110%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.sidebarOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(10px);
+  z-index: 30;
+  display: flex;
+  justify-content: flex-start;
+  align-items: stretch;
+}
+
+.sidebarMobile {
+  width: 90vw;
+  max-width: 320px;
+  margin: 0;
+  border-radius: 0 22px 22px 0;
+}
+
+/* -----------------------------------------------------------------------------
+   Section & Action Styling
+   ----------------------------------------------------------------------------- */
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 12px;
+  position: relative;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.sectionDragging {
+  opacity: 0.5;
+  cursor: grabbing;
+}
+
+.sectionDivider {
+  width: calc(100% - 32px);
+  height: 1px;
+  margin: 8px auto 12px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #00bcf2) 45%, transparent)) 50%,
+    transparent 100%
+  );
+  opacity: 0.4;
+  transition: background 0.3s ease;
+}
+
+.sectionTitle {
+  font-size: 9px;
+  letter-spacing: var(--theme-letter-spacing, 1.2px);
+  text-transform: var(--theme-text-transform, uppercase);
+  color: color-mix(in srgb, var(--palette-primary, #00d4ff) 70%, transparent);
+  margin-bottom: var(--theme-spacing-sm, 8px);
+  padding: var(--theme-spacing-xs, 4px) var(--theme-spacing-sm, 8px);
+  background: color-mix(in srgb, var(--palette-primary, #00bcf2) 5%, transparent);
+  border: 1px solid var(--palette-border, rgba(0, 212, 255, 0.15));
+  border-radius: var(--theme-radius-md, 6px);
+  display: grid;
+  grid-template-columns: auto auto 1fr auto;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.15s ease, border-color 0.3s ease, background-color 0.3s ease, color 0.3s ease;
+  font-family: var(--theme-font-body, "Courier New", monospace);
+  font-weight: var(--theme-font-weight-bold, 700);
+  gap: 6px;
+  position: relative;
+}
+
+.sectionTitle > span {
+  text-align: center;
+  justify-self: center;
+  grid-column: 3;
+}
+
+.sectionTitle svg:not(.toggleIcon):not(.dragHandleIcon) {
+  display: block;
+  flex-shrink: 0;
+  grid-column: 2;
+  justify-self: start;
+}
+
+.sectionTitleIcon {
+  width: 14px;
+  height: 14px;
+  min-width: 14px;
+  min-height: 14px;
+  max-width: 14px;
+  max-height: 14px;
+  fill: currentColor;
+  display: block;
+  flex-shrink: 0;
+  vertical-align: middle;
+  color: inherit;
+  transition: all 0.15s ease;
+  filter: drop-shadow(0 0 2px currentColor);
+  opacity: 0.85;
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  align-self: center;
+  overflow: visible !important;
+  shape-rendering: geometricPrecision;
+  grid-column: 1;
+  justify-self: start;
+}
+
+.sectionTitleIcon path {
+  fill: currentColor !important;
+  stroke: none !important;
+  vector-effect: non-scaling-stroke;
+  shape-rendering: geometricPrecision;
+}
+
+.sectionTitleIcon * {
+  fill: currentColor !important;
+  stroke: none !important;
+  vector-effect: non-scaling-stroke;
+  shape-rendering: geometricPrecision;
+}
+
+.sectionTitle:hover .sectionTitleIcon {
+  opacity: 1;
+  filter: drop-shadow(0 0 4px currentColor);
+  transform: scale(1.1);
+}
+
+.sectionToggle svg {
+  display: block;
+  flex-shrink: 0;
+}
+
+.sectionTitle:hover {
+  background: color-mix(in srgb, var(--palette-primary, #00bcf2) 8%, transparent);
+  color: var(--palette-primary, #00d4ff);
+}
+
+.sectionToggle {
+  background: transparent;
+  border: none;
+  color: currentColor;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+  grid-column: 4;
+  justify-self: end;
+}
+
+/* Drag Handle */
+.dragHandle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: grab;
+  padding: 4px;
+  color: var(--palette-muted, rgba(153, 204, 255, 0.4));
+  transition: color 0.2s ease, transform 0.2s ease;
+  grid-column: 1;
+  justify-self: start;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+.dragHandle:active {
+  cursor: grabbing;
+}
+
+.dragHandle:hover {
+  color: var(--palette-primary, #00d4ff);
+  transform: scale(1.1);
+}
+
+.dragHandleIcon {
+  width: 14px;
+  height: 14px;
+  min-width: 14px;
+  min-height: 14px;
+  fill: currentColor;
+  display: block;
+}
+
+/* Drag Overlay */
+.dragOverlay {
+  background: color-mix(in srgb, var(--palette-surface, rgba(21, 21, 32, 1)) 95%, transparent);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--palette-primary, #00d4ff);
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 9px;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: var(--palette-primary, #00d4ff);
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgba(0, 212, 255, 0.3);
+  transform: rotate(2deg);
+}
+
+.toggleIcon {
+  width: 16px;
+  height: 16px;
+  min-width: 16px;
+  min-height: 16px;
+  fill: currentColor;
+  display: inline-block;
+  vertical-align: middle;
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+  color: inherit;
+  background: transparent !important;
+}
+
+.toggleIcon path {
+  fill: currentColor !important;
+  stroke: none;
+}
+
+.toggleIcon * {
+  fill: currentColor !important;
+  stroke: none;
+}
+
+.sectionCollapsed .toggleIcon {
+  transform: rotate(-90deg);
+}
+
+.sectionContent {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 4px 0;
+}
+
+.disabledMessage {
+  margin: 0 16px 8px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: rgba(255, 193, 7, 0.12);
+  border: 1px solid rgba(255, 193, 7, 0.28);
+  color: rgba(255, 193, 7, 0.92);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.sectionSkeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 0 16px;
+}
+
+.sectionSkeletonBar {
+  height: 36px;
+  border-radius: 10px;
+  background: rgba(0, 188, 242, 0.12);
+  position: relative;
+  overflow: hidden;
+}
+
+.sectionSkeletonBar::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(0, 188, 242, 0) 0%,
+    rgba(0, 188, 242, 0.35) 50%,
+    rgba(0, 188, 242, 0) 100%
+  );
+  animation: shimmer-slide 1.4s ease-in-out infinite;
+}
+
+.sectionCollapsed .sectionContent {
+  display: none;
+}
+
+.button {
+  background: color-mix(in srgb, var(--palette-primary, #00bcf2) 8%, transparent);
+  border: 1px solid var(--palette-border, rgba(0, 212, 255, 0.15));
+  border-radius: var(--theme-radius-md, 8px);
+  padding: var(--theme-spacing-sm, 8px) var(--theme-spacing-md, 12px);
+  color: var(--palette-primary, #00d4ff);
+  font-family: var(--theme-font-body, "Courier New", monospace);
+  font-size: 11px;
+  font-weight: var(--theme-font-weight-normal, 500);
+  letter-spacing: var(--theme-letter-spacing, 0.05em);
+  cursor: pointer;
+  transition: all 0.15s ease, border-color 0.3s ease, background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: var(--theme-spacing-sm, 8px);
+  min-height: 36px;
+  margin-bottom: 4px;
+  position: relative;
+  overflow: visible;
+}
+
+/* Ensure button SVG icons inherit button color */
+.button svg,
+.button svg * {
+  color: inherit !important;
+}
+
+.button svg {
+  display: block;
+  flex-shrink: 0;
+  align-self: center;
+}
+
+.button:hover {
+  background: color-mix(in srgb, var(--palette-primary, #00bcf2) 18%, transparent);
+  border-color: var(--palette-primary, #00d4ff);
+  box-shadow: 0 0 20px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #00bcf2) 30%, transparent)),
+    inset 0 0 10px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #00bcf2) 10%, transparent));
+  transform: translateX(6px) scale(1.02);
+  color: var(--palette-secondary, #00ffff);
+}
+
+.button:focus,
+.button:focus-visible {
+  outline: 2px solid var(--palette-primary, #00d4ff);
+  outline-offset: 2px;
+  box-shadow: 
+    0 0 20px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #00bcf2) 30%, transparent)),
+    inset 0 0 10px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #00bcf2) 10%, transparent)),
+    0 0 0 2px var(--palette-primary, #00d4ff);
+}
+
+.buttonActive {
+  background: color-mix(in srgb, var(--palette-primary, #00bcf2) 35%, transparent);
+  border-color: color-mix(in srgb, var(--palette-primary, #00bcf2) 55%, transparent);
+  box-shadow: 0 20px 36px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #00bcf2) 30%, transparent));
+  transition: all 0.3s ease;
+}
+
+.buttonDisabled {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.buttonLoading {
+  position: relative;
+  color: rgba(0, 188, 242, 0.65);
+}
+
+.buttonLoading::after {
+  content: "";
+  position: absolute;
+  right: 16px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  animation: spin 0.9s linear infinite;
+}
+
+@keyframes shimmer-slide {
+  0% {
+    transform: translateX(-100%);
+  }
+
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.buttonIcon {
+  width: 16px;
+  height: 16px;
+  min-width: 16px;
+  min-height: 16px;
+  max-width: 16px;
+  max-height: 16px;
+  fill: currentColor;
+  flex-shrink: 0;
+  display: block !important;
+  filter: drop-shadow(0 0 2px currentColor);
+  color: inherit;
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  overflow: visible !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  align-self: center;
+  /* Center the SVG content within its viewBox */
+  vertical-align: middle;
+}
+
+.buttonIcon path {
+  fill: currentColor !important;
+  stroke: none !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  vector-effect: non-scaling-stroke;
+}
+
+.buttonIcon * {
+  fill: currentColor !important;
+  stroke: none !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  vector-effect: non-scaling-stroke;
+}
+
+/* Ensure SVG icons are visible and styled correctly */
+.button svg.buttonIcon,
+.expandableButton svg.buttonIcon {
+  fill: currentColor !important;
+  color: inherit;
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  display: block !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  overflow: visible !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  align-self: center;
+}
+
+.button svg.buttonIcon path,
+.expandableButton svg.buttonIcon path,
+.button svg.buttonIcon *,
+.expandableButton svg.buttonIcon * {
+  fill: currentColor !important;
+  stroke: none !important;
+  background: transparent !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  vector-effect: non-scaling-stroke;
+}
+
+.buttonText {
+  flex: 1;
+}
+
+/* Expandable buttons (like AI Assistant, Terminal Style) */
+.expandable {
+  margin-bottom: 4px;
+}
+
+.expandableButton {
+  background: color-mix(in srgb, var(--palette-primary, #00bcf2) 8%, transparent);
+  border: 1px solid var(--palette-border, rgba(0, 212, 255, 0.15));
+  border-radius: 8px;
+  padding: 10px 12px;
+  color: var(--palette-primary, #00d4ff);
+  font-family: "Courier New", monospace;
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease, border-color 0.3s ease, background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 36px;
+  position: relative;
+  overflow: visible;
+  width: 100%;
+  text-align: left;
+  list-style: none;
+}
+
+/* Ensure expandable button SVG icons inherit button color */
+.expandableButton svg,
+.expandableButton svg * {
+  color: inherit !important;
+}
+
+.expandableButton svg {
+  display: block;
+  flex-shrink: 0;
+  align-self: center;
+}
+
+.expandableButton:hover {
+  background: color-mix(in srgb, var(--palette-primary, #00bcf2) 18%, transparent);
+  border-color: var(--palette-primary, #00d4ff);
+  box-shadow: 0 0 20px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #00bcf2) 30%, transparent)),
+    inset 0 0 10px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #00bcf2) 10%, transparent));
+  transform: translateX(6px) scale(1.02);
+  color: var(--palette-secondary, #00ffff);
+}
+
+.expandableButton::-webkit-details-marker {
+  display: none;
+}
+
+.expandIcon {
+  width: 16px;
+  height: 16px;
+  min-width: 16px;
+  min-height: 16px;
+  fill: currentColor;
+  margin-left: auto;
+  display: inline-block;
+  vertical-align: middle;
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+  color: inherit;
+  background: transparent !important;
+}
+
+.expandIcon path {
+  fill: currentColor !important;
+  stroke: none;
+}
+
+.expandIcon * {
+  fill: currentColor !important;
+  stroke: none;
+}
+
+details[open] .expandIcon {
+  transform: rotate(180deg);
+}
+
+/* Sub-actions (nested items) */
+.subActions {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 0 4px 28px;
+  margin-top: 4px;
+  width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+.subButton {
+  background: transparent;
+  border: none;
+  color: color-mix(in srgb, var(--palette-text, #ffffff) 65%, transparent);
+  font-family: "Courier New", monospace;
+  font-size: 11px;
+  font-weight: 400;
+  padding: 6px 8px;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 6px;
+}
+
+.subButton[draggable="true"] {
+  cursor: grab;
+}
+
+.subButton[draggable="true"]:active {
+  cursor: grabbing;
+}
+
+/* Ensure sub-button SVG icons inherit button color */
+.subButton svg,
+.subButton svg * {
+  color: inherit !important;
+}
+
+.subButtonIcon {
+  width: 12px;
+  height: 12px;
+  min-width: 12px;
+  min-height: 12px;
+  max-width: 12px;
+  max-height: 12px;
+  fill: currentColor;
+  display: block !important;
+  flex-shrink: 0;
+  color: inherit;
+  transition: all 0.15s ease;
+  opacity: 0.75;
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  overflow: visible !important;
+  visibility: visible !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  align-self: center;
+  /* Center the SVG content within its viewBox */
+  vertical-align: middle;
+}
+
+.subButtonIcon path {
+  fill: currentColor !important;
+  stroke: none !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  vector-effect: non-scaling-stroke;
+}
+
+.subButtonIcon * {
+  fill: currentColor !important;
+  stroke: none !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  vector-effect: non-scaling-stroke;
+}
+
+.subButton:hover .subButtonIcon {
+  opacity: 1;
+  transform: translateX(2px);
+}
+
+.subButton:hover {
+  color: var(--palette-primary, #00d4ff);
+  background: color-mix(in srgb, var(--palette-primary, #00bcf2) 8%, transparent);
+  transform: translateX(4px);
+  transition: all 0.15s ease, color 0.3s ease, background-color 0.3s ease;
+}
+
+/* AI Toggle State Indicators - Red when OFF, Green when ON */
+.aiToggleOff {
+  color: #ff4757 !important;
+  border-left: 3px solid #ff4757 !important;
+  padding-left: 5px !important; /* Adjust for left border */
+}
+
+.aiToggleOff:hover {
+  color: #ff4757 !important;
+  background: color-mix(in srgb, #ff4757 12%, transparent) !important;
+  border-left-color: #ff4757 !important;
+}
+
+.aiToggleOn {
+  color: #00ff88 !important;
+  border-left: 3px solid #00ff88 !important;
+  padding-left: 5px !important; /* Adjust for left border */
+}
+
+.aiToggleOn:hover {
+  color: #00ff88 !important;
+  background: color-mix(in srgb, #00ff88 12%, transparent) !important;
+  border-left-color: #00ff88 !important;
+}
+
+.aiToggleOff svg,
+.aiToggleOff svg *,
+.aiToggleOn svg,
+.aiToggleOn svg * {
+  color: inherit !important;
+  fill: currentColor !important;
+}
+
+.subSectionHeader {
+  padding: 12px 0 6px 0;
+  font-size: 9px;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--palette-primary, #00d4ff) 50%, transparent);
+  font-weight: 600;
+  border-top: 1px solid var(--palette-border, rgba(0, 212, 255, 0.1));
+  margin-top: 8px;
+  transition: color 0.3s ease, border-color 0.3s ease;
+}
+
+.subSectionHeader:first-child {
+  border-top: none;
+  margin-top: 0;
+  padding-top: 4px;
+}
+
+/* -----------------------------------------------------------------------------
+   Palette & Theme Grid Layouts
+   ----------------------------------------------------------------------------- */
+
+.paletteGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 5px;
+  padding: 8px 0;
+  margin-top: 4px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+.paletteChip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 8px;
+  background: color-mix(in srgb, var(--palette-primary, #00bcf2) 6%, transparent);
+  border: 1px solid var(--palette-border, rgba(0, 212, 255, 0.12));
+  border-radius: 6px;
+  color: color-mix(in srgb, var(--palette-text, #ffffff) 75%, transparent);
+  font-family: "Courier New", monospace;
+  font-size: 10px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease, border-color 0.3s ease, background-color 0.3s ease, color 0.3s ease;
+  text-align: left;
+  min-height: 28px;
+  min-width: 0;
+  width: 100%;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.paletteChip span:last-child {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+}
+
+.paletteChipLong {
+  font-size: 8.5px !important;
+}
+
+.paletteChipLong span:last-child {
+  font-size: 8.5px;
+}
+
+.paletteChip:hover {
+  background: color-mix(in srgb, var(--palette-primary, #00bcf2) 14%, transparent);
+  border-color: var(--palette-primary, #00d4ff);
+  color: var(--palette-primary, #00d4ff);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #00bcf2) 20%, transparent));
+}
+
+.paletteSwatch {
+  width: 16px;
+  height: 16px;
+  min-width: 16px;
+  max-width: 16px;
+  flex-shrink: 0;
+  border-radius: 4px;
+  display: block;
+  border: 1px solid color-mix(in srgb, var(--palette-border, rgba(0, 212, 255, 0.2)) 50%, transparent);
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.paletteChip:hover .paletteSwatch {
+  transform: scale(1.1);
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
+}
+
+.resetChip {
+  grid-column: 1 / -1;
+  justify-content: center;
+  background: color-mix(in srgb, var(--palette-secondary, #00ff88) 8%, transparent);
+  border-color: color-mix(in srgb, var(--palette-secondary, #00ff88) 25%, transparent);
+  padding: 6px 12px;
+  min-height: 28px;
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 2px;
+}
+
+.resetChip:hover {
+  background: color-mix(in srgb, var(--palette-secondary, #00ff88) 16%, transparent);
+  border-color: var(--palette-secondary, #00ff88);
+  color: var(--palette-secondary, #00ff88);
+}
+
+.resetChip svg {
+  width: 12px;
+  height: 12px;
+  min-width: 12px;
+  max-width: 12px;
+  flex-shrink: 0;
+}
+
+.themeGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 6px;
+  padding: 8px 0;
+  margin-top: 4px;
+}
+
+.themeChip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px;
+  background: color-mix(in srgb, var(--palette-primary, #00bcf2) 6%, transparent);
+  border: 1px solid var(--palette-border, rgba(0, 212, 255, 0.12));
+  border-radius: 6px;
+  color: color-mix(in srgb, var(--palette-text, #ffffff) 75%, transparent);
+  font-family: "Courier New", monospace;
+  font-size: 10px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease, border-color 0.3s ease, background-color 0.3s ease, color 0.3s ease;
+  min-height: 32px;
+}
+
+.themeChip:hover {
+  background: color-mix(in srgb, var(--palette-primary, #00bcf2) 14%, transparent);
+  border-color: var(--palette-primary, #00d4ff);
+  color: var(--palette-primary, #00d4ff);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #00bcf2) 20%, transparent));
+}
+
+/* Theme-specific fonts for preview */
+.themeDark {
+  font-family: "Courier New", "Monaco", "Consolas", monospace !important;
+  letter-spacing: 0.05em;
+  font-weight: 700;
+}
+
+.themeLight {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", sans-serif !important;
+  letter-spacing: 0;
+  font-weight: 600;
+}
+
+.themeMatrix {
+  font-family: "Courier New", "Monaco", monospace !important;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.themeRetro {
+  font-family: "VT323", "Courier New", monospace !important;
+  letter-spacing: 0.05em;
+  font-weight: 400;
+  font-size: 11px;
+}
+
+.themePowershell {
+  font-family: "Segoe UI", "Microsoft Sans Serif", sans-serif !important;
+  letter-spacing: 0;
+  font-weight: 600;
+}
+
+.themeExecutive {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "SF Pro Display", sans-serif !important;
+  letter-spacing: 0.01em;
+  font-weight: 600;
+}
+
+.themeModern {
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif !important;
+  letter-spacing: -0.01em;
+  font-weight: 600;
+}
+
+.themeCrt {
+  font-family: "Courier New", "Monaco", "Consolas", "Lucida Console", monospace !important;
+  letter-spacing: 0.05em;
+  font-weight: 400;
+  color: var(--palette-primary, #00ff00) !important;
+  text-shadow: 
+    0 0 5px color-mix(in srgb, var(--palette-primary, #00ff00) 50%, transparent),
+    0 0 10px color-mix(in srgb, var(--palette-primary, #00ff00) 30%, transparent);
+  background: color-mix(in srgb, var(--palette-bg, #000000) 80%, transparent) !important;
+  border: 1px solid color-mix(in srgb, var(--palette-primary, #00ff00) 30%, transparent) !important;
+  box-shadow: 
+    0 0 10px color-mix(in srgb, var(--palette-primary, #00ff00) 20%, transparent),
+    inset 0 0 10px color-mix(in srgb, var(--palette-primary, #00ff00) 10%, transparent);
+}
+
+.themeCrt:hover {
+  background: color-mix(in srgb, var(--palette-bg, #000000) 90%, transparent) !important;
+  border-color: color-mix(in srgb, var(--palette-primary, #00ff00) 60%, transparent) !important;
+  color: var(--palette-secondary, #39ff14) !important;
+  text-shadow: 
+    0 0 8px color-mix(in srgb, var(--palette-primary, #00ff00) 80%, transparent),
+    0 0 15px color-mix(in srgb, var(--palette-primary, #00ff00) 50%, transparent);
+  box-shadow: 
+    0 0 20px color-mix(in srgb, var(--palette-primary, #00ff00) 40%, transparent),
+    inset 0 0 20px color-mix(in srgb, var(--palette-primary, #00ff00) 15%, transparent);
+}
+
+/* -----------------------------------------------------------------------------
+   CRT Theme Overrides - Match exact retro terminal look
+   ----------------------------------------------------------------------------- */
+
+:global(body.theme-crt) .sidebar {
+  background: #000000 !important;
+  border: none !important;
+  border-radius: 0 !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  padding: 16px !important;
+  color: var(--palette-primary, #00ff00) !important;
+  font-family: "Courier New", "Monaco", "Consolas", "Lucida Console", monospace !important;
+  font-size: 13px !important;
+  letter-spacing: 0.05em !important;
+  text-shadow: 
+    0 0 5px color-mix(in srgb, var(--palette-primary, #00ff00) 50%, transparent),
+    0 0 10px color-mix(in srgb, var(--palette-primary, #00ff00) 30%, transparent),
+    0 0 2px color-mix(in srgb, var(--palette-primary, #00ff00) 80%, transparent);
+  box-shadow: none !important;
+}
+
+:global(body.theme-crt) .sidebar * {
+  color: var(--palette-primary, #00ff00) !important;
+  text-shadow: 
+    0 0 5px color-mix(in srgb, var(--palette-primary, #00ff00) 50%, transparent),
+    0 0 10px color-mix(in srgb, var(--palette-primary, #00ff00) 30%, transparent),
+    0 0 2px color-mix(in srgb, var(--palette-primary, #00ff00) 80%, transparent);
+}
+
+:global(body.theme-crt) .searchContainer {
+  background: transparent !important;
+  border-bottom: none !important;
+  backdrop-filter: none !important;
+  padding-bottom: 8px !important;
+  margin-bottom: 12px !important;
+}
+
+:global(body.theme-crt) .searchInput {
+  background: rgba(0, 0, 0, 0.8) !important;
+  border: none !important;
+  border-radius: 0 !important;
+  color: var(--palette-primary, #00ff00) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: none !important;
+}
+
+:global(body.theme-crt) .searchInput:focus {
+  border: none !important;
+  box-shadow: none !important;
+  background: rgba(0, 0, 0, 0.9) !important;
+}
+
+:global(body.theme-crt) .searchInput::placeholder {
+  color: color-mix(in srgb, var(--palette-primary, #00ff00) 40%, transparent) !important;
+}
+
+:global(body.theme-crt) .section {
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  padding: 12px 0 !important;
+  box-shadow: none !important;
+  margin-bottom: 16px !important;
+}
+
+:global(body.theme-crt) .sectionTitle {
+  background: linear-gradient(
+    135deg,
+    var(--palette-secondary, #39ff14) 0%,
+    var(--palette-primary, #00ff00) 50%,
+    var(--palette-secondary, #39ff14) 100%
+  ) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  color: var(--palette-primary, #00ff00) !important; /* Fallback */
+  border: none !important;
+  border-bottom: none !important;
+  padding-bottom: 6px !important;
+  margin-bottom: 12px !important;
+  font-size: 11px !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.1em !important;
+  text-shadow: 
+    0 0 8px color-mix(in srgb, var(--palette-secondary, #39ff14) 60%, transparent),
+    0 0 15px color-mix(in srgb, var(--palette-primary, #00ff00) 40%, transparent),
+    0 0 20px color-mix(in srgb, var(--palette-secondary, #39ff14) 25%, transparent);
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+
+/* Section title SVG icons - Use tertiary/accent color */
+:global(body.theme-crt) .sectionTitle svg,
+:global(body.theme-crt) .sectionTitleIcon {
+  color: var(--palette-secondary, #39ff14) !important;
+  fill: var(--palette-secondary, #39ff14) !important;
+  filter: drop-shadow(0 0 4px color-mix(in srgb, var(--palette-secondary, #39ff14) 70%, transparent)) !important;
+}
+
+:global(body.theme-crt) .sectionTitle svg path,
+:global(body.theme-crt) .sectionTitleIcon path,
+:global(body.theme-crt) .sectionTitle svg *,
+:global(body.theme-crt) .sectionTitleIcon * {
+  fill: var(--palette-secondary, #39ff14) !important;
+  stroke: var(--palette-secondary, #39ff14) !important;
+  color: var(--palette-secondary, #39ff14) !important;
+}
+
+:global(body.theme-crt) .sectionTitle:hover svg,
+:global(body.theme-crt) .sectionTitle:hover .sectionTitleIcon {
+  color: var(--palette-primary, #00ff00) !important;
+  fill: var(--palette-primary, #00ff00) !important;
+  filter: drop-shadow(0 0 8px color-mix(in srgb, var(--palette-primary, #00ff00) 80%, transparent)) !important;
+  transform: scale(1.1) !important;
+}
+
+:global(body.theme-crt) .sectionTitle:hover {
+  background: linear-gradient(
+    135deg,
+    var(--palette-primary, #00ff00) 0%,
+    var(--palette-secondary, #39ff14) 50%,
+    var(--palette-primary, #00ff00) 100%
+  ) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  text-shadow: 
+    0 0 10px color-mix(in srgb, var(--palette-primary, #00ff00) 80%, transparent),
+    0 0 18px color-mix(in srgb, var(--palette-secondary, #39ff14) 50%, transparent),
+    0 0 25px color-mix(in srgb, var(--palette-primary, #00ff00) 30%, transparent);
+}
+
+:global(body.theme-crt) .button {
+  background: rgba(0, 0, 0, 0.7) !important;
+  border: none !important;
+  border-radius: 0 !important;
+  color: var(--palette-primary, #00ff00) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: none !important;
+  text-shadow: 
+    0 0 5px color-mix(in srgb, var(--palette-primary, #00ff00) 50%, transparent),
+    0 0 10px color-mix(in srgb, var(--palette-primary, #00ff00) 30%, transparent);
+}
+
+/* Button SVG icons - Use secondary color */
+:global(body.theme-crt) .button svg,
+:global(body.theme-crt) .button svg path,
+:global(body.theme-crt) .button svg * {
+  color: var(--palette-secondary, #39ff14) !important;
+  fill: var(--palette-secondary, #39ff14) !important;
+  stroke: var(--palette-secondary, #39ff14) !important;
+  filter: drop-shadow(0 0 3px color-mix(in srgb, var(--palette-secondary, #39ff14) 60%, transparent)) !important;
+}
+
+:global(body.theme-crt) .button:hover {
+  background: rgba(0, 0, 0, 0.9) !important;
+  border: none !important;
+  box-shadow: none !important;
+  text-shadow: 
+    0 0 8px color-mix(in srgb, var(--palette-primary, #00ff00) 80%, transparent),
+    0 0 15px color-mix(in srgb, var(--palette-primary, #00ff00) 50%, transparent);
+}
+
+:global(body.theme-crt) .button:hover svg,
+:global(body.theme-crt) .button:hover svg path,
+:global(body.theme-crt) .button:hover svg * {
+  color: var(--palette-primary, #00ff00) !important;
+  fill: var(--palette-primary, #00ff00) !important;
+  stroke: var(--palette-primary, #00ff00) !important;
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--palette-primary, #00ff00) 80%, transparent)) !important;
+}
+
+:global(body.theme-crt) .expandable {
+  border: none !important;
+  background: transparent !important;
+}
+
+:global(body.theme-crt) .expandableButton {
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  color: var(--palette-primary, #00ff00) !important;
+  text-shadow: 
+    0 0 5px color-mix(in srgb, var(--palette-primary, #00ff00) 50%, transparent),
+    0 0 10px color-mix(in srgb, var(--palette-primary, #00ff00) 30%, transparent);
+}
+
+:global(body.theme-crt) .expandableButton:hover {
+  background: rgba(0, 0, 0, 0.5) !important;
+  text-shadow: 
+    0 0 8px color-mix(in srgb, var(--palette-primary, #00ff00) 80%, transparent),
+    0 0 15px color-mix(in srgb, var(--palette-primary, #00ff00) 50%, transparent);
+}
+
+:global(body.theme-crt) .subActions {
+  border-left: none !important;
+  padding-left: 12px !important;
+  margin-left: 8px !important;
+  margin-top: 8px !important;
+}
+
+:global(body.theme-crt) .subButton {
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  color: var(--palette-primary, #00ff00) !important;
+  text-shadow: 
+    0 0 5px color-mix(in srgb, var(--palette-primary, #00ff00) 50%, transparent),
+    0 0 10px color-mix(in srgb, var(--palette-primary, #00ff00) 30%, transparent);
+}
+
+:global(body.theme-crt) .subButton:hover {
+  background: rgba(0, 0, 0, 0.6) !important;
+  text-shadow: 
+    0 0 8px color-mix(in srgb, var(--palette-primary, #00ff00) 80%, transparent),
+    0 0 15px color-mix(in srgb, var(--palette-primary, #00ff00) 50%, transparent);
+}
+
+:global(body.theme-crt) .subSectionHeader {
+  color: color-mix(in srgb, var(--palette-primary, #00ff00) 70%, transparent) !important;
+  border-bottom: none !important;
+  text-shadow: 
+    0 0 5px color-mix(in srgb, var(--palette-primary, #00ff00) 40%, transparent),
+    0 0 10px color-mix(in srgb, var(--palette-primary, #00ff00) 20%, transparent);
+}
+
+:global(body.theme-crt) .paletteChip,
+:global(body.theme-crt) .themeChip {
+  background: color-mix(in srgb, var(--palette-bg, #000000) 80%, transparent) !important;
+  border: none !important;
+  border-radius: 0 !important;
+  color: var(--palette-primary, #00ff00) !important;
+  text-shadow: 
+    0 0 5px color-mix(in srgb, var(--palette-primary, #00ff00) 50%, transparent),
+    0 0 10px color-mix(in srgb, var(--palette-primary, #00ff00) 30%, transparent);
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+:global(body.theme-crt) .paletteChip:hover,
+:global(body.theme-crt) .themeChip:hover {
+  background: color-mix(in srgb, var(--palette-bg, #000000) 90%, transparent) !important;
+  border: none !important;
+  text-shadow: 
+    0 0 8px color-mix(in srgb, var(--palette-primary, #00ff00) 80%, transparent),
+    0 0 15px color-mix(in srgb, var(--palette-primary, #00ff00) 50%, transparent);
+  box-shadow: none !important;
+}
+
+:global(body.theme-crt) .sidebar::-webkit-scrollbar {
+  width: 8px;
+  background: rgba(0, 0, 0, 0.8);
+}
+
+:global(body.theme-crt) .sidebar::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--palette-primary, #00ff00) 30%, transparent);
+  border: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+:global(body.theme-crt) .sidebar::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in srgb, var(--palette-primary, #00ff00) 50%, transparent);
+  box-shadow: none !important;
+}
+
+:global(body.theme-crt) .sidebar::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.9);
+  border: none !important;
+}
+
+/* Light palette overrides for grid */
+:global(body[data-color-palette="light"]) .paletteChip,
+:global(body[data-color-palette="light"]) .themeChip {
+  background: color-mix(in srgb, var(--palette-primary, #1e40af) 8%, transparent) !important;
+  border: 1px solid var(--palette-border, #e2e8f0) !important;
+  color: color-mix(in srgb, var(--palette-text, #1e293b) 80%, transparent) !important;
+}
+
+:global(body[data-color-palette="light"]) .paletteChip:hover,
+:global(body[data-color-palette="light"]) .themeChip:hover {
+  background: color-mix(in srgb, var(--palette-primary, #1e40af) 16%, transparent) !important;
+  border-color: var(--palette-primary, #1e40af) !important;
+  color: var(--palette-primary, #1e40af) !important;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  background: rgba(0, 188, 242, 0.15);
+  color: rgba(0, 188, 242, 0.95);
+}
+
+.badgeNew {
+  background: rgba(255, 120, 220, 0.18);
+  color: rgba(255, 120, 220, 0.95);
+}
+
+.badgeCount {
+  background: color-mix(in srgb, var(--palette-secondary, #00ff88) 18%, transparent);
+  color: var(--palette-secondary, rgba(0, 255, 136, 0.95));
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* -----------------------------------------------------------------------------
+   Theme Variants (global body selectors)
+   ----------------------------------------------------------------------------- */
+
+:global(body.theme-executive) .sidebar {
+  background: rgba(8, 8, 16, 0.92);
+  border: 1px solid var(--palette-border, rgba(255, 255, 255, 0.2));
+  box-shadow: 0 28px 60px rgba(0, 0, 0, 0.3);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+:global(body.theme-executive) .sectionTitle {
+  color: var(--palette-primary, #ffffff);
+}
+
+:global(body.theme-executive) .button {
+  background: color-mix(in srgb, var(--palette-primary, #ffffff) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--palette-primary, #ffffff) 20%, transparent);
+  color: var(--palette-text, rgba(255, 255, 255, 0.95));
+}
+
+:global(body.theme-executive) .buttonIcon,
+:global(body.theme-executive) .subButtonIcon {
+  fill: currentColor !important;
+  color: inherit;
+}
+
+:global(body.theme-executive) .buttonIcon path,
+:global(body.theme-executive) .subButtonIcon path,
+:global(body.theme-executive) .buttonIcon *,
+:global(body.theme-executive) .subButtonIcon * {
+  fill: currentColor !important;
+}
+
+:global(body.theme-modern) .sidebar {
+  background: linear-gradient(
+    170deg,
+    rgba(18, 20, 36, 0.92) 0%,
+    rgba(10, 12, 24, 0.92) 100%
+  );
+  border: 1px solid var(--palette-border, rgba(98, 0, 255, 0.32));
+  transition: border-color 0.3s ease;
+}
+
+:global(body.theme-modern) .button {
+  background: rgba(98, 0, 255, 0.12);
+  border: 1px solid rgba(98, 0, 255, 0.28);
+  color: rgba(220, 220, 245, 0.88);
+}
+
+:global(body.theme-modern) .buttonIcon,
+:global(body.theme-modern) .subButtonIcon {
+  fill: currentColor !important;
+  color: inherit;
+}
+
+:global(body.theme-modern) .buttonIcon path,
+:global(body.theme-modern) .subButtonIcon path,
+:global(body.theme-modern) .buttonIcon *,
+:global(body.theme-modern) .subButtonIcon * {
+  fill: currentColor !important;
+}
+
+:global(body.theme-matrix) .sidebar {
+  background: rgba(0, 6, 0, 0.95);
+  border: 1px solid var(--palette-border, rgba(57, 255, 20, 0.28));
+  color: var(--palette-primary, rgba(57, 255, 20, 0.88));
+  transition: border-color 0.3s ease, color 0.3s ease;
+}
+
+:global(body.theme-matrix) .button {
+  border-color: rgba(57, 255, 20, 0.25);
+}
+
+:global(body.theme-matrix) .buttonIcon,
+:global(body.theme-matrix) .subButtonIcon {
+  fill: currentColor !important;
+  color: inherit;
+}
+
+:global(body.theme-matrix) .buttonIcon path,
+:global(body.theme-matrix) .subButtonIcon path,
+:global(body.theme-matrix) .buttonIcon *,
+:global(body.theme-matrix) .subButtonIcon * {
+  fill: currentColor !important;
+}
+
+/* -----------------------------------------------------------------------------
+   Light Palette Overrides - Ensure sidebar works with light background
+   ----------------------------------------------------------------------------- */
+
+:global(body[data-color-palette="light"]) .sidebar {
+  background: color-mix(in srgb, var(--palette-surface, #f8fafc) 95%, transparent) !important;
+  border: 1px solid var(--palette-border, #e2e8f0) !important;
+  color: var(--palette-text, #1e293b) !important;
+  backdrop-filter: blur(20px);
+}
+
+:global(body[data-color-palette="light"]) .sectionTitle {
+  color: color-mix(in srgb, var(--palette-primary, #1e40af) 80%, transparent) !important;
+  background: color-mix(in srgb, var(--palette-primary, #1e40af) 8%, transparent) !important;
+  border: 1px solid var(--palette-border, #e2e8f0) !important;
+}
+
+:global(body[data-color-palette="light"]) .sectionTitle:hover {
+  background: color-mix(in srgb, var(--palette-primary, #1e40af) 12%, transparent) !important;
+  color: var(--palette-primary, #1e40af) !important;
+}
+
+:global(body[data-color-palette="light"]) .button {
+  background: color-mix(in srgb, var(--palette-primary, #1e40af) 10%, transparent) !important;
+  border: 1px solid var(--palette-border, #e2e8f0) !important;
+  color: var(--palette-primary, #1e40af) !important;
+}
+
+:global(body[data-color-palette="light"]) .button:hover {
+  background: color-mix(in srgb, var(--palette-primary, #1e40af) 20%, transparent) !important;
+  border-color: var(--palette-primary, #1e40af) !important;
+  color: var(--palette-secondary, #059669) !important;
+  box-shadow: 0 0 15px var(--palette-primary-glow, rgba(30, 64, 175, 0.2)),
+    inset 0 0 8px var(--palette-primary-glow, rgba(30, 64, 175, 0.1)) !important;
+}
+
+:global(body[data-color-palette="light"]) .expandableButton {
+  background: color-mix(in srgb, var(--palette-primary, #1e40af) 10%, transparent) !important;
+  border: 1px solid var(--palette-border, #e2e8f0) !important;
+  color: var(--palette-primary, #1e40af) !important;
+}
+
+:global(body[data-color-palette="light"]) .expandableButton:hover {
+  background: color-mix(in srgb, var(--palette-primary, #1e40af) 20%, transparent) !important;
+  border-color: var(--palette-primary, #1e40af) !important;
+  color: var(--palette-secondary, #059669) !important;
+  box-shadow: 0 0 15px var(--palette-primary-glow, rgba(30, 64, 175, 0.2)),
+    inset 0 0 8px var(--palette-primary-glow, rgba(30, 64, 175, 0.1)) !important;
+}
+
+:global(body[data-color-palette="light"]) .subButton {
+  color: color-mix(in srgb, var(--palette-text, #1e293b) 70%, transparent) !important;
+}
+
+:global(body[data-color-palette="light"]) .subButton:hover {
+  color: var(--palette-primary, #1e40af) !important;
+  background: color-mix(in srgb, var(--palette-primary, #1e40af) 12%, transparent) !important;
+}
+
+:global(body[data-color-palette="light"]) .sectionDivider {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--palette-primary-glow, rgba(30, 64, 175, 0.3)) 50%,
+    transparent 100%
+  ) !important;
+}
+
+:global(body[data-color-palette="light"]) .subSectionHeader {
+  color: color-mix(in srgb, var(--palette-primary, #1e40af) 60%, transparent) !important;
+  border-top-color: var(--palette-border, #e2e8f0) !important;
+}
+
+:global(body[data-color-palette="light"]) .sidebar::-webkit-scrollbar-thumb {
+  background: linear-gradient(
+    180deg,
+    var(--palette-primary, rgba(30, 64, 175, 0.6)),
+    var(--palette-secondary, rgba(5, 150, 105, 0.6))
+  ) !important;
+}
+
+:global(body[data-color-palette="light"]) .sidebar::-webkit-scrollbar-track {
+  background: color-mix(in srgb, var(--palette-surface, #f8fafc) 50%, transparent) !important;
+}
+
+/* Light palette with theme combinations */
+:global(body[data-color-palette="light"].theme-executive) .sidebar,
+:global(body[data-color-palette="light"].theme-modern) .sidebar,
+:global(body[data-color-palette="light"].theme-matrix) .sidebar,
+:global(body[data-color-palette="light"].theme-retro) .sidebar,
+:global(body[data-color-palette="light"].theme-powershell) .sidebar,
+:global(body[data-color-palette="light"].theme-dark) .sidebar {
+  background: color-mix(in srgb, var(--palette-surface, #f8fafc) 95%, transparent) !important;
+  border: 1px solid var(--palette-border, #e2e8f0) !important;
+  color: var(--palette-text, #1e293b) !important;
+}
+
+/* -----------------------------------------------------------------------------
+   Responsive Breakpoints
+   ----------------------------------------------------------------------------- */
+
+@media (max-width: 1400px) {
+  .sidebar {
+    border-radius: 18px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .sidebar {
+    display: none;
+  }
+
+  .sidebarOverlay {
+    display: flex;
+  }
+}
+
+@media (max-width: 768px) {
+  .sidebarMobile {
+    max-height: 60vh;
+    overflow-y: auto;
+  }
+
+  .button {
+    margin: 0 12px;
+    padding: 12px;
+    font-size: 11px;
+  }
+
+  .buttonIcon {
+    width: 16px;
+    height: 16px;
+  }
+
+  .sectionTitle {
+    padding: 8px 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .sidebarMobile {
+    width: 100vw;
+    max-width: none;
+    border-radius: 0;
+  }
+
+  .button {
+    padding: 12px 14px;
+    font-size: 10px;
+  }
+}
+
+/* -----------------------------------------------------------------------------
+   Feature Queries & Touch Enhancements
+   ----------------------------------------------------------------------------- */
+
+@supports (-webkit-touch-callout: none) {
+  .sidebarMobile {
+    padding-bottom: max(28px, calc(28px + env(safe-area-inset-bottom)));
+  }
+}
+
+@supports (padding: max(0px)) {
+  .sidebar {
+    padding-left: max(16px, env(safe-area-inset-left));
+  }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .button,
+  .sectionTitle {
+    min-height: 48px;
+  }
+}

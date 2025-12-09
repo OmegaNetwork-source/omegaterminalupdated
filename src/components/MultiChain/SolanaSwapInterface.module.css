@@ -1,0 +1,314 @@
+/**
+ * Solana Swap Interface Styles
+ * Matches the unified design system with palette variables
+ */
+
+.container {
+  background: var(--palette-bg-primary, rgba(0, 0, 0, 0.9));
+  border: 1px solid var(--palette-border, rgba(138, 43, 226, 0.3));
+  padding: 24px;
+  margin: 16px 0;
+  border-radius: 12px;
+  font-family: var(--font-mono, 'IBM Plex Mono', 'JetBrains Mono', monospace);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3),
+              0 0 0 1px var(--palette-border, rgba(138, 43, 226, 0.15));
+}
+
+.header {
+  margin: 0 0 20px 0;
+  color: var(--palette-primary, #8a2be2);
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-align: center;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--palette-border, rgba(138, 43, 226, 0.2));
+}
+
+.tokenInput {
+  margin-bottom: 20px;
+}
+
+.tokenInput label {
+  color: var(--palette-text-secondary, rgba(255, 255, 255, 0.7));
+  display: block;
+  margin-bottom: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 12px 16px;
+  background: color-mix(in srgb, var(--palette-primary, #8a2be2) 5%, transparent);
+  color: var(--palette-text-primary, #ffffff);
+  border: 1px solid var(--palette-border, rgba(138, 43, 226, 0.2));
+  border-radius: 8px;
+  box-sizing: border-box;
+  font-family: var(--font-mono, 'IBM Plex Mono', monospace);
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.searchInput:focus {
+  outline: none;
+  border-color: var(--palette-primary, #8a2be2);
+  background: color-mix(in srgb, var(--palette-primary, #8a2be2) 10%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--palette-primary, #8a2be2) 20%, transparent);
+}
+
+.searchInput::placeholder {
+  color: var(--palette-text-tertiary, rgba(255, 255, 255, 0.4));
+}
+
+.searchResults {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  max-height: 240px;
+  overflow-y: auto;
+  background: var(--palette-bg-primary, rgba(0, 0, 0, 0.95));
+  border: 1px solid var(--palette-border, rgba(138, 43, 226, 0.3));
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  z-index: 1000;
+  margin-top: 2px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.tokenResult {
+  padding: 12px 16px;
+  cursor: pointer;
+  border-bottom: 1px solid var(--palette-border, rgba(138, 43, 226, 0.1));
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  transition: all 0.2s ease;
+}
+
+.tokenResult:last-child {
+  border-bottom: none;
+}
+
+.tokenResult:hover {
+  background: color-mix(in srgb, var(--palette-primary, #8a2be2) 15%, transparent);
+  border-left: 3px solid var(--palette-primary, #8a2be2);
+}
+
+.tokenSymbol {
+  font-weight: 600;
+  color: var(--palette-primary, #8a2be2);
+  font-size: 14px;
+}
+
+.tokenName {
+  flex: 1;
+  color: var(--palette-text-secondary, rgba(255, 255, 255, 0.7));
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.verified {
+  color: #00ff88;
+  font-weight: bold;
+  font-size: 12px;
+  padding: 2px 6px;
+  background: rgba(0, 255, 136, 0.1);
+  border-radius: 4px;
+}
+
+.selectedToken {
+  margin-top: 12px;
+  padding: 12px 16px;
+  background: color-mix(in srgb, var(--palette-primary, #8a2be2) 10%, transparent);
+  border-radius: 8px;
+  color: var(--palette-primary, #8a2be2);
+  border-left: 3px solid var(--palette-primary, #8a2be2);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.amountInput {
+  margin-bottom: 20px;
+}
+
+.amountInput label {
+  color: var(--palette-text-secondary, rgba(255, 255, 255, 0.7));
+  display: block;
+  margin-bottom: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.amountInput .input {
+  width: 100%;
+  padding: 12px 16px;
+  background: color-mix(in srgb, var(--palette-primary, #8a2be2) 5%, transparent);
+  border: 1px solid var(--palette-border, rgba(138, 43, 226, 0.2));
+  color: var(--palette-text-primary, #ffffff);
+  border-radius: 8px;
+  font-family: var(--font-mono, 'IBM Plex Mono', monospace);
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.amountInput .input:focus {
+  outline: none;
+  border-color: var(--palette-primary, #8a2be2);
+  background: color-mix(in srgb, var(--palette-primary, #8a2be2) 10%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--palette-primary, #8a2be2) 20%, transparent);
+}
+
+.slippageControl {
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.slippageControl label {
+  color: var(--palette-text-secondary, rgba(255, 255, 255, 0.7));
+  font-size: 13px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.slippageControl .input {
+  flex: 1;
+  padding: 12px 16px;
+  background: color-mix(in srgb, var(--palette-primary, #8a2be2) 5%, transparent);
+  border: 1px solid var(--palette-border, rgba(138, 43, 226, 0.2));
+  color: var(--palette-text-primary, #ffffff);
+  border-radius: 8px;
+  font-family: var(--font-mono, 'IBM Plex Mono', monospace);
+  font-size: 14px;
+}
+
+.slippagePercent {
+  color: var(--palette-primary, #8a2be2);
+  font-weight: 600;
+  font-size: 14px;
+  min-width: 60px;
+  text-align: right;
+}
+
+.quoteBox {
+  background: color-mix(in srgb, var(--palette-primary, #8a2be2) 8%, transparent);
+  border: 1px solid var(--palette-border, rgba(138, 43, 226, 0.3));
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.quoteBox h3 {
+  margin: 0 0 12px 0;
+  color: var(--palette-primary, #8a2be2);
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.quoteBox p {
+  margin: 8px 0;
+  color: var(--palette-text-secondary, rgba(255, 255, 255, 0.8));
+  font-size: 13px;
+  font-family: var(--font-mono, 'IBM Plex Mono', monospace);
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.quoteButton,
+.swapButton {
+  flex: 1;
+  padding: 14px 24px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  font-family: var(--font-mono, 'IBM Plex Mono', monospace);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.quoteButton {
+  background: color-mix(in srgb, var(--palette-primary, #8a2be2) 20%, transparent);
+  color: var(--palette-primary, #8a2be2);
+  border: 1px solid var(--palette-primary, #8a2be2);
+}
+
+.quoteButton:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--palette-primary, #8a2be2) 30%, transparent);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--palette-primary, #8a2be2) 30%, transparent);
+}
+
+.swapButton {
+  background: linear-gradient(135deg, #8a2be2 0%, #6a1bb2 100%);
+  color: #ffffff;
+  border: 1px solid #8a2be2;
+  box-shadow: 0 0 20px color-mix(in srgb, var(--palette-primary, #8a2be2) 40%, transparent);
+}
+
+.swapButton:hover:not(:disabled) {
+  background: linear-gradient(135deg, #9a3bf2 0%, #7a2bc2 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px color-mix(in srgb, var(--palette-primary, #8a2be2) 50%, transparent);
+}
+
+.quoteButton:disabled,
+.swapButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 16px;
+    margin: 8px 0;
+  }
+
+  .header {
+    font-size: 18px;
+  }
+
+  .actions {
+    flex-direction: column;
+  }
+
+  .quoteButton,
+  .swapButton {
+    width: 100%;
+  }
+
+  .slippageControl {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .slippageControl .input {
+    width: 100%;
+  }
+
+  .slippagePercent {
+    text-align: left;
+  }
+}
+
+

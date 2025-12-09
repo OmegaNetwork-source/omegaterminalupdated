@@ -1,0 +1,183 @@
+/**
+ * @file PortfolioTracker.module.css
+ * @description Portfolio tracker component styling for terminal header
+ * Sharp, uniform, inline design matching terminal header aesthetics
+ */
+
+.portfolioTracker {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 12px;
+  background: color-mix(in srgb, var(--palette-primary, #00d4ff) 5%, transparent);
+  border: 1px solid color-mix(in srgb, var(--palette-primary, #00d4ff) 20%, transparent);
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  min-width: fit-content;
+  position: relative;
+  cursor: pointer;
+  user-select: none;
+  outline: none;
+  font-family: "Courier New", monospace;
+}
+
+.portfolioTracker:focus-visible {
+  outline: 1px solid color-mix(in srgb, var(--palette-primary, #00bcf2) 60%, transparent);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+.portfolioTracker:hover {
+  background: color-mix(in srgb, var(--palette-primary, #00d4ff) 10%, transparent);
+  border-color: var(--palette-primary, #00d4ff);
+}
+
+.portfolioTracker:active {
+  transform: scale(0.98);
+}
+
+.portfolioTitle {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--palette-primary, #00bcf2);
+  line-height: 1;
+  margin: 0;
+  padding: 0;
+  transition: color 0.3s ease;
+}
+
+.portfolioContentWrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+}
+
+.portfolioContent {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.portfolioLabel {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1;
+  white-space: nowrap;
+  transition: color 0.3s ease;
+}
+
+.portfolioValue {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  color: rgba(255, 255, 255, 0.95);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  transition: color 0.3s ease;
+}
+
+.portfolioChange {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  white-space: nowrap;
+  transition: color 0.3s ease;
+}
+
+.portfolioChange.positive {
+  color: var(--palette-success, #16c782);
+}
+
+.portfolioChange.negative {
+  color: var(--palette-error, #ff4d4f);
+}
+
+.portfolioDivider {
+  width: 1px;
+  height: 20px;
+  background: color-mix(in srgb, var(--palette-primary, #00d4ff) 15%, transparent);
+  flex-shrink: 0;
+  transition: background 0.3s ease;
+}
+
+/* Mobile Responsive */
+@media (max-width: 1024px) {
+  .portfolioTracker {
+    gap: 6px;
+    padding: 3px 10px;
+  }
+
+  .portfolioTitle {
+    font-size: 9px;
+  }
+
+  .portfolioContentWrapper {
+    gap: 6px;
+  }
+
+  .portfolioContent {
+    gap: 4px;
+  }
+
+  .portfolioLabel,
+  .portfolioValue {
+    font-size: 10px;
+  }
+  
+  .portfolioChange {
+    font-size: 9px;
+  }
+
+  .portfolioDivider {
+    height: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .portfolioTracker {
+    display: none; /* Hide on mobile to save space */
+  }
+}
+
+/* Light mode overrides - match terminal header styling */
+:global(body.light-mode) .portfolioTracker {
+  background: color-mix(in srgb, var(--palette-primary, rgba(0, 81, 213, 1)) 5%, transparent);
+  border-color: color-mix(in srgb, var(--palette-primary, rgba(0, 81, 213, 1)) 20%, transparent);
+}
+
+:global(body.light-mode) .portfolioTracker:hover {
+  background: color-mix(in srgb, var(--palette-primary, rgba(0, 81, 213, 1)) 10%, transparent);
+  border-color: var(--palette-primary, var(--cyber-blue, #0051d5));
+}
+
+:global(body.light-mode) .portfolioTracker .portfolioTitle {
+  color: var(--palette-primary, var(--cyber-blue, #0051d5));
+}
+
+:global(body.light-mode) .portfolioTracker .portfolioLabel {
+  color: rgba(0, 0, 0, 0.7);
+}
+
+:global(body.light-mode) .portfolioTracker .portfolioValue {
+  color: rgba(0, 0, 0, 0.9);
+}
+
+:global(body.light-mode) .portfolioTracker .portfolioDivider {
+  background: color-mix(in srgb, var(--palette-primary, rgba(0, 81, 213, 1)) 20%, transparent);
+}
+

@@ -1,0 +1,410 @@
+/* Prediction Chart Modal */
+
+.chartOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(8px);
+  z-index: 10001;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.chartContainer {
+  background: linear-gradient(180deg, #1a2332 0%, #141c28 100%);
+  border: 1px solid rgba(0, 255, 214, 0.2);
+  border-radius: 16px;
+  width: 95%;
+  max-width: 640px;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* Header */
+.chartHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.chartTitle {
+  flex: 1;
+}
+
+.chartTitle h3 {
+  margin: 8px 0 0 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
+  line-height: 1.4;
+}
+
+.venueTag {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.6);
+  text-transform: capitalize;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 28px;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  transition: color 0.2s ease;
+}
+
+.closeButton:hover {
+  color: #fff;
+}
+
+/* Price Summary */
+.priceSummary {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 16px 20px;
+  background: rgba(0, 0, 0, 0.2);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.currentPrice {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.priceLabel {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+}
+
+.priceValue {
+  font-size: 28px;
+  font-weight: 700;
+  color: #00ffd6;
+}
+
+.priceChange {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.priceChange.positive {
+  background: rgba(74, 222, 128, 0.15);
+  color: #4ade80;
+}
+
+.priceChange.negative {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+}
+
+.volumeInfo {
+  margin-left: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.volumeLabel {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.volumeValue {
+  font-size: 16px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* Time Range Selector */
+.timeRangeSelector {
+  display: flex;
+  gap: 4px;
+  padding: 12px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.timeRangeButton {
+  padding: 8px 14px;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.timeRangeButton:hover {
+  background: rgba(0, 255, 214, 0.1);
+  border-color: rgba(0, 255, 214, 0.3);
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.timeRangeButton.active {
+  background: rgba(0, 255, 214, 0.15);
+  border-color: rgba(0, 255, 214, 0.5);
+  color: #00ffd6;
+}
+
+/* Chart Area */
+.chartArea {
+  position: relative;
+  padding: 20px;
+}
+
+.chart {
+  display: block;
+  width: 100%;
+  cursor: crosshair;
+}
+
+.tooltip {
+  position: absolute;
+  top: 30px;
+  right: 30px;
+  background: rgba(0, 0, 0, 0.8);
+  border: 1px solid rgba(0, 255, 214, 0.3);
+  border-radius: 8px;
+  padding: 10px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  pointer-events: none;
+}
+
+.tooltipPrice {
+  font-size: 18px;
+  font-weight: 700;
+  color: #00ffd6;
+}
+
+.tooltipTime {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* Multi-Outcome Section */
+.outcomesSection {
+  padding: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.outcomesTitle {
+  font-size: 14px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.8);
+  margin: 0 0 14px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.outcomesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 10px;
+}
+
+.outcomeCard {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+}
+
+.outcomeCard:hover {
+  background: rgba(0, 255, 214, 0.08);
+  border-color: rgba(0, 255, 214, 0.3);
+  transform: translateY(-2px);
+}
+
+.outcomeCard.selected {
+  background: rgba(0, 255, 214, 0.12);
+  border-color: rgba(0, 255, 214, 0.5);
+}
+
+.outcomeLabel {
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.outcomeProbability {
+  font-size: 24px;
+  font-weight: 700;
+  color: #00ffd6;
+}
+
+.outcomePrices {
+  display: flex;
+  gap: 12px;
+  font-size: 11px;
+}
+
+.yesPrice {
+  color: #4ade80;
+}
+
+.noPrice {
+  color: #ef4444;
+}
+
+.outcomeVolume {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+/* Binary Outcomes (Yes/No markets) */
+.binaryOutcomes {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.binaryOutcome {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.binaryLabel {
+  width: 40px;
+  font-size: 12px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.binaryBar {
+  flex: 1;
+  height: 24px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.binaryFill {
+  height: 100%;
+  border-radius: 6px;
+  transition: width 0.3s ease;
+}
+
+.binaryPrice {
+  width: 60px;
+  text-align: right;
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* Market Info */
+.marketInfo {
+  display: flex;
+  justify-content: space-between;
+  padding: 16px 20px;
+  background: rgba(0, 0, 0, 0.15);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.infoItem {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  text-align: center;
+}
+
+.infoLabel {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.4);
+  text-transform: uppercase;
+}
+
+.infoValue {
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* View Source Link */
+.viewSource {
+  display: block;
+  padding: 14px 20px;
+  text-align: center;
+  color: #00ffd6;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 600;
+  background: rgba(0, 255, 214, 0.05);
+  border-top: 1px solid rgba(0, 255, 214, 0.1);
+  transition: background 0.2s ease;
+}
+
+.viewSource:hover {
+  background: rgba(0, 255, 214, 0.1);
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .chartContainer {
+    border-radius: 0;
+    max-width: 100%;
+    max-height: 100vh;
+  }
+
+  .priceSummary {
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .volumeInfo {
+    margin-left: 0;
+    width: 100%;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  .outcomesGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .timeRangeSelector {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+

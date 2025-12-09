@@ -1,0 +1,285 @@
+/**
+ * Mining Status Component Styles
+ * Styles for the real-time mining status display
+ * Updated to use CSS variables for uniform styling across all color palettes
+ */
+
+.container {
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--palette-primary, #00d4ff) 8%, transparent),
+    color-mix(in srgb, var(--palette-secondary, #00ff88) 5%, transparent)
+  );
+  border: 1px solid color-mix(in srgb, var(--palette-primary, #00d4ff) 25%, transparent);
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-bottom: 12px;
+  font-family: "Courier New", monospace;
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--palette-primary, #00d4ff) 15%, transparent);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  position: relative;
+  overflow: hidden;
+}
+
+.container::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--palette-primary, #00d4ff),
+    transparent
+  );
+  opacity: 0.6;
+}
+
+.containerCompact {
+  border-radius: 14px;
+  padding: 16px;
+}
+
+.containerMobile {
+  border-radius: 14px;
+  padding: 16px;
+  gap: 10px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.headerText {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--palette-primary, #00d4ff);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  text-shadow: 0 0 8px color-mix(in srgb, var(--palette-primary, #00d4ff) 40%, transparent);
+}
+
+.miningIcon {
+  color: var(--palette-primary, #00d4ff);
+  animation: rotate 2s linear infinite;
+  flex-shrink: 0;
+}
+
+.status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.statusIndicator {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--palette-secondary, #00ff88);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--palette-secondary, #00ff88) 60%, transparent);
+  animation: pulse 2s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+.statusText {
+  color: var(--palette-secondary, #00ff88);
+  font-weight: 600;
+  font-size: 12px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+.stats {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.statRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  padding: 6px 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--palette-text, #ccd4e0) 8%, transparent);
+}
+
+.statRow:last-child {
+  border-bottom: none;
+}
+
+.statContent {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.statIcon {
+  color: color-mix(in srgb, var(--palette-primary, #00d4ff) 70%, transparent);
+  flex-shrink: 0;
+  width: 14px;
+  height: 14px;
+}
+
+.statLabel {
+  color: color-mix(in srgb, var(--palette-text, #ccd4e0) 80%, transparent);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.statValue {
+  color: var(--palette-text, #ccd4e0);
+  font-weight: 600;
+  font-size: 12px;
+  font-family: "Courier New", monospace;
+}
+
+.stopButton {
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--palette-error, #ff4757) 12%, transparent),
+    color-mix(in srgb, var(--palette-error, #ff4757) 8%, transparent)
+  );
+  border: 1px solid color-mix(in srgb, var(--palette-error, #ff4757) 30%, transparent);
+  color: var(--palette-error, #ff4757);
+  padding: 10px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: "Courier New", monospace;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 8px;
+  width: 100%;
+  transition: all 0.2s ease;
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stopButton:hover {
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--palette-error, #ff4757) 18%, transparent),
+    color-mix(in srgb, var(--palette-error, #ff4757) 12%, transparent)
+  );
+  border-color: color-mix(in srgb, var(--palette-error, #ff4757) 45%, transparent);
+  box-shadow: 0 0 12px color-mix(in srgb, var(--palette-error, #ff4757) 30%, transparent);
+  transform: translateY(-1px);
+}
+
+.stopButton:active {
+  transform: translateY(0);
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.1);
+  }
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Theme variants are now handled by CSS variables - no need for specific theme overrides */
+
+/* -----------------------------------------------------------------------------
+   Responsive Breakpoints
+   ----------------------------------------------------------------------------- */
+
+@media (max-width: 1024px) {
+  .container {
+    padding: 12px 14px;
+  }
+
+  .headerText {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 10px 12px;
+    border-radius: 10px;
+    gap: 8px;
+  }
+
+  .headerText {
+    font-size: 11px;
+  }
+
+  .statRow {
+    font-size: 11px;
+    padding: 5px 0;
+  }
+
+  .statIcon {
+    width: 12px;
+    height: 12px;
+  }
+
+  .status {
+    gap: 6px;
+  }
+
+  .miningIcon {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 8px 10px;
+  }
+
+  .headerText {
+    font-size: 10px;
+    letter-spacing: 1px;
+  }
+
+  .stopButton {
+    font-size: 10px;
+    padding: 8px 12px;
+    min-height: 32px;
+  }
+}
+
+/* -----------------------------------------------------------------------------
+   Safe Area & Touch Enhancements
+   ----------------------------------------------------------------------------- */
+
+@supports (padding: max(0px)) {
+  .container {
+    padding-bottom: max(14px, calc(14px + env(safe-area-inset-bottom)));
+  }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .stopButton {
+    min-height: 48px;
+  }
+}

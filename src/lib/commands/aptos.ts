@@ -1,0 +1,466 @@
+/**
+ * Aptos Commands
+ * Commands for Aptos blockchain operations including wallet management and token creation
+ */
+
+import type { Command } from "@/types/commands";
+import { Aptos, AptosConfig, Network } from "@aptos-labs/ts-sdk";
+import { createCommandLine, createUsageError } from "./command-output-helpers";
+
+const APTOS_CONFIG = new AptosConfig({ network: Network.MAINNET });
+const aptosClient = new Aptos(APTOS_CONFIG);
+const DEFAULT_FACTORY_ADDRESS =
+  "0x3df5482f5555633e5f0dfbe189eff42c24779fdc73d6bc4649733003eb1ef566";
+
+async function getConnectedAddress(): Promise<string | null> {
+  const provider = (window as any).aptos;
+  if (!provider) return null;
+  try {
+    const account = await provider.account?.();
+    return account?.address || null;
+  } catch {
+    return null;
+  }
+}
+
+function getProvider(): any | null {
+  if (typeof window === "undefined") return null;
+
+  const aptosWindow = (window as any).aptos;
+  if (!aptosWindow) return null;
+
+  if (typeof aptosWindow.signAndSubmitTransaction === "function") {
+    return aptosWindow;
+  }
+
+  if (aptosWindow.wallet && typeof aptosWindow.wallet.signAndSubmitTransaction === "function") {
+    return aptosWindow.wallet;
+  }
+
+  return aptosWindow;
+}
+
+async function signAndSubmit(payload: any, context?: any): Promise<string | null> {
+  const provider = getProvider();
+  if (!provider) {
+    throw new Error("Aptos wallet provider not available.");
+  }
+
+  if (context) {
+    context.log(`Checking wallet provider methods...`, "info");
+    context.log(`Available methods: ${JSON.stringify(Object.keys(provider || {}))}`, "info");
+  }
+
+  let signAndSubmitMethod: any = null;
+
+  if (typeof provider.signAndSubmitTransaction === "function") {
+    signAndSubmitMethod = provider.signAndSubmitTransaction.bind(provider);
+  } else if (typeof provider.signAndSubmit === "function") {
+    signAndSubmitMethod = provider.signAndSubmit.bind(provider);
+  } else if (typeof provider.signTransaction === "function" && typeof provider.submitTransaction === "function") {
+    if (context) {
+      context.log(`Using separate sign and submit methods...`, "info");
+    }
+    try {
+      const signedTx = await provider.signTransaction(payload);
+      const res = await provider.submitTransaction(signedTx);
+      return res?.hash || res?.txHash || null;
+    } catch (err: any) {
+      if (context) {
+        context.log(`Separate sign/submit error: ${err?.message ?? err}`, "error");
+      }
+      throw err;
+    }
+  } else {
+    throw new Error(`Wallet provider missing signAndSubmitTransaction method. Available: ${Object.keys(provider || {}).join(", ")}`);
+  }
+
+  if (context) {
+    context.log(`Calling wallet signAndSubmitTransaction...`, "info");
+    context.log(`Payload type: ${payload?.type}, function: ${payload?.function}`, "info");
+  }
+
+  try {
+    const res = await signAndSubmitMethod(payload);
+    const txHash = res?.hash || res?.txHash || res?.transactionHash || null;
+    if (context) {
+      if (!txHash) {
+        context.log(`Warning: Transaction response: ${JSON.stringify(res)}`, "warning");
+      } else {
+        context.log(`Transaction hash received: ${txHash}`, "success");
+      }
+    }
+    return txHash;
+  } catch (err: any) {
+    if (context) {
+      context.log(`Wallet error: ${err?.message ?? err}`, "error");
+      if (err?.code) {
+        context.log(`Error code: ${err.code}`, "error");
+      }
+    }
+    throw err;
+  }
+}
+
+async function handleConnect(context: any) {
+  if (typeof window === "undefined") {
+    context.log("Aptos wallet connection is only available in the browser.", "error");
+    return;
+  }
+
+  context.log("Attempting to connect your Aptos wallet (Petra)...", "info");
+  try {
+    const provider = (window as any).aptos;
+    if (provider && typeof provider.connect === "function") {
+      const res = await provider.connect();
+      const acct = res?.address || (await provider.account?.())?.address;
+      context.log("Aptos wallet connected!", "success");
+      if (acct) context.log(`Address: ${acct}`, "output");
+    } else {
+      context.log(
+        "No Aptos wallet (Petra) extension detected. Install Petra Wallet: https://petra.app/",
+        "error"
+      );
+    }
+  } catch (err: any) {
+    context.log(`Aptos wallet connection failed: ${err?.message ?? err}`, "error");
+  }
+}
+
+async function handleBalance(context: any) {
+  if (typeof window === "undefined") {
+    context.log("Aptos balance check is only available in the browser.", "error");
+    return;
+  }
+
+  try {
+    const address = await getConnectedAddress();
+    if (!address) {
+      context.log("Connect wallet first.", "warning");
+      const helpHtml = createCommandLine("aptos connect", "Connect your Aptos wallet");
+      context.logHtml(helpHtml);
+      return;
+    }
+
+    context.log(`Checking APT balance for ${address}...`, "info");
+    
+    // Try multiple methods to get balance (view function is most reliable)
+    let balanceFound = false;
+    let aptAmount = 0;
+    
+    // Method 1: Try view function first (most reliable)
+    try {
+      const viewResponse = await fetch(
+        `https://api.mainnet.aptoslabs.com/v1/view`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+          },
+          body: JSON.stringify({
+            function: "0x1::coin::balance",
+            type_arguments: ["0x1::aptos_coin::AptosCoin"],
+            arguments: [address],
+          }),
+        }
+      );
+      
+      if (viewResponse.ok) {
+        const viewData = await viewResponse.json();
+        const balance = viewData[0] || "0";
+        const balanceBigInt = BigInt(String(balance));
+        aptAmount = Number(balanceBigInt) / 1e8;
+        balanceFound = true;
+        context.log(`💰 APT Balance: ${aptAmount.toFixed(8)} APT`, "success");
+      } else {
+        const errorText = await viewResponse.text();
+        throw new Error(`View function returned ${viewResponse.status}: ${errorText.substring(0, 100)}`);
+      }
+    } catch (viewError: any) {
+      // Method 2: Try SDK getAccountResource
+      try {
+        const accountResource = await aptosClient.getAccountResource({
+          accountAddress: address,
+          resourceType: "0x1::coin::CoinStore<0x1::aptos_coin::AptosCoin>",
+        });
+        
+        const coinData = (accountResource.data as any);
+        // Check different possible structures
+        const balance = coinData?.coin?.value || coinData?.value || coinData?.balance || "0";
+        const balanceBigInt = BigInt(String(balance));
+        aptAmount = Number(balanceBigInt) / 1e8;
+        balanceFound = true;
+        
+        context.log(`💰 APT Balance: ${aptAmount.toFixed(8)} APT`, "success");
+      } catch (sdkError: any) {
+        // Method 3: Direct REST API call
+        try {
+          // Try with proper URL encoding
+          const resourceType = "0x1::coin::CoinStore<0x1::aptos_coin::AptosCoin>";
+          const encodedResourceType = encodeURIComponent(resourceType);
+          const apiUrl = `https://api.mainnet.aptoslabs.com/v1/accounts/${address}/resource/${encodedResourceType}`;
+          
+          const response = await fetch(apiUrl, {
+            method: "GET",
+            headers: {
+              "Accept": "application/json",
+            },
+          });
+          
+          if (response.ok) {
+            const data = await response.json();
+            // Try multiple possible response structures
+            const balance = data.data?.coin?.value || 
+                           data.data?.value || 
+                           data.data?.balance ||
+                           data.coin?.value ||
+                           data.value ||
+                           "0";
+            
+            const balanceBigInt = BigInt(String(balance));
+            aptAmount = Number(balanceBigInt) / 1e8;
+            balanceFound = true;
+            
+            context.log(`💰 APT Balance: ${aptAmount.toFixed(8)} APT`, "success");
+          } else if (response.status === 404) {
+            // Try getting all account resources
+            const altUrl = `https://api.mainnet.aptoslabs.com/v1/accounts/${address}/resources`;
+            const accountResponse = await fetch(altUrl);
+            
+            if (accountResponse.ok) {
+              const accountData = await accountResponse.json();
+              // Find CoinStore resource
+              const coinStore = accountData.find((r: any) => 
+                r.type?.includes("CoinStore") && r.type?.includes("AptosCoin")
+              );
+              
+              if (coinStore) {
+                const balance = coinStore.data?.coin?.value || coinStore.data?.value || "0";
+                const balanceBigInt = BigInt(String(balance));
+                aptAmount = Number(balanceBigInt) / 1e8;
+                balanceFound = true;
+                context.log(`💰 APT Balance: ${aptAmount.toFixed(8)} APT`, "success");
+              } else {
+                context.log(`💰 APT Balance: 0.00000000 APT`, "success");
+                context.log("💡 This account has no APT balance yet.", "output");
+              }
+            } else {
+              context.log(`💰 APT Balance: 0.00000000 APT`, "success");
+              context.log("💡 This account has no APT balance yet.", "output");
+            }
+          } else {
+            const errorText = await response.text();
+            throw new Error(`API error: ${response.status} - ${errorText.substring(0, 100)}`);
+          }
+        } catch (apiError: any) {
+          // If all methods fail, show error with details
+          context.log(`Balance error: ${viewError?.message || sdkError?.message || apiError?.message}`, "error");
+          context.log(`Tried view function, SDK, and REST API - all failed.`, "output");
+          context.log(`Address: ${address}`, "output");
+        }
+      }
+    }
+    
+    if (balanceFound && aptAmount === 0) {
+      context.log("💡 This account has no APT balance yet.", "output");
+    }
+  } catch (err: any) {
+    context.log(`Balance error: ${err?.message ?? err}`, "error");
+    context.log(`Error details: ${JSON.stringify(err, null, 2)}`, "output");
+    if (err?.message?.includes("resource_not_found")) {
+      context.log("💡 This account may not have initialized its CoinStore resource yet.", "output");
+      context.log("   This is normal for new accounts with 0 APT balance.", "output");
+    }
+  }
+}
+
+// --- Token Factory: create token + optional initial mint ---
+async function handleCreateToken(context: any, args: string[]) {
+  // Usage: aptos create token [factoryAddress] <name> <symbol> <decimals> <iconUri> <projectUri> [initialMint]
+  // If factory address omitted, uses DEFAULT_FACTORY_ADDRESS
+  let parts = args.slice(2);
+
+  // If user only typed: aptos create token -> open interactive wizard
+  if (parts.length === 1 && parts[0]?.toLowerCase() === "token") {
+    const factoryHint = DEFAULT_FACTORY_ADDRESS;
+    const html = `
+      <div style="border:1px solid rgba(0,188,242,0.4);padding:14px;border-radius:8px;margin:8px 0;background:rgba(255,255,255,0.03)">
+        <div style="font-weight:600;color:#00bcf2;margin-bottom:8px">Aptos Token Creator (Mainnet)</div>
+        <div style="font-size:12px;color:#aaa;margin-bottom:6px">Factory: ${factoryHint}</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <input id="aptos_tok_name" placeholder="Token Name" style="padding:8px;border-radius:6px;border:1px solid #333;background:#111;color:#fff" />
+          <input id="aptos_tok_symbol" placeholder="Token Symbol (e.g., MYT)" style="padding:8px;border-radius:6px;border:1px solid #333;background:#111;color:#fff" />
+          <input id="aptos_tok_decimals" placeholder="Decimals (e.g., 8)" style="padding:8px;border-radius:6px;border:1px solid #333;background:#111;color:#fff" />
+          <input id="aptos_tok_icon" placeholder="Icon URL" style="padding:8px;border-radius:6px;border:1px solid #333;background:#111;color:#fff" />
+          <input id="aptos_tok_project" placeholder="Project URL" style="padding:8px;border-radius:6px;border:1px solid #333;background:#111;color:#fff" />
+          <input id="aptos_tok_initial" placeholder="Initial Mint (whole tokens, optional)" style="padding:8px;border-radius:6px;border:1px solid #333;background:#111;color:#fff" />
+        </div>
+        <div style="margin-top:10px;display:flex;gap:8px">
+          <button id="aptos_tok_submit" style="background:#00bcf2;border:0;color:#000;padding:8px 12px;border-radius:6px;cursor:pointer">Create</button>
+          <button id="aptos_tok_cancel" style="background:#333;border:1px solid #555;color:#ddd;padding:8px 12px;border-radius:6px;cursor:pointer">Cancel</button>
+        </div>
+      </div>`;
+    context.logHtml(html);
+    if (typeof window !== "undefined") {
+      (window as any).__aptosCreateTokenSubmit = async () => {
+        const g = (id: string) => (document.getElementById(id) as HTMLInputElement)?.value?.trim();
+
+        const name = g("aptos_tok_name");
+        const symbol = g("aptos_tok_symbol");
+        const decimals = g("aptos_tok_decimals");
+        const icon = g("aptos_tok_icon");
+        const project = g("aptos_tok_project");
+        const initial = g("aptos_tok_initial");
+
+        const cmd = `aptos create token ${name} ${symbol} ${decimals} ${icon} ${project}${initial ? " " + initial : ""}`;
+        await context.executeCommand(cmd);
+      };
+
+      setTimeout(() => {
+        const submit = document.getElementById("aptos_tok_submit");
+        const cancel = document.getElementById("aptos_tok_cancel");
+        if (submit) submit.addEventListener("click", () => (window as any).__aptosCreateTokenSubmit?.());
+        if (cancel) cancel.addEventListener("click", () => context.log("Canceled.", "info"));
+      }, 0);
+    }
+    return;
+  }
+  // If user kept the subkeyword 'token' in the same line, drop it
+  if (parts[0]?.toLowerCase() === "token") {
+    parts = parts.slice(1);
+  }
+
+  let factoryAddress = DEFAULT_FACTORY_ADDRESS;
+  if (parts[0] && parts[0].startsWith("0x")) {
+    factoryAddress = parts[0];
+    parts = parts.slice(1);
+  }
+  const [name, symbol, decimalsStr, iconUri, projectUri, initialMintStr] = parts;
+
+  if (!name || !symbol || !decimalsStr || !iconUri || !projectUri) {
+    const usageHtml = createUsageError("aptos create token [factoryAddress] <name> <symbol> <decimals> <iconUri> <projectUri> [initialMint]", [
+      "aptos create token MyToken MTK 8 https://example.com/icon.png https://example.com",
+      "aptos create token 0x123... MyToken MTK 8 https://example.com/icon.png https://example.com 1000",
+    ]);
+    context.logHtml(usageHtml);
+    return;
+  }
+
+  const address = await getConnectedAddress();
+  if (!address) {
+    context.log("Please connect your Aptos wallet (Petra) first.", "warning");
+    const helpHtml = createCommandLine("aptos connect", "Connect your Aptos wallet");
+    context.logHtml(helpHtml);
+    return;
+  }
+
+  const decimals = Number(decimalsStr);
+  if (!Number.isFinite(decimals)) {
+    context.log("Invalid decimals value", "error");
+    return;
+  }
+
+  try {
+    context.log("📦 Creating token via token factory...", "info");
+    const createPayload = {
+      type: "entry_function_payload",
+      function: `${factoryAddress}::token_factory_v2::create_token`,
+      type_arguments: [],
+      arguments: [name, symbol, decimals, iconUri, projectUri],
+    };
+
+    const createHash = await signAndSubmit(createPayload, context);
+    context.log(`✅ create_token submitted: ${createHash}`, "success");
+    context.log(`🔍 View on explorer: https://explorer.aptoslabs.com/txn/${createHash}?network=mainnet`, "info");
+
+    if (initialMintStr) {
+      // Support human-friendly whole-token input; auto-scale by decimals
+      // If value ends with 'o'/'octas'/'raw', treat as base units
+      const raw = /\s*(o|octas|raw)$/i.test(initialMintStr);
+      const cleaned = initialMintStr.replace(/[,\s_]/g, "").replace(/(o|octas|raw)$/i, "");
+      let amount = BigInt(0);
+      if (raw) {
+        amount = BigInt(cleaned);
+      } else {
+        // Scale whole tokens by 10^decimals
+        const base = BigInt(cleaned);
+        const scale = 10n ** BigInt(decimals);
+        amount = base * scale;
+      }
+      context.log("🪙 Minting initial supply to your address...", "info");
+      const mintPayload = {
+        type: "entry_function_payload",
+        function: `${factoryAddress}::token_factory_v2::mint`,
+        type_arguments: [],
+        arguments: [symbol, address, amount.toString()],
+      };
+
+      const mintHash = await signAndSubmit(mintPayload, context);
+      context.log(`✅ mint submitted: ${mintHash}`, "success");
+      context.log(`🔍 View on explorer: https://explorer.aptoslabs.com/txn/${mintHash}?network=mainnet`, "info");
+      context.log(
+        `Note: initial mint interpreted as ${raw ? "base units" : "whole tokens scaled by 10^decimals"}.`,
+        "info"
+      );
+    }
+  } catch (err: any) {
+    context.log(`Token factory error: ${err?.message ?? err}`, "error");
+  }
+}
+
+export const aptosCommand: Command = {
+  name: "aptos",
+  aliases: ["apt"],
+  description: "Aptos tools (wallet, token creation)",
+  usage: "aptos <connect|balance|create token>",
+  category: "aptos",
+  handler: async (context, args) => {
+    const sub = (args[1] || "help").toLowerCase();
+
+    switch (sub) {
+      case "connect":
+        await handleConnect(context);
+        break;
+      case "balance":
+        await handleBalance(context);
+        break;
+      case "create":
+        if (args[2]?.toLowerCase() === "token") {
+          await handleCreateToken(context, args);
+        } else {
+          const usageHtml = createUsageError("aptos create token", [
+            "aptos create token",
+          ]);
+          context.logHtml(usageHtml);
+        }
+        break;
+      case "help":
+      default:
+        const helpHtml = `
+          <div style="
+            background: linear-gradient(135deg, color-mix(in srgb, var(--palette-primary, #00d4ff) 15%, transparent), color-mix(in srgb, var(--palette-secondary, #00ff88) 10%, transparent));
+            border: 1px solid color-mix(in srgb, var(--palette-primary, #00d4ff) 30%, transparent);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 10px 0;
+          ">
+            <div style="
+              font-size: 18px;
+              font-weight: 600;
+              color: var(--palette-primary, #00d4ff);
+              margin-bottom: 16px;
+            ">=== Aptos Commands ===</div>
+            ${createCommandLine("aptos connect", "Connect Petra wallet (mainnet)")}
+            ${createCommandLine("aptos balance", "Show APT balance for connected wallet")}
+            ${createCommandLine("aptos create token", "Create fungible token (wizard)")}
+          </div>
+        `;
+        context.logHtml(helpHtml);
+        break;
+    }
+  },
+};
+
+export const aptosCommands: Command[] = [aptosCommand];
+

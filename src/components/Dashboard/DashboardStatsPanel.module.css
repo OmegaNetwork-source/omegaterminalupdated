@@ -1,0 +1,1177 @@
+/**
+ * @file DashboardStatsPanel.module.css
+ * @description Stats panel styling with theme variants, charts, progress bars, and responsive behavior.
+ * @sources styles/futuristic-theme.css, styles/mobile-terminal-fix.css
+ */
+
+/* -----------------------------------------------------------------------------
+   Panel Container
+   ----------------------------------------------------------------------------- */
+
+.statsPanel {
+  grid-area: stats;
+  background: color-mix(in srgb, var(--palette-surface, rgba(21, 21, 32, 1)) 70%, transparent);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--palette-border, rgba(0, 212, 255, 0.15));
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  max-height: 100vh;
+  height: 100vh;
+  scrollbar-width: thin;
+  scrollbar-color: var(--palette-primary, #00d4ff) var(--palette-surface, rgba(0, 0, 0, 0.2));
+  font-family: "Courier New", monospace;
+  transition: border-color 0.3s ease;
+  color: var(--palette-text, #ffffff);
+  position: relative;
+  isolation: isolate;
+  z-index: 1;
+}
+
+/* When companion is open, ensure proper stacking */
+.statsPanel:has(.companionSection) {
+  /* Keep isolation to maintain stacking context, but companion will be on top */
+}
+
+/* Hide scrollbars from media panels - only statsPanel should scroll */
+.mediaSection .mediaPanelWrapper :global(.panel),
+.mediaSection .mediaPanelWrapper :global(.panel .content),
+.mediaSection .mediaPanelWrapper :global(.panel *) {
+  scrollbar-width: none !important; /* Firefox */
+}
+
+.mediaSection .mediaPanelWrapper :global(.panel)::-webkit-scrollbar,
+.mediaSection .mediaPanelWrapper :global(.panel .content)::-webkit-scrollbar,
+.mediaSection .mediaPanelWrapper :global(.panel *)::-webkit-scrollbar {
+  display: none !important; /* Chrome, Safari, Edge */
+}
+
+/* Ensure SystemOverview is always at the top */
+.statsPanel > .systemOverviewFull,
+.statsPanel > .systemOverviewCompact {
+  order: -1;
+  flex-shrink: 0;
+  width: 100%;
+}
+
+/* Companion section appears at the top when open, replaces SystemOverview */
+.section.companionSection,
+.companionSection.mediaSection,
+.companionSection {
+  order: -2 !important; /* Even higher priority than SystemOverview */
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  margin-bottom: 0 !important;
+  padding: 0 !important;
+  height: 100% !important;
+  position: relative !important;
+  z-index: 100 !important; /* Much higher than cubes background (0) and other sections (10-20) */
+  isolation: isolate !important;
+  background: transparent !important; /* Let the wrapper handle background */
+  transform: translateZ(0) !important; /* Force new stacking context above cubes */
+  will-change: transform !important; /* Hint to browser for optimization */
+}
+
+/* Companion panel wrapper takes full available space */
+.companionSection .mediaPanelWrapper {
+  flex: 1 1 auto !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  position: relative !important;
+  z-index: 101 !important; /* Even higher than companion section */
+  isolation: isolate !important;
+  background: transparent !important;
+  transform: translateZ(0) !important; /* Force new stacking context above cubes */
+}
+
+.statsPanel::-webkit-scrollbar {
+  width: 6px;
+}
+
+.statsPanel::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.statsPanel::-webkit-scrollbar-thumb {
+  background: linear-gradient(
+    180deg,
+    var(--palette-primary, rgba(0, 188, 242, 0.7)),
+    var(--palette-secondary, rgba(0, 255, 210, 0.7))
+  );
+  border-radius: 3px;
+  transition: background 0.3s ease;
+}
+
+.statsPanelCollapsed {
+  display: none;
+}
+
+.statsPanelOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(12px);
+  z-index: 32;
+  display: flex;
+  justify-content: flex-end;
+  align-items: stretch;
+}
+
+.statsPanelMobile {
+  width: 90vw;
+  max-width: 320px;
+  border-radius: 22px 0 0 22px;
+}
+
+/* -----------------------------------------------------------------------------
+   Headings & Sections
+   ----------------------------------------------------------------------------- */
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--palette-border, rgba(0, 188, 242, 0.22));
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--palette-primary, rgba(0, 188, 242, 0.95));
+  transition: border-color 0.3s ease, color 0.3s ease;
+}
+
+/* Animated Cubes Background */
+.cubesBackground {
+  position: absolute;
+  inset: 0;
+  z-index: 0 !important; /* Keep cubes at the bottom */
+  pointer-events: none;
+  border-radius: 12px;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+/* Allow the scene inside to receive pointer events for interaction */
+.cubesBackground :global(.cubesScene) {
+  pointer-events: auto;
+}
+
+.section {
+  background: color-mix(in srgb, var(--palette-surface, rgba(21, 21, 32, 1)) 85%, transparent);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--palette-border, rgba(0, 212, 255, 0.2));
+  border-radius: 12px;
+  padding: 16px;
+  flex-shrink: 0;
+  transition: border-color 0.3s ease, background 0.3s ease;
+  color: var(--palette-text, #ffffff);
+  position: relative;
+  z-index: 10;
+  isolation: isolate;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  margin-top: 0;
+  margin-bottom: 12px;
+  width: 100%;
+  overflow: visible;
+}
+
+.mediaSection {
+  z-index: 15;
+}
+
+/* Companion section must override mediaSection z-index - more specific selectors */
+.section.companionSection.mediaSection,
+.companionSection.mediaSection {
+  z-index: 100 !important; /* Override the default mediaSection z-index (15) and section z-index (10) */
+}
+
+/* System Overview States */
+.systemOverviewFull {
+  position: relative;
+  z-index: 5;
+  flex-shrink: 0;
+  width: 100%;
+}
+
+.systemOverviewCompact {
+  position: relative;
+  z-index: 5;
+  flex-shrink: 0;
+  width: 100%;
+  max-height: 38vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  margin-bottom: 12px;
+  flex: 0 0 auto;
+}
+
+.systemOverviewCompact::-webkit-scrollbar {
+  width: 4px;
+}
+
+.systemOverviewCompact::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.systemOverviewCompact::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--palette-primary, #00d4ff) 40%, transparent);
+  border-radius: 2px;
+}
+
+.sectionCollapsible .sectionContent {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease;
+}
+
+.sectionExpanded .sectionContent {
+  max-height: 800px;
+}
+
+.sectionTitle {
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--palette-primary, #00d4ff) 70%, transparent);
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--palette-border, rgba(0, 212, 255, 0.15));
+  font-family: "Courier New", monospace;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  transition: color 0.3s ease, border-color 0.3s ease;
+}
+
+.sectionTitle button {
+  background: transparent;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+.sectionTitle > span {
+  flex: 1;
+}
+
+.sectionContent {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.statCardPrimary {
+  border-left: 3px solid var(--palette-primary, rgba(0, 188, 242, 0.85));
+  transition: border-color 0.3s ease;
+}
+
+.statCardSecondary {
+  border-left: 3px solid var(--palette-secondary, rgba(0, 255, 136, 0.85));
+  transition: border-color 0.3s ease;
+}
+
+.statItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.statLabel {
+  font-size: 11px;
+  color: color-mix(in srgb, var(--palette-text, #ffffff) 55%, transparent);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.statValue {
+  font-size: 12px;
+  font-weight: 700;
+  color: color-mix(in srgb, var(--palette-text, #ffffff) 92%, transparent);
+  text-align: right;
+}
+
+.statValueHighlight {
+  color: var(--palette-secondary, rgba(0, 255, 136, 0.95));
+  transition: color 0.3s ease;
+}
+
+.statValueMuted {
+  color: color-mix(in srgb, var(--palette-text, #ffffff) 45%, transparent);
+}
+
+/* -----------------------------------------------------------------------------
+   Status Indicators & Progress
+   ----------------------------------------------------------------------------- */
+
+.statusIndicator {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 8px;
+  box-shadow: 0 0 12px currentColor;
+}
+
+.statusConnected {
+  color: var(--palette-success, #00ff88);
+  transition: color 0.3s ease;
+}
+
+.statusConnecting {
+  color: #fbbf24;
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+.statusDisconnected {
+  color: #ff5a5f;
+}
+
+.statusError {
+  color: #ff3d7f;
+}
+
+.progressBar {
+  position: relative;
+  width: 100%;
+  height: 10px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--palette-text, #ffffff) 10%, transparent);
+  overflow: hidden;
+}
+
+.progressTrack {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: color-mix(in srgb, var(--palette-primary, rgba(0, 188, 242, 1)) 8%, transparent);
+}
+
+.progressFill {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    90deg,
+    var(--palette-primary, rgba(0, 188, 242, 0.95)),
+    var(--palette-secondary, rgba(0, 255, 136, 0.95))
+  );
+  transform-origin: left center;
+  transition: transform 0.45s ease, background 0.3s ease;
+}
+
+.progressFill::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.45),
+    transparent 80%
+  );
+  opacity: 0.4;
+}
+
+.progressText {
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--palette-text, #ffffff) 55%, transparent);
+}
+
+/* -----------------------------------------------------------------------------
+   Charts & Activity Log
+   ----------------------------------------------------------------------------- */
+
+.chartPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: color-mix(in srgb, var(--palette-surface, rgba(21, 21, 32, 1)) 88%, transparent);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--palette-border, rgba(0, 212, 255, 0.22));
+  border-radius: 12px;
+  padding: 12px;
+  position: relative;
+  z-index: 1;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), 0 0 20px rgba(0, 212, 255, 0.08);
+  width: 100%;
+  min-height: 0;
+  flex: 1 1 auto;
+}
+
+.chartPanelActive {
+  border-color: color-mix(in srgb, var(--palette-primary, #00bcf2) 30%, transparent);
+}
+
+.chartPanelMinimized {
+  display: none;
+}
+
+.chartHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--palette-border, rgba(0, 212, 255, 0.15));
+  margin-bottom: 8px;
+}
+
+.chartHeaderLeft {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.chartIcon {
+  width: 14px;
+  height: 14px;
+  stroke: var(--palette-primary, #00bcf2);
+  flex-shrink: 0;
+}
+
+.chartSymbol {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--palette-primary, #00bcf2);
+  font-family: "Courier New", monospace;
+  transition: color 0.3s ease;
+}
+
+.infoBar {
+  display: flex;
+  gap: 10px;
+  font-size: 11px;
+  color: color-mix(in srgb, var(--palette-text, #ffffff) 55%, transparent);
+}
+
+.chartCloseButton {
+  background: transparent;
+  border: 1px solid color-mix(in srgb, var(--palette-primary, #00bcf2) 15%, transparent);
+  color: color-mix(in srgb, var(--palette-text, #ffffff) 70%, transparent);
+  cursor: pointer;
+  padding: 0;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  min-width: 24px;
+  min-height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chartCloseButton:hover {
+  color: var(--palette-error, #ff4757);
+  border-color: color-mix(in srgb, var(--palette-error, #ff4757) 30%, transparent);
+  background: color-mix(in srgb, var(--palette-error, #ff4757) 10%, transparent);
+}
+
+.chartCloseIcon {
+  width: 14px;
+  height: 14px;
+  stroke: currentColor;
+  stroke-width: 2;
+}
+
+.chartContainer {
+  width: 100%;
+  aspect-ratio: 1 / 1; /* Make it square */
+  min-height: 400px;
+  max-height: calc(100vh - 350px); /* Account for SystemOverview (compact) and padding */
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--palette-bg, #000000) 60%, transparent);
+  overflow: hidden;
+  position: relative;
+  border: 1px solid var(--palette-border, rgba(0, 212, 255, 0.15));
+  transition: border-color 0.3s ease;
+  display: block;
+  flex: 0 1 auto;
+}
+
+.chartContainer:hover {
+  border-color: color-mix(in srgb, var(--palette-primary, #00bcf2) 30%, transparent);
+}
+
+/* Ensure TradingView widget container div fills the parent */
+.chartContainer > div {
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 400px !important;
+  position: relative !important;
+  display: block !important;
+  overflow: hidden !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* Ensure TradingView widget iframe is fully visible and fills container */
+.chartContainer iframe {
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 400px !important;
+  max-height: 100% !important;
+  border: none !important;
+  display: block !important;
+  background: transparent !important;
+  position: relative !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  box-sizing: border-box !important;
+}
+
+/* Media Panel Wrapper - contains Spotify, YouTube, News panels */
+.mediaPanelWrapper {
+  width: 100%;
+  position: relative;
+  z-index: 20;
+  margin-bottom: 0;
+  overflow: visible !important; /* Let parent handle scrolling */
+  height: auto;
+  min-height: 0;
+  max-height: none;
+  display: flex;
+  flex-direction: column;
+  isolation: isolate;
+  flex: 1 1 auto;
+}
+
+/* Companion panel wrapper must have higher z-index */
+.companionSection .mediaPanelWrapper {
+  z-index: 101 !important; /* Override default mediaPanelWrapper z-index */
+}
+
+/* Media sections don't need section titles - panels have their own headers */
+.mediaSection {
+  padding: 0 !important;
+  margin-bottom: 16px !important;
+  margin-top: 0 !important;
+  height: auto;
+  min-height: 0;
+  max-height: none;
+  overflow: visible !important; /* Let parent handle scrolling */
+  display: flex;
+  flex-direction: column;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  flex: 0 1 auto;
+  position: relative !important; /* Ensure proper stacking */
+  z-index: auto !important;
+}
+
+.mediaSection .sectionTitle {
+  display: none; /* Hide section title - panel has its own header */
+}
+
+/* Override media panel styles when inside stats panel */
+.mediaSection .mediaPanelWrapper :global(.panel) {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-height: 450px !important;
+  max-height: calc(100vh - 280px) !important; /* Account for SystemOverview compact + padding */
+  overflow: visible !important;
+  margin: 0 !important;
+  height: auto !important;
+  flex: 0 1 auto !important;
+  position: relative !important; /* CRITICAL: Override absolute positioning */
+  top: auto !important;
+  left: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  transform: none !important;
+  z-index: auto !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3) !important; /* Add shadow for depth */
+}
+
+/* Companion panel takes full height when open */
+.companionSection .mediaPanelWrapper :global(.container) {
+  min-height: calc(100vh - 32px) !important; /* Account for stats panel padding (16px top + 16px bottom) */
+  max-height: calc(100vh - 32px) !important;
+  height: calc(100vh - 32px) !important;
+  flex: 1 1 auto !important;
+  position: relative !important;
+  z-index: 102 !important; /* Highest z-index to ensure it's above everything including cubes */
+  isolation: isolate !important;
+  background: var(--palette-surface, rgba(21, 21, 32, 1)) !important; /* Ensure solid background to cover cubes */
+  background-color: var(--palette-surface, rgba(21, 21, 32, 1)) !important; /* Explicit background-color */
+  box-shadow: 0 0 0 1px var(--palette-border, rgba(0, 212, 255, 0.15)) !important; /* Visual separation */
+  /* Ensure it's above cubes animation */
+  transform: translateZ(0) !important; /* Force hardware acceleration and new stacking context */
+}
+
+/* Remove scrollbars from panel content when inside stats panel */
+.mediaSection .mediaPanelWrapper :global(.panel .content) {
+  overflow-y: visible !important;
+  overflow-x: hidden !important;
+  max-height: none !important;
+  height: auto !important;
+  flex: 1 1 auto !important;
+}
+
+/* Ensure panel content areas don't create their own scrollbars */
+.mediaSection .mediaPanelWrapper :global(.panel .trackList),
+.mediaSection .mediaPanelWrapper :global(.panel .playlistList),
+.mediaSection .mediaPanelWrapper :global(.panel .resultsList) {
+  overflow-y: visible !important;
+  max-height: none !important;
+}
+
+/* Ensure chart panel fits properly */
+.section:has(.chartPanel) {
+  padding: 16px;
+  overflow: visible;
+  margin-bottom: 12px;
+  flex: 0 1 auto;
+}
+
+.chartPanel {
+  width: 100%;
+  max-width: 100%;
+  overflow: visible;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.chartContainer {
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.panelLoading {
+  padding: 20px;
+  text-align: center;
+  color: color-mix(in srgb, var(--palette-text, #ffffff) 60%, transparent);
+  font-size: 12px;
+  letter-spacing: 0.1em;
+}
+
+@media (max-width: 1024px) {
+  .chartContainer {
+    height: 500px;
+    min-height: 400px;
+  }
+}
+
+@media (max-height: 800px) {
+  .chartContainer {
+    height: 450px;
+    min-height: 350px;
+  }
+}
+
+.loadingOverlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in srgb, var(--palette-bg, #000000) 55%, transparent);
+}
+
+.loadingSpinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid color-mix(in srgb, var(--palette-text, #ffffff) 25%, transparent);
+  border-top-color: var(--palette-primary, rgba(0, 188, 242, 0.85));
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  transition: border-color 0.3s ease;
+}
+
+.activityLog {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 200px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.activityEntry {
+  font-size: 11px;
+  padding: 6px 0;
+  color: color-mix(in srgb, var(--palette-text, #ffffff) 55%, transparent);
+  border-bottom: 1px solid var(--palette-border, rgba(0, 188, 242, 0.12));
+  transition: border-color 0.3s ease;
+}
+
+.activityEntryRecent {
+  color: var(--palette-secondary, rgba(0, 255, 136, 0.95));
+  transition: color 0.3s ease;
+}
+
+.activityEntryOld {
+  color: color-mix(in srgb, var(--palette-text, #ffffff) 35%, transparent);
+}
+
+/* -----------------------------------------------------------------------------
+   Theme Variants (global body selectors)
+   ----------------------------------------------------------------------------- */
+
+:global(body.theme-executive) .statsPanel {
+  background: rgba(12, 12, 18, 0.92);
+  border: 1px solid rgba(255, 215, 0, 0.32);
+  box-shadow: 0 28px 60px rgba(255, 215, 0, 0.2);
+}
+
+:global(body.theme-executive) .section {
+  background: rgba(255, 215, 0, 0.08);
+  border: 1px solid rgba(255, 215, 0, 0.28);
+  color: rgba(245, 238, 220, 0.92);
+}
+
+:global(body.theme-modern) .statsPanel {
+  background: linear-gradient(
+    170deg,
+    rgba(18, 20, 36, 0.92) 0%,
+    rgba(10, 12, 24, 0.92) 100%
+  );
+  border: 1px solid rgba(98, 0, 255, 0.32);
+}
+
+:global(body.theme-modern) .section {
+  background: rgba(98, 0, 255, 0.12);
+  border: 1px solid rgba(98, 0, 255, 0.28);
+}
+
+:global(body.theme-matrix) .statsPanel {
+  background: rgba(0, 6, 0, 0.95);
+  border: 1px solid rgba(57, 255, 20, 0.28);
+  color: rgba(57, 255, 20, 0.88);
+}
+
+:global(body.theme-matrix) .section {
+  border: 1px solid rgba(57, 255, 20, 0.24);
+}
+
+/* -----------------------------------------------------------------------------
+   CRT Theme Overrides - Match exact retro terminal look
+   ----------------------------------------------------------------------------- */
+
+:global(body.theme-crt) .statsPanel {
+  background: #000000 !important;
+  border: none !important;
+  border-radius: 0 !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  padding: 16px !important;
+  color: var(--palette-primary, #00ff00) !important;
+  font-family: "Courier New", "Monaco", "Consolas", "Lucida Console", monospace !important;
+  font-size: 13px !important;
+  letter-spacing: 0.05em !important;
+  text-shadow: 
+    0 0 5px color-mix(in srgb, var(--palette-primary, #00ff00) 50%, transparent),
+    0 0 10px color-mix(in srgb, var(--palette-primary, #00ff00) 30%, transparent),
+    0 0 2px color-mix(in srgb, var(--palette-primary, #00ff00) 80%, transparent);
+  box-shadow: none !important;
+}
+
+:global(body.theme-crt) .statsPanel * {
+  color: var(--palette-primary, #00ff00) !important;
+  text-shadow: 
+    0 0 5px color-mix(in srgb, var(--palette-primary, #00ff00) 50%, transparent),
+    0 0 10px color-mix(in srgb, var(--palette-primary, #00ff00) 30%, transparent),
+    0 0 2px color-mix(in srgb, var(--palette-primary, #00ff00) 80%, transparent);
+}
+
+:global(body.theme-crt) .section {
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  padding: 12px 0 !important;
+  box-shadow: none !important;
+  margin-bottom: 16px !important;
+}
+
+:global(body.theme-crt) .header {
+  color: var(--palette-primary, #00ff00) !important;
+  border: none !important;
+  border-bottom: none !important;
+  text-shadow: 
+    0 0 5px color-mix(in srgb, var(--palette-primary, #00ff00) 50%, transparent),
+    0 0 10px color-mix(in srgb, var(--palette-primary, #00ff00) 30%, transparent);
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+:global(body.theme-crt) .sectionTitle {
+  color: var(--palette-primary, #00ff00) !important;
+  border: none !important;
+  border-bottom: none !important;
+  text-shadow: 
+    0 0 5px color-mix(in srgb, var(--palette-primary, #00ff00) 50%, transparent),
+    0 0 10px color-mix(in srgb, var(--palette-primary, #00ff00) 30%, transparent);
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+:global(body.theme-crt) .statLabel {
+  color: color-mix(in srgb, var(--palette-primary, #00ff00) 70%, transparent) !important;
+  text-shadow: 
+    0 0 5px color-mix(in srgb, var(--palette-primary, #00ff00) 40%, transparent),
+    0 0 10px color-mix(in srgb, var(--palette-primary, #00ff00) 20%, transparent);
+}
+
+:global(body.theme-crt) .statValue {
+  color: var(--palette-primary, #00ff00) !important;
+  text-shadow: 
+    0 0 5px color-mix(in srgb, var(--palette-primary, #00ff00) 50%, transparent),
+    0 0 10px color-mix(in srgb, var(--palette-primary, #00ff00) 30%, transparent);
+}
+
+:global(body.theme-crt) .statValueHighlight {
+  color: var(--palette-secondary, #39ff14) !important;
+  text-shadow: 
+    0 0 8px color-mix(in srgb, var(--palette-primary, #00ff00) 80%, transparent),
+    0 0 15px color-mix(in srgb, var(--palette-primary, #00ff00) 50%, transparent);
+}
+
+:global(body.theme-crt) .statValueMuted {
+  color: color-mix(in srgb, var(--palette-primary, #00ff00) 50%, transparent) !important;
+}
+
+:global(body.theme-crt) .chartPanel {
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  padding: 12px 0 !important;
+  box-shadow: none !important;
+}
+
+:global(body.theme-crt) .chartHeader {
+  border: none !important;
+  border-bottom: none !important;
+  color: var(--palette-primary, #00ff00) !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+:global(body.theme-crt) .chartSymbol {
+  color: var(--palette-primary, #00ff00) !important;
+  text-shadow: 
+    0 0 5px color-mix(in srgb, var(--palette-primary, #00ff00) 50%, transparent),
+    0 0 10px color-mix(in srgb, var(--palette-primary, #00ff00) 30%, transparent);
+}
+
+:global(body.theme-crt) .chartContainer {
+  background: rgba(0, 0, 0, 0.9) !important;
+  border: none !important;
+  border-radius: 0 !important;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+:global(body.theme-crt) .chartContainer:hover {
+  border: none !important;
+  box-shadow: none !important;
+}
+
+:global(body.theme-crt) .infoBar {
+  color: color-mix(in srgb, var(--palette-primary, #00ff00) 70%, transparent) !important;
+  text-shadow: 
+    0 0 5px color-mix(in srgb, var(--palette-primary, #00ff00) 40%, transparent),
+    0 0 10px color-mix(in srgb, var(--palette-primary, #00ff00) 20%, transparent);
+}
+
+:global(body.theme-crt) .activityEntry {
+  border: none !important;
+  border-bottom: none !important;
+  color: color-mix(in srgb, var(--palette-primary, #00ff00) 70%, transparent) !important;
+}
+
+:global(body.theme-crt) .activityEntryRecent {
+  color: var(--palette-secondary, #39ff14) !important;
+  text-shadow: 
+    0 0 8px color-mix(in srgb, var(--palette-primary, #00ff00) 80%, transparent),
+    0 0 15px color-mix(in srgb, var(--palette-primary, #00ff00) 50%, transparent);
+}
+
+:global(body.theme-crt) .activityEntryOld {
+  color: color-mix(in srgb, var(--palette-primary, #00ff00) 40%, transparent) !important;
+}
+
+:global(body.theme-crt) .progressBar {
+  background: rgba(0, 0, 0, 0.8) !important;
+  border: none !important;
+  border-radius: 0 !important;
+}
+
+:global(body.theme-crt) .progressTrack {
+  background: color-mix(in srgb, var(--palette-primary, #00ff00) 10%, transparent) !important;
+}
+
+:global(body.theme-crt) .progressFill {
+  background: linear-gradient(90deg, var(--palette-primary, #00ff00), var(--palette-secondary, #39ff14)) !important;
+  box-shadow: none !important;
+}
+
+:global(body.theme-crt) .progressText {
+  color: color-mix(in srgb, var(--palette-primary, #00ff00) 70%, transparent) !important;
+  text-shadow: 
+    0 0 5px color-mix(in srgb, var(--palette-primary, #00ff00) 40%, transparent),
+    0 0 10px color-mix(in srgb, var(--palette-primary, #00ff00) 20%, transparent);
+}
+
+:global(body.theme-crt) .statsPanel::-webkit-scrollbar {
+  width: 8px;
+  background: rgba(0, 0, 0, 0.8);
+}
+
+:global(body.theme-crt) .statsPanel::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--palette-primary, #00ff00) 30%, transparent);
+  border: none !important;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+:global(body.theme-crt) .statsPanel::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in srgb, var(--palette-primary, #00ff00) 50%, transparent);
+  box-shadow: none !important;
+}
+
+:global(body.theme-crt) .statsPanel::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.9);
+  border: none !important;
+}
+
+:global(body.theme-crt) .mediaSection {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+:global(body.theme-crt) .mediaSection .mediaPanelWrapper :global(.panel) {
+  background: rgba(0, 0, 0, 0.9) !important;
+  border: none !important;
+  border-radius: 0 !important;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  box-shadow: none !important;
+}
+
+/* -----------------------------------------------------------------------------
+   Light Palette Overrides - Ensure stats panel works with light background
+   ----------------------------------------------------------------------------- */
+
+:global(body[data-color-palette="light"]) .statsPanel {
+  background: color-mix(in srgb, var(--palette-surface, #f8fafc) 95%, transparent) !important;
+  border: 1px solid var(--palette-border, #e2e8f0) !important;
+  color: var(--palette-text, #1e293b) !important;
+}
+
+:global(body[data-color-palette="light"]) .section {
+  background: color-mix(in srgb, var(--palette-surface, #f8fafc) 95%, transparent) !important;
+  border: 1px solid var(--palette-border, #e2e8f0) !important;
+  color: var(--palette-text, #1e293b) !important;
+}
+
+:global(body[data-color-palette="light"]) .header {
+  color: var(--palette-primary, #1e40af) !important;
+  border-bottom-color: var(--palette-border, #e2e8f0) !important;
+}
+
+:global(body[data-color-palette="light"]) .statLabel {
+  color: color-mix(in srgb, var(--palette-text, #1e293b) 70%, transparent) !important;
+}
+
+:global(body[data-color-palette="light"]) .statValue {
+  color: var(--palette-text, #1e293b) !important;
+}
+
+:global(body[data-color-palette="light"]) .statValueMuted {
+  color: color-mix(in srgb, var(--palette-text, #1e293b) 60%, transparent) !important;
+}
+
+:global(body[data-color-palette="light"]) .progressBar {
+  background: color-mix(in srgb, var(--palette-text, #1e293b) 15%, transparent) !important;
+}
+
+:global(body[data-color-palette="light"]) .progressTrack {
+  background: color-mix(in srgb, var(--palette-primary, #1e40af) 12%, transparent) !important;
+}
+
+:global(body[data-color-palette="light"]) .progressText {
+  color: color-mix(in srgb, var(--palette-text, #1e293b) 70%, transparent) !important;
+}
+
+:global(body[data-color-palette="light"]) .infoBar {
+  color: color-mix(in srgb, var(--palette-text, #1e293b) 70%, transparent) !important;
+}
+
+:global(body[data-color-palette="light"]) .activityEntry {
+  color: color-mix(in srgb, var(--palette-text, #1e293b) 70%, transparent) !important;
+  border-bottom-color: var(--palette-border, #e2e8f0) !important;
+}
+
+:global(body[data-color-palette="light"]) .activityEntryOld {
+  color: color-mix(in srgb, var(--palette-text, #1e293b) 50%, transparent) !important;
+}
+
+:global(body[data-color-palette="light"]) .panelLoading {
+  color: color-mix(in srgb, var(--palette-text, #1e293b) 70%, transparent) !important;
+}
+
+:global(body[data-color-palette="light"]) .loadingOverlay {
+  background: color-mix(in srgb, var(--palette-bg, #ffffff) 85%, transparent) !important;
+}
+
+:global(body[data-color-palette="light"]) .loadingSpinner {
+  border-color: color-mix(in srgb, var(--palette-text, #1e293b) 30%, transparent) !important;
+  border-top-color: var(--palette-primary, #1e40af) !important;
+}
+
+:global(body[data-color-palette="light"]) .statsPanel::-webkit-scrollbar-thumb {
+  background: linear-gradient(
+    180deg,
+    var(--palette-primary, rgba(30, 64, 175, 0.6)),
+    var(--palette-secondary, rgba(5, 150, 105, 0.6))
+  ) !important;
+}
+
+:global(body[data-color-palette="light"]) .statsPanel::-webkit-scrollbar-track {
+  background: color-mix(in srgb, var(--palette-surface, #f8fafc) 50%, transparent) !important;
+}
+
+/* Light palette with theme combinations */
+:global(body[data-color-palette="light"].theme-executive) .statsPanel,
+:global(body[data-color-palette="light"].theme-modern) .statsPanel,
+:global(body[data-color-palette="light"].theme-matrix) .statsPanel,
+:global(body[data-color-palette="light"].theme-retro) .statsPanel,
+:global(body[data-color-palette="light"].theme-powershell) .statsPanel,
+:global(body[data-color-palette="light"].theme-dark) .statsPanel {
+  background: color-mix(in srgb, var(--palette-surface, #f8fafc) 95%, transparent) !important;
+  border: 1px solid var(--palette-border, #e2e8f0) !important;
+  color: var(--palette-text, #1e293b) !important;
+}
+
+/* -----------------------------------------------------------------------------
+   Responsive Breakpoints
+   ----------------------------------------------------------------------------- */
+
+@media (max-width: 1400px) {
+  .statsPanel {
+    display: none;
+  }
+}
+
+@media (max-width: 1024px) {
+  .statsPanelOverlay {
+    display: flex;
+  }
+
+  .activityLog {
+    max-height: 160px;
+  }
+}
+
+@media (max-width: 768px) {
+  .statsPanelMobile {
+    max-height: 40vh;
+    overflow-y: auto;
+    border-radius: 22px 22px 0 0;
+  }
+
+  .section {
+    padding: 14px;
+  }
+
+  .statItem {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .statValue {
+    font-size: 11px;
+  }
+
+  .chartContainer {
+    height: 400px;
+    min-height: 300px;
+  }
+  
+  .chartPanel {
+    padding: 10px;
+    gap: 10px;
+  }
+  
+  .chartHeader {
+    padding-bottom: 6px;
+    margin-bottom: 6px;
+  }
+  
+  .chartIcon {
+    width: 12px;
+    height: 12px;
+  }
+  
+  .chartSymbol {
+    font-size: 10px;
+  }
+  
+  .chartCloseButton {
+    min-width: 22px;
+    min-height: 22px;
+  }
+  
+  .chartCloseIcon {
+    width: 12px;
+    height: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .statsPanelMobile {
+    width: 100vw;
+    max-width: none;
+    border-radius: 0;
+  }
+
+  .section {
+    padding: 12px;
+  }
+}
+
+/* -----------------------------------------------------------------------------
+   Feature Queries & Touch Enhancements
+   ----------------------------------------------------------------------------- */
+
+@supports (-webkit-touch-callout: none) {
+  .statsPanelMobile {
+    padding-bottom: max(24px, calc(24px + env(safe-area-inset-bottom)));
+  }
+}
+
+@supports (padding: max(0px)) {
+  .statsPanel {
+    padding-right: max(18px, env(safe-area-inset-right));
+  }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .section {
+    gap: 14px;
+  }
+
+  .statItem {
+    min-height: 44px;
+  }
+}

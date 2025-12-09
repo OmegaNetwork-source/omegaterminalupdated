@@ -1,0 +1,153 @@
+/**
+ * Number Guessing Game Styles
+ */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding: 30px;
+  text-align: center;
+  min-height: 400px;
+  justify-content: center;
+}
+
+.message {
+  font-size: 18px;
+  color: var(--palette-text, #ffffff);
+  margin-bottom: 10px;
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Courier New", monospace;
+}
+
+.inputSection {
+  width: 100%;
+  max-width: 300px;
+}
+
+.input {
+  width: 100%;
+  padding: 15px 20px;
+  border: none;
+  border-radius: 12px;
+  font-size: 18px;
+  text-align: center;
+  background: color-mix(in srgb, var(--palette-bg, #000) 80%, transparent);
+  color: var(--palette-text, #ffffff);
+  border: 2px solid var(--palette-border, rgba(0, 212, 255, 0.3));
+  box-sizing: border-box;
+  font-family: "Courier New", monospace;
+  transition: all 0.2s ease;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--palette-primary, #00bcf2);
+  box-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
+}
+
+.input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.guessButton {
+  width: 100%;
+  max-width: 300px;
+  padding: 15px 20px;
+  background: linear-gradient(
+    135deg,
+    var(--palette-error, #ff4d4f),
+    var(--palette-warning, #ffaa00)
+  );
+  border: none;
+  border-radius: 12px;
+  color: white;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: "Courier New", monospace;
+}
+
+.guessButton:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 77, 79, 0.4);
+}
+
+.guessButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.controls {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+  max-width: 300px;
+}
+
+.controlButton {
+  flex: 1;
+  padding: 12px;
+  background: color-mix(
+    in srgb,
+    var(--palette-primary, #00bcf2) 20%,
+    transparent
+  );
+  border: 1px solid var(--palette-border, rgba(0, 212, 255, 0.3));
+  border-radius: 8px;
+  color: var(--palette-text, #ffffff);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: "Courier New", monospace;
+  font-size: 14px;
+}
+
+.controlButton:hover {
+  background: color-mix(
+    in srgb,
+    var(--palette-primary, #00bcf2) 30%,
+    transparent
+  );
+  box-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
+}
+
+.stats {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 300px;
+  font-size: 14px;
+  color: color-mix(in srgb, var(--palette-text, #ffffff) 80%, transparent);
+  font-family: "Courier New", monospace;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .container {
+    padding: 20px;
+  }
+
+  .input,
+  .guessButton,
+  .controls {
+    max-width: 100%;
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+

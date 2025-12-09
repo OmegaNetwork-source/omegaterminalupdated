@@ -1,0 +1,1262 @@
+/**
+ * @file SpotifyPanel.module.css
+ * @description Spotify media panel styling matching YouTube panel design
+ * Uses palette variables for uniform theming across all color palettes and themes.
+ */
+
+/* -----------------------------------------------------------------------------
+   Panel Container
+   ----------------------------------------------------------------------------- */
+
+.panel {
+  position: relative;
+  width: 100%;
+  max-width: 320px;
+  min-height: 400px;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(
+    160deg,
+    color-mix(in srgb, var(--palette-primary, #1db954) 8%, rgba(6, 26, 6, 0.92)) 0%,
+    rgba(0, 0, 0, 0.94) 100%
+  );
+  border: 1px solid var(--palette-border, color-mix(in srgb, var(--palette-primary, #1db954) 28%, transparent));
+  border-radius: var(--theme-radius-md, 8px);
+  overflow: hidden;
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+  color: var(--palette-text, rgba(255, 255, 255, 0.92));
+  transition: border-color 0.3s ease, background 0.3s ease, color 0.3s ease;
+}
+
+.panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--palette-primary, #1db954) 18%, transparent), transparent 60%);
+  transition: background 0.3s ease;
+}
+
+/* -----------------------------------------------------------------------------
+   Header & Layout
+   ----------------------------------------------------------------------------- */
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid color-mix(in srgb, var(--palette-primary, #1db954) 15%, transparent);
+  position: relative;
+  z-index: 1;
+  transition: border-color 0.3s ease;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.logo {
+  width: 18px;
+  height: 18px;
+  color: var(--palette-primary, #1db954);
+  flex-shrink: 0;
+  transition: color 0.3s ease, filter 0.3s ease;
+  filter: drop-shadow(0 0 6px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #1db954) 30%, transparent)));
+}
+
+.title {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--palette-primary, #1db954);
+  font-family: "Courier New", monospace;
+  transition: color 0.3s ease;
+  line-height: 1;
+}
+
+.minimizeButton {
+  background: transparent;
+  border: 1px solid color-mix(in srgb, var(--palette-primary, #1db954) 15%, transparent);
+  color: color-mix(in srgb, var(--palette-text, #ffffff) 70%, transparent);
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  min-width: 24px;
+  min-height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.minimizeButton:hover {
+  color: var(--palette-text, #ffffff);
+  border-color: color-mix(in srgb, var(--palette-primary, #1db954) 30%, transparent);
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.minimizeIcon {
+  width: 14px;
+  height: 14px;
+  stroke: currentColor;
+}
+
+.closeButton {
+  background: transparent;
+  border: 1px solid color-mix(in srgb, var(--palette-primary, #1db954) 15%, transparent);
+  color: color-mix(in srgb, var(--palette-text, #ffffff) 70%, transparent);
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  min-width: 24px;
+  min-height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.closeButton:hover {
+  color: var(--palette-error, #ff4757);
+  border-color: color-mix(in srgb, var(--palette-error, #ff4757) 30%, transparent);
+  background: color-mix(in srgb, var(--palette-error, #ff4757) 10%, transparent);
+}
+
+.closeIcon {
+  width: 14px;
+  height: 14px;
+  stroke: currentColor;
+  stroke-width: 2;
+}
+
+.content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 22px 24px 24px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  position: relative;
+  z-index: 0;
+  min-height: 0;
+}
+
+.content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.content::-webkit-scrollbar-thumb {
+  background: var(--palette-primary, #1db954);
+  border-radius: 3px;
+  opacity: 0.45;
+  transition: opacity 0.3s ease;
+}
+
+.content::-webkit-scrollbar-thumb:hover {
+  opacity: 0.7;
+}
+
+/* -----------------------------------------------------------------------------
+   Authentication UI
+   ----------------------------------------------------------------------------- */
+
+.authContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.authIcon {
+  width: 48px;
+  height: 48px;
+  color: var(--palette-primary, #1db954);
+  filter: drop-shadow(0 8px 24px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #1db954) 30%, transparent)));
+}
+
+.authTitle {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--palette-text, rgba(255, 255, 255, 0.92));
+}
+
+.authDescription {
+  margin: 0;
+  color: color-mix(in srgb, var(--palette-text, #ffffff) 66%, transparent);
+  font-size: 14px;
+  max-width: 280px;
+}
+
+.authButton {
+  padding: 14px 28px;
+  background: linear-gradient(135deg, var(--palette-primary, #1db954) 0%, #1ed760 100%);
+  border: none;
+  border-radius: 999px;
+  color: #0a0a0a;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 48px;
+}
+
+.authButton:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 22px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #1db954) 35%, transparent));
+}
+
+.authButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.setupInfo {
+  margin-top: 20px;
+  padding: 16px;
+  background: color-mix(in srgb, var(--palette-primary, #1db954) 6%, transparent);
+  border-radius: var(--theme-radius-md, 12px);
+  border: 1px solid var(--palette-border, color-mix(in srgb, var(--palette-primary, #1db954) 14%, transparent));
+  text-align: left;
+  max-width: 280px;
+}
+
+.setupTitle {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--palette-text, rgba(255, 255, 255, 0.92));
+}
+
+.setupList {
+  margin: 0;
+  padding-left: 20px;
+  font-size: 12px;
+  color: color-mix(in srgb, var(--palette-text, #ffffff) 66%, transparent);
+  line-height: 1.6;
+}
+
+.setupList li {
+  margin-bottom: 8px;
+}
+
+.setupList code {
+  background: color-mix(in srgb, var(--palette-text, #ffffff) 8%, transparent);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-family: monospace;
+}
+
+.setupList a {
+  color: var(--palette-primary, #1db954);
+  text-decoration: none;
+}
+
+.setupList a:hover {
+  text-decoration: underline;
+}
+
+/* -----------------------------------------------------------------------------
+   Error Display
+   ----------------------------------------------------------------------------- */
+
+.errorMessage {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 16px;
+  background: color-mix(in srgb, #ff4444 12%, transparent);
+  border: 1px solid color-mix(in srgb, #ff4444 30%, transparent);
+  border-radius: var(--theme-radius-md, 8px);
+  color: #ffcccc;
+  font-size: 13px;
+}
+
+.errorMessage p {
+  margin: 0;
+  flex: 1;
+}
+
+.errorClose {
+  background: transparent;
+  border: none;
+  color: #ffcccc;
+  cursor: pointer;
+  padding: 4px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  min-height: 20px;
+}
+
+.errorClose:hover {
+  color: #ffffff;
+}
+
+.errorCloseIcon {
+  width: 14px;
+  height: 14px;
+  stroke: currentColor;
+  stroke-width: 2;
+}
+
+/* -----------------------------------------------------------------------------
+   Now Playing
+   ----------------------------------------------------------------------------- */
+
+.nowPlaying {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 18px 20px;
+  background: color-mix(in srgb, var(--palette-primary, #1db954) 10%, transparent);
+  border-radius: var(--theme-radius-lg, 16px);
+  border: 1px solid var(--palette-border, color-mix(in srgb, var(--palette-primary, #1db954) 28%, transparent));
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: all 0.3s ease;
+}
+
+.trackArtwork {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: var(--theme-radius-md, 12px);
+  overflow: hidden;
+  background: color-mix(in srgb, var(--palette-primary, #1db954) 15%, transparent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.trackArtwork img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.artworkPlaceholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--palette-primary, #1db954);
+}
+
+.artworkPlaceholderIcon {
+  width: 48px;
+  height: 48px;
+  opacity: 0.6;
+}
+
+.trackInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.trackName {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--palette-text, rgba(255, 255, 255, 0.92));
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: 1.4;
+}
+
+.trackArtist {
+  font-size: 14px;
+  color: color-mix(in srgb, var(--palette-text, #ffffff) 75%, transparent);
+}
+
+.trackAlbum {
+  font-size: 12px;
+  color: color-mix(in srgb, var(--palette-text, #ffffff) 55%, transparent);
+}
+
+.progressContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.progressBar {
+  width: 100%;
+  height: 4px;
+  background: color-mix(in srgb, var(--palette-text, #ffffff) 15%, transparent);
+  border-radius: 2px;
+  overflow: hidden;
+  position: relative;
+}
+
+.progressFill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--palette-primary, #1db954) 0%, #1ed760 100%);
+  transition: width 0.3s ease;
+  border-radius: 2px;
+}
+
+.progressTime {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: color-mix(in srgb, var(--palette-text, #ffffff) 55%, transparent);
+  letter-spacing: 0.04em;
+}
+
+/* -----------------------------------------------------------------------------
+   Player Controls
+   ----------------------------------------------------------------------------- */
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid color-mix(in srgb, var(--palette-primary, #1db954) 15%, transparent);
+  transition: all 0.3s ease;
+}
+
+.controlButton {
+  background: transparent;
+  border: 1px solid color-mix(in srgb, var(--palette-primary, #1db954) 15%, transparent);
+  color: color-mix(in srgb, var(--palette-text, #ffffff) 70%, transparent);
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  min-height: 32px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.controlButton:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--palette-primary, #1db954) 10%, transparent);
+  border-color: color-mix(in srgb, var(--palette-primary, #1db954) 30%, transparent);
+  color: var(--palette-text, #ffffff);
+  transform: translateY(-1px);
+}
+
+.controlButton:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.controlButton:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.controlIcon {
+  width: 14px;
+  height: 14px;
+  stroke: currentColor;
+  fill: currentColor;
+}
+
+.playPauseButton {
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  min-height: 36px;
+  background: color-mix(in srgb, var(--palette-primary, #1db954) 20%, transparent);
+  border: 1px solid color-mix(in srgb, var(--palette-primary, #1db954) 30%, transparent);
+  color: var(--palette-text, #ffffff);
+  transition: all 0.2s ease;
+}
+
+.playPauseButton:hover {
+  background: color-mix(in srgb, var(--palette-primary, #1db954) 30%, transparent);
+  border-color: color-mix(in srgb, var(--palette-primary, #1db954) 40%, transparent);
+  transform: translateY(-1px);
+}
+
+.playPauseButton .controlIcon {
+  width: 16px;
+  height: 16px;
+}
+
+/* -----------------------------------------------------------------------------
+   Volume Control
+   ----------------------------------------------------------------------------- */
+
+.volumeControl {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+  border: 1px solid color-mix(in srgb, var(--palette-primary, #1db954) 15%, transparent);
+}
+
+.volumeIcon {
+  width: 14px;
+  height: 14px;
+  stroke: currentColor;
+  color: color-mix(in srgb, var(--palette-text, #ffffff) 70%, transparent);
+  flex-shrink: 0;
+}
+
+.volumeLabel {
+  display: none;
+}
+
+.volumeSlider {
+  flex: 1;
+  height: 4px;
+  background: color-mix(in srgb, var(--palette-text, #ffffff) 15%, transparent);
+  border-radius: 2px;
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+  cursor: pointer;
+}
+
+.volumeSlider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 10px;
+  height: 10px;
+  background: var(--palette-primary, #1db954);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.volumeSlider::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+  box-shadow: 0 0 6px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #1db954) 40%, transparent));
+}
+
+.volumeSlider::-moz-range-thumb {
+  width: 10px;
+  height: 10px;
+  background: var(--palette-primary, #1db954);
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+}
+
+.volumeSlider::-moz-range-thumb:hover {
+  transform: scale(1.2);
+  box-shadow: 0 0 6px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #1db954) 40%, transparent));
+}
+
+.volumeValue {
+  font-size: 10px;
+  font-family: "Courier New", monospace;
+  color: color-mix(in srgb, var(--palette-text, #ffffff) 65%, transparent);
+  min-width: 32px;
+  text-align: right;
+  letter-spacing: 0.3px;
+}
+
+/* -----------------------------------------------------------------------------
+   Search
+   ----------------------------------------------------------------------------- */
+
+.searchContainer {
+  padding-top: 4px;
+}
+
+.searchForm {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.searchInput {
+  flex: 1;
+  padding: 8px 12px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid color-mix(in srgb, var(--palette-primary, #1db954) 15%, transparent);
+  border-radius: 6px;
+  color: var(--palette-text, rgba(255, 255, 255, 0.88));
+  font-size: 11px;
+  font-family: "Courier New", monospace;
+  letter-spacing: 0.3px;
+  outline: none;
+  transition: all 0.2s ease;
+  min-height: 32px;
+}
+
+.searchInput:focus {
+  background: rgba(0, 0, 0, 0.4);
+  border-color: color-mix(in srgb, var(--palette-primary, #1db954) 30%, transparent);
+  box-shadow: 0 0 0 2px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #1db954) 10%, transparent));
+}
+
+.searchInput::placeholder {
+  color: color-mix(in srgb, var(--palette-text, #ffffff) 45%, transparent);
+  font-family: "Courier New", monospace;
+  font-size: 11px;
+}
+
+.searchButton {
+  padding: 0;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid color-mix(in srgb, var(--palette-primary, #1db954) 15%, transparent);
+  border-radius: 6px;
+  color: var(--palette-primary, #1db954);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 32px;
+  min-width: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.searchButton:hover {
+  background: color-mix(in srgb, var(--palette-primary, #1db954) 10%, transparent);
+  border-color: color-mix(in srgb, var(--palette-primary, #1db954) 30%, transparent);
+  transform: translateY(-1px);
+}
+
+.searchButton:active {
+  transform: translateY(0);
+  background: color-mix(in srgb, var(--palette-primary, #1db954) 15%, transparent);
+}
+
+.searchIcon {
+  width: 14px;
+  height: 14px;
+  stroke: currentColor;
+  transition: stroke 0.2s ease;
+}
+
+.searchButton:hover .searchIcon {
+  stroke: var(--palette-primary, #1db954);
+}
+
+/* -----------------------------------------------------------------------------
+   Tabs
+   ----------------------------------------------------------------------------- */
+
+.tabs {
+  display: flex;
+  gap: 8px;
+  border-bottom: 1px solid var(--palette-border, color-mix(in srgb, var(--palette-primary, #1db954) 22%, transparent));
+  padding-bottom: 12px;
+}
+
+.tab {
+  flex: 1;
+  padding: 10px 16px;
+  background: transparent;
+  border: none;
+  border-radius: var(--theme-radius-md, 8px);
+  color: color-mix(in srgb, var(--palette-text, #ffffff) 55%, transparent);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.tab:hover {
+  color: color-mix(in srgb, var(--palette-text, #ffffff) 75%, transparent);
+  background: color-mix(in srgb, var(--palette-primary, #1db954) 6%, transparent);
+}
+
+.tabActive {
+  color: var(--palette-primary, #1db954);
+  background: color-mix(in srgb, var(--palette-primary, #1db954) 12%, transparent);
+}
+
+/* -----------------------------------------------------------------------------
+   Results List
+   ----------------------------------------------------------------------------- */
+
+.results {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.resultsHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--palette-border, color-mix(in srgb, var(--palette-primary, #1db954) 22%, transparent));
+  transition: border-color 0.3s ease;
+}
+
+.resultsHeader h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: color-mix(in srgb, var(--palette-text, #ffffff) 85%, transparent);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.resultsCount {
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--palette-text, #ffffff) 55%, transparent);
+}
+
+.trackList,
+.playlistList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 400px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.trackList::-webkit-scrollbar,
+.playlistList::-webkit-scrollbar {
+  width: 6px;
+}
+
+.trackList::-webkit-scrollbar-thumb,
+.playlistList::-webkit-scrollbar-thumb {
+  background: var(--palette-primary, #1db954);
+  border-radius: 3px;
+  opacity: 0.35;
+  transition: opacity 0.3s ease;
+}
+
+.trackList::-webkit-scrollbar-thumb:hover,
+.playlistList::-webkit-scrollbar-thumb:hover {
+  opacity: 0.6;
+}
+
+.trackItem,
+.playlistItem {
+  display: flex;
+  gap: 12px;
+  padding: 14px;
+  border-radius: var(--theme-radius-md, 12px);
+  background: color-mix(in srgb, var(--palette-text, #ffffff) 5%, transparent);
+  border: 1px solid var(--palette-border, color-mix(in srgb, var(--palette-text, #ffffff) 8%, transparent));
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.3s ease, background 0.2s ease;
+  user-select: none;
+  outline: none;
+}
+
+.trackItem:hover,
+.playlistItem:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 18px 28px rgba(0, 0, 0, 0.25);
+  border-color: var(--palette-border, color-mix(in srgb, var(--palette-primary, #1db954) 40%, transparent));
+  background: color-mix(in srgb, var(--palette-primary, #1db954) 8%, transparent);
+}
+
+.trackItem:active,
+.playlistItem:active {
+  transform: translateY(-1px);
+  background: color-mix(in srgb, var(--palette-primary, #1db954) 12%, transparent);
+}
+
+.trackItem:focus,
+.playlistItem:focus {
+  outline: 2px solid var(--palette-primary, #1db954);
+  outline-offset: 2px;
+}
+
+.trackItemActive {
+  background: color-mix(in srgb, var(--palette-primary, #1db954) 22%, transparent);
+  border-color: var(--palette-border, color-mix(in srgb, var(--palette-primary, #1db954) 40%, transparent));
+  box-shadow: 0 20px 34px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #1db954) 25%, transparent));
+}
+
+.trackThumbnail,
+.playlistThumbnail {
+  width: 60px;
+  height: 60px;
+  min-width: 60px;
+  border-radius: var(--theme-radius-md, 8px);
+  overflow: hidden;
+  background: color-mix(in srgb, var(--palette-primary, #1db954) 15%, transparent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.trackThumbnail img,
+.playlistThumbnail img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.trackPlaceholder,
+.playlistPlaceholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--palette-primary, #1db954);
+}
+
+.trackPlaceholderIcon,
+.playlistPlaceholderIcon {
+  width: 24px;
+  height: 24px;
+  opacity: 0.6;
+}
+
+.playingIndicator {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.35);
+  color: var(--palette-text, rgba(255, 255, 255, 0.92));
+}
+
+.playingIcon {
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+}
+
+.trackInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.trackTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: color-mix(in srgb, var(--palette-text, #ffffff) 85%, transparent);
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.trackArtist {
+  font-size: 12px;
+  color: color-mix(in srgb, var(--palette-text, #ffffff) 55%, transparent);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.trackDuration {
+  font-size: 11px;
+  color: color-mix(in srgb, var(--palette-text, #ffffff) 40%, transparent);
+  letter-spacing: 0.04em;
+}
+
+.playlistInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.playlistName {
+  font-size: 14px;
+  font-weight: 600;
+  color: color-mix(in srgb, var(--palette-text, #ffffff) 85%, transparent);
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.playlistTracks {
+  font-size: 12px;
+  color: color-mix(in srgb, var(--palette-text, #ffffff) 55%, transparent);
+}
+
+/* -----------------------------------------------------------------------------
+   Empty State
+   ----------------------------------------------------------------------------- */
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 60px 20px;
+  text-align: center;
+  background: color-mix(in srgb, var(--palette-primary, #1db954) 6%, transparent);
+  border-radius: var(--theme-radius-lg, 16px);
+  border: 1px solid var(--palette-border, color-mix(in srgb, var(--palette-primary, #1db954) 14%, transparent));
+  transition: all 0.3s ease;
+}
+
+.emptyIcon {
+  width: 32px;
+  height: 32px;
+  color: var(--palette-primary, #1db954);
+  filter: drop-shadow(0 8px 24px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #1db954) 30%, transparent)));
+  transition: filter 0.3s ease;
+  opacity: 0.6;
+}
+
+.emptyState p {
+  margin: 0;
+  color: color-mix(in srgb, var(--palette-text, #ffffff) 66%, transparent);
+  font-size: 14px;
+}
+
+/* -----------------------------------------------------------------------------
+   Footer
+   ----------------------------------------------------------------------------- */
+
+.footer {
+  padding-top: 12px;
+  border-top: 1px solid var(--palette-border, color-mix(in srgb, var(--palette-primary, #1db954) 22%, transparent));
+}
+
+.logoutButton {
+  width: 100%;
+  padding: 12px 20px;
+  background: color-mix(in srgb, var(--palette-text, #ffffff) 6%, transparent);
+  border: 1px solid var(--palette-border, color-mix(in srgb, var(--palette-primary, #1db954) 30%, transparent));
+  border-radius: var(--theme-radius-md, 8px);
+  color: color-mix(in srgb, var(--palette-text, #ffffff) 75%, transparent);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.logoutButton:hover {
+  background: color-mix(in srgb, var(--palette-primary, #1db954) 12%, transparent);
+  border-color: var(--palette-border, color-mix(in srgb, var(--palette-primary, #1db954) 40%, transparent));
+  color: var(--palette-text, rgba(255, 255, 255, 0.92));
+  transform: translateY(-1px);
+}
+
+/* -----------------------------------------------------------------------------
+   Theme Variants
+   ----------------------------------------------------------------------------- */
+
+:global(body.theme-executive) .panel {
+  background: linear-gradient(
+    160deg,
+    color-mix(in srgb, var(--palette-primary, #ffd700) 8%, rgba(22, 16, 6, 0.94)) 0%,
+    rgba(4, 4, 10, 0.98) 100%
+  );
+  border-color: var(--palette-border, color-mix(in srgb, var(--palette-primary, #ffd700) 36%, transparent));
+}
+
+:global(body.theme-modern) .panel {
+  background: linear-gradient(
+    165deg,
+    color-mix(in srgb, var(--palette-primary, #6633ff) 8%, rgba(12, 6, 26, 0.95)) 0%,
+    rgba(0, 0, 24, 0.96) 100%
+  );
+  border-color: var(--palette-border, color-mix(in srgb, var(--palette-primary, #6633ff) 36%, transparent));
+}
+
+:global(body.theme-matrix) .panel {
+  background: linear-gradient(
+    165deg,
+    color-mix(in srgb, var(--palette-primary, #39ff14) 8%, rgba(0, 24, 4, 0.94)) 0%,
+    rgba(0, 0, 0, 0.96) 100%
+  );
+  border-color: var(--palette-border, color-mix(in srgb, var(--palette-primary, #39ff14) 35%, transparent));
+}
+
+/* -----------------------------------------------------------------------------
+   Responsive Breakpoints
+   ----------------------------------------------------------------------------- */
+
+@media (max-width: 768px) {
+  .panel:not(.mobile) {
+    width: 100vw;
+    height: 100vh;
+    max-width: 100vw;
+    border-radius: 0;
+  }
+
+  .panel:not(.mobile) .content {
+    padding: 18px 18px 28px 18px;
+  }
+
+  .panel:not(.mobile) .trackThumbnail,
+  .panel:not(.mobile) .playlistThumbnail {
+    width: 50px;
+    height: 50px;
+    min-width: 50px;
+  }
+  
+  .panel.mobile .header {
+    padding: 10px 12px;
+  }
+  
+  .panel.mobile .logo {
+    width: 16px;
+    height: 16px;
+  }
+  
+  .panel.mobile .title {
+    font-size: 12px;
+  }
+  
+  .panel.mobile .closeButton,
+  .panel.mobile .minimizeButton {
+    min-width: 22px;
+    min-height: 22px;
+  }
+  
+  .panel.mobile .closeIcon,
+  .panel.mobile .minimizeIcon {
+    width: 12px;
+    height: 12px;
+  }
+}
+
+/* Mobile-specific optimizations */
+.panel.mobile {
+  padding: 0;
+  max-height: calc(100vh - 56px - 70px); /* Header + Input */
+}
+
+.panel.mobile .content {
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  max-height: calc(100vh - 56px - 70px - 40px); /* Account for header padding */
+}
+
+.panel.mobile .controls {
+  gap: 6px;
+  padding: 10px;
+  flex-wrap: nowrap;
+}
+
+.panel.mobile .controlButton {
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  min-height: 28px;
+  padding: 0;
+}
+
+.panel.mobile .controlIcon {
+  width: 12px;
+  height: 12px;
+}
+
+.panel.mobile .playPauseButton {
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  min-height: 32px;
+  padding: 0;
+}
+
+.panel.mobile .playPauseButton .controlIcon {
+  width: 14px;
+  height: 14px;
+}
+
+.panel.mobile .authButton,
+.panel.mobile .searchButton {
+  min-height: 40px;
+  font-size: 14px;
+  padding: 8px 14px;
+}
+
+.panel.mobile .trackItem,
+.panel.mobile .playlistItem {
+  min-height: 48px;
+  padding: 8px 10px;
+  gap: 10px;
+}
+
+.panel.mobile .trackThumbnail,
+.panel.mobile .playlistThumbnail {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+}
+
+.panel.mobile .trackList,
+.panel.mobile .playlistList {
+  max-height: calc(100vh - 56px - 70px - 300px); /* Account for controls, header, input */
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-right: 4px;
+}
+
+.panel.mobile .trackList::-webkit-scrollbar,
+.panel.mobile .playlistList::-webkit-scrollbar {
+  width: 4px;
+}
+
+.panel.mobile .trackList::-webkit-scrollbar-thumb,
+.panel.mobile .playlistList::-webkit-scrollbar-thumb {
+  background: var(--palette-primary, #1db954);
+  border-radius: 2px;
+}
+
+.panel.mobile .volumeControl {
+  padding: 6px 10px;
+  gap: 6px;
+}
+
+.panel.mobile .volumeIcon {
+  width: 12px;
+  height: 12px;
+}
+
+.panel.mobile .volumeValue {
+  font-size: 9px;
+  min-width: 28px;
+}
+
+.panel.mobile .nowPlaying {
+  padding: 12px 14px;
+  gap: 12px;
+}
+
+.panel.mobile .searchContainer {
+  padding-top: 4px;
+}
+
+.panel.mobile .searchForm {
+  gap: 6px;
+}
+
+.panel.mobile .searchInput {
+  padding: 8px 12px;
+  font-size: 11px;
+  min-height: 32px;
+}
+
+.panel.mobile .searchButton {
+  min-height: 32px;
+  min-width: 32px;
+  padding: 0;
+}
+
+.panel.mobile .searchIcon {
+  width: 14px;
+  height: 14px;
+}
+
+.panel.mobile .tabs {
+  gap: 6px;
+  padding-bottom: 8px;
+}
+
+.panel.mobile .tab {
+  padding: 8px 12px;
+  font-size: 12px;
+}
+
+/* Minimized View */
+.minimizedContainer {
+  position: fixed;
+  bottom: 70px;
+  left: 0;
+  right: 0;
+  z-index: 1001;
+  padding: 8px 12px;
+  padding-bottom: max(8px, calc(8px + env(safe-area-inset-bottom)));
+  pointer-events: none;
+}
+
+.minimizedButton {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: color-mix(in srgb, var(--palette-primary, #1db954) 15%, rgba(0, 0, 0, 0.9));
+  border: 1px solid var(--palette-border, color-mix(in srgb, var(--palette-primary, #1db954) 35%, transparent));
+  border-radius: 12px;
+  color: var(--palette-text, #ffffff);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  touch-action: manipulation;
+  pointer-events: auto;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.minimizedButton:active {
+  transform: scale(0.98);
+  background: color-mix(in srgb, var(--palette-primary, #1db954) 20%, rgba(0, 0, 0, 0.9));
+}
+
+.minimizedIcon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  color: var(--palette-primary, #1db954);
+  filter: drop-shadow(0 2px 8px var(--palette-primary-glow, color-mix(in srgb, var(--palette-primary, #1db954) 30%, transparent)));
+}
+
+.minimizedTrack {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--palette-text, rgba(255, 255, 255, 0.9));
+}
+

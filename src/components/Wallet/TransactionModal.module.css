@@ -1,0 +1,431 @@
+/**
+ * TransactionModal Component Styles
+ * Theme-aware transaction confirmation modal with status, gas, and network indicators.
+ */
+
+/* -----------------------------------------------------------------------------
+   Overlay & Modal Container
+   ----------------------------------------------------------------------------- */
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2600;
+  animation: fadeIn 0.25s ease-out;
+  padding: 32px;
+}
+
+.modal {
+  background: rgba(12, 16, 26, 0.9);
+  border: 1px solid rgba(0, 188, 242, 0.45);
+  border-radius: 28px;
+  padding: 32px;
+  max-width: 520px;
+  width: 92vw;
+  box-shadow: 0 32px 64px rgba(0, 188, 242, 0.28);
+  animation: slideIn 0.3s ease-out;
+  position: relative;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.modal::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgba(0, 188, 242, 0.22), transparent 70%);
+  pointer-events: none;
+}
+
+/* -----------------------------------------------------------------------------
+   Header & Network Badge
+   ----------------------------------------------------------------------------- */
+
+.header {
+  font-size: 24px;
+  font-weight: 700;
+  color: #00bcf2;
+  margin-bottom: 20px;
+  text-align: center;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.networkBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: rgba(0, 188, 242, 0.18);
+  border: 1px solid rgba(0, 188, 242, 0.35);
+  color: #00bcf2;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* -----------------------------------------------------------------------------
+   Transaction Details
+   ----------------------------------------------------------------------------- */
+
+.details {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+.detailRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  gap: 18px;
+}
+
+.detailRow:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.detailLabel {
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  min-width: 120px;
+}
+
+.detailValue {
+  color: rgba(255, 255, 255, 0.95);
+  font-weight: 700;
+  word-break: break-word;
+  text-align: right;
+  flex: 1;
+}
+
+.gasFee {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.gasFeeHigh {
+  background: rgba(255, 68, 68, 0.18);
+  color: #ff5252;
+  border: 1px solid rgba(255, 68, 68, 0.35);
+}
+
+.gasFeeLow {
+  background: rgba(0, 255, 136, 0.18);
+  color: #00ff88;
+  border: 1px solid rgba(0, 255, 136, 0.32);
+}
+
+/* -----------------------------------------------------------------------------
+   Status Indicators
+   ----------------------------------------------------------------------------- */
+
+.statusBar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 18px;
+  padding: 10px 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.statusPending {
+  border-color: rgba(255, 170, 0, 0.35);
+  background: rgba(255, 170, 0, 0.12);
+  color: #ffaa00;
+}
+
+.statusConfirmed {
+  border-color: rgba(0, 255, 136, 0.35);
+  background: rgba(0, 255, 136, 0.12);
+  color: #00ff88;
+}
+
+.statusFailed {
+  border-color: rgba(255, 68, 68, 0.35);
+  background: rgba(255, 68, 68, 0.12);
+  color: #ff5252;
+}
+
+/* -----------------------------------------------------------------------------
+   Warning Copy
+   ----------------------------------------------------------------------------- */
+
+.warning {
+  background: rgba(255, 170, 0, 0.14);
+  border: 1px solid rgba(255, 170, 0, 0.35);
+  border-radius: 18px;
+  padding: 18px;
+  margin-bottom: 24px;
+  color: #ffbf40;
+  font-size: 14px;
+  line-height: 1.6;
+  text-align: center;
+}
+
+/* -----------------------------------------------------------------------------
+   Button Group
+   ----------------------------------------------------------------------------- */
+
+.buttonGroup {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+}
+
+.button {
+  padding: 12px 30px;
+  border-radius: 16px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  border: none;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 46px;
+}
+
+.button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.cancelButton {
+  background: rgba(255, 68, 68, 0.16);
+  color: #ff5252;
+  border: 1px solid rgba(255, 68, 68, 0.36);
+}
+
+.cancelButton:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 30px rgba(255, 68, 68, 0.26);
+}
+
+.confirmButton {
+  background: linear-gradient(
+    135deg,
+    rgba(0, 188, 242, 0.28) 0%,
+    rgba(0, 136, 255, 0.32) 100%
+  );
+  color: #00bcf2;
+  border: 1px solid rgba(0, 188, 242, 0.45);
+  box-shadow: 0 16px 36px rgba(0, 188, 242, 0.28);
+}
+
+.confirmButton:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 40px rgba(0, 188, 242, 0.32);
+}
+
+/* -----------------------------------------------------------------------------
+   Loading Spinner
+   ----------------------------------------------------------------------------- */
+
+.loading {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(0, 188, 242, 0.3);
+  border-top-color: #00bcf2;
+  border-radius: 50%;
+  animation: spin 0.85s linear infinite;
+}
+
+/* -----------------------------------------------------------------------------
+   Animations
+   ----------------------------------------------------------------------------- */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(-24px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* -----------------------------------------------------------------------------
+   Theme Variants
+   ----------------------------------------------------------------------------- */
+
+:global(body.theme-executive) .modal {
+  background: rgba(18, 14, 6, 0.92);
+  border-color: rgba(255, 215, 0, 0.42);
+  box-shadow: 0 32px 70px rgba(255, 215, 0, 0.28);
+}
+
+:global(body.theme-executive) .header {
+  color: #ffd700;
+}
+
+:global(body.theme-modern) .modal {
+  background: rgba(14, 10, 36, 0.92);
+  border-color: rgba(102, 51, 255, 0.42);
+  box-shadow: 0 32px 70px rgba(102, 51, 255, 0.3);
+}
+
+:global(body.theme-modern) .header {
+  color: #a88cff;
+}
+
+:global(body.theme-matrix) .modal {
+  background: rgba(0, 22, 10, 0.92);
+  border-color: rgba(57, 255, 20, 0.42);
+  box-shadow: 0 32px 70px rgba(57, 255, 20, 0.28);
+}
+
+:global(body.theme-matrix) .header {
+  color: #39ff14;
+}
+
+/* -----------------------------------------------------------------------------
+   Responsive Breakpoints
+   ----------------------------------------------------------------------------- */
+
+@media (max-width: 1400px) {
+  .overlay {
+    padding: 28px;
+  }
+
+  .modal {
+    max-width: 480px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .modal {
+    max-width: 440px;
+    padding: 28px;
+  }
+
+  .detailLabel {
+    min-width: 100px;
+  }
+}
+
+@media (max-width: 768px) {
+  .overlay {
+    padding: 20px;
+  }
+
+  .modal {
+    width: 95vw;
+    border-radius: 24px;
+    padding: 24px;
+  }
+
+  .detailRow {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .detailLabel,
+  .detailValue {
+    text-align: left;
+  }
+
+  .buttonGroup {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .modal {
+    padding: 22px;
+    border-radius: 20px;
+  }
+
+  .header {
+    font-size: 20px;
+  }
+
+  .warning {
+    font-size: 13px;
+    padding: 16px;
+  }
+}
+
+/* -----------------------------------------------------------------------------
+   Safe Area & iOS Enhancements
+   ----------------------------------------------------------------------------- */
+
+@supports (-webkit-touch-callout: none) {
+  .overlay {
+    min-height: -webkit-fill-available;
+  }
+}
+
+@supports (padding: max(0px)) {
+  .overlay {
+    padding-top: max(32px, env(safe-area-inset-top));
+    padding-bottom: max(32px, env(safe-area-inset-bottom));
+    padding-left: max(32px, env(safe-area-inset-left));
+    padding-right: max(32px, env(safe-area-inset-right));
+  }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .button {
+    min-height: 48px;
+  }
+}

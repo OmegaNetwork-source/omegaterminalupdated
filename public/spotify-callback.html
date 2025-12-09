@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spotify Authorization</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: linear-gradient(135deg, #1db954 0%, #1ed760 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 16px;
+      padding: 40px;
+      max-width: 400px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+
+    .logo {
+      font-size: 64px;
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      color: #1db954;
+      margin-bottom: 12px;
+      font-size: 24px;
+    }
+
+    p {
+      color: #666;
+      margin-bottom: 24px;
+      line-height: 1.6;
+    }
+
+    .spinner {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #1db954;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 20px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .error {
+      color: #ff4444;
+      margin-top: 20px;
+      padding: 12px;
+      background: #ffe6e6;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="logo">🎵</div>
+    <h1>Spotify Authorization</h1>
+    <div class="spinner"></div>
+    <p>Processing authorization...</p>
+    <div id="error" class="error" style="display: none;"></div>
+  </div>
+
+  <script>
+    (function() {
+      // Get the authorization code from URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const code = urlParams.get('code');
+      const error = urlParams.get('error');
+      const errorDescription = urlParams.get('error_description');
+
+      if (error) {
+        // Show error message
+        const errorDiv = document.getElementById('error');
+        errorDiv.style.display = 'block';
+        errorDiv.textContent = errorDescription || error;
+        return;
+      }
+
+      if (code) {
+        // Send code to parent window
+        if (window.opener) {
+          window.opener.postMessage({
+            type: 'spotify-auth',
+            code: code
+          }, window.location.origin);
+          
+          // Close popup after a short delay
+          setTimeout(() => {
+            window.close();
+          }, 1000);
+        } else {
+          // If no opener, try to redirect
+          document.getElementById('error').style.display = 'block';
+          document.getElementById('error').textContent = 'Unable to communicate with parent window. Please close this window.';
+        }
+      } else {
+        // No code or error, something went wrong
+        document.getElementById('error').style.display = 'block';
+        document.getElementById('error').textContent = 'No authorization code received. Please try again.';
+      }
+    })();
+  </script>
+</body>
+</html>
+

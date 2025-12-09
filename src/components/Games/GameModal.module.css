@@ -1,0 +1,169 @@
+/**
+ * GameModal Styles
+ * Full-screen modal overlay for game rendering
+ */
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.9);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modal {
+  width: 95vw;
+  height: 95vh;
+  max-width: 1600px;
+  max-height: 1200px;
+  background: linear-gradient(
+    135deg,
+    rgba(0, 0, 0, 0.95),
+    rgba(26, 26, 46, 0.95)
+  );
+  border: 2px solid rgba(0, 255, 153, 0.3);
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(0, 255, 153, 0.2);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background: rgba(0, 0, 0, 0.7);
+  border-bottom: 1px solid rgba(0, 255, 153, 0.2);
+}
+
+.title {
+  font-size: 14px;
+  font-weight: bold;
+  color: #00ff99;
+  text-shadow: 0 0 8px #00ff99;
+  margin: 0;
+  letter-spacing: 1px;
+}
+
+.headerButtons {
+  display: flex;
+  gap: 10px;
+}
+
+.headerBtn {
+  background: rgba(0, 255, 153, 0.15);
+  border: 1px solid rgba(0, 255, 153, 0.4);
+  color: #00ff99;
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: "Courier New", monospace;
+  font-size: 14px;
+  min-width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.headerBtn:hover {
+  background: rgba(0, 255, 153, 0.4);
+  box-shadow: 0 0 15px rgba(0, 255, 153, 0.5);
+  transform: translateY(-1px);
+}
+
+.headerBtn:active {
+  transform: translateY(0);
+}
+
+.gameContainer {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #000;
+}
+
+.footer {
+  display: none; /* Hidden - all UI in left sidebar now */
+}
+
+.scoreDisplay {
+  font-size: 18px;
+  color: #00ff99;
+  font-weight: bold;
+  font-family: "Courier New", monospace;
+}
+
+.submitBtn {
+  background: linear-gradient(135deg, #00ff99, #00cc77);
+  color: #000;
+  padding: 10px 24px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  font-family: "Courier New", monospace;
+}
+
+.submitBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 255, 153, 0.4);
+}
+
+.submitBtn:active {
+  transform: translateY(0);
+}
+
+.submitBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .modal {
+    width: 98vw;
+    height: 98vh;
+    border-radius: 8px;
+  }
+
+  .header {
+    padding: 6px 10px;
+  }
+
+  .title {
+    font-size: 12px;
+  }
+
+  .headerBtn {
+    padding: 3px 6px;
+    font-size: 12px;
+    min-width: 24px;
+    height: 24px;
+  }
+}

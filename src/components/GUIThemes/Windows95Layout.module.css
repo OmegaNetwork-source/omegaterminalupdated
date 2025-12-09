@@ -1,0 +1,192 @@
+.desktop {
+  position: fixed;
+  inset: 0;
+  background: #008080;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-bottom: 40px;
+}
+.window {
+  width: 800px;
+  height: 520px;
+  background: #c3c7cb;
+  border: 2px solid #000;
+  box-shadow: 4px 4px 0 #000;
+  display: flex;
+  flex-direction: column;
+}
+.titleBar {
+  background: linear-gradient(#000080, #000060);
+  color: white;
+  padding: 4px 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 700;
+}
+.close {
+  background: #c0c0c0;
+  border: 2px outset #fff;
+  padding: 2px 8px;
+  cursor: pointer;
+}
+.menuBar {
+  background: #c3c7cb;
+  padding: 4px 8px;
+  border-bottom: 2px groove #fff;
+}
+.content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: #000;
+  color: #0f0;
+  padding: 8px;
+}
+.output {
+  flex: 1;
+  overflow-y: auto;
+  font-family: "Courier New", monospace;
+  font-size: 14px;
+}
+.inputRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: "Courier New", monospace;
+  color: #0f0;
+}
+.input {
+  flex: 1;
+  background: #000;
+  color: #0f0;
+  border: none;
+  outline: none;
+  font-family: "Courier New", monospace;
+}
+.taskbar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 34px;
+  background: #c3c7cb;
+  border-top: 2px outset #fff;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 2px 6px;
+}
+.start {
+  background: #c0c0c0;
+  border: 2px outset #fff;
+  padding: 4px 10px;
+}
+.taskItem {
+  background: #e0e0e0;
+  border: 2px inset #fff;
+  padding: 4px 10px;
+}
+
+/* -----------------------------------------------------------------------------
+   Mobile Variants & Compact Modes
+   ----------------------------------------------------------------------------- */
+
+.windowMobile {
+  width: 100vw;
+  height: calc(100vh - 34px);
+  border-radius: 0;
+}
+
+.appMobile {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.compactMode .window {
+  width: 680px;
+  height: 480px;
+}
+
+.compactMode .desktop {
+  padding-bottom: 28px;
+}
+
+/* -----------------------------------------------------------------------------
+   Responsive Breakpoints
+   ----------------------------------------------------------------------------- */
+
+@media (max-width: 1024px) {
+  .window {
+    width: 720px;
+    height: 500px;
+  }
+}
+
+@media (max-width: 768px) {
+  .desktop {
+    padding: 16px;
+    padding-bottom: 40px;
+  }
+
+  .window {
+    width: 95vw;
+    height: calc(90vh - 34px);
+  }
+
+  .output {
+    font-size: 15px;
+  }
+
+  .input {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .desktop {
+    padding: 12px;
+    padding-bottom: 34px;
+  }
+
+  .window {
+    width: 100vw;
+    height: calc(100vh - 34px);
+  }
+
+  .titleBar {
+    padding: 6px 10px;
+  }
+
+  .content {
+    padding: 6px;
+  }
+
+  .inputRow {
+    gap: 4px;
+  }
+}
+
+/* -----------------------------------------------------------------------------
+   Safe Area & Touch Enhancements
+   ----------------------------------------------------------------------------- */
+
+@supports (padding: max(0px)) {
+  .desktop {
+    padding-bottom: max(40px, calc(40px + env(safe-area-inset-bottom)));
+  }
+
+  .taskbar {
+    padding-bottom: max(2px, env(safe-area-inset-bottom));
+  }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .close,
+  .start,
+  .taskItem {
+    min-height: 44px;
+  }
+}

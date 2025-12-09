@@ -1,0 +1,152 @@
+.container {
+  width: 100vw;
+  height: 100vh;
+  background: #212121;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  color: #f1f1f1;
+}
+
+.header {
+  height: 64px;
+  width: 100%;
+  border-bottom: 1px solid #3a3a3f;
+  background: #26262b;
+}
+
+.content {
+  flex: 1;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  overflow: hidden;
+}
+
+.skeletonMessage {
+  max-width: 70%;
+  height: 60px;
+  border-radius: 16px;
+  background: #2a2a2f;
+}
+
+.left {
+  align-self: flex-start;
+}
+
+.right {
+  align-self: flex-end;
+}
+
+.leftTall {
+  align-self: flex-start;
+  height: 80px;
+}
+
+.rightShort {
+  align-self: flex-end;
+  height: 42px;
+}
+
+.inputSkeleton {
+  height: 68px;
+  border-top: 1px solid #3a3a3f;
+  background: #26262b;
+}
+
+.shimmer {
+  position: relative;
+  overflow: hidden;
+  background-image: linear-gradient(
+    90deg,
+    #27272d 0%,
+    #37373f 50%,
+    #27272d 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.8s ease-in-out infinite;
+}
+
+.shimmer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.08) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  animation: shimmer-highlight 1.8s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+@keyframes shimmer-highlight {
+  0% {
+    transform: translateX(-100%);
+  }
+
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@media (max-width: 960px) {
+  .content {
+    padding: 20px;
+  }
+
+  .skeletonMessage {
+    border-radius: 14px;
+  }
+}
+
+@media (max-width: 720px) {
+  .content {
+    padding: 18px 16px;
+    gap: 16px;
+  }
+
+  .skeletonMessage {
+    max-width: 85%;
+  }
+}
+
+@media (max-width: 480px) {
+  .header {
+    height: 58px;
+  }
+
+  .inputSkeleton {
+    height: 62px;
+  }
+
+  .skeletonMessage {
+    height: 52px;
+  }
+
+  .leftTall {
+    height: 70px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shimmer {
+    animation: none;
+  }
+
+  .shimmer::after {
+    animation: none;
+    opacity: 0.08;
+  }
+}

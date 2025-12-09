@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+  <!-- Kalshi Orange Brand -->
+  <defs>
+    <linearGradient id="kalshiGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FF9500"/>
+      <stop offset="100%" style="stop-color:#FF6B00"/>
+    </linearGradient>
+  </defs>
+  <rect x="3" y="3" width="26" height="26" rx="6" fill="url(#kalshiGrad)"/>
+  <!-- K letter stylized -->
+  <path d="M10 8h3v7l5-7h4l-6 7.5 6.5 8.5h-4l-5.5-7v7h-3V8z" fill="white"/>
+</svg>

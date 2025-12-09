@@ -1,0 +1,813 @@
+"use client";
+
+/**
+ * Wallet Provider Component
+ *
+ * Provides global wallet state management using React Context.
+ * Supports three wallet types:
+ * - MetaMask: Browser extension wallet
+ * - Session: Ephemeral wallet created in-session
+ * - Imported: Wallet imported via private key
+ *
+ * Security Considerations:
+ * - Session wallets are ephemeral and should not be used for large amounts
+ * - Private keys should never be shared or committed to version control
+ * - MetaMask is recommended for production use
+ *
+ * Usage:
+ * ```tsx
+ * import { WalletProvider } from '@/providers/WalletProvider';
+ *
+ * function App() {
+ *   return (
+ *     <WalletProvider>
+ *       <YourApp />
+ *     </WalletProvider>
+ *   );
+ * }
+ * ```
+ */
+
+import React, {
+  createContext,
+  useState,
+  useEffect,
+  useCallback,
+  useRef,
+} from "react";
+import { BrowserProvider, JsonRpcProvider, Wallet } from "ethers";
+import {
+  useAppKitAccount,
+  useAppKitNetwork,
+  useAppKitProvider,
+  useDisconnect as useAppKitDisconnect,
+} from "@reown/appkit/react";
+import {
+  WalletState,
+  WalletContextValue,
+  WalletProviderProps,
+  WalletConnectResult,
+  InitializeExternalWalletParams,
+  EthereumProvider,
+} from "@/types/wallet";
+import {
+  connectMetaMask as connectMetaMaskModule,
+  createSessionWallet as createSessionWalletModule,
+  importSessionWallet as importSessionWalletModule,
+  getBalance as getBalanceModule,
+  addOmegaNetwork as addOmegaNetworkModule,
+} from "@/lib/wallet";
+import { getEthereumProvider } from "@/lib/wallet/detection";
+import { useMobileDetection } from "@/hooks/useMobileDetection";
+
+/**
+ * Get network name from chainId
+ */
+function getNetworkNameFromChainId(chainId: number): string | null {
+  const chainIdMap: Record<number, string> = {
+    1: "Ethereum",
+    56: "BNB Smart Chain",
+    137: "Polygon",
+    42161: "Arbitrum One",
+    10: "Optimism",
+    8453: "Base",
+    1313161768: "Omega Network",
+    121212: "Rome Protocol",
+    935: "FAIR Testnet",
+    120000: "Monad Testnet",
+    143: "Monad Mainnet",
+  };
+  return chainIdMap[chainId] || null;
+}
+
+// Create wallet context
+export const WalletContext = createContext<WalletContextValue | undefined>(
+  undefined
+);
+
+/**
+ * WalletProvider component
+ *
+ * Manages wallet state and provides wallet methods to all child components.
+ */
+export function WalletProvider({ children }: WalletProviderProps) {
+  // Wallet state
+  const [walletState, setWalletState] = useState<WalletState>({
+    type: null,
+    address: null,
+    isConnected: false,
+    isConnecting: false,
+    balance: null,
+    chainId: null,
+    networkName: null,
+    error: null,
+  });
+
+  // Provider and signer state
+  const [provider, setProvider] = useState<
+    BrowserProvider | JsonRpcProvider | null
+  >(null);
+  const [signer, setSigner] = useState<any | null>(null);
+  const [sessionWallet, setSessionWallet] = useState<Wallet | null>(null);
+  const { isMobile } = useMobileDetection();
+  const { address: appKitAddress, isConnected: appKitConnected } =
+    useAppKitAccount({ namespace: "eip155" });
+  const { walletProvider: appKitWalletProvider } =
+    useAppKitProvider<EthereumProvider>("eip155");
+  const { caipNetwork, chainId: appKitChainId } = useAppKitNetwork();
+  const { disconnect: disconnectAppKit } = useAppKitDisconnect();
+
+  // Refs for stable event listener wrappers (Comment 1)
+  const accountsChangedHandlerRef = useRef<(accounts: string[]) => void>(
+    () => {}
+  );
+  const chainChangedHandlerRef = useRef<
+    (chainIdHex: string) => void | Promise<void>
+  >(() => {});
+
+  /**
+   * Debug helper: Log ethereum provider availability on mount
+   */
+  useEffect(() => {
+    if (process.env.NODE_ENV !== "production") {
+      const checkEthereum = () => {
+        const eth = (window as typeof window & { ethereum?: any }).ethereum;
+        // eslint-disable-next-line no-console
+        console.debug("[WalletProvider] Ethereum provider check on mount:", {
+          exists: Boolean(eth),
+          isMetaMask: eth?.isMetaMask,
+          isPhantom: eth?.isPhantom,
+          hasRequest: typeof eth?.request === "function",
+          providers: eth?.providers,
+        });
+      };
+
+      // Check immediately and after a delay (MetaMask might inject late)
+      checkEthereum();
+      const timer = setTimeout(checkEthereum, 1000);
+
+      return () => clearTimeout(timer);
+    }
+  }, []);
+
+  const onAccountsChanged = useCallback((accounts: string[]) => {
+    accountsChangedHandlerRef.current(accounts);
+  }, []);
+
+  const onChainChanged = useCallback((chainIdHex: string) => {
+    chainChangedHandlerRef.current(chainIdHex);
+  }, []);
+
+  const handleGetBalance = useCallback(
+    async (
+      overrideProvider?: BrowserProvider | JsonRpcProvider,
+      overrideAddress?: string
+    ): Promise<string | null> => {
+      try {
+        const targetProvider = overrideProvider || provider;
+        const targetAddress = overrideAddress || walletState.address;
+
+        if (!targetProvider || !targetAddress) {
+          return null;
+        }
+
+        if (typeof getBalanceModule !== "function") {
+          console.error("[WalletProvider] getBalance module unavailable");
+          setWalletState((prev) => ({
+            ...prev,
+            error: "Wallet module not available",
+          }));
+          return null;
+        }
+
+        const balance = await getBalanceModule(targetProvider, targetAddress);
+
+        setWalletState((prev) => ({
+          ...prev,
+          balance,
+        }));
+
+        return balance;
+      } catch (error: any) {
+        console.error("Failed to get balance:", error);
+        return null;
+      }
+    },
+    [provider, walletState.address]
+  );
+
+  /**
+   * Connect to MetaMask wallet
+   */
+  const handleConnectMetaMask =
+    useCallback(async (): Promise<WalletConnectResult> => {
+      try {
+        // Set connecting state
+        setWalletState((prev) => ({
+          ...prev,
+          isConnecting: true,
+          error: null,
+        }));
+
+        if (typeof connectMetaMaskModule !== "function") {
+          console.error("[WalletProvider] connectMetaMask module unavailable");
+          setWalletState((prev) => ({
+            ...prev,
+            isConnecting: false,
+            error: "Wallet module not available",
+          }));
+          return { success: false, error: "Wallet module not available" };
+        }
+
+        // Call connection module
+        const result = await connectMetaMaskModule();
+
+        if (!result.success) {
+          setWalletState((prev) => ({
+            ...prev,
+            isConnecting: false,
+            error: result.error || "Failed to connect to MetaMask",
+          }));
+          return {
+            success: false,
+            error: result.error || "Failed to connect to MetaMask",
+          };
+        }
+
+        // Store provider
+        if (result.provider) {
+          setProvider(result.provider);
+
+          // Get signer (async in v6)
+          const newSigner = await result.provider.getSigner();
+          setSigner(newSigner);
+
+          // Get network info
+          const network = await result.provider.getNetwork();
+
+          // Get network name from chainId
+          const networkName = getNetworkNameFromChainId(
+            Number(network.chainId)
+          );
+
+          // Update state
+          setWalletState({
+            type: "metamask",
+            address: result.address || null,
+            isConnected: true,
+            isConnecting: false,
+            balance: null,
+            chainId: Number(network.chainId),
+            networkName,
+            error: null,
+          });
+
+          // Fetch balance (Comment 2: pass provider and address directly to avoid race condition)
+          if (result.address) {
+            handleGetBalance(result.provider, result.address);
+          }
+
+          // Set up event listeners (Comment 1: using stable wrapper functions)
+          const ethereumProvider = getEthereumProvider();
+          if (ethereumProvider) {
+            ethereumProvider.on("accountsChanged", onAccountsChanged);
+            ethereumProvider.on("chainChanged", onChainChanged);
+          }
+
+          // Save to localStorage
+          if (typeof window !== "undefined") {
+            localStorage.setItem("walletType", "metamask");
+          }
+
+          return {
+            success: true,
+            address: result.address || null,
+          };
+        }
+
+        return {
+          success: false,
+          error: result.error || "MetaMask provider unavailable",
+        };
+      } catch (error: any) {
+        console.error("MetaMask connection error:", error);
+        setWalletState((prev) => ({
+          ...prev,
+          isConnecting: false,
+          error: error.message || "Failed to connect to MetaMask",
+        }));
+        return {
+          success: false,
+          error: error.message || "Failed to connect to MetaMask",
+        };
+      }
+    }, [onAccountsChanged, onChainChanged]);
+
+  const handleInitializeExternalConnection = useCallback(
+    async ({
+      provider: externalProvider,
+      address,
+      chainId,
+      walletType = "metamask",
+      networkName,
+    }: InitializeExternalWalletParams): Promise<void> => {
+      setProvider(externalProvider);
+      const newSigner = await externalProvider.getSigner();
+      setSigner(newSigner);
+
+      // Use provided networkName or get from chainId
+      const finalNetworkName =
+        networkName || getNetworkNameFromChainId(chainId);
+
+      setWalletState({
+        type: walletType,
+        address,
+        isConnected: true,
+        isConnecting: false,
+        balance: null,
+        chainId,
+        networkName: finalNetworkName,
+        error: null,
+      });
+
+      if (address) {
+        handleGetBalance(externalProvider, address);
+      }
+
+      const ethereumProvider = getEthereumProvider();
+      if (ethereumProvider) {
+        ethereumProvider.on("accountsChanged", onAccountsChanged);
+        ethereumProvider.on("chainChanged", onChainChanged);
+      }
+
+      if (typeof window !== "undefined") {
+        localStorage.setItem("walletType", walletType ?? "metamask");
+        if (networkName) {
+          localStorage.setItem("walletNetworkName", networkName);
+        }
+      }
+    },
+    [handleGetBalance, onAccountsChanged, onChainChanged]
+  );
+
+  useEffect(() => {
+    if (!isMobile) {
+      return;
+    }
+
+    const resolveChainId = (): number | null => {
+      if (typeof appKitChainId === "number") {
+        return appKitChainId;
+      }
+      if (typeof appKitChainId === "string") {
+        const hexMatch = appKitChainId.match(/^0x[0-9a-f]+$/i);
+        if (hexMatch) {
+          return parseInt(appKitChainId, 16);
+        }
+        const parts = appKitChainId.split(":");
+        const numericPart = parts[parts.length - 1];
+        const parsed = parseInt(numericPart, 10);
+        if (!Number.isNaN(parsed)) {
+          return parsed;
+        }
+      }
+      if (typeof caipNetwork?.id === "number") {
+        return caipNetwork.id;
+      }
+      if (typeof caipNetwork?.id === "string") {
+        const parts = caipNetwork.id.split(":");
+        const numericPart = parts[parts.length - 1];
+        const parsed = parseInt(numericPart, 10);
+        if (!Number.isNaN(parsed)) {
+          return parsed;
+        }
+      }
+      return null;
+    };
+
+    const normalizedChainId = resolveChainId();
+
+    if (
+      appKitConnected &&
+      appKitAddress &&
+      appKitWalletProvider &&
+      normalizedChainId
+    ) {
+      const alreadySynced =
+        walletState.type === "appkit" &&
+        walletState.address?.toLowerCase() === appKitAddress.toLowerCase() &&
+        walletState.chainId === normalizedChainId;
+
+      if (!alreadySynced) {
+        const ethersProvider = new BrowserProvider(
+          appKitWalletProvider as unknown as any
+        );
+
+        void handleInitializeExternalConnection({
+          provider: ethersProvider,
+          address: appKitAddress,
+          chainId: normalizedChainId,
+          walletType: "appkit",
+          networkName: caipNetwork?.name,
+        });
+      }
+
+      return;
+    }
+
+    if (
+      walletState.type === "appkit" &&
+      walletState.isConnected &&
+      (!appKitConnected || !appKitAddress)
+    ) {
+      setProvider(null);
+      setSigner(null);
+      setWalletState((prev) => ({
+        ...prev,
+        type: null,
+        address: null,
+        isConnected: false,
+        balance: null,
+        chainId: null,
+        networkName: null,
+      }));
+    }
+  }, [
+    appKitConnected,
+    appKitAddress,
+    appKitWalletProvider,
+    appKitChainId,
+    caipNetwork?.id,
+    caipNetwork?.name,
+    handleInitializeExternalConnection,
+    isMobile,
+    walletState.address,
+    walletState.chainId,
+    walletState.isConnected,
+    walletState.type,
+  ]);
+
+  /**
+   * Create new session wallet
+   */
+  const handleCreateSessionWallet = useCallback(async (): Promise<boolean> => {
+    try {
+      // Set connecting state
+      setWalletState((prev) => ({
+        ...prev,
+        isConnecting: true,
+        error: null,
+      }));
+
+      if (typeof createSessionWalletModule !== "function") {
+        console.error(
+          "[WalletProvider] createSessionWallet module unavailable"
+        );
+        setWalletState((prev) => ({
+          ...prev,
+          isConnecting: false,
+          error: "Wallet module not available",
+        }));
+        return false;
+      }
+
+      // Call session wallet module
+      const result = await createSessionWalletModule();
+
+      // Store provider, signer, and wallet
+      setProvider(result.provider);
+      setSigner(result.wallet);
+      setSessionWallet(result.wallet);
+
+      // Persist private key in sessionStorage
+      if (typeof window !== "undefined") {
+        sessionStorage.setItem("omega-session-wallet-key", result.privateKey);
+      }
+
+      // Update state
+      setWalletState({
+        type: "session",
+        address: result.address,
+        isConnected: true,
+        isConnecting: false,
+        balance: null,
+        chainId: null,
+        networkName: "Omega Network", // Session wallets default to Omega
+        error: null,
+      });
+
+      // Fetch balance (Comment 2: pass provider and address directly to avoid race condition)
+      handleGetBalance(result.provider, result.address);
+
+      return true;
+    } catch (error: any) {
+      console.error("Session wallet creation error:", error);
+      setWalletState((prev) => ({
+        ...prev,
+        isConnecting: false,
+        error: error.message || "Failed to create session wallet",
+      }));
+      return false;
+    }
+  }, []);
+
+  /**
+   * Import wallet using private key
+   */
+  const handleImportSessionWallet = useCallback(
+    async (privateKey: string): Promise<boolean> => {
+      try {
+        // Set connecting state
+        setWalletState((prev) => ({
+          ...prev,
+          isConnecting: true,
+          error: null,
+        }));
+
+        if (typeof importSessionWalletModule !== "function") {
+          console.error(
+            "[WalletProvider] importSessionWallet module unavailable"
+          );
+          setWalletState((prev) => ({
+            ...prev,
+            isConnecting: false,
+            error: "Wallet module not available",
+          }));
+          return false;
+        }
+
+        // Call import wallet module
+        const result = await importSessionWalletModule(privateKey);
+
+        if (result.error) {
+          setWalletState((prev) => ({
+            ...prev,
+            isConnecting: false,
+            error: result.error || "Failed to import wallet",
+          }));
+          return false;
+        }
+
+        // Store provider, signer, and wallet
+        setProvider(result.provider);
+        setSigner(result.wallet);
+        setSessionWallet(result.wallet);
+
+        // Persist private key in sessionStorage
+        if (typeof window !== "undefined") {
+          sessionStorage.setItem("omega-session-wallet-key", privateKey);
+        }
+
+        // Update state
+        setWalletState({
+          type: "imported",
+          address: result.address,
+          isConnected: true,
+          isConnecting: false,
+          balance: null,
+          chainId: null,
+          networkName: "Omega Network", // Imported wallets default to Omega
+          error: null,
+        });
+
+        // Fetch balance (Comment 2: pass provider and address directly to avoid race condition)
+        handleGetBalance(result.provider, result.address);
+
+        return true;
+      } catch (error: any) {
+        console.error("Wallet import error:", error);
+        setWalletState((prev) => ({
+          ...prev,
+          isConnecting: false,
+          error: error.message || "Failed to import wallet",
+        }));
+        return false;
+      }
+    },
+    []
+  );
+
+  /**
+   * Disconnect wallet
+   */
+  const handleDisconnect = useCallback(async (): Promise<void> => {
+    try {
+      // Remove event listeners if MetaMask (Comment 1: using stable wrapper functions)
+      if (walletState.type === "metamask") {
+        const ethereumProvider = getEthereumProvider();
+        if (ethereumProvider) {
+          ethereumProvider.removeListener("accountsChanged", onAccountsChanged);
+          ethereumProvider.removeListener("chainChanged", onChainChanged);
+        }
+      } else if (walletState.type === "appkit") {
+        disconnectAppKit().catch((error) => {
+          console.warn("AppKit disconnect failed", error);
+        });
+      }
+
+      // Clear state
+      setProvider(null);
+      setSigner(null);
+      setSessionWallet(null);
+      setWalletState({
+        type: null,
+        address: null,
+        isConnected: false,
+        isConnecting: false,
+        balance: null,
+        chainId: null,
+        networkName: null,
+        error: null,
+      });
+
+      // Clear localStorage and sessionStorage
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("walletType");
+        sessionStorage.removeItem("omega-session-wallet-key");
+        localStorage.removeItem("walletNetworkName");
+      }
+    } catch (error: any) {
+      console.error("Disconnect error:", error);
+    }
+  }, [walletState.type, onAccountsChanged, onChainChanged, disconnectAppKit]);
+
+  /**
+   * Add Omega Network to MetaMask
+   */
+  const handleAddOmegaNetwork = useCallback(async (): Promise<boolean> => {
+    try {
+      const ethereumProvider = getEthereumProvider();
+      if (!ethereumProvider) {
+        return false;
+      }
+
+      if (typeof addOmegaNetworkModule !== "function") {
+        console.error("[WalletProvider] addOmegaNetwork module unavailable");
+        return false;
+      }
+
+      const result = await addOmegaNetworkModule(ethereumProvider);
+      return result.success;
+    } catch (error: any) {
+      console.error("Failed to add Omega Network:", error);
+      return false;
+    }
+  }, []);
+
+  /**
+   * Get signer
+   */
+  const handleGetSigner = useCallback(async (): Promise<any | null> => {
+    if (signer) {
+      return signer;
+    }
+
+    if (provider && provider instanceof BrowserProvider) {
+      const newSigner = await provider.getSigner();
+      setSigner(newSigner);
+      return newSigner;
+    }
+
+    return null;
+  }, [provider, signer]);
+
+  /**
+   * Get provider
+   */
+  const handleGetProvider = useCallback((): any | null => {
+    return provider;
+  }, [provider]);
+
+  /**
+   * Handle accounts changed event (MetaMask)
+   */
+  const handleAccountsChanged = useCallback(
+    (accounts: string[]) => {
+      if (accounts.length === 0) {
+        // User disconnected
+        handleDisconnect();
+      } else {
+        // Account changed
+        setWalletState((prev) => ({
+          ...prev,
+          address: accounts[0] ?? null,
+        }));
+        // Refresh balance
+        handleGetBalance();
+      }
+    },
+    [handleDisconnect, handleGetBalance]
+  );
+
+  /**
+   * Handle chain changed event (MetaMask)
+   * Updates wallet state without reloading the page
+   */
+  const handleChainChanged = useCallback(
+    async (chainIdHex: string) => {
+      try {
+        // Convert hex chainId to number
+        const chainId = parseInt(chainIdHex, 16);
+        const networkName = getNetworkNameFromChainId(chainId);
+
+        // Get the current provider
+        const ethereumProvider = getEthereumProvider();
+        if (!ethereumProvider) {
+          console.warn(
+            "[WalletProvider] No ethereum provider available on chain change"
+          );
+          return;
+        }
+
+        // Create new BrowserProvider with updated chain
+        const newProvider = new BrowserProvider(ethereumProvider);
+        const newSigner = await newProvider.getSigner();
+        const address = await newSigner.getAddress();
+
+        // Update provider and signer
+        setProvider(newProvider);
+        setSigner(newSigner);
+
+        // Update wallet state with new chain info
+        setWalletState((prev) => ({
+          ...prev,
+          chainId,
+          networkName,
+          address: address || prev.address, // Keep existing address if new one fails
+        }));
+
+        // Update balance with new provider
+        if (address) {
+          handleGetBalance(newProvider, address);
+        }
+
+        // Save network name to localStorage
+        if (typeof window !== "undefined" && networkName) {
+          localStorage.setItem("walletNetworkName", networkName);
+        }
+
+        console.log(
+          `[WalletProvider] Chain changed to ${networkName || chainId}`
+        );
+      } catch (error: any) {
+        console.error("[WalletProvider] Error handling chain change:", error);
+        // On error, update chainId but keep existing connection
+        const chainId = parseInt(chainIdHex, 16);
+        const networkName = getNetworkNameFromChainId(chainId);
+        setWalletState((prev) => ({
+          ...prev,
+          chainId,
+          networkName,
+        }));
+      }
+    },
+    [handleGetBalance]
+  );
+
+  /**
+   * Update ref functions to point to latest handlers (Comment 1)
+   */
+  useEffect(() => {
+    accountsChangedHandlerRef.current = handleAccountsChanged;
+    chainChangedHandlerRef.current = handleChainChanged;
+  }, [handleAccountsChanged, handleChainChanged]);
+
+  /**
+   * Attempt to reconnect on mount if previously connected
+   */
+  useEffect(() => {
+    const reconnect = async () => {
+      if (typeof window === "undefined") {
+        return;
+      }
+
+      const savedWalletType = localStorage.getItem("walletType");
+
+      if (savedWalletType === "metamask") {
+        // Skip automatic reconnection to avoid triggering MetaMask errors on load.
+        // The user can reconnect manually via the network selector.
+        return;
+      }
+    };
+
+    reconnect();
+  }, [handleInitializeExternalConnection]);
+
+  // Context value
+  const value: WalletContextValue = {
+    state: walletState,
+    connectMetaMask: handleConnectMetaMask,
+    initializeExternalConnection: handleInitializeExternalConnection,
+    createSessionWallet: handleCreateSessionWallet,
+    importSessionWallet: handleImportSessionWallet,
+    disconnect: handleDisconnect,
+    getBalance: handleGetBalance,
+    addOmegaNetwork: handleAddOmegaNetwork,
+    getSigner: handleGetSigner,
+    getProvider: handleGetProvider,
+  };
+
+  return (
+    <WalletContext.Provider value={value}>{children}</WalletContext.Provider>
+  );
+}
