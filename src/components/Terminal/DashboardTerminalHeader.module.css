@@ -627,17 +627,9 @@
   border: 1px solid rgba(0, 255, 0, 0.3) !important;
   border-radius: 0 !important;
   color: #00ff00 !important;
-<<<<<<< HEAD
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
-  text-shadow: 
-    0 0 5px rgba(0, 255, 0, 0.5),
-    0 0 10px rgba(0, 255, 0, 0.3);
-=======
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
   text-shadow: 0 0 5px rgba(0, 255, 0, 0.5), 0 0 10px rgba(0, 255, 0, 0.3);
->>>>>>> 1e406fe24e00fed788ea986ca4ada9d26b39110d
 }
 
 :global(body.theme-crt) .statusIndicator {
@@ -660,17 +652,9 @@
   border: 1px solid rgba(0, 255, 0, 0.3) !important;
   border-radius: 0 !important;
   color: #00ff00 !important;
-<<<<<<< HEAD
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
-  text-shadow: 
-    0 0 5px rgba(0, 255, 0, 0.5),
-    0 0 10px rgba(0, 255, 0, 0.3);
-=======
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
   text-shadow: 0 0 5px rgba(0, 255, 0, 0.5), 0 0 10px rgba(0, 255, 0, 0.3);
->>>>>>> 1e406fe24e00fed788ea986ca4ada9d26b39110d
 }
 
 :global(body.theme-crt) .terminalIconBtn:hover {
