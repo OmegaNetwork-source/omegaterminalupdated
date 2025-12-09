@@ -8,6 +8,7 @@ import { createUsageError, createSwapStatusNotice, createCommandLine } from "./c
 import { parseUnits, formatUnits } from "ethers";
 import { getPancakeSwapQuote, buildPancakeSwapTransaction, isNativeToken, getNativeTokenAddress } from "@/lib/multichain/evm/pancakeswap";
 import { searchPancakeSwapTokens, type TokenInfo } from "@/lib/multichain/evm/token-search";
+import { isAppMode } from "@/lib/utils/url-utils";
 
 /**
  * Supported networks for PancakeSwap
@@ -85,6 +86,12 @@ export const pancakeswapCommand: Command = {
     }
 
     if (subcommand === "swap") {
+      // Check if app mode is enabled
+      if (isAppMode()) {
+        context.log("❌ Swap is not supported on mobile app version", "error");
+        return;
+      }
+      
       if (args.length >= 6) {
         await handlePancakeSwapSwap(context, args);
       } else {

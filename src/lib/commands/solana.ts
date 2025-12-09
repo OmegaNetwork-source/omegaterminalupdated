@@ -7,6 +7,7 @@ import type { Command, CommandContext } from "@/types/commands";
 import { config } from "@/lib/config";
 import * as solana from "@/lib/multichain/solana";
 import { createCommandLine, createUsageError } from "./command-output-helpers";
+import { isAppMode } from "@/lib/utils/url-utils";
 
 /**
  * Solana command - Main entry point for all Solana operations
@@ -44,18 +45,24 @@ export const solanaCommand: Command = {
         await getSwapQuote(context, args.slice(2));
         break;
       case "swap":
-        if (args[2] === "execute" && args.length >= 6) {
-          await executeSwap(context, args.slice(3));
-        } else {
-          await showSwapInterface(context);
-        }
+      // Check if app mode is enabled
+      if (isAppMode()) {
+        context.log("❌ Swap is not supported on mobile app version", "error");
+        return;
+      }
+      
+      if (args.length > 2) {
+        await executeSwap(context, args.slice(2));
+      } else {
+        await showSwapInterface(context);
+      }
         break;
       default:
-        context.log(
-          `Unknown Solana subcommand: ${subcommand}.`,
-          "error"
+        context.log(`Unknown Solana subcommand: ${subcommand}.`, "error");
+        const helpHtml = createCommandLine(
+          "solana help",
+          "See available commands"
         );
-        const helpHtml = createCommandLine("solana help", "See available commands");
         context.logHtml(helpHtml);
     }
   },
@@ -310,10 +317,10 @@ async function searchTokens(
     const query = args.join(" ");
 
     if (!query) {
-      const usageHtml = createUsageError("solana search <token name or symbol>", [
-        "solana search USDC",
-        "solana search Solana",
-      ]);
+      const usageHtml = createUsageError(
+        "solana search <token name or symbol>",
+        ["solana search USDC", "solana search Solana"]
+      );
       context.logHtml(usageHtml);
       return;
     }
@@ -468,9 +475,12 @@ async function getSwapQuote(
 ): Promise<void> {
   try {
     if (args.length < 3) {
-      const usageHtml = createUsageError("solana quote <from_mint> <to_mint> <amount>", [
-        "solana quote So11111111111111111111111111111111111111112 EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v 1000000",
-      ]);
+      const usageHtml = createUsageError(
+        "solana quote <from_mint> <to_mint> <amount>",
+        [
+          "solana quote So11111111111111111111111111111111111111112 EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v 1000000",
+        ]
+      );
       context.logHtml(usageHtml);
       return;
     }
@@ -487,7 +497,10 @@ async function getSwapQuote(
       context.log(`   Output: ${quote.outAmount}`, "info");
       context.log(`   Price Impact: ${quote.priceImpactPct}%`, "info");
       context.log("", "info");
-      const helpHtml = createCommandLine("solana swap", "Use for interactive swapping");
+      const helpHtml = createCommandLine(
+        "solana swap",
+        "Use for interactive swapping"
+      );
       context.logHtml(helpHtml);
     } else {
       context.log("❌ Failed to get quote", "error");
@@ -514,7 +527,10 @@ async function showSwapInterface(context: CommandContext): Promise<void> {
       const helpHtml = `
         <div style="margin: 8px 0;">
           ${createCommandLine("solana connect", "Connect your Solana wallet")}
-          ${createCommandLine("solana generate", "Generate a new Solana wallet")}
+          ${createCommandLine(
+            "solana generate",
+            "Generate a new Solana wallet"
+          )}
         </div>
       `;
       context.logHtml(helpHtml);
@@ -531,8 +547,13 @@ async function showSwapInterface(context: CommandContext): Promise<void> {
         <div style="margin-bottom: 15px;">
           <label style="color: #cccccc; display: block; margin-bottom: 5px;">From Token:</label>
           <div style="position: relative;">
-            <input type="text" id="solanaFromSearch" placeholder="Search tokens..." 
-              style="width: 100%; padding: 8px; background: #222; color: #fff; border: 1px solid #444; border-radius: 3px; box-sizing: border-box; cursor: text;" autocomplete="off">
+            <input 
+              type="text" 
+              id="solanaFromSearch" 
+              placeholder="Search tokens..." 
+              style="width: 100%; padding: 8px; background: #222; color: #fff; border: 1px solid #444; border-radius: 3px; box-sizing: border-box; cursor: text;" 
+              autocomplete="off"
+              oninput="window.__handleSolanaTokenSearch('from', this.value)">
             <div id="solanaFromList" style="position: absolute; top: 100%; left: 0; right: 0; max-height: 200px; overflow-y: auto; background: #222; border: 1px solid #444; border-top: none; z-index: 1000; display: none;"></div>
           </div>
           <input type="hidden" id="fromTokenAddress" value="So11111111111111111111111111111111111111112">
@@ -546,8 +567,13 @@ async function showSwapInterface(context: CommandContext): Promise<void> {
         <div style="margin-bottom: 15px;">
           <label style="color: #cccccc; display: block; margin-bottom: 5px;">To Token:</label>
           <div style="position: relative;">
-            <input type="text" id="solanaToSearch" placeholder="Search tokens..." 
-              style="width: 100%; padding: 8px; background: #222; color: #fff; border: 1px solid #444; border-radius: 3px; box-sizing: border-box; cursor: text;" autocomplete="off">
+            <input 
+              type="text" 
+              id="solanaToSearch" 
+              placeholder="Search tokens..." 
+              style="width: 100%; padding: 8px; background: #222; color: #fff; border: 1px solid #444; border-radius: 3px; box-sizing: border-box; cursor: text;" 
+              autocomplete="off"
+              oninput="window.__handleSolanaTokenSearch('to', this.value)">
             <div id="solanaToList" style="position: absolute; top: 100%; left: 0; right: 0; max-height: 200px; overflow-y: auto; background: #222; border: 1px solid #444; border-top: none; z-index: 1000; display: none;"></div>
           </div>
           <input type="hidden" id="toTokenAddress" value="">
@@ -563,8 +589,8 @@ async function showSwapInterface(context: CommandContext): Promise<void> {
         
         <!-- Action buttons -->
         <div style="display: flex; gap: 10px; margin-bottom: 15px;">
-          <button id="solanaQuoteBtn" style="flex: 1; padding: 12px; background: linear-gradient(45deg, #0080ff, #00bfff); color: white; border: none; border-radius: 5px; font-weight: bold; cursor: pointer;">Get Quote</button>
-          <button id="solanaSwapBtn" style="flex: 1; padding: 12px; background: linear-gradient(45deg, #00bfff, #0080ff); color: white; border: none; border-radius: 5px; font-weight: bold; cursor: pointer;">Execute Swap</button>
+          <button onclick="window.__handleSolanaQuote()" style="flex: 1; padding: 12px; background: linear-gradient(45deg, #0080ff, #00bfff); color: white; border: none; border-radius: 5px; font-weight: bold; cursor: pointer;">Get Quote</button>
+          <button onclick="window.__handleSolanaSwap()" style="flex: 1; padding: 12px; background: linear-gradient(45deg, #00bfff, #0080ff); color: white; border: none; border-radius: 5px; font-weight: bold; cursor: pointer;">Execute Swap</button>
         </div>
         
         <div style="background: #2a2a2a; padding: 10px; border-radius: 4px; border-left: 3px solid #00bfff;">
@@ -575,11 +601,9 @@ async function showSwapInterface(context: CommandContext): Promise<void> {
 
     context.logHtml(html);
 
-    // Setup event handlers after rendering
+    // Setup global handlers for inline event handlers
     if (typeof window !== "undefined") {
-      setTimeout(() => {
-        setupSwapInterface(context);
-      }, 100);
+      setupGlobalSwapHandlers(context);
     }
   } catch (error: any) {
     context.log(`❌ Error: ${error.message}`, "error");
@@ -587,310 +611,252 @@ async function showSwapInterface(context: CommandContext): Promise<void> {
 }
 
 /**
- * Setup swap interface event handlers
+ * Setup global swap handlers for inline event handlers
  */
-function setupSwapInterface(context: CommandContext): void {
-  const fromSearch = document.getElementById(
-    "solanaFromSearch"
-  ) as HTMLInputElement;
-  const toSearch = document.getElementById(
-    "solanaToSearch"
-  ) as HTMLInputElement;
-  const fromList = document.getElementById("solanaFromList");
-  const toList = document.getElementById("solanaToList");
-  const quoteBtn = document.getElementById("solanaQuoteBtn");
-  const swapBtn = document.getElementById("solanaSwapBtn");
+function setupGlobalSwapHandlers(context: CommandContext): void {
+  // Token search handler with debouncing
+  let searchTimeouts: Record<string, any> = {};
 
-  if (!fromSearch || !toSearch) return;
+  (window as any).__handleSolanaTokenSearch = async (
+    field: "from" | "to",
+    query: string
+  ) => {
+    console.log(`[Token Search] ${field} field, query:`, query);
 
-  // Setup token search for "From" field
-  let fromSearchTimeout: any;
-  fromSearch.addEventListener("input", async (e) => {
-    clearTimeout(fromSearchTimeout);
-    const query = (e.target as HTMLInputElement).value.trim();
+    const listId = field === "from" ? "solanaFromList" : "solanaToList";
+    const list = document.getElementById(listId);
 
-    if (query.length < 2) {
-      if (fromList) fromList.style.display = "none";
+    if (!list) {
+      console.error("[Token Search] List element not found:", listId);
       return;
     }
 
-    fromSearchTimeout = setTimeout(async () => {
-      if (fromList) {
-        fromList.innerHTML =
-          '<div style="padding: 8px; color: #666;">Searching...</div>';
-        fromList.style.display = "block";
-      }
+    // Clear previous timeout
+    if (searchTimeouts[field]) {
+      clearTimeout(searchTimeouts[field]);
+    }
 
-      try {
-        const tokens = await solana.searchTokens(query);
-
-        if (fromList) {
-          fromList.innerHTML = "";
-
-          if (tokens && tokens.length > 0) {
-            tokens.slice(0, 10).forEach((token) => {
-              const item = document.createElement("div");
-              item.style.cssText =
-                "padding: 8px; cursor: pointer; border-bottom: 1px solid #333; display: flex; align-items: center; gap: 8px;";
-
-              const logoUri = (token as any).logoURI || "";
-              let content = "";
-              if (logoUri) {
-                content += `<img src="${logoUri}" style="width: 20px; height: 20px; border-radius: 50%;">`;
-              }
-              content += `<div><div style="font-weight: bold;">${
-                token.symbol || "Unknown"
-              }</div><div style="font-size: 12px; color: #888;">${
-                token.name || "Unknown"
-              }</div></div>`;
-
-              item.innerHTML = content;
-
-              item.addEventListener("click", (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                const fromTokenAddressInput = document.getElementById(
-                  "fromTokenAddress"
-                ) as HTMLInputElement;
-                if (fromTokenAddressInput) {
-                  fromTokenAddressInput.value = token.address || "";
-                }
-
-                const isVerified =
-                  token.verified ||
-                  (token.tags && token.tags.includes("verified"));
-                const verificationBadge = isVerified
-                  ? '<span style="color: #00ff00; font-size: 12px;">✅ VERIFIED</span>'
-                  : '<span style="color: #ff4444; font-size: 12px;">⚠️ UNVERIFIED</span>';
-
-                const shortAddr =
-                  token.address.substring(0, 8) +
-                  "..." +
-                  token.address.substring(token.address.length - 8);
-
-                const fromTokenDisplay =
-                  document.getElementById("fromTokenDisplay");
-                if (fromTokenDisplay) {
-                  fromTokenDisplay.innerHTML = `${token.symbol} - ${token.name} ${verificationBadge}<br><span style="font-size: 11px; color: #888;">${shortAddr}</span>`;
-                  fromTokenDisplay.style.borderLeftColor = isVerified
-                    ? "#00bfff"
-                    : "#ff4444";
-                  fromTokenDisplay.style.color = isVerified
-                    ? "#00bfff"
-                    : "#ffaa00";
-                }
-
-                fromSearch.value = "";
-                if (fromList) fromList.style.display = "none";
-              });
-
-              fromList.appendChild(item);
-            });
-          } else {
-            fromList.innerHTML =
-              '<div style="padding: 8px; color: #666;">No results found</div>';
-          }
-        }
-      } catch (err) {
-        if (fromList) {
-          fromList.innerHTML =
-            '<div style="padding: 8px; color: #666;">Search failed</div>';
-        }
-      }
-    }, 300);
-  });
-
-  // Setup token search for "To" field (similar logic)
-  let toSearchTimeout: any;
-  toSearch.addEventListener("input", async (e) => {
-    clearTimeout(toSearchTimeout);
-    const query = (e.target as HTMLInputElement).value.trim();
-
-    if (query.length < 2) {
-      if (toList) toList.style.display = "none";
+    if (query.trim().length < 2) {
+      list.style.display = "none";
       return;
     }
 
-    toSearchTimeout = setTimeout(async () => {
-      if (toList) {
-        toList.innerHTML =
-          '<div style="padding: 8px; color: #666;">Searching...</div>';
-        toList.style.display = "block";
-      }
+    // Show loading state
+    list.innerHTML =
+      '<div style="padding: 8px; color: #666;">Searching...</div>';
+    list.style.display = "block";
+
+    // Debounce the search
+    searchTimeouts[field] = setTimeout(async () => {
+      console.log(`[Token Search] Making API call for ${field}:`, query);
 
       try {
         const tokens = await solana.searchTokens(query);
+        console.log(`[Token Search] Found ${tokens.length} tokens`);
 
-        if (toList) {
-          toList.innerHTML = "";
+        list.innerHTML = "";
 
-          if (tokens && tokens.length > 0) {
-            tokens.slice(0, 10).forEach((token) => {
-              const item = document.createElement("div");
-              item.style.cssText =
-                "padding: 8px; cursor: pointer; border-bottom: 1px solid #333; display: flex; align-items: center; gap: 8px;";
+        if (tokens && tokens.length > 0) {
+          // Filter tokens to only include those with valid addresses
+          const validTokens = tokens.filter(
+            (token) => token.address && token.address.length > 0
+          );
+          console.log(
+            `[Token Search] Valid tokens after filtering: ${validTokens.length}/${tokens.length}`
+          );
 
-              const logoUri = (token as any).logoURI || "";
-              let content = "";
-              if (logoUri) {
-                content += `<img src="${logoUri}" style="width: 20px; height: 20px; border-radius: 50%;">`;
+          validTokens.slice(0, 10).forEach((token) => {
+            console.log(
+              `[Token Search] Creating item for token:`,
+              token.symbol,
+              token.address
+            );
+            const item = document.createElement("div");
+            item.style.cssText =
+              "padding: 8px; cursor: pointer; border-bottom: 1px solid #333; display: flex; align-items: center; gap: 8px;";
+            item.onmouseover = () => {
+              item.style.background = "#333";
+            };
+            item.onmouseout = () => {
+              item.style.background = "transparent";
+            };
+
+            const logoUri = (token as any).logoURI || "";
+            let content = "";
+            if (logoUri) {
+              content += `<img src="${logoUri}" style="width: 20px; height: 20px; border-radius: 50%;">`;
+            }
+            content += `<div><div style="font-weight: bold;">${
+              token.symbol || "Unknown"
+            }</div><div style="font-size: 12px; color: #888;">${
+              token.name || "Unknown"
+            }</div></div>`;
+
+            item.innerHTML = content;
+
+            item.onclick = () => {
+              console.log(
+                "[Token Search] Token clicked:",
+                token.symbol,
+                token.address
+              );
+
+              // Validate token has address
+              if (!token.address) {
+                console.error("[Token Search] Token missing address:", token);
+                return;
               }
-              content += `<div><div style="font-weight: bold;">${
-                token.symbol || "Unknown"
-              }</div><div style="font-size: 12px; color: #888;">${
-                token.name || "Unknown"
-              }</div></div>`;
 
-              item.innerHTML = content;
+              console.log(
+                "[Token Search] Setting token address to:",
+                token.address
+              );
 
-              item.addEventListener("click", (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                const toTokenAddressInput = document.getElementById(
-                  "toTokenAddress"
-                ) as HTMLInputElement;
-                if (toTokenAddressInput) {
-                  toTokenAddressInput.value = token.address || "";
-                }
+              const tokenAddressInput = document.getElementById(
+                field === "from" ? "fromTokenAddress" : "toTokenAddress"
+              ) as HTMLInputElement;
+              if (tokenAddressInput) {
+                tokenAddressInput.value = token.address;
+                console.log(
+                  "[Token Search] Updated input value to:",
+                  tokenAddressInput.value
+                );
+              } else {
+                console.error(
+                  "[Token Search] Could not find address input element"
+                );
+              }
 
-                const isVerified =
-                  token.verified ||
-                  (token.tags && token.tags.includes("verified"));
-                const verificationBadge = isVerified
-                  ? '<span style="color: #00ff00; font-size: 12px;">✅ VERIFIED</span>'
-                  : '<span style="color: #ff4444; font-size: 12px;">⚠️ UNVERIFIED</span>';
+              const isVerified =
+                token.verified ||
+                (token.tags && token.tags.includes("verified"));
+              const verificationBadge = isVerified
+                ? '<span style="color: #00ff00; font-size: 12px;">✅ VERIFIED</span>'
+                : '<span style="color: #ff4444; font-size: 12px;">⚠️ UNVERIFIED</span>';
 
-                const shortAddr =
-                  token.address.substring(0, 8) +
-                  "..." +
-                  token.address.substring(token.address.length - 8);
+              const shortAddr =
+                token.address.substring(0, 8) +
+                "..." +
+                token.address.substring(token.address.length - 8);
 
-                const toTokenDisplay =
-                  document.getElementById("toTokenDisplay");
-                if (toTokenDisplay) {
-                  toTokenDisplay.innerHTML = `${token.symbol} - ${token.name} ${verificationBadge}<br><span style="font-size: 11px; color: #888;">${shortAddr}</span>`;
-                  toTokenDisplay.style.borderLeftColor = isVerified
-                    ? "#00bfff"
-                    : "#ff4444";
-                  toTokenDisplay.style.color = isVerified
-                    ? "#00bfff"
-                    : "#ffaa00";
-                }
+              const tokenDisplay = document.getElementById(
+                field === "from" ? "fromTokenDisplay" : "toTokenDisplay"
+              );
+              if (tokenDisplay) {
+                tokenDisplay.innerHTML = `${token.symbol} - ${token.name} ${verificationBadge}<br><span style="font-size: 11px; color: #888;">${shortAddr}</span>`;
+                tokenDisplay.style.borderLeftColor = isVerified
+                  ? "#00bfff"
+                  : "#ff4444";
+                tokenDisplay.style.color = isVerified ? "#00bfff" : "#ffaa00";
+              }
 
-                toSearch.value = "";
-                if (toList) toList.style.display = "none";
-              });
+              const searchInput = document.getElementById(
+                field === "from" ? "solanaFromSearch" : "solanaToSearch"
+              ) as HTMLInputElement;
+              if (searchInput) {
+                searchInput.value = "";
+              }
+              list.style.display = "none";
+            };
 
-              toList.appendChild(item);
-            });
-          } else {
-            toList.innerHTML =
-              '<div style="padding: 8px; color: #666;">No results found</div>';
-          }
+            list.appendChild(item);
+          });
+        } else {
+          list.innerHTML =
+            '<div style="padding: 8px; color: #666;">No results found</div>';
         }
       } catch (err) {
-        if (toList) {
-          toList.innerHTML =
-            '<div style="padding: 8px; color: #666;">Search failed</div>';
-        }
+        console.error("[Token Search] Error:", err);
+        list.innerHTML =
+          '<div style="padding: 8px; color: #666;">Search failed</div>';
       }
     }, 300);
-  });
+  };
 
   // Quote button handler
-  if (quoteBtn) {
-    quoteBtn.addEventListener("click", async () => {
-      const fromToken = (
-        document.getElementById("fromTokenAddress") as HTMLInputElement
-      )?.value;
-      const toToken = (
-        document.getElementById("toTokenAddress") as HTMLInputElement
-      )?.value;
-      const amount = (document.getElementById("swapAmount") as HTMLInputElement)
-        ?.value;
+  (window as any).__handleSolanaQuote = async () => {
+    const fromToken = (
+      document.getElementById("fromTokenAddress") as HTMLInputElement
+    )?.value;
+    const toToken = (
+      document.getElementById("toTokenAddress") as HTMLInputElement
+    )?.value;
+    const amount = (document.getElementById("swapAmount") as HTMLInputElement)
+      ?.value;
 
-      if (!fromToken || !toToken || !amount) {
-        context.log(
-          "❌ Please select both tokens and enter an amount",
-          "error"
-        );
-        return;
-      }
+    console.log("[Quote Handler] Raw values:", { fromToken, toToken, amount });
 
-      if (fromToken === toToken) {
-        context.log("❌ Cannot swap the same token", "error");
-        return;
-      }
+    if (!fromToken || !toToken || !amount) {
+      context.log("❌ Please select both tokens and enter an amount", "error");
+      return;
+    }
 
-      // Convert amount to proper decimals
-      const decimals =
-        fromToken === "So11111111111111111111111111111111111111112" ? 9 : 6;
-      const swapAmount = Math.floor(
-        parseFloat(amount) * Math.pow(10, decimals)
-      );
+    if (fromToken === toToken) {
+      context.log("❌ Cannot swap the same token", "error");
+      return;
+    }
 
-      await getSwapQuote(context, [
-        "",
-        "",
-        fromToken,
-        toToken,
-        swapAmount.toString(),
-      ]);
+    // Convert amount to proper decimals
+    const decimals =
+      fromToken === "So11111111111111111111111111111111111111112" ? 9 : 6;
+    const swapAmount = Math.floor(parseFloat(amount) * Math.pow(10, decimals));
+
+    console.log("[Quote Handler] Calling getSwapQuote with:", {
+      fromToken,
+      toToken,
+      swapAmount: swapAmount.toString(),
+      decimals,
     });
-  }
+
+    context.log("💱 Getting swap quote...", "info");
+    context.log(`   From: ${fromToken}`, "info");
+    context.log(`   To: ${toToken}`, "info");
+    context.log(`   Amount: ${swapAmount}`, "info");
+
+    const quote = await solana.getSwapQuote(
+      fromToken,
+      toToken,
+      swapAmount.toString()
+    );
+
+    if (quote) {
+      context.log("✅ Quote received:", "success");
+      context.log(`   Input: ${quote.inAmount}`, "info");
+      context.log(`   Output: ${quote.outAmount}`, "info");
+      context.log(`   Price Impact: ${quote.priceImpactPct}%`, "info");
+    } else {
+      context.log("❌ Failed to get quote", "error");
+    }
+  };
 
   // Swap button handler
-  if (swapBtn) {
-    swapBtn.addEventListener("click", async () => {
-      const fromToken = (
-        document.getElementById("fromTokenAddress") as HTMLInputElement
-      )?.value;
-      const toToken = (
-        document.getElementById("toTokenAddress") as HTMLInputElement
-      )?.value;
-      const amount = (document.getElementById("swapAmount") as HTMLInputElement)
-        ?.value;
+  (window as any).__handleSolanaSwap = async () => {
+    const fromToken = (
+      document.getElementById("fromTokenAddress") as HTMLInputElement
+    )?.value;
+    const toToken = (
+      document.getElementById("toTokenAddress") as HTMLInputElement
+    )?.value;
+    const amount = (document.getElementById("swapAmount") as HTMLInputElement)
+      ?.value;
 
-      if (!fromToken || !toToken || !amount) {
-        context.log(
-          "❌ Please select both tokens and enter an amount",
-          "error"
-        );
-        return;
-      }
+    if (!fromToken || !toToken || !amount) {
+      context.log("❌ Please select both tokens and enter an amount", "error");
+      return;
+    }
 
-      if (fromToken === toToken) {
-        context.log("❌ Cannot swap the same token", "error");
-        return;
-      }
+    if (fromToken === toToken) {
+      context.log("❌ Cannot swap the same token", "error");
+      return;
+    }
 
-      // Convert amount to proper decimals
-      const decimals =
-        fromToken === "So11111111111111111111111111111111111111112" ? 9 : 6;
-      const swapAmount = Math.floor(
-        parseFloat(amount) * Math.pow(10, decimals)
-      );
+    // Convert amount to proper decimals
+    const decimals =
+      fromToken === "So11111111111111111111111111111111111111112" ? 9 : 6;
+    const swapAmount = Math.floor(parseFloat(amount) * Math.pow(10, decimals));
 
-      await executeSwap(context, [
-        "",
-        "",
-        "",
-        fromToken,
-        toToken,
-        swapAmount.toString(),
-      ]);
-    });
-  }
-
-  // Focus management
-  [fromSearch, toSearch].forEach((input) => {
-    input.setAttribute("tabindex", "1");
-    input.style.cursor = "text";
-    input.addEventListener("click", (e) => {
-      e.stopPropagation();
-      (e.target as HTMLInputElement).focus();
-    });
-  });
+    await executeSwap(context, [fromToken, toToken, swapAmount.toString()]);
+  };
 }
 
 /**
@@ -913,7 +879,10 @@ async function executeSwap(
       const helpHtml = `
         <div style="margin: 8px 0;">
           ${createCommandLine("solana connect", "Connect your Solana wallet")}
-          ${createCommandLine("solana generate", "Generate a new Solana wallet")}
+          ${createCommandLine(
+            "solana generate",
+            "Generate a new Solana wallet"
+          )}
         </div>
       `;
       context.logHtml(helpHtml);
@@ -921,10 +890,13 @@ async function executeSwap(
     }
 
     if (args.length < 3) {
-      const usageHtml = createUsageError("solana swap execute <from_mint> <to_mint> <amount> [slippage_bps]", [
-        "solana swap execute So11111111111111111111111111111111111111112 EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v 1000000",
-        "solana swap execute So11...AA Bonk...AA 1000000 50",
-      ]);
+      const usageHtml = createUsageError(
+        "solana swap execute <from_mint> <to_mint> <amount> [slippage_bps]",
+        [
+          "solana swap execute So11111111111111111111111111111111111111112 EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v 1000000",
+          "solana swap execute So11...AA Bonk...AA 1000000 50",
+        ]
+      );
       context.logHtml(usageHtml);
       return;
     }

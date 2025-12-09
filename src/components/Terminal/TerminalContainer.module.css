@@ -845,6 +845,9 @@
     height: -webkit-fill-available; /* iOS fix */
     padding: 0;
     margin: 0;
+    /* Compensate for body's safe-area-inset padding to ensure proper centering */
+    margin-left: calc(-1 * env(safe-area-inset-left, 0px));
+    margin-right: calc(-1 * env(safe-area-inset-right, 0px));
     border-radius: 0;
     background: var(--palette-bg, #000000);
     overflow: hidden;

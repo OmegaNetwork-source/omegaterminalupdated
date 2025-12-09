@@ -9,7 +9,8 @@ import { config } from "@/lib/config";
 import { AVAILABLE_THEMES, APP_TITLE, APP_VERSION } from "@/lib/constants";
 import type { Theme } from "@/types";
 import { commandRegistry } from "./CommandRegistry";
-import { createCommandLine, createUsageError } from "./command-output-helpers";
+import { createCommandLine, createUsageError, createSingleCommandSuggestion, createCommandSuggestions } from "./command-output-helpers";
+import { isAppMode } from "@/lib/utils/url-utils";
 import {
   getQuickActions,
   saveQuickActions,
@@ -689,44 +690,18 @@ export const helpCommand: Command = {
     if (category && CATEGORY_HELP[category]) {
       const categoryLines = CATEGORY_HELP[category]();
       let categoryHtml = `
-         <div style="
-           font-family: 'Courier New', monospace;
-           line-height: 1.8;
-          color: var(--palette-text, #e0e0e0);
-           padding: 10px;
-         ">
-           <div style="
-             font-size: 20px;
-             font-weight: bold;
-            color: var(--palette-primary, #00d4ff);
-             margin-bottom: 20px;
-             text-align: center;
-             padding: 15px;
-            background: linear-gradient(135deg, rgba(0, 212, 255, 0.15), rgba(0, 255, 136, 0.1));
-            border: 2px solid var(--palette-primary, #00d4ff);
-             border-radius: 8px;
-            text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
-             letter-spacing: 2px;
-           ">
+         <div class="help-category-container">
+           <div class="help-category-title">
              ═══ ${category.toUpperCase()} HELP ═══
            </div>
-           <div style="padding: 10px;">
+           <div class="help-category-content">
        `;
 
       categoryLines.forEach((line) => {
         // Check if line is a header (contains emoji and uppercase text)
         if (line.match(/^[🎮💰⛏️📊🤖📰🌐🎨]|^[A-Z\s]+:$/)) {
           categoryHtml += `
-             <div style="
-               font-size: 16px;
-               font-weight: bold;
-              color: var(--palette-primary, #00d4ff);
-               margin: 15px 0 10px 0;
-               padding: 10px;
-              background: linear-gradient(90deg, rgba(0, 212, 255, 0.2), rgba(0, 212, 255, 0.05));
-              border-left: 4px solid var(--palette-primary, #00d4ff);
-               border-radius: 4px;
-             ">${line}</div>
+             <div class="help-category-group-header">${line}</div>
            `;
         } else if (line.trim().startsWith("  ") && line.includes("→")) {
           // Command line with arrow - make command clickable
@@ -741,73 +716,34 @@ export const helpCommand: Command = {
             .replace(/'/g, "&#39;");
 
           categoryHtml += `
-             <div style="margin: 8px 0; padding-left: 20px; padding-bottom: 6px;">
+             <div class="help-category-command-row">
               <span 
-                class="omega-help-command"
+                class="omega-help-command help-category-command-name"
                 data-command="${escapedCommand}"
-                style="
-                  color: var(--palette-secondary, #00ff88);
-                 font-weight: bold;
-                 font-size: 1.05em;
-                 font-family: 'Courier New', monospace;
-                  text-shadow: 0 0 6px rgba(0, 255, 136, 0.3);
-                  cursor: pointer;
-                  display: inline-block;
-                  padding: 2px 4px;
-                  border-radius: 3px;
-                 transition: all 0.2s ease;
-                  user-select: none;
-                "
-                onmouseover="this.style.background = 'color-mix(in srgb, var(--palette-secondary, #00ff88) 15%, transparent)'; this.style.textShadow = '0 0 8px var(--palette-secondary-glow, rgba(0, 255, 136, 0.5))';"
-                onmouseout="this.style.background = 'transparent'; this.style.textShadow = '0 0 6px rgba(0, 255, 136, 0.3)';"
                 title="Click to add '${escapedCommand}' to terminal input"
               >${commandPart}</span>
                ${
                  descPart
-                   ? `<span style="
-                color: var(--palette-text, #ccd4e0);
-                 margin-left: 15px;
-                 font-size: 0.95em;
-                 opacity: 0.95;
-               ">→ ${descPart}</span>`
+                   ? `<span class="help-category-command-desc">→ ${descPart}</span>`
                    : ""
                }
              </div>
            `;
         } else if (line.trim()) {
           categoryHtml += `
-             <div style="
-              color: var(--palette-text, #ccd4e0);
-               margin: 6px 0;
-               padding-left: 15px;
-               font-size: 0.95em;
-               line-height: 1.6;
-             ">${line}</div>
+             <div class="help-category-text">${line}</div>
            `;
         } else {
-          categoryHtml += `<div style="margin: 8px 0;"></div>`;
+          categoryHtml += `<div class="help-spacer"></div>`;
         }
       });
 
       categoryHtml += `
            </div>
-           <div style="
-             margin-top: 25px;
-             padding: 15px;
-            background: rgba(0, 212, 255, 0.1);
-            border: 1px solid var(--palette-border, rgba(0, 212, 255, 0.3));
-             border-radius: 6px;
-             text-align: center;
-           ">
-            <span style="color: var(--palette-primary, #00d4ff); font-weight: bold;">💡</span>
-            <span style="color: var(--palette-text, #ccd4e0); margin-left: 8px;">
-               Use <code style="
-                color: var(--palette-primary-glow, #00ff88);
-                background: rgba(0, 255, 136, 0.1);
-                 padding: 2px 6px;
-                 border-radius: 3px;
-                 font-weight: bold;
-               ">help</code> to see all commands
+           <div class="help-category-hint">
+            <span class="help-hint-icon">💡</span>
+            <span class="help-hint-text">
+               Use <code class="help-hint-code">help</code> to see all commands
              </span>
            </div>
          </div>
@@ -854,36 +790,9 @@ export const helpCommand: Command = {
     </svg>`;
 
     let helpHtml = `
-       <div style="
-         font-family: 'Courier New', monospace;
-        line-height: 1.6;
-        color: var(--palette-text, #e0e0e0);
-        padding: 12px;
-       ">
-         <div style="
-          font-size: 18px;
-           font-weight: bold;
-          color: var(--palette-primary, #00d4ff);
-          margin-bottom: 20px;
-           text-align: center;
-          padding: 8px;
-          border: 1px solid var(--palette-border, rgba(0, 212, 255, 0.3));
-          border-radius: 4px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 12px;
-        ">
-          <span style="
-            width: 24px;
-            height: 24px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--palette-primary, #00bcf2);
-            flex-shrink: 0;
-            vertical-align: middle;
-         ">
+       <div class="help-container">
+         <div class="help-header">
+          <span class="help-icon">
             ${helpIconSvg}
           </span>
           <span>Omega Commands</span>
@@ -948,18 +857,11 @@ export const helpCommand: Command = {
       const commands = commandsByCategory.get(cat);
       if (commands && commands.length > 0) {
         helpHtml += `
-          <div style="margin: 24px 0 12px 0;">
-             <div style="
-              font-size: 14px;
-               font-weight: bold;
-              color: var(--palette-primary, #00d4ff);
-               margin-bottom: 12px;
-              padding: 4px 0;
-              border-bottom: 1px solid var(--palette-border, rgba(0, 212, 255, 0.2));
-             ">
+          <div class="help-category-section">
+             <div class="help-category-header">
               ${cat.replace(/-/g, " ").toUpperCase()} (${commands.length})
              </div>
-            <div style="margin-bottom: 16px;">
+            <div class="help-grid">
          `;
 
         commands
@@ -967,24 +869,11 @@ export const helpCommand: Command = {
           .forEach((cmd) => {
             const aliases =
               cmd.aliases && cmd.aliases.length > 0
-                ? ` <span style="
-                  color: var(--palette-primary, #00d4ff);
-                   font-size: 0.85em;
-                   font-weight: normal;
-                   font-style: italic;
-                  opacity: 0.8;
-                   margin-left: 5px;
-                 ">[${cmd.aliases.join(", ")}]</span>`
+                ? ` <span class="help-command-aliases">[${cmd.aliases.join(", ")}]</span>`
                 : "";
 
             const usage = cmd.usage
-              ? `<div style="
-                  color: var(--palette-secondary, #00ff88);
-                  margin-left: 0;
-                  margin-top: 4px;
-                  font-size: 11px;
-                   font-family: 'Courier New', monospace;
-                ">→ Usage: <span style="color: var(--palette-secondary, #00ff88);">${cmd.usage}</span></div>`
+              ? `<div class="help-command-usage">→ Usage: <span>${cmd.usage}</span></div>`
               : "";
 
             // Make command name clickable
@@ -993,43 +882,17 @@ export const helpCommand: Command = {
               .replace(/'/g, "&#39;");
 
             helpHtml += `
-              <div style="
-                background: linear-gradient(135deg, color-mix(in srgb, var(--palette-primary, #00bcf2) 5%, transparent) 0%, color-mix(in srgb, var(--palette-primary, #00bcf2) 2%, transparent) 100%);
-                border: 1px solid var(--palette-border, color-mix(in srgb, var(--palette-primary, #00bcf2) 20%, transparent));
-                border-radius: 8px;
-                padding: 12px;
-                margin-bottom: 8px;
-              ">
-                <div style="display: flex; align-items: baseline; flex-wrap: wrap; gap: 8px; margin-bottom: 6px;">
+              <div class="help-command-card">
+                <div class="help-command-header">
                   <span 
-                    class="omega-help-command"
+                    class="omega-help-command help-command-name"
                     data-command="${escapedCommand}"
-                    style="
-                      color: var(--palette-secondary, #00ff88);
-                     font-weight: bold;
-                      font-size: 14px;
-                     font-family: 'Courier New', monospace;
-                      cursor: pointer;
-                      display: inline-block;
-                      padding: 2px 6px;
-                      border-radius: 3px;
-                     transition: all 0.2s ease;
-                      user-select: none;
-                    "
-                    onmouseover="this.style.background = 'color-mix(in srgb, var(--palette-secondary, #00ff88) 15%, transparent)'; this.style.textShadow = '0 0 8px var(--palette-secondary-glow, rgba(0, 255, 136, 0.5))';"
-                    onmouseout="this.style.background = 'transparent'; this.style.textShadow = 'none';"
                     title="Click to add '${escapedCommand}' to terminal input"
                   >${cmd.name}</span>${aliases}
                  </div>
                  ${
                    cmd.description
-                     ? `<div style="
-                  color: color-mix(in srgb, var(--palette-text, #ffffff) 70%, transparent);
-                  margin-left: 0;
-                   margin-top: 4px;
-                  font-size: 12px;
-                  line-height: 1.4;
-                 ">${cmd.description}</div>`
+                     ? `<div class="help-command-description">${cmd.description}</div>`
                      : ""
                  }
                  ${usage}
@@ -1047,18 +910,11 @@ export const helpCommand: Command = {
     // Display uncategorized commands
     if (uncategorized.length > 0) {
       helpHtml += `
-        <div style="margin: 24px 0 12px 0;">
-           <div style="
-            font-size: 14px;
-             font-weight: bold;
-            color: var(--palette-primary, #00d4ff);
-             margin-bottom: 12px;
-            padding: 4px 0;
-            border-bottom: 1px solid var(--palette-border, rgba(0, 212, 255, 0.2));
-           ">
+        <div class="help-category-section">
+           <div class="help-category-header">
             OTHER COMMANDS (${uncategorized.length})
            </div>
-          <div style="margin-bottom: 16px;">
+          <div class="help-grid">
        `;
 
       uncategorized
@@ -1066,24 +922,11 @@ export const helpCommand: Command = {
         .forEach((cmd) => {
           const aliases =
             cmd.aliases && cmd.aliases.length > 0
-              ? ` <span style="
-                color: var(--palette-primary, #00d4ff);
-                font-size: 11px;
-                 font-weight: normal;
-                 font-style: italic;
-                opacity: 0.8;
-                 margin-left: 5px;
-               ">[${cmd.aliases.join(", ")}]</span>`
+              ? ` <span class="help-command-aliases">[${cmd.aliases.join(", ")}]</span>`
               : "";
 
           const usage = cmd.usage
-            ? `<div style="
-                color: var(--palette-secondary, #00ff88);
-                margin-left: 0;
-                margin-top: 4px;
-                font-size: 11px;
-                 font-family: 'Courier New', monospace;
-              ">→ Usage: <span style="color: var(--palette-secondary, #00ff88);">${cmd.usage}</span></div>`
+            ? `<div class="help-command-usage">→ Usage: <span>${cmd.usage}</span></div>`
             : "";
 
           // Make command name clickable
@@ -1092,43 +935,17 @@ export const helpCommand: Command = {
             .replace(/'/g, "&#39;");
 
           helpHtml += `
-            <div style="
-              background: linear-gradient(135deg, color-mix(in srgb, var(--palette-primary, #00bcf2) 5%, transparent) 0%, color-mix(in srgb, var(--palette-primary, #00bcf2) 2%, transparent) 100%);
-              border: 1px solid var(--palette-border, color-mix(in srgb, var(--palette-primary, #00bcf2) 20%, transparent));
-              border-radius: 8px;
-              padding: 12px;
-              margin-bottom: 8px;
-            ">
-              <div style="display: flex; align-items: baseline; flex-wrap: wrap; gap: 8px; margin-bottom: 6px;">
+            <div class="help-command-card">
+              <div class="help-command-header">
                 <span 
-                  class="omega-help-command"
+                  class="omega-help-command help-command-name"
                   data-command="${escapedCommand}"
-                  style="
-                    color: var(--palette-secondary, #00ff88);
-                   font-weight: bold;
-                    font-size: 14px;
-                   font-family: 'Courier New', monospace;
-                    cursor: pointer;
-                    display: inline-block;
-                    padding: 2px 6px;
-                    border-radius: 3px;
-                   transition: all 0.2s ease;
-                    user-select: none;
-                  "
-                  onmouseover="this.style.background = 'color-mix(in srgb, var(--palette-secondary, #00ff88) 15%, transparent)'; this.style.textShadow = '0 0 8px var(--palette-secondary-glow, rgba(0, 255, 136, 0.5))';"
-                  onmouseout="this.style.background = 'transparent'; this.style.textShadow = 'none';"
                   title="Click to add '${escapedCommand}' to terminal input"
                 >${cmd.name}</span>${aliases}
                </div>
                ${
                  cmd.description
-                   ? `<div style="
-                color: color-mix(in srgb, var(--palette-text, #ffffff) 70%, transparent);
-                margin-left: 0;
-                 margin-top: 4px;
-                font-size: 12px;
-                line-height: 1.4;
-               ">${cmd.description}</div>`
+                   ? `<div class="help-command-description">${cmd.description}</div>`
                    : ""
                }
                ${usage}
@@ -1136,21 +953,12 @@ export const helpCommand: Command = {
            `;
         });
 
-      helpHtml += `</div>`;
+      helpHtml += `</div></div>`;
     }
 
     helpHtml += `
-         <div style="
-          margin-top: 20px;
-          padding: 15px;
-           text-align: center;
-          border-top: 1px solid var(--palette-border, rgba(0, 212, 255, 0.2));
-         ">
-           <div style="
-            color: color-mix(in srgb, var(--palette-text, #ffffff) 60%, transparent);
-            font-size: 0.85em;
-               font-family: 'Courier New', monospace;
-          ">
+         <div class="help-footer">
+           <div class="help-version">
             Ω Terminal v3.0.0 - Enhanced Analytics • DeFi Integration • NFT Trading
            </div>
          </div>
@@ -1190,7 +998,7 @@ export const statusCommand: Command = {
       );
     } else {
       context.log("Wallet: Not connected", "warning");
-      const helpHtml = createCommandLine("connect", "Link MetaMask");
+      const helpHtml = createSingleCommandSuggestion("connect", "Link MetaMask");
       context.logHtml(helpHtml);
     }
 
@@ -1811,9 +1619,6 @@ export const quickActionsCommand: Command = {
       const actions = getQuickActions();
       const grouped = groupQuickActionsByCategory(actions);
 
-      context.log("⭐ Your Custom Quick Actions:", "info");
-      context.log("", "output");
-
       if (actions.length === 0) {
         context.log(
           "No custom quick actions set. Use 'quick-actions add' to add some!",
@@ -1822,23 +1627,27 @@ export const quickActionsCommand: Command = {
         return;
       }
 
+      // Display quick actions using the new command suggestion helper
+      context.log("⭐ Your Quick Actions", "info");
+      context.log("", "output");
+
+      // Convert quick actions to command suggestions grouped by category
       Object.entries(grouped).forEach(([category, categoryActions]) => {
-        context.log(`📁 ${category}:`, "output");
-        categoryActions.forEach((action) => {
-          context.logHtml(
-            `  • ${createCommandLine(action.command, action.label)} ${
-              action.description ? `→ ${action.description}` : ""
-            }`
-          );
-        });
+        context.log(`📁 ${category}`, "info");
+        
+        const suggestions = categoryActions.map(action => ({
+          command: action.command,
+          label: action.label || action.command,
+          description: action.description
+        }));
+        
+        const html = createCommandSuggestions(suggestions);
+        context.logHtml(html);
+        
         context.log("", "output");
       });
 
-      context.log("💡 Click any command above to execute it", "info");
-      context.log(
-        "💡 Use 'quick-actions add <command> <label> [description]' to add more",
-        "info"
-      );
+      context.log("💡 Click any command to execute • 'qa add' to add more", "info");
     } else if (subcommand === "add") {
       const command = args[2];
       if (!command) {
@@ -2040,8 +1849,14 @@ export const multiterminalCommand: Command = {
         context.log("❌ Invalid terminal mode", "error");
         const helpHtml = `
           <div style="margin: 8px 0;">
-            ${createCommandLine("multiterminal single", "Switch to single terminal mode")}
-            ${createCommandLine("multiterminal multi", "Switch to multi-terminal mode")}
+            ${createCommandLine(
+              "multiterminal single",
+              "Switch to single terminal mode"
+            )}
+            ${createCommandLine(
+              "multiterminal multi",
+              "Switch to multi-terminal mode"
+            )}
             ${createCommandLine("multiterminal toggle", "Toggle between modes")}
           </div>
         `;

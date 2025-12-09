@@ -30,12 +30,12 @@ export async function searchTokens(query: string): Promise<TokenInfo[]> {
     const tokens: TokenInfo[] = (data.tokens || data || [])
       .slice(0, 20)
       .map((token: any) => ({
-        address: token.address || token.mint,
+        address: token.id || token.address || token.mint,
         symbol: token.symbol,
         name: token.name,
         decimals: token.decimals,
-        logoURI: token.logoURI || token.logo,
-        verified: token.verified || token.strict,
+        logoURI: token.icon || token.logoURI || token.logo,
+        verified: token.isVerified || token.verified || token.strict,
         tags: token.tags || [],
       }));
 
@@ -65,6 +65,13 @@ export async function getSwapQuote(
   slippageBps: number = 50
 ): Promise<SwapQuote | null> {
   try {
+    console.log("[Jupiter getSwapQuote] Received parameters:", {
+      inputMint,
+      outputMint,
+      amount,
+      slippageBps,
+    });
+
     // Build query parameters
     const params = new URLSearchParams({
       inputMint,
@@ -72,6 +79,8 @@ export async function getSwapQuote(
       amount,
       slippageBps: slippageBps.toString(),
     });
+
+    console.log("[Jupiter getSwapQuote] Query params:", params.toString());
 
     // Use relayer as proxy for Jupiter API
     const url = `${config.JUPITER_API_URL}/jupiter/quote?${params.toString()}`;

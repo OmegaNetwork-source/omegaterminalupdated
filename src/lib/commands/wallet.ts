@@ -8,12 +8,12 @@ import { isValidEthereumAddress, shortenAddress, escapeHtml } from "@/lib/utils"
 import { config } from "@/lib/config";
 import { parseEther } from "ethers";
 import { openNetworkSelector } from "@/lib/wallet/networkSelector";
-import { createCommandLine, createUsageError } from "./command-output-helpers";
+import { createCommandLine, createUsageError, createSingleCommandSuggestion, createCommandSuggestions } from "./command-output-helpers";
 
 function requireConnection(context: CommandContext): boolean {
   if (!context.wallet.state.isConnected || !context.wallet.state.address) {
     context.log("No wallet connected.", "warning");
-    const helpHtml = createCommandLine("connect", "Connect a wallet first");
+    const helpHtml = createSingleCommandSuggestion("connect", "Connect a wallet first");
     context.logHtml(helpHtml);
     return false;
   }
@@ -821,77 +821,23 @@ export const fundDirectCommand: Command = {
  * Displays helpful instructions in a nicely formatted panel
  */
 function showWalletSetupGuide(context: CommandContext): void {
-  const helpHtml = `
-    <div style="
-      background: linear-gradient(135deg, color-mix(in srgb, var(--palette-primary, #00d4ff) 15%, transparent), color-mix(in srgb, var(--palette-secondary, #00ff88) 10%, transparent));
-      border: 1px solid color-mix(in srgb, var(--palette-primary, #00d4ff) 30%, transparent);
-      border-radius: 12px;
-      padding: 20px;
-      margin: 10px 0;
-    ">
-      <div style="
-        font-size: 18px;
-        font-weight: 600;
-        color: var(--palette-primary, #00d4ff);
-        margin-bottom: 16px;
-        text-align: center;
-      ">🦊 Wallet Setup Guide</div>
-      
-      <div style="color: var(--palette-warning, #ffa502); margin-bottom: 12px;">
-        No wallet is currently connected.
-      </div>
-      
-      <div style="margin: 16px 0;">
-        <div style="
-          font-size: 14px;
-          font-weight: bold;
-          color: var(--palette-primary, #00d4ff);
-          margin-bottom: 8px;
-        ">Option 1: Connect MetaMask</div>
-        ${createCommandLine("connect", "Connect your MetaMask wallet")}
-      </div>
-      
-      <div style="margin: 16px 0;">
-        <div style="
-          font-size: 14px;
-          font-weight: bold;
-          color: var(--palette-primary, #00d4ff);
-          margin-bottom: 8px;
-        ">Option 2: Create Test Wallet</div>
-        ${createCommandLine("test-wallet", "Create a temporary test wallet")}
-        <div style="
-          color: var(--palette-warning, #ffa502);
-          margin-top: 4px;
-          font-size: 0.9em;
-          padding-left: 20px;
-        ">(For testing only - wallet clears when tab closes)</div>
-      </div>
-      
-      <div style="margin: 16px 0;">
-        <div style="
-          font-size: 14px;
-          font-weight: bold;
-          color: var(--palette-primary, #00d4ff);
-          margin-bottom: 8px;
-        ">After connecting:</div>
-        ${createCommandLine("balance", "Check your balance")}
-        ${createCommandLine("send <amount> <address>", "Transfer tokens")}
-        ${createCommandLine("fund", "Get testnet tokens")}
-      </div>
-      
-      <div style="
-        margin-top: 20px;
-        padding-top: 12px;
-        border-top: 1px solid color-mix(in srgb, var(--palette-primary, #00d4ff) 20%, transparent);
-        color: var(--palette-text, #ccd4e0);
-        font-size: 0.9em;
-        text-align: center;
-      ">
-        💡 You can still use commands like <span class="omega-help-command" data-command="help" style="color: var(--palette-secondary, #00ff88); font-weight: bold; cursor: pointer; font-family: 'Courier New', monospace; padding: 2px 4px; border-radius: 3px; transition: all 0.2s ease;" onmouseover="this.style.background = 'color-mix(in srgb, var(--palette-secondary, #00ff88) 15%, transparent)';" onmouseout="this.style.background = 'transparent';" title="Click to add 'help' to terminal input">help</span>, <span class="omega-help-command" data-command="balance" style="color: var(--palette-secondary, #00ff88); font-weight: bold; cursor: pointer; font-family: 'Courier New', monospace; padding: 2px 4px; border-radius: 3px; transition: all 0.2s ease;" onmouseover="this.style.background = 'color-mix(in srgb, var(--palette-secondary, #00ff88) 15%, transparent)';" onmouseout="this.style.background = 'transparent';" title="Click to add 'balance' to terminal input">balance</span>, and <span class="omega-help-command" data-command="mine" style="color: var(--palette-secondary, #00ff88); font-weight: bold; cursor: pointer; font-family: 'Courier New', monospace; padding: 2px 4px; border-radius: 3px; transition: all 0.2s ease;" onmouseover="this.style.background = 'color-mix(in srgb, var(--palette-secondary, #00ff88) 15%, transparent)';" onmouseout="this.style.background = 'transparent';" title="Click to add 'mine' to terminal input">mine</span>
-      </div>
-    </div>
-  `;
-  context.logHtml(helpHtml);
+  context.log("🦊 Wallet Setup Guide", "info");
+  context.log("", "output");
+  context.log("No wallet is currently connected.", "warning");
+  context.log("", "output");
+  
+  context.log("Options:", "info");
+  const suggestions = createCommandSuggestions([
+    { command: "connect", label: "Connect MetaMask", description: "Connect your MetaMask wallet" },
+    { command: "test-wallet", label: "Create Test Wallet", description: "Create a temporary test wallet (for testing only)" },
+    { command: "balance", label: "Check Balance", description: "Check your wallet balance" },
+    { command: "send <amount> <address>", label: "Send Tokens", description: "Transfer tokens to an address" },
+    { command: "fund", label: "Get Testnet Tokens", description: "Request testnet tokens from faucet" },
+  ]);
+  context.logHtml(suggestions);
+  
+  context.log("", "output");
+  context.log("💡 You can still use commands like help, balance, and mine", "info");
 }
 
 export const walletCommands: Command[] = [

@@ -7,6 +7,7 @@ import type { Command, CommandContext } from "@/types/commands";
 import { config } from "@/lib/config";
 import * as eclipse from "@/lib/multichain/eclipse";
 import { createCommandLine, createUsageError } from "./command-output-helpers";
+import { isAppMode } from "@/lib/utils/url-utils";
 
 /**
  * Eclipse command - Main entry point for all Eclipse network operations
@@ -41,8 +42,14 @@ export const eclipseCommand: Command = {
         await getTokenPrice(context, args.slice(2));
         break;
       case "swap":
-        if (args[2] === "execute" && args.length >= 6) {
-          await executeSwap(context, args.slice(3));
+        // Check if app mode is enabled
+        if (isAppMode()) {
+          context.log("❌ Swap is not supported on mobile app version", "error");
+          return;
+        }
+        
+        if (args.length > 2) {
+          await executeSwap(context, args.slice(2));
         } else {
           await showSwapInterface(context);
         }

@@ -6,6 +6,7 @@
  */
 
 import type { Command, CommandContext } from "@/types/commands";
+import { isAppMode } from "@/lib/utils/url-utils";
 
 /**
  * Perps command - Perpetual futures trading
@@ -17,6 +18,12 @@ export const perpsCommand: Command = {
   aliases: ["perp"],
   category: "trading",
   handler: async (context: CommandContext, args: string[]) => {
+    // Check if app mode is enabled - disable Perps completely
+    if (isAppMode()) {
+      context.log("❌ Perpetual trading is not supported on mobile app version", "error");
+      return;
+    }
+    
     const subcommand = args[1]?.toLowerCase();
 
     if (!subcommand || subcommand === "open") {

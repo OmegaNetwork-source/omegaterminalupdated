@@ -21,6 +21,7 @@
  */
 
 import type { Command, CommandContext } from "@/types/commands";
+import { isAppMode } from "@/lib/utils/url-utils";
 import config from "@/lib/config";
 import { createCommandLine, createUsageError } from "./command-output-helpers";
 
@@ -267,6 +268,12 @@ export const youtubeCommand: Command = {
     "youtube <open|close|search|play|pause|next|prev|mute|unmute|help> [params]",
   category: "media",
   handler: async (context: CommandContext, args: string[]) => {
+    // Check if app mode is enabled - disable YouTube completely
+    if (isAppMode()) {
+      context.log("❌ YouTube is not supported on mobile app version", "error");
+      return;
+    }
+    
     const subcommand = args[1]?.toLowerCase();
 
     switch (subcommand) {

@@ -5,6 +5,7 @@
  */
 
 import type { Command, CommandContext } from "@/types/commands";
+import { isAppMode } from "@/lib/utils/url-utils";
 import { createUsageError } from "./command-output-helpers";
 
 /**
@@ -16,6 +17,12 @@ export const spotifyCommand: Command = {
   usage: "spotify <open|connect|disconnect|play|pause|next|prev|search|playlists|close|help>",
   category: "entertainment",
   handler: async (context: CommandContext, args: string[]) => {
+    // Check if app mode is enabled - disable Spotify completely
+    if (isAppMode()) {
+      context.log("❌ Spotify is not supported on mobile app version", "error");
+      return;
+    }
+    
     const subcommand = args[1]?.toLowerCase();
 
     if (!subcommand || subcommand === "open" || subcommand === "player") {

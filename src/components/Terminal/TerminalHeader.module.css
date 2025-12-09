@@ -23,11 +23,18 @@
   flex-shrink: 0;
   position: relative;
   z-index: 10;
+  box-sizing: border-box;
   transition: border-color 0.3s ease, background 0.3s ease;
 }
 
 .headerLeft,
 .headerCenter,
+.headerRight {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+}
 .headerRight {
   flex: 1;
   display: flex;
@@ -227,11 +234,7 @@
   border-color: var(--palette-primary, #00bcf2);
   color: var(--palette-secondary, #00ff88);
   box-shadow: 0 0 10px
-    color-mix(
-      in srgb,
-      var(--palette-primary, #00bcf2) 30%,
-      transparent
-    );
+    color-mix(in srgb, var(--palette-primary, #00bcf2) 30%, transparent);
 }
 
 .aiLabel {
@@ -701,13 +704,13 @@
 
 @media (max-width: 768px) {
   .header {
-    flex-direction: row;
+    display: grid;
+    grid-template-columns: 40px 1fr 40px;
     align-items: center;
-    justify-content: space-between;
-    padding: 8px 16px;
-    height: 50px;
-    min-height: 50px;
-    max-height: 50px;
+    padding: 12px 16px;
+    height: auto;
+    min-height: 56px;
+    max-height: 56px;
     position: relative;
     background: color-mix(in srgb, var(--palette-bg, #0a0a0f) 85%, transparent);
     backdrop-filter: blur(10px);
@@ -719,6 +722,7 @@
     margin: 0;
     left: 0;
     right: 0;
+    gap: 12px;
   }
 
   /* Hide center section on mobile */
@@ -726,29 +730,49 @@
     display: none;
   }
 
-  /* Show right section for spacing balance */
+  /* Show right section for spacing balance - equal width to menu button */
   .headerRight {
     display: flex;
-    width: 40px; /* Match menu button width */
+    width: 40px;
     min-width: 40px;
+    flex-shrink: 0;
+    justify-content: flex-end;
+    align-items: center;
+    grid-column: 3;
   }
 
-  /* Show only title and hamburger on mobile */
+  /* Center title section - takes remaining space in the middle grid column */
   .headerLeft {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 0;
-    flex: 1;
     min-width: 0;
+    margin: 0;
+    padding: 0;
+    grid-column: 2;
   }
 
   .title {
     font-size: 16px;
     margin: 0;
+    padding: 0;
     font-weight: 600;
     text-align: center;
     width: 100%;
+    text-shadow: 0 0 10px
+        var(
+          --palette-primary-glow,
+          color-mix(in srgb, var(--palette-primary, #ffffff) 20%, transparent)
+        ),
+      0 0 20px
+        var(
+          --palette-primary-glow,
+          color-mix(in srgb, var(--palette-primary, #ffffff) 20%, transparent)
+        );
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .routeNav {
@@ -761,6 +785,8 @@
     min-height: 40px;
     width: 40px;
     height: 40px;
+    margin: 0;
+    padding: 0;
     background: transparent;
     border: 1px solid var(--palette-border, rgba(0, 188, 242, 0.25));
     border-radius: 8px;
@@ -772,6 +798,7 @@
     transition: all 150ms ease;
     touch-action: manipulation;
     flex-shrink: 0;
+    grid-column: 1;
   }
 
   .mobileMenuButton:hover,
@@ -793,8 +820,6 @@
     width: 24px;
     height: 24px;
   }
-
-  /* Removed conflicting styles that were forcing column layout */
 
   .subtitle {
     text-align: center;
@@ -848,11 +873,39 @@
 
 @media (max-width: 480px) {
   .header {
-    padding-bottom: 12px;
+    display: grid;
+    grid-template-columns: 36px 1fr 36px;
+    padding: 10px 12px;
+    min-height: 52px;
+    max-height: 52px;
+    gap: 10px;
   }
 
   .title {
-    font-size: 16px;
+    font-size: 15px;
+  }
+
+  .mobileMenuButton {
+    min-width: 36px;
+    min-height: 36px;
+    width: 36px;
+    height: 36px;
+    grid-column: 1;
+  }
+
+  .mobileMenuButton svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .headerLeft {
+    grid-column: 2;
+  }
+
+  .headerRight {
+    width: 36px;
+    min-width: 36px;
+    grid-column: 3;
   }
 
   .socialLinks {
@@ -935,16 +988,12 @@
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
   color: #00ff00 !important;
-  text-shadow: 
-    0 0 5px rgba(0, 255, 0, 0.5),
-    0 0 10px rgba(0, 255, 0, 0.3);
+  text-shadow: 0 0 5px rgba(0, 255, 0, 0.5), 0 0 10px rgba(0, 255, 0, 0.3);
 }
 
 :global(body.theme-crt) .header * {
   color: #00ff00 !important;
-  text-shadow: 
-    0 0 5px rgba(0, 255, 0, 0.5),
-    0 0 10px rgba(0, 255, 0, 0.3);
+  text-shadow: 0 0 5px rgba(0, 255, 0, 0.5), 0 0 10px rgba(0, 255, 0, 0.3);
 }
 
 :global(body.theme-crt) .title {
@@ -958,10 +1007,12 @@
   background-clip: text !important;
   -webkit-text-fill-color: transparent !important;
   color: var(--palette-primary, #00ff00) !important; /* Fallback */
-  text-shadow: 
-    0 0 10px color-mix(in srgb, var(--palette-secondary, #39ff14) 70%, transparent),
-    0 0 20px color-mix(in srgb, var(--palette-primary, #00ff00) 50%, transparent),
-    0 0 30px color-mix(in srgb, var(--palette-secondary, #39ff14) 30%, transparent);
+  text-shadow: 0 0 10px
+      color-mix(in srgb, var(--palette-secondary, #39ff14) 70%, transparent),
+    0 0 20px
+      color-mix(in srgb, var(--palette-primary, #00ff00) 50%, transparent),
+    0 0 30px
+      color-mix(in srgb, var(--palette-secondary, #39ff14) 30%, transparent);
 }
 
 :global(body.theme-crt) .routeLink {
@@ -972,9 +1023,7 @@
 :global(body.theme-crt) .routeLink:hover {
   color: #39ff14 !important;
   border-bottom-color: rgba(0, 255, 0, 0.4) !important;
-  text-shadow: 
-    0 0 8px rgba(0, 255, 0, 0.8),
-    0 0 15px rgba(0, 255, 0, 0.5);
+  text-shadow: 0 0 8px rgba(0, 255, 0, 0.8), 0 0 15px rgba(0, 255, 0, 0.5);
 }
 
 :global(body.theme-crt) .controlButton {
@@ -982,6 +1031,7 @@
   border: 1px solid rgba(0, 255, 0, 0.3) !important;
   border-radius: 0 !important;
   color: #00ff00 !important;
+<<<<<<< HEAD
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
   box-shadow: 
@@ -990,32 +1040,31 @@
   text-shadow: 
     0 0 5px rgba(0, 255, 0, 0.5),
     0 0 10px rgba(0, 255, 0, 0.3);
+=======
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  box-shadow: 0 0 10px rgba(0, 255, 0, 0.2), inset 0 0 10px rgba(0, 255, 0, 0.1);
+  text-shadow: 0 0 5px rgba(0, 255, 0, 0.5), 0 0 10px rgba(0, 255, 0, 0.3);
+>>>>>>> 1e406fe24e00fed788ea986ca4ada9d26b39110d
 }
 
 :global(body.theme-crt) .controlButton:hover {
   background: rgba(0, 0, 0, 0.9) !important;
   border-color: rgba(0, 255, 0, 0.6) !important;
   color: #39ff14 !important;
-  text-shadow: 
-    0 0 8px rgba(0, 255, 0, 0.8),
-    0 0 15px rgba(0, 255, 0, 0.5);
-  box-shadow: 
-    0 0 20px rgba(0, 255, 0, 0.4),
+  text-shadow: 0 0 8px rgba(0, 255, 0, 0.8), 0 0 15px rgba(0, 255, 0, 0.5);
+  box-shadow: 0 0 20px rgba(0, 255, 0, 0.4),
     inset 0 0 20px rgba(0, 255, 0, 0.15);
 }
 
 :global(body.theme-crt) .socialLink {
   color: rgba(0, 255, 0, 0.7) !important;
-  text-shadow: 
-    0 0 5px rgba(0, 255, 0, 0.4),
-    0 0 10px rgba(0, 255, 0, 0.2);
+  text-shadow: 0 0 5px rgba(0, 255, 0, 0.4), 0 0 10px rgba(0, 255, 0, 0.2);
 }
 
 :global(body.theme-crt) .socialLink:hover {
   color: #39ff14 !important;
-  text-shadow: 
-    0 0 8px rgba(0, 255, 0, 0.8),
-    0 0 15px rgba(0, 255, 0, 0.5);
+  text-shadow: 0 0 8px rgba(0, 255, 0, 0.8), 0 0 15px rgba(0, 255, 0, 0.5);
 }
 
 :global(body.theme-crt) .aiSelect,
@@ -1024,11 +1073,17 @@
   border: 1px solid rgba(0, 255, 0, 0.3) !important;
   border-radius: 0 !important;
   color: #00ff00 !important;
+<<<<<<< HEAD
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
   text-shadow: 
     0 0 5px rgba(0, 255, 0, 0.5),
     0 0 10px rgba(0, 255, 0, 0.3);
+=======
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  text-shadow: 0 0 5px rgba(0, 255, 0, 0.5), 0 0 10px rgba(0, 255, 0, 0.3);
+>>>>>>> 1e406fe24e00fed788ea986ca4ada9d26b39110d
 }
 
 :global(body.theme-crt) .connectionStatus {
@@ -1038,15 +1093,258 @@
   color: #00ff00 !important;
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
-  text-shadow: 
-    0 0 5px rgba(0, 255, 0, 0.5),
-    0 0 10px rgba(0, 255, 0, 0.3);
+  text-shadow: 0 0 5px rgba(0, 255, 0, 0.5), 0 0 10px rgba(0, 255, 0, 0.3);
 }
 
 :global(body.theme-crt) .connectionStatus.connected {
   color: #39ff14 !important;
   border-color: rgba(57, 255, 20, 0.4) !important;
-  text-shadow: 
-    0 0 8px rgba(57, 255, 20, 0.8),
-    0 0 15px rgba(57, 255, 20, 0.5);
+  text-shadow: 0 0 8px rgba(57, 255, 20, 0.8), 0 0 15px rgba(57, 255, 20, 0.5);
+}
+
+/* -----------------------------------------------------------------------------
+   Theme-Specific Mobile Overrides
+   ----------------------------------------------------------------------------- */
+
+/* CRT Theme Mobile */
+@media (max-width: 768px) {
+  :global(body.theme-crt) .header {
+    display: grid !important;
+    grid-template-columns: 40px 1fr 40px !important;
+    padding: 12px 16px !important;
+    min-height: 56px !important;
+    max-height: 56px !important;
+    gap: 12px !important;
+  }
+
+  :global(body.theme-crt) .title {
+    font-size: 16px !important;
+  }
+
+  :global(body.theme-crt) .mobileMenuButton {
+    min-width: 40px !important;
+    min-height: 40px !important;
+    width: 40px !important;
+    height: 40px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+}
+
+@media (max-width: 480px) {
+  :global(body.theme-crt) .header {
+    display: grid !important;
+    grid-template-columns: 36px 1fr 36px !important;
+    padding: 10px 12px !important;
+    min-height: 52px !important;
+    max-height: 52px !important;
+    gap: 10px !important;
+  }
+
+  :global(body.theme-crt) .title {
+    font-size: 15px !important;
+  }
+
+  :global(body.theme-crt) .mobileMenuButton {
+    min-width: 36px !important;
+    min-height: 36px !important;
+    width: 36px !important;
+    height: 36px !important;
+  }
+}
+
+/* Executive Theme Mobile */
+@media (max-width: 768px) {
+  :global(body.theme-executive) .header {
+    display: grid;
+    grid-template-columns: 40px 1fr 40px;
+    padding: 12px 16px;
+    min-height: 56px;
+    max-height: 56px;
+    gap: 12px;
+  }
+
+  :global(body.theme-executive) .title {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  :global(body.theme-executive) .header {
+    display: grid;
+    grid-template-columns: 36px 1fr 36px;
+    padding: 10px 12px;
+    min-height: 52px;
+    max-height: 52px;
+    gap: 10px;
+  }
+
+  :global(body.theme-executive) .title {
+    font-size: 15px;
+  }
+}
+
+/* Modern Theme Mobile */
+@media (max-width: 768px) {
+  :global(body.theme-modern) .header {
+    display: grid;
+    grid-template-columns: 40px 1fr 40px;
+    padding: 12px 16px;
+    min-height: 56px;
+    max-height: 56px;
+    gap: 12px;
+  }
+
+  :global(body.theme-modern) .title {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  :global(body.theme-modern) .header {
+    display: grid;
+    grid-template-columns: 36px 1fr 36px;
+    padding: 10px 12px;
+    min-height: 52px;
+    max-height: 52px;
+    gap: 10px;
+  }
+
+  :global(body.theme-modern) .title {
+    font-size: 15px;
+  }
+}
+
+/* Matrix Theme Mobile */
+@media (max-width: 768px) {
+  :global(body.theme-matrix) .header {
+    display: grid;
+    grid-template-columns: 40px 1fr 40px;
+    padding: 12px 16px;
+    min-height: 56px;
+    max-height: 56px;
+    gap: 12px;
+  }
+
+  :global(body.theme-matrix) .title {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  :global(body.theme-matrix) .header {
+    display: grid;
+    grid-template-columns: 36px 1fr 36px;
+    padding: 10px 12px;
+    min-height: 52px;
+    max-height: 52px;
+    gap: 10px;
+  }
+
+  :global(body.theme-matrix) .title {
+    font-size: 15px;
+  }
+}
+
+/* Futuristic Mode Mobile */
+@media (max-width: 768px) {
+  :global(body.futuristic-mode) .header {
+    display: grid;
+    grid-template-columns: 40px 1fr 40px;
+    padding: 12px 16px;
+    min-height: 56px;
+    max-height: 56px;
+    gap: 12px;
+  }
+
+  :global(body.modern-ui-futuristic) .header {
+    display: grid;
+    grid-template-columns: 40px 1fr 40px;
+    padding: 12px 16px;
+    min-height: 56px;
+    max-height: 56px;
+    gap: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  :global(body.futuristic-mode) .header {
+    display: grid;
+    grid-template-columns: 36px 1fr 36px;
+    padding: 10px 12px;
+    min-height: 52px;
+    max-height: 52px;
+    gap: 10px;
+  }
+
+  :global(body.modern-ui-futuristic) .header {
+    display: grid;
+    grid-template-columns: 36px 1fr 36px;
+    padding: 10px 12px;
+    min-height: 52px;
+    max-height: 52px;
+    gap: 10px;
+  }
+}
+
+/* Retro Theme Mobile */
+@media (max-width: 768px) {
+  :global(body.theme-retro) .header {
+    display: grid;
+    grid-template-columns: 40px 1fr 40px;
+    padding: 12px 16px;
+    min-height: 56px;
+    max-height: 56px;
+    gap: 12px;
+  }
+
+  :global(body.theme-retro) .title {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  :global(body.theme-retro) .header {
+    display: grid;
+    grid-template-columns: 36px 1fr 36px;
+    padding: 10px 12px;
+    min-height: 52px;
+    max-height: 52px;
+    gap: 10px;
+  }
+
+  :global(body.theme-retro) .title {
+    font-size: 15px;
+  }
+}
+
+/* PowerShell Theme Mobile */
+@media (max-width: 768px) {
+  :global(body.theme-powershell) .header {
+    display: grid;
+    grid-template-columns: 40px 1fr 40px;
+    padding: 12px 16px;
+    min-height: 56px;
+    max-height: 56px;
+    gap: 12px;
+  }
+
+  :global(body.theme-powershell) .title {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  :global(body.theme-powershell) .header {
+    display: grid;
+    grid-template-columns: 36px 1fr 36px;
+    padding: 10px 12px;
+    min-height: 52px;
+    max-height: 52px;
+    gap: 10px;
+  }
+
+  :global(body.theme-powershell) .title {
+    font-size: 15px;
+  }
 }

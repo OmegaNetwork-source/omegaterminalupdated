@@ -31,6 +31,7 @@ import { useTheme } from "@/hooks/useTheme";
 import { useCustomizer } from "@/hooks/useCustomizer";
 import { useSoundEffects } from "@/hooks/useSoundEffects";
 import { commandRegistry } from "@/lib/commands";
+import { isAppMode } from "@/lib/utils/url-utils";
 import styles from "./DashboardSidebar.module.css";
 import { getSubActionIcon } from "./utils/subActionIcons";
 

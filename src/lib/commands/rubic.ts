@@ -6,6 +6,7 @@
  */
 
 import type { Command, CommandContext } from "@/types/commands";
+import { isAppMode } from "@/lib/utils/url-utils";
 import { rubic } from "@/lib/api";
 import type {
   RubicBlockchain,
@@ -1094,6 +1095,12 @@ export const rubicCommand: Command = {
   aliases: ["swap", "rubic-swap"],
   category: "wallet",
   handler: async (context: CommandContext, args: string[]) => {
+    // Check if app mode is enabled - disable Rubic swap completely
+    if (isAppMode()) {
+      context.log("❌ Swap is not supported on mobile app version", "error");
+      return;
+    }
+    
     const subcommand = args[1]?.toLowerCase();
 
     switch (subcommand) {

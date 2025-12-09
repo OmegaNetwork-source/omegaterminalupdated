@@ -8,6 +8,7 @@ import { createUsageError, createSwapStatusNotice, createCommandLine } from "./c
 import { parseUnits, formatUnits } from "ethers";
 import { getUniswapQuote, buildUniswapSwapTransaction, isNativeToken, getNativeTokenAddress } from "@/lib/multichain/evm/uniswap";
 import { searchUniswapTokens, type TokenInfo } from "@/lib/multichain/evm/token-search";
+import { isAppMode } from "@/lib/utils/url-utils";
 
 /**
  * Supported networks for Uniswap
@@ -87,6 +88,12 @@ export const uniswapCommand: Command = {
     }
 
     if (subcommand === "swap") {
+      // Check if app mode is enabled
+      if (isAppMode()) {
+        context.log("❌ Swap is not supported on mobile app version", "error");
+        return;
+      }
+      
       if (args.length >= 6) {
         await handleUniswapSwap(context, args);
       } else {
