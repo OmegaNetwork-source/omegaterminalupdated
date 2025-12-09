@@ -68,7 +68,7 @@
     "lightweight-charts": "^4.2.1",
     "lottie-react": "^2.4.1",
     "near-api-js": "^4.0.3",
-    "next": "^15.0.0",
+    "next": "15.0.5",
     "petra-plugin-wallet-adapter": "^0.4.5",
     "porto": "^0.2.37",
     "postprocessing": "^6.37.8",
