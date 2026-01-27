@@ -371,15 +371,15 @@ for (let i = 0; i < NUM_MINER_WALLETS; i++) {
 async function fundMinerWalletIfNeeded(wallet) {
   try {
     const balance = await provider.getBalance(wallet.address);
-    if (balance.lt(ethers.utils.parseEther("0.0002"))) {
+    if (balance < ethers.parseEther("0.0002")) {
       // 🔧 CRITICAL: Get fresh nonce for funding
       const nonce = await getFreshNonce();
 
       const tx = await relayerSigner.sendTransaction({
         to: wallet.address,
-        value: ethers.utils.parseEther("0.001"),
+        value: ethers.parseEther("0.001"),
         gasLimit: 21000,
-        gasPrice: ethers.utils.parseUnits("20", "gwei"),
+        gasPrice: ethers.parseUnits("20", "gwei"),
         nonce: nonce, // Force fresh nonce
       });
       await tx.wait();
@@ -412,13 +412,13 @@ app.post("/fund", async (req, res) => {
   }
 
   const fundAmount = amount
-    ? ethers.utils.parseEther(amount)
-    : ethers.utils.parseEther("0.1");
+    ? ethers.parseEther(amount)
+    : ethers.parseEther("0.1");
   const startTime = Date.now();
 
   try {
     console.log(
-      `[FUND] 🚀 Starting: ${address} - ${ethers.utils.formatEther(
+      `[FUND] 🚀 Starting: ${address} - ${ethers.formatEther(
         fundAmount
       )} OMEGA`
     );
@@ -430,11 +430,11 @@ app.post("/fund", async (req, res) => {
       // Get gas price with retry
       const gasPrice = await withNetworkRetry(async () => {
         try {
-          const networkGasPrice = await provider.getGasPrice();
-          return networkGasPrice.mul(120).div(100); // 20% bump
+          const networkGasPrice = await provider.getFeeData();
+          return (networkGasPrice.gasPrice * 120n) / 100n; // 20% bump using BigInt
         } catch (error) {
           console.log(`[GAS] Using fallback gas price: ${error.message}`);
-          return ethers.utils.parseUnits("30", "gwei");
+          return ethers.parseUnits("30", "gwei");
         }
       }, "Gas Price Fetch");
 
@@ -496,7 +496,7 @@ app.get("/status", async (req, res) => {
 
       return {
         relayerAddress: relayerSigner.address,
-        balance: ethers.utils.formatEther(balance),
+        balance: ethers.formatEther(balance),
         blockNumber: blockNumber,
       };
     }, "Status Check");
@@ -1285,7 +1285,7 @@ app.post("/stress", async (req, res) => {
             to,
             value: 0,
             gasLimit: 21000,
-            gasPrice: ethers.utils.parseUnits("20", "gwei"),
+            gasPrice: ethers.parseUnits("20", "gwei"),
             nonce: nonce,
           });
         }, `Stress Test ${i + 1}`)
@@ -2260,7 +2260,7 @@ app.get("/api/faucet/status", async (req, res) => {
                       data: {
                         canClaim,
                         faucetBalance,
-                        claimAmount: ethers.utils.parseEther("0.1").toString(),
+                        claimAmount: ethers.parseEther("0.1").toString(),
                         cooldownPeriod: 86400,
                         timeUntilNextClaim: lastClaim
                           ? Math.max(
@@ -2305,7 +2305,7 @@ app.get("/api/faucet/status", async (req, res) => {
                       data: {
                         canClaim,
                         faucetBalance: "0",
-                        claimAmount: ethers.utils.parseEther("0.1").toString(),
+                        claimAmount: ethers.parseEther("0.1").toString(),
                         cooldownPeriod: 86400,
                         timeUntilNextClaim: lastClaim
                           ? Math.max(
@@ -2343,7 +2343,7 @@ app.get("/api/faucet/status", async (req, res) => {
                   data: {
                     canClaim,
                     faucetBalance: "0",
-                    claimAmount: ethers.utils.parseEther("0.1").toString(),
+                    claimAmount: ethers.parseEther("0.1").toString(),
                     cooldownPeriod: 86400,
                     timeUntilNextClaim: lastClaim
                       ? Math.max(
@@ -2377,7 +2377,7 @@ app.get("/api/faucet/status", async (req, res) => {
                 success: true,
                 data: {
                   canClaim,
-                  claimAmount: ethers.utils.parseEther("0.1").toString(),
+                  claimAmount: ethers.parseEther("0.1").toString(),
                   cooldownPeriod: 86400,
                   timeUntilNextClaim: lastClaim
                     ? Math.max(
@@ -2697,7 +2697,7 @@ app.post("/v1/wallet-verification", async (req, res) => {
     }
 
     try {
-      const recoveredAddress = ethers.utils.verifyMessage(message, signature);
+      const recoveredAddress = ethers.verifyMessage(message, signature);
       const isValid =
         recoveredAddress.toLowerCase() === walletAddress.toLowerCase();
 
